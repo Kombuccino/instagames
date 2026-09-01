@@ -88,16 +88,12 @@ export function GameFeed({ games }: GameFeedProps) {
   if (games.length === 0) return emptyState
 
   return (
-    <main ref={containerRef} className="game-feed" aria-label="Instagames feed">
+    <main ref={containerRef} className="game-feed" aria-label="MiniFugg game feed">
       {slots.map((slot, index) => (
-        <section
-          className="game-slot"
-          data-game-slot
-          data-index={index}
-          key={slot.key}
-        >
+        <section className="game-slot" data-game-slot data-index={index} key={slot.key}>
           <GameRuntime
             game={slot.game}
+            catalog={games}
             seed={slot.seed}
             active={index === activeIndex}
             mounted={Math.abs(index - activeIndex) <= 1}

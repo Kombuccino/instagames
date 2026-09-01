@@ -1,6 +1,24 @@
 :root {
   --minifugg-core-top-reserved: calc(108px + env(safe-area-inset-top));
-  --minifugg-core-bottom-reserved: calc(76px + env(safe-area-inset-bottom));
+  --minifugg-swipe-gutter: 30px;
+  --minifugg-core-bottom-reserved: calc(100px + env(safe-area-inset-bottom));
+}
+
+.game-feed {
+  touch-action: pan-y;
+}
+
+.game-slot::after {
+  content: '';
+  position: absolute;
+  z-index: 28;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--minifugg-swipe-gutter) + env(safe-area-inset-bottom));
+  background: transparent;
+  pointer-events: auto;
+  touch-action: pan-y;
 }
 
 .game-topbar {
@@ -26,7 +44,7 @@
 .game-identity {
   position: relative;
   z-index: 1;
-  max-width: calc(100% - 24px);
+  max-width: calc(100% - 96px);
   padding: 4px 0;
 }
 
@@ -50,7 +68,7 @@
   position: absolute;
   z-index: 3;
   left: 50%;
-  bottom: max(12px, env(safe-area-inset-bottom));
+  bottom: calc(var(--minifugg-swipe-gutter) + env(safe-area-inset-bottom) + 6px);
   transform: translateX(-50%);
   display: flex;
   align-items: center;
@@ -115,8 +133,9 @@
 }
 
 .score-chip {
+  top: max(12px, env(safe-area-inset-top));
   right: 12px;
-  bottom: calc(max(12px, env(safe-area-inset-bottom)) + 64px);
+  bottom: auto;
 }
 
 @media (max-width: 430px) {
@@ -127,7 +146,7 @@
   }
 
   .game-identity {
-    max-width: calc(100% - 20px);
+    max-width: calc(100% - 92px);
   }
 
   .game-heading > strong {
@@ -154,6 +173,6 @@
 
 @media (min-width: 760px) {
   .swipe-hint {
-    bottom: 88px;
+    bottom: calc(var(--minifugg-swipe-gutter) + 72px);
   }
 }

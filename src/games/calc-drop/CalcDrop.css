@@ -1,0 +1,282 @@
+.calc-drop-game {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(22, 22, 22, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(22, 22, 22, 0.035) 1px, transparent 1px),
+    #f2efe6;
+  background-size: 22px 22px;
+  color: #151515;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  user-select: none;
+}
+
+.calc-drop-safe {
+  position: absolute;
+  top: var(--minifugg-core-top-reserved);
+  right: 0;
+  bottom: var(--minifugg-core-bottom-reserved);
+  left: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  gap: clamp(6px, 1.2vh, 10px);
+  padding: 8px clamp(8px, 3vw, 16px) max(8px, env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.calc-drop-hud {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+  width: min(100%, 390px);
+  margin: 0 auto;
+}
+
+.calc-drop-level,
+.calc-drop-target {
+  border-top: 3px solid #151515;
+  border-bottom: 1px solid #151515;
+  padding: 5px 0 6px;
+}
+
+.calc-drop-level {
+  min-width: 74px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.calc-drop-level span,
+.calc-drop-target span {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.calc-drop-level strong {
+  font-size: 25px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.calc-drop-target-copy {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.calc-drop-target-copy strong {
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.calc-drop-progress {
+  height: 6px;
+  margin-top: 5px;
+  background: #d8d3c6;
+  overflow: hidden;
+}
+
+.calc-drop-progress span {
+  display: block;
+  height: 100%;
+  background: #d64b36;
+  transition: width 180ms ease-out;
+}
+
+.calc-drop-board-shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.calc-drop-board {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(20, 1fr);
+  height: min(100%, 600px);
+  aspect-ratio: 1 / 2;
+  border: 3px solid #151515;
+  background: #ddd8ca;
+  box-shadow: 5px 5px 0 rgba(21, 21, 21, 0.16);
+}
+
+.calc-drop-cell {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid rgba(21, 21, 21, 0.12);
+  border-bottom: 1px solid rgba(21, 21, 21, 0.12);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.calc-drop-cell span {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(10px, 3.25vw, 15px);
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+.calc-drop-cell.is-settled,
+.calc-drop-cell.is-active {
+  border: 1px solid #151515;
+}
+
+.calc-drop-cell.is-number {
+  background: #f7f3e8;
+}
+
+.calc-drop-cell.is-multiply {
+  background: #e0c857;
+}
+
+.calc-drop-cell.is-divide {
+  background: #7b9fc5;
+  color: #101b26;
+}
+
+.calc-drop-cell.is-active {
+  z-index: 2;
+  outline: 2px solid #d64b36;
+  outline-offset: -2px;
+}
+
+.calc-drop-cell.is-ghost::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border: 1px dashed rgba(21, 21, 21, 0.42);
+}
+
+.calc-drop-lock {
+  position: absolute;
+  left: calc(50% + min(41vw, 166px) + 8px);
+  bottom: 12px;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 3px;
+  opacity: 0;
+  transition: opacity 80ms linear;
+}
+
+.calc-drop-lock.is-visible {
+  opacity: 1;
+}
+
+.calc-drop-lock span {
+  width: 5px;
+  height: 13px;
+  background: #c9c3b5;
+  border: 1px solid #151515;
+}
+
+.calc-drop-lock span.is-on {
+  background: #d64b36;
+}
+
+.calc-drop-equation {
+  width: min(100%, 390px);
+  margin: 0 auto;
+  min-height: 31px;
+  padding: 5px 8px;
+  box-sizing: border-box;
+  border-left: 4px solid #151515;
+  background: rgba(255, 253, 247, 0.74);
+  display: flex;
+  align-items: center;
+  font-size: clamp(12px, 3.4vw, 15px);
+  font-weight: 800;
+  line-height: 1.15;
+  white-space: normal;
+  overflow: hidden;
+  animation: calc-drop-equation-in 180ms ease-out;
+}
+
+@keyframes calc-drop-equation-in {
+  from { transform: translateX(7px); opacity: 0.5; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.calc-drop-controls {
+  width: min(100%, 420px);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+}
+
+.calc-drop-move-controls,
+.calc-drop-rotate-controls {
+  display: flex;
+  gap: 7px;
+}
+
+.calc-drop-controls button {
+  width: clamp(48px, 14vw, 58px);
+  height: clamp(48px, 14vw, 58px);
+  border: 2px solid #151515;
+  border-radius: 0;
+  background: #f8f4e9;
+  color: #151515;
+  box-shadow: 3px 3px 0 #151515;
+  font: 900 clamp(24px, 7vw, 31px) / 1 system-ui, sans-serif;
+  padding: 0;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.calc-drop-controls button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #151515;
+}
+
+.calc-drop-controls button.is-down {
+  background: #e0c857;
+}
+
+.calc-drop-rotate-controls button {
+  background: #7b9fc5;
+}
+
+@media (max-height: 720px) {
+  .calc-drop-safe {
+    gap: 5px;
+    padding-top: 4px;
+  }
+
+  .calc-drop-level,
+  .calc-drop-target {
+    padding-top: 3px;
+    padding-bottom: 4px;
+  }
+
+  .calc-drop-level strong {
+    font-size: 21px;
+  }
+
+  .calc-drop-equation {
+    min-height: 26px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+
+  .calc-drop-controls button {
+    width: 45px;
+    height: 45px;
+    font-size: 25px;
+  }
+}

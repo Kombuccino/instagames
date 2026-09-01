@@ -25,7 +25,7 @@ export function GameRuntime({ game, seed, active, mounted }: GameRuntimeProps) {
       </div>
 
       <header className="game-topbar">
-        <div className="brand">INSTAGAMES</div>
+        <div className="brand">MINIFUGG</div>
         <div className="roulette-pill"><span /> Roulette</div>
       </header>
 

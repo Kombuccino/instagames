@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { getSavedNickname } from './leaderboard'
 import {
   addGameComment,
@@ -23,6 +23,8 @@ type GameRuntimeProps = {
 }
 
 type OpenSheet = 'help' | 'leaderboard' | 'comments' | 'creator' | null
+
+type IconName = 'rules' | 'heart' | 'comment' | 'bookmark' | 'close'
 
 const EMPTY_SOCIAL: GameSocialStats = {
   plays: 0,
@@ -80,6 +82,28 @@ function periodLabel(period: GameLeaderboardPeriod) {
   if (period === 'daily') return 'Jour'
   if (period === 'weekly') return 'Semaine'
   return 'Global'
+}
+
+function CoreIcon({ name, filled = false }: { name: IconName, filled?: boolean }) {
+  let content: ReactNode
+
+  if (name === 'heart') {
+    content = <path d="M12 20.3s-7.2-4.4-9.5-8.6C.5 8 2.1 4.5 5.8 4.1c2.1-.2 4.1.8 5.2 2.5 1.1-1.7 3.1-2.7 5.2-2.5 3.7.4 5.3 3.9 3.3 7.6-2.3 4.2-9.5 8.6-9.5 8.6Z" />
+  } else if (name === 'comment') {
+    content = <path d="M20.5 11.4a8.4 8.4 0 0 1-8.7 8.1 9.4 9.4 0 0 1-3.2-.6L4 20l1.4-3.7a7.7 7.7 0 0 1-1.9-5.1A8.4 8.4 0 0 1 12.2 3a8.4 8.4 0 0 1 8.3 8.4Z" />
+  } else if (name === 'bookmark') {
+    content = <path d="M6.4 3.2h11.2c.8 0 1.4.6 1.4 1.4v16.2l-7-4.5-7 4.5V4.6c0-.8.6-1.4 1.4-1.4Z" />
+  } else if (name === 'rules') {
+    content = <><circle cx="12" cy="12" r="9" /><path d="M12 10.5v6" /><circle cx="12" cy="7.4" r=".7" className="icon-dot" /></>
+  } else {
+    content = <><path d="M5 5l14 14" /><path d="M19 5 5 19" /></>
+  }
+
+  return (
+    <svg className="core-icon" viewBox="0 0 24 24" aria-hidden="true" fill={filled ? 'currentColor' : 'none'}>
+      {content}
+    </svg>
+  )
 }
 
 export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntimeProps) {
@@ -221,16 +245,16 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
 
         <nav className="game-actions" aria-label="Actions du jeu">
           {game.instructions && game.features?.help !== false && (
-            <button type="button" onClick={() => setSheet('help')} aria-label="Règles du jeu"><span>≡</span><small>Règles</small></button>
+            <button type="button" onClick={() => setSheet('help')} aria-label="Règles du jeu"><CoreIcon name="rules" /><small>Règles</small></button>
           )}
           {loveEnabled && (
-            <button type="button" className={social.loved ? 'is-active' : ''} onClick={() => void toggleLove()} aria-label="Aimer"><span>♥</span><small>{formatCount(social.loves)}</small></button>
+            <button type="button" className={social.loved ? 'is-active' : ''} onClick={() => void toggleLove()} aria-label="Aimer"><CoreIcon name="heart" filled={social.loved} /><small>{formatCount(social.loves)}</small></button>
           )}
           {commentsEnabled && (
-            <button type="button" onClick={() => setSheet('comments')} aria-label="Commentaires"><span>◌</span><small>{formatCount(social.comments)}</small></button>
+            <button type="button" onClick={() => setSheet('comments')} aria-label="Commentaires"><CoreIcon name="comment" /><small>{formatCount(social.comments)}</small></button>
           )}
           {bookmarkEnabled && (
-            <button type="button" className={social.bookmarked ? 'is-active' : ''} onClick={() => void toggleBookmark()} aria-label="Mettre en favori"><span>▮</span><small>{social.bookmarked ? 'Sauvé' : 'Garder'}</small></button>
+            <button type="button" className={social.bookmarked ? 'is-active' : ''} onClick={() => void toggleBookmark()} aria-label="Mettre en favori"><CoreIcon name="bookmark" filled={social.bookmarked} /><small>{social.bookmarked ? 'Sauvé' : 'Garder'}</small></button>
           )}
         </nav>
       </header>
@@ -252,7 +276,7 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
                   {sheet === 'creator' && `@${game.author}`}
                 </strong>
               </div>
-              <button type="button" onClick={() => setSheet(null)} aria-label="Fermer">×</button>
+              <button type="button" onClick={() => setSheet(null)} aria-label="Fermer"><CoreIcon name="close" /></button>
             </div>
 
             {sheet === 'help' && game.instructions && (

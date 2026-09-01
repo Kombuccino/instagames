@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react'
 import type { GameComponentProps } from '../../core/types'
 import './ShootTheShooter.css'
+import './ShootTheShooter.mobile-fix.css'
 
 type GlassType = 'classic' | 'tapered' | 'tall' | 'heavy' | 'flared' | 'mini'
 type LiquidPattern = 'solid' | 'gradient' | 'layered'
@@ -71,8 +72,9 @@ type GrabState = {
   x: number
 }
 
-const BASE_AIM_X = 80
-const HIT_RADIUS = 5.8
+const BASE_AIM_X = 76
+const MOBILE_HIT_RADIUS_PX = 34
+const DESKTOP_HIT_RADIUS_PX = 30
 const CRUISE_SPEED = 10.5
 const MAX_SPEED = 13.8
 const SPEED_BOOST = 0.62
@@ -264,6 +266,7 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
   const runSeed = useMemo(() => (seed ^ Math.imul(restartToken + 1, 0x45d9f3b)) >>> 0, [restartToken, seed])
   const recipes = useMemo(() => createRecipes(runSeed), [runSeed])
   const worldRef = useRef<World>(createWorld(recipes, runSeed))
+  const trackRef = useRef<HTMLDivElement | null>(null)
   const finishTimerRef = useRef<number | null>(null)
   const grabTimerRef = useRef<number | null>(null)
   const grabTokenRef = useRef(0)
@@ -389,19 +392,27 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
     const world = worldRef.current
     if (!active || world.finished) return
 
-    const tolerance = Math.max(4.25, HIT_RADIUS - world.alcohol * 0.014)
-    let target: Shooter | null = null
-    let bestDistance = Number.POSITIVE_INFINITY
+    const trackWidth = trackRef.current?.getBoundingClientRect().width ?? 390
+    const hitRadiusPx = trackWidth <= 430 ? MOBILE_HIT_RADIUS_PX : DESKTOP_HIT_RADIUS_PX
+    const tolerance = (hitRadiusPx / Math.max(1, trackWidth)) * 100
 
-    for (const shooter of world.shooters) {
-      const distance = Math.abs(shooter.x - world.aimX)
+    // Judge the exact positions currently painted on screen. This avoids false misses
+    // caused by the simulation being a frame ahead of the rendered mobile UI.
+    let visibleTarget: Shooter | null = null
+    let bestDistance = Number.POSITIVE_INFINITY
+    for (const shooter of view.shooters) {
+      const distance = Math.abs(shooter.x - view.aimX)
       if (distance <= tolerance && distance < bestDistance) {
-        target = shooter
+        visibleTarget = shooter
         bestDistance = distance
       }
     }
 
-    if (!target) {
+    const target = visibleTarget
+      ? world.shooters.find((shooter) => shooter.id === visibleTarget?.id) ?? null
+      : null
+
+    if (!target || !visibleTarget) {
       world.misses += 1
       setView(snapshot(world))
       setMissToken((value) => value + 1)
@@ -412,8 +423,8 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
     const recipe = recipeById.get(target.recipeId)
     if (!recipe) return
 
-    const grabbedAt = target.x
-    world.shooters = world.shooters.filter((shooter) => shooter.id !== target?.id)
+    const grabbedAt = visibleTarget.x
+    world.shooters = world.shooters.filter((shooter) => shooter.id !== target.id)
     world.score += 1
     world.alcohol = Math.max(0, Math.min(100, world.alcohol + recipe.effect))
     world.peakAlcohol = Math.max(world.peakAlcohol, world.alcohol)
@@ -431,7 +442,7 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
     setView(snapshot(world))
 
     if (world.alcohol >= 100) finishRun('coma')
-  }, [active, finishRun, recipeById, session])
+  }, [active, finishRun, recipeById, session, view.aimX, view.shooters])
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key !== ' ' && event.key !== 'Enter') return
@@ -487,10 +498,11 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
         </div>
 
         <div
+          ref={trackRef}
           className="sts-track"
           role="button"
           tabIndex={0}
-          aria-label="Les shooters arrivent de gauche. Touchez quand un verre croise le point de visée près de la main."
+          aria-label="Les shooters arrivent de gauche. Touchez quand un verre croise le point de visée au-dessus de la main."
           onPointerDown={(event) => {
             event.preventDefault()
             drink()
@@ -523,7 +535,7 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
           <div
             className={`sts-hand ${grab ? 'is-grabbing' : ''}`}
             key={`hand-${grab?.token ?? 0}`}
-            style={grab ? { '--grab-x': `${grab.x}%` } as CSSProperties : undefined}
+            style={{ left: `${grab?.x ?? BASE_AIM_X}%` }}
             aria-hidden="true"
           >
             <span className="sts-hand-emoji">🤏</span>
@@ -576,7 +588,7 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
             : view.endReason === 'misses'
               ? 'Trois erreurs : bar fermé.'
               : 'Tu as arrêté de boire trop longtemps.'
-          : '3 erreurs maximum. La ligne ne ralentit que si tu arrêtes réellement de boire.'}
+          : '3 erreurs maximum. La cible visible est la vraie zone de prise.'}
       </div>
 
       {grabRecipe && grab && (

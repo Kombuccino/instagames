@@ -45,11 +45,24 @@ button { color: inherit; }
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 20px;
   padding: max(18px, env(safe-area-inset-top)) 18px 18px;
   pointer-events: none;
   background: linear-gradient(180deg, rgba(0,0,0,.52), transparent);
 }
 .brand { font-size: 12px; letter-spacing: .2em; font-weight: 900; }
+.game-title {
+  min-width: 0;
+  max-width: 58%;
+  overflow: hidden;
+  color: rgba(255,255,255,.94);
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: -.025em;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 .game-actions {
   position: absolute;

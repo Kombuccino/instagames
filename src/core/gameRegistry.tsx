@@ -3,6 +3,7 @@ import { LineFugg } from '../games/linefugg/LineFugg'
 import { ShootTheShooter } from '../games/shoot-the-shooter/ShootTheShooter'
 import { VladsSkewers } from '../games/vlads-skewers/VladsSkewers'
 import { HariRottenTeeth } from '../games/hari-rotten-teeth/HariRottenTeeth'
+import { CalcDrop } from '../games/calc-drop/CalcDrop'
 
 export const gameRegistry: InstagameDefinition[] = [
   {
@@ -124,6 +125,40 @@ export const gameRegistry: InstagameDefinition[] = [
         'Si les bonbons atteignent le haut de la grille, la partie est terminée.',
       ],
       controls: ['← et → déplacent le bloc', 'Maintiens ↓ pour accélérer la chute', '↔ change vertical/horizontal', '↻ fait tourner l’ordre des 3 bonbons'],
+    },
+    features: {
+      help: true,
+      love: true,
+      comments: true,
+      bookmark: true,
+      leaderboard: {
+        enabled: true,
+        periods: ['daily', 'weekly'],
+        sort: 'desc',
+        limit: 10,
+      },
+      share: false,
+      remix: false,
+    },
+  },
+  {
+    id: 'calc-drop',
+    title: 'Calc Drop',
+    description: 'Complète des lignes · fabrique des calculs monstrueux',
+    author: 'MiniFugg',
+    component: CalcDrop,
+    instructions: {
+      goal: 'Atteins 100 000 points à chaque niveau en construisant les lignes les plus rentables possible.',
+      rules: [
+        'Les pièces ont les 7 formes classiques de tétriminos et contiennent 4 cases numériques.',
+        'Un chiffre ajoute sa valeur au total courant. ×2, ×3, ÷2 et ÷3 modifient ce total.',
+        'Une ligne complète est calculée strictement de gauche à droite en partant de 0, sans priorité opératoire.',
+        'Chaque ligne est plafonnée à 999 999 avant d’être ajoutée au score.',
+        'À 100 000 points sur le niveau en cours, tu passes au niveau suivant et la chute accélère.',
+        'Quand une pièce touche le sol, tu as encore 4 ticks pour la déplacer ou la tourner avant son verrouillage.',
+        'Si une nouvelle pièce ne peut plus entrer dans la grille, la partie est terminée.',
+      ],
+      controls: ['← et → déplacent la pièce', 'Maintiens ↓ pour accélérer la chute', '↺ et ↻ tournent la pièce', 'Clavier : flèches, Z et X'],
     },
     features: {
       help: true,

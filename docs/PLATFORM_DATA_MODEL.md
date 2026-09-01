@@ -34,7 +34,7 @@ One row per counted play/session.
 
 Index: `(game_id, started_at)`.
 
-A play should be counted when the game becomes active for the first time in a feed slot, not on every React render.
+A play is counted when a game becomes active for the first time in a feed slot, not on every React render.
 
 ### game_loves
 
@@ -66,7 +66,7 @@ Index: `(game_id, created_at desc)`.
 
 ### scores
 
-Store every submitted score once. Daily and weekly leaderboards are queries/views over these rows; do not duplicate the score just to create periods.
+Store every submitted run exactly once. Daily and weekly leaderboards are queries/views over these rows; never duplicate the score just to create periods.
 
 - `id` UUID primary key
 - `game_id` text -> games.id
@@ -86,22 +86,41 @@ For competitive games, client-only score submission is not secure. A later versi
 
 ## Leaderboard periods
 
-The API exposes periods, while PostgreSQL keeps raw timestamps.
+PostgreSQL keeps raw timestamps. The API exposes leaderboard windows derived from them:
 
 - Daily: UTC day, e.g. `day:2026-09-01`
 - Weekly: ISO week, e.g. `week:2026-W36`
 - Global: `global`
 
-The server converts the requested board id into a timestamp window when necessary.
+The server converts the requested board id into the corresponding timestamp window.
 
 ## API shape
 
-Existing score transport remains:
+### Submit one finished run
 
-- `GET /v1/leaderboards/:gameId/:boardId?limit=10&sort=desc`
-- `POST /v1/leaderboards/:gameId/:boardId`
+`POST /v1/scores`
 
-Social/core endpoints planned by the client:
+```json
+{
+  "gameId": "linefugg",
+  "nickname": "Player",
+  "score": 123,
+  "periods": ["daily", "weekly"],
+  "metadata": {}
+}
+```
+
+The server inserts one score row. `periods` describes which leaderboard views the game exposes; it must not cause duplicate score rows.
+
+### Read a leaderboard window
+
+`GET /v1/leaderboards/:gameId/:boardId?limit=10&sort=desc`
+
+The old board-specific score POST may remain only for legacy/special boards:
+
+`POST /v1/leaderboards/:gameId/:boardId`
+
+### Social/core endpoints
 
 - `GET /v1/games/:gameId/stats`
 - `POST /v1/games/:gameId/plays`

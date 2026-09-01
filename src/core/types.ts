@@ -1,11 +1,13 @@
 import type { ComponentType } from 'react'
 
-export type GameLeaderboardScope = 'daily' | 'global'
+export type GameLeaderboardPeriod = 'daily' | 'weekly' | 'global'
 export type GameLeaderboardSort = 'desc' | 'asc'
 
 export type GameLeaderboardConfig = {
   enabled: true
-  scope: GameLeaderboardScope
+  periods?: GameLeaderboardPeriod[]
+  /** Legacy single-period setting. Prefer periods. */
+  scope?: 'daily' | 'global'
   sort?: GameLeaderboardSort
   limit?: number
 }
@@ -13,8 +15,10 @@ export type GameLeaderboardConfig = {
 export type GameFeatureConfig = {
   help?: boolean
   leaderboard?: GameLeaderboardConfig | false
-  share?: boolean
+  love?: boolean
   comments?: boolean
+  bookmark?: boolean
+  share?: boolean
   remix?: boolean
 }
 

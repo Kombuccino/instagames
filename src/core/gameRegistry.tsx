@@ -2,6 +2,7 @@ import type { InstagameDefinition } from './types'
 import { LineFugg } from '../games/linefugg/LineFugg'
 import { ShootTheShooter } from '../games/shoot-the-shooter/ShootTheShooter'
 import { VladsSkewers } from '../games/vlads-skewers/VladsSkewers'
+import { HariRottenTeeth } from '../games/hari-rotten-teeth/HariRottenTeeth'
 
 export const gameRegistry: InstagameDefinition[] = [
   {
@@ -89,6 +90,40 @@ export const gameRegistry: InstagameDefinition[] = [
         'Si un client perd toute sa patience, il part. Au troisième client perdu, le service est terminé.',
       ],
       controls: ['Maintiens le doigt dans le tiers inférieur de l’écran', 'Glisse librement pour déplacer la brochette', 'Vise avec la pointe métallique'],
+    },
+    features: {
+      help: true,
+      love: true,
+      comments: true,
+      bookmark: true,
+      leaderboard: {
+        enabled: true,
+        periods: ['daily', 'weekly'],
+        sort: 'desc',
+        limit: 10,
+      },
+      share: false,
+      remix: false,
+    },
+  },
+  {
+    id: 'hari-rotten-teeth',
+    title: 'HARI les dents pourries',
+    description: 'Aligne les bonbons · pourris toute la mâchoire',
+    author: 'MiniFugg',
+    component: HariRottenTeeth,
+    instructions: {
+      goal: 'Fais des alignements de bonbons pour transformer toutes les dents de HARI en vieux chicots.',
+      rules: [
+        'Les pièces sont des blocs de 3 bonbons qui descendent dans une grille de 7 × 12.',
+        'Aligne au moins 3 bonbons identiques horizontalement, verticalement ou en diagonale pour les faire disparaître.',
+        'Chaque bonbon détruit inflige un dégât caché à une dent portant le même bonbon.',
+        'Une dent brunit puis noircit à mesure qu’elle est attaquée. À zéro point de vie, elle reste en place sous forme de chicot.',
+        'Les cascades sont automatiques et rapportent davantage de points.',
+        'Quand les 8 dents sont pourries, les chicots tombent et le niveau suivant démarre plus vite avec des dents plus résistantes.',
+        'Si les bonbons atteignent le haut de la grille, la partie est terminée.',
+      ],
+      controls: ['← et → déplacent le bloc', 'Maintiens ↓ pour accélérer la chute', '↔ change vertical/horizontal', '↻ fait tourner l’ordre des 3 bonbons'],
     },
     features: {
       help: true,

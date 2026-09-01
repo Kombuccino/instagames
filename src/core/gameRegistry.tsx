@@ -152,8 +152,10 @@ export const gameRegistry: InstagameDefinition[] = [
       rules: [
         'Les pièces ont les 7 formes classiques de tétriminos et contiennent 4 cases numériques.',
         'Un chiffre ajoute sa valeur au total courant. ×2, ×3, ÷2 et ÷3 modifient ce total.',
-        'Une ligne complète est calculée strictement de gauche à droite en partant de 0, sans priorité opératoire.',
-        'Chaque ligne est plafonnée à 999 999 avant d’être ajoutée au score.',
+        'Une ligne complète est calculée de gauche à droite en partant de 0, sans priorité opératoire.',
+        'Le maximum standard d’une ligne de 10 cases est 9 × 3⁹ = 177 147. Les multiplicateurs bonus augmentent ce maximum théorique uniquement s’ils sont présents dans la ligne.',
+        'Le bonus ⇄ fait calculer toute la ligne de droite à gauche et sa case n’ajoute aucune valeur.',
+        'Effacer 2 lignes d’un coup injecte ⇄ dans la pièce suivante, 3 lignes injectent ×4, et 4 lignes injectent ×6. La forme de la pièce reste imposée par le jeu.',
         'À 100 000 points sur le niveau en cours, tu passes au niveau suivant et la chute accélère.',
         'Quand une pièce touche le sol, tu as encore 4 ticks pour la déplacer ou la tourner avant son verrouillage.',
         'Si une nouvelle pièce ne peut plus entrer dans la grille, la partie est terminée.',

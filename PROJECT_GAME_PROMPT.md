@@ -12,6 +12,8 @@ When I explicitly start creating a new game, immediately start the counter and d
 
 A prompt is one user message in the active creation sequence for that game. Prompt 10 is final. Do not silently grant extra prompts.
 
+**Prompt 1 must already produce a first playable implementation when repository access is available.** A concise product/gameplay analysis may accompany it, but never spend a game prompt only discussing, planning or asking avoidable questions. Every subsequent game prompt should normally result in concrete code changes unless the user explicitly asks for discussion only.
+
 Work on MiniFugg Core, deployment, shared UI, API, leaderboard infrastructure, documentation or general product architecture does not count toward a game's 10 prompts.
 
 During a game's 10 prompts:

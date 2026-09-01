@@ -1,0 +1,139 @@
+.game-actions {
+  gap: 8px;
+}
+
+.game-actions button {
+  position: relative;
+  display: grid;
+  grid-template-rows: 29px 9px;
+  justify-items: center;
+  align-items: center;
+  gap: 1px;
+  min-width: 40px;
+  width: 40px;
+  height: 43px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: rgba(255,255,255,.92);
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.game-actions button::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 10px;
+  background: transparent;
+  transition: background 120ms ease;
+}
+
+.game-actions button:hover::before,
+.game-actions button:focus-visible::before {
+  background: rgba(255,255,255,.055);
+}
+
+.game-actions button:focus-visible {
+  outline: none;
+}
+
+.game-actions button:active {
+  transform: scale(.92);
+}
+
+.game-actions .core-icon {
+  position: relative;
+  z-index: 1;
+  width: 27px;
+  height: 27px;
+  overflow: visible;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 120ms ease, color 120ms ease, fill 120ms ease;
+}
+
+.game-actions .core-icon .icon-dot {
+  fill: currentColor;
+  stroke: none;
+}
+
+.game-actions button small {
+  position: relative;
+  z-index: 1;
+  max-width: 42px;
+  overflow: hidden;
+  color: rgba(255,255,255,.58);
+  font-size: 7px;
+  font-weight: 700;
+  line-height: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-actions button.is-active {
+  color: #fff;
+  background: transparent;
+  border-color: transparent;
+}
+
+.game-actions button.is-active .core-icon {
+  color: #fff;
+  filter: drop-shadow(0 1px 4px rgba(255,255,255,.14));
+}
+
+.platform-sheet-head > button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: rgba(255,255,255,.82);
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.platform-sheet-head > button .core-icon {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.65;
+  stroke-linecap: round;
+}
+
+.platform-sheet-head > button:active {
+  transform: scale(.9);
+}
+
+@media (max-width: 430px) {
+  .game-actions {
+    gap: 5px;
+  }
+
+  .game-actions button {
+    min-width: 38px;
+    width: 38px;
+    height: 42px;
+    padding: 0;
+  }
+
+  .game-actions .core-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .game-actions button small {
+    font-size: 6.5px;
+  }
+}

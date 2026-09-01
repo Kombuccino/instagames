@@ -1,27 +1,22 @@
-# MiniFugg Game Development Contract v1
+# MiniFugg Game Development Contract v1.1
 
-This file is the source of truth for every AI or developer creating a MiniFugg game.
-Read it completely before writing or modifying game code.
+This file is the source of truth for every AI or developer creating a MiniFugg game. Read it completely before writing or modifying game code.
 
 ## 1. Product idea
 
 MiniFugg is a vertical feed of tiny, instantly playable games. The user swipes up/down to move between games. Games must feel immediate, mobile-first and understandable in seconds.
 
-A real game is designed and finished in a maximum of **10 user prompts**. The constraint is part of the product.
-
-Platform/Core work does **not** consume a game's 10 prompts.
+A real game is designed and finished in a maximum of **10 user prompts**. Platform/Core work does **not** consume a game's 10 prompts.
 
 ## 2. The 10-prompt rule
 
-When the user explicitly starts a new game, count user prompts starting at 1.
-Every answer while building that game must visibly include:
+When the user explicitly starts a new game, count user prompts starting at 1. Every answer while building that game must visibly include:
 
 `🎮 <Game name> — Prompt N/10 — X prompts remaining`
 
-Prompt 10 is the last development prompt. Do not quietly extend the budget.
-Bug fixes, polish and deployment requests for that game count if they happen during its 10-prompt creation session.
+Prompt 10 is the last development prompt. Do not quietly extend the budget. Bug fixes, polish and deployment requests during that game's active creation sequence count.
 
-Do not count discussion about MiniFugg Core, platform UI, shared API, deployment infrastructure or this specification as game prompts.
+Do not count work about MiniFugg Core, shared UI, API, deployment, accounts, social features, leaderboards or this specification.
 
 ## 3. Technical boundary
 
@@ -31,21 +26,15 @@ Current stack:
 - TypeScript
 - Vite
 - CSS
-- Browser APIs (Canvas/WebGL/WebAudio are allowed when useful)
+- browser APIs such as Canvas/WebGL/WebAudio when useful
 
-A normal first-party game lives in:
+A normal first-party game lives in `src/games/<game-id>/` and should normally modify only its directory plus its entry in `src/core/gameRegistry.tsx`.
 
-`src/games/<game-id>/`
-
-A game should normally only modify its own directory plus its single registration entry in `src/core/gameRegistry.tsx`.
-
-Do **not** modify Core/runtime/platform files while building a game unless the user explicitly asks for a platform change.
-
-Do not add a new npm dependency for a game unless it is genuinely necessary. Prefer browser APIs and existing dependencies.
+Do **not** modify Core/runtime/platform files while building a game unless the user explicitly asks for a platform change. Avoid new npm dependencies unless genuinely necessary.
 
 ## 4. Runtime contract
 
-Every game component receives `GameComponentProps` from `src/core/types.ts`:
+Every game receives `GameComponentProps` from `src/core/types.ts`:
 
 ```ts
 export type GameComponentProps = {
@@ -63,48 +52,63 @@ export type GameComponentProps = {
 }
 ```
 
-### `active`
+### active
 
-`true` only while the game is the active feed item.
-Pause animation loops, timers and audio when `active === false`.
-Never keep expensive work running off-screen.
+`true` only while the game is active. Pause timers, animation loops and audio when false. Never keep expensive work running off-screen.
 
-### `seed`
+### seed
 
-A run seed supplied by the feed. Use it when deterministic generation is useful.
-For a daily challenge, derive deterministic content from the UTC day (or use a documented daily seed strategy) so every player receives the same board that day.
+Use the feed seed when deterministic variation is useful. A daily challenge may derive deterministic gameplay from the UTC day.
 
-### `restartToken`
+### restartToken
 
-The Core increments this when the player presses the common Replay button.
-A game using `session.finish()` must reset all run state when `restartToken` changes.
+The Core increments this when the common Replay action is used. A game using `session.finish()` must reset all run state when this value changes.
 
-### `session.setScore(score)`
+### session.setScore(score)
 
-Reports the live score to MiniFugg. Call it when the displayed score changes.
-The platform owns the generic score chip.
+Reports the live score to MiniFugg. The platform owns the generic score chip. Do not duplicate a generic floating score UI unless the gameplay itself requires a game-specific display.
 
-### `session.finish({ score, boardId?, metadata? })`
+### session.finish({ score, boardId?, metadata? })
 
-Call exactly once when a run is finished.
-This hands the end-of-run flow to MiniFugg Core: final score, nickname, leaderboard submission and Replay UI.
+Call once when a run is over. This hands the generic end flow to Core: final score, nickname, score submission, ladders and Replay.
 
-Do not build a custom generic “score saved / nickname / leaderboard / replay” modal inside a new game.
+Do not build generic nickname / save score / leaderboard / replay UI inside a new game.
 
-`boardId` is optional. For a daily leaderboard the Core can derive today's UTC board automatically. Use an explicit boardId only when the game has a special season/level/challenge identifier.
+Usually omit `boardId`: Core will publish the score to the leaderboard periods configured for the game. Use an explicit boardId only for a special level, season or challenge that intentionally overrides normal period boards.
 
-## 5. Shared platform features
+## 5. Shared platform chrome
 
-Features are declared in `src/core/gameRegistry.tsx`, not reimplemented inside each game.
+The general MiniFugg interface is outside the game and is owned by Core.
 
-Example:
+Current shared chrome includes:
+
+- game title
+- clickable `@creator`
+- short game description
+- play count
+- rules/help action
+- love action + count
+- comments action + count
+- bookmark action
+- generic score module
+- leaderboard sheet
+- common finish/replay flow
+- nickname persistence
+
+A game must not reserve its own UI for these features.
+
+The creator panel is built from the registry/catalog today and will later be backed by creator/game database records.
+
+## 6. Registry declaration
+
+Shared features are declared in `src/core/gameRegistry.tsx`.
 
 ```ts
 {
   id: 'my-game',
   title: 'My Game',
-  description: 'One-line hook',
-  author: 'MiniFugg',
+  description: 'One-line gameplay hook',
+  author: 'creatorHandle',
   component: MyGame,
   instructions: {
     goal: 'Do the thing before time runs out.',
@@ -113,119 +117,112 @@ Example:
   },
   features: {
     help: true,
+    love: true,
+    comments: true,
+    bookmark: true,
     leaderboard: {
       enabled: true,
-      scope: 'daily', // or 'global'
+      periods: ['daily', 'weekly'],
       sort: 'desc',
       limit: 10,
     },
     share: false,
-    comments: false,
     remix: false,
   },
 }
 ```
 
-Current common features:
+`love`, `comments` and `bookmark` are platform features. Never implement their persistence inside a game.
 
-- MiniFugg brand chrome
-- live score
-- rules/help sheet
-- leaderboard sheet
-- common end-of-run modal for games using `session.finish()`
-- nickname persistence
-- Replay lifecycle
+## 7. Score and leaderboard model
 
-Reserved platform features (do not implement inside games yet):
+Games own scoring logic but **Core owns score storage and rankings**.
 
-- share
-- comments
-- likes/favorites
-- remix/fork
-- creator follow
-- tips/revenue share
-- player profile/account
+A finished run reports one score using `session.finish()`.
 
-## 6. Leaderboard and API
+Leaderboard periods currently supported:
 
-Games never call a database directly.
-Games never own player identity or nickname storage.
-Games only call `session.finish()`.
+- `daily`
+- `weekly`
+- `global`
 
-The platform client lives in `src/core/platformApi.ts`.
+Core maps them to board ids such as:
 
-When `VITE_MINIFUGG_API_URL` is absent, leaderboard data falls back to local browser storage for development.
-When it is present, the Core expects:
+- `day:2026-09-01`
+- `week:2026-W36`
+- `global`
 
-### Read leaderboard
+A game can expose multiple periods simultaneously. In production PostgreSQL should keep the raw score timestamp as the source of truth; day/week are query windows rather than separate game code.
 
-`GET /v1/leaderboards/:gameId/:boardId?limit=10&sort=desc`
+Sort direction is declared per game (`desc` for higher-is-better, `asc` for lower-is-better).
 
-Response can be either an array or:
+## 8. Platform data/API boundary
 
-```json
-{ "entries": [] }
-```
+Games never call a database directly. Games never own player identity, nickname, plays, loves, bookmarks or comments.
 
-### Submit score
+The platform transport lives in `src/core/platformApi.ts`.
 
-`POST /v1/leaderboards/:gameId/:boardId`
+When `VITE_MINIFUGG_API_URL` is absent, Core uses browser-local fallbacks for development. When present, Core can use the remote MiniFugg API.
 
-```json
-{
-  "nickname": "Player",
-  "score": 123,
-  "metadata": {}
-}
-```
+Score API:
 
-The server returns the created leaderboard entry.
+- `GET /v1/leaderboards/:gameId/:boardId?limit=10&sort=desc`
+- `POST /v1/leaderboards/:gameId/:boardId`
 
-Important: a public client can fake scores. The first remote API may be a casual leaderboard, but competitive ladders will require server-side validation/run proofs or game-specific verification. Do not pretend client-only anti-cheat is secure.
+Social API planned/consumed by Core:
 
-## 7. UX rules for games
+- `GET /v1/games/:gameId/stats`
+- `POST /v1/games/:gameId/plays`
+- `PUT /v1/games/:gameId/love`
+- `DELETE /v1/games/:gameId/love`
+- `PUT /v1/games/:gameId/bookmark`
+- `DELETE /v1/games/:gameId/bookmark`
+- `GET /v1/games/:gameId/comments`
+- `POST /v1/games/:gameId/comments`
 
-Default target: portrait phone screen.
+See `docs/PLATFORM_DATA_MODEL.md` for the recommended PostgreSQL schema.
+
+Client-only score validation is not secure. Competitive ladders will eventually require run proofs or game-specific server validation.
+
+## 9. UX rules for games
+
+Default target: portrait phone.
 
 A MiniFugg game should:
 
-- be playable almost immediately;
+- start almost immediately;
 - require no account before play;
-- explain itself through interaction plus the common `?` help panel;
-- use touch as the primary input;
-- remain playable with mouse on desktop when practical;
-- avoid tiny targets and text;
-- avoid browser scrolling/zoom gestures during gameplay when they conflict with controls;
-- fit inside the game surface without relying on page navigation;
-- survive pause/resume when the player swipes away and back;
+- be understandable quickly, with details available through the common rules panel;
+- use touch as primary input;
+- remain practical with mouse on desktop when possible;
+- avoid tiny targets/text;
+- avoid conflicting browser scroll/zoom gestures during gameplay;
+- fit inside the game surface;
+- survive pause/resume when swiping away and back;
 - never assume a fixed phone resolution;
-- respect safe areas when placing essential game-owned UI near screen edges.
+- keep essential game-owned UI clear of platform chrome and safe areas.
 
 Prefer one strong mechanic over menus, progression trees or settings.
 
-## 8. Performance rules
+## 10. Performance rules
 
-Only the active game and its neighbours may be mounted by the feed.
-The game must still clean up its own resources.
-
-Always clean up:
+Only the active game and neighbours are mounted by the feed. A game must still clean up its own resources:
 
 - intervals/timeouts
 - requestAnimationFrame loops
 - event listeners
-- AudioContext/audio playback where applicable
-- WebGL resources where applicable
+- audio playback/AudioContext
+- WebGL resources
 
-Do not make continuous network requests from gameplay.
-Avoid large assets unless essential.
+Do not make continuous network requests from gameplay. Avoid large assets unless essential.
 
-## 9. Platform ownership vs game ownership
+## 11. Ownership boundary
 
 ### The game owns
 
 - gameplay
 - game-specific visuals
-- game-specific HUD necessary to understand the mechanic
+- game-specific HUD strictly needed for the mechanic
 - run state
 - deterministic generation
 - scoring logic
@@ -234,28 +231,25 @@ Avoid large assets unless essential.
 ### MiniFugg Core owns
 
 - feed/swiping
-- brand chrome
+- title/creator/description/plays chrome
 - generic score display
 - rules panel
-- leaderboard display
-- nickname
-- score submission transport
+- daily/weekly/global ladders
+- nickname and score transport
+- love/bookmark/comments
 - generic final score/replay flow
-- account/profile
-- comments/share/remix in future
+- accounts/profile later
+- share/remix/follow/tips later
 
 When in doubt, do not duplicate a generic platform feature inside the game.
 
-## 10. Security constraints
+## 12. Security constraints
 
-First-party games are compiled with the app today, but code should already be compatible with a future sandboxed public-creation model.
+First-party games are compiled with the app today, but code should remain compatible with a future sandboxed public-creation model.
 
-Do not put secrets/API keys in game code.
-Do not access cookies, auth tokens or private platform state.
-Do not require arbitrary external scripts.
-Do not create custom backend endpoints for an individual game unless the user explicitly approves a platform-level capability.
+Do not put secrets/API keys in game code. Do not access cookies/auth tokens/private platform state. Do not require arbitrary external scripts. Do not create custom backend endpoints for one game unless explicitly approved as a platform capability.
 
-## 11. Definition of done
+## 13. Definition of done
 
 Before declaring a game finished, check:
 
@@ -264,13 +258,13 @@ Before declaring a game finished, check:
 - no obvious desktop/mobile overflow;
 - score updates through `session.setScore`;
 - finished runs call `session.finish` when using the shared end flow;
-- restartToken resets the run;
+- `restartToken` resets the run;
 - timers/loops respect `active` and clean up;
-- rules and feature flags are registered in `gameRegistry.tsx`;
-- no generic platform UI has been duplicated;
+- rules and platform feature flags are in the registry;
+- generic platform UI has not been duplicated;
 - TypeScript should build without errors;
-- the final code is on `main` when the user asked for deployment.
+- final code is on `main` when deployment was requested.
 
-## 12. Current migration note
+## 14. Migration note
 
-LineFugg is the first real MiniFugg game and predates the full shared finish API. It currently still contains part of its legacy local finish/leaderboard UI. New games must follow this contract instead of copying that legacy code. LineFugg can be migrated separately without changing its gameplay.
+Older games may predate this contract and still contain legacy leaderboard/final-score UI. Do not copy those legacy sections into new games. Preserve gameplay while migrating them deliberately toward the Core-owned flow.

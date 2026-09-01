@@ -8,14 +8,10 @@ import {
   recordGamePlay,
   setGameBookmark,
   setGameLove,
-  submitScore,
+  submitRunScore,
 } from './platformApi'
 import type { GameComment, GameSocialStats } from './social'
-import type {
-  GameFinishPayload,
-  GameLeaderboardPeriod,
-  InstagameDefinition,
-} from './types'
+import type { GameFinishPayload, GameLeaderboardPeriod, InstagameDefinition } from './types'
 import type { LeaderboardEntry } from './leaderboard'
 
 type GameRuntimeProps = {
@@ -163,10 +159,6 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
     if (sheet === 'comments') void refreshComments()
   }, [refreshComments, refreshLeaderboard, sheet])
 
-  useEffect(() => {
-    if (sheet === 'leaderboard') void refreshLeaderboard()
-  }, [leaderboardPeriod, refreshLeaderboard, sheet])
-
   const replay = () => {
     setScore(0)
     setFinished(null)
@@ -177,20 +169,16 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
 
   const submitFinishedScore = async () => {
     if (!finished || !leaderboardEnabled || submitted || !nickname.trim()) return
-    const boardIds = finished.boardId ? [finished.boardId] : periods.map(boardIdFor)
-    let firstEntry: LeaderboardEntry | null = null
-    for (const boardId of boardIds) {
-      const entry = await submitScore({
-        gameId: game.id,
-        boardId,
-        nickname,
-        score: finished.score,
-        metadata: finished.metadata,
-      })
-      if (!firstEntry && entry) firstEntry = entry
-    }
-    if (!firstEntry) return
-    setNickname(firstEntry.nickname)
+    const entry = await submitRunScore({
+      gameId: game.id,
+      nickname,
+      score: finished.score,
+      periods,
+      boardId: finished.boardId,
+      metadata: finished.metadata,
+    })
+    if (!entry) return
+    setNickname(entry.nickname)
     setSubmitted(true)
     await refreshLeaderboard()
   }
@@ -214,12 +202,7 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
     <article className="game-card" aria-label={game.title}>
       <div className="game-surface">
         {mounted ? (
-          <Game
-            active={active && !finished}
-            seed={seed}
-            restartToken={restartToken}
-            session={session}
-          />
+          <Game active={active && !finished} seed={seed} restartToken={restartToken} session={session} />
         ) : (
           <div className="game-placeholder" aria-hidden="true" />
         )}
@@ -229,49 +212,31 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
         <div className="game-identity">
           <div className="game-heading">
             <strong>{game.title}</strong>
-            {game.author && (
-              <button type="button" className="creator-link" onClick={() => setSheet('creator')}>@{game.author}</button>
-            )}
+            {game.author && <button type="button" className="creator-link" onClick={() => setSheet('creator')}>@{game.author}</button>}
           </div>
           <div className="game-subline">
-            <span>{game.description}</span>
-            <b>·</b>
-            <span>{formatCount(social.plays)} plays</span>
+            <span>{game.description}</span><b>·</b><span>{formatCount(social.plays)} plays</span>
           </div>
         </div>
 
         <nav className="game-actions" aria-label="Actions du jeu">
           {game.instructions && game.features?.help !== false && (
-            <button type="button" onClick={() => setSheet('help')} aria-label="Règles du jeu">
-              <span>≡</span><small>Règles</small>
-            </button>
+            <button type="button" onClick={() => setSheet('help')} aria-label="Règles du jeu"><span>≡</span><small>Règles</small></button>
           )}
           {loveEnabled && (
-            <button type="button" className={social.loved ? 'is-active' : ''} onClick={() => void toggleLove()} aria-label="Aimer">
-              <span>♥</span><small>{formatCount(social.loves)}</small>
-            </button>
+            <button type="button" className={social.loved ? 'is-active' : ''} onClick={() => void toggleLove()} aria-label="Aimer"><span>♥</span><small>{formatCount(social.loves)}</small></button>
           )}
           {commentsEnabled && (
-            <button type="button" onClick={() => setSheet('comments')} aria-label="Commentaires">
-              <span>◌</span><small>{formatCount(social.comments)}</small>
-            </button>
+            <button type="button" onClick={() => setSheet('comments')} aria-label="Commentaires"><span>◌</span><small>{formatCount(social.comments)}</small></button>
           )}
           {bookmarkEnabled && (
-            <button type="button" className={social.bookmarked ? 'is-active' : ''} onClick={() => void toggleBookmark()} aria-label="Mettre en favori">
-              <span>▮</span><small>{social.bookmarked ? 'Sauvé' : 'Garder'}</small>
-            </button>
+            <button type="button" className={social.bookmarked ? 'is-active' : ''} onClick={() => void toggleBookmark()} aria-label="Mettre en favori"><span>▮</span><small>{social.bookmarked ? 'Sauvé' : 'Garder'}</small></button>
           )}
         </nav>
       </header>
 
-      <button
-        type="button"
-        className="score-chip"
-        onClick={() => leaderboardEnabled && setSheet('leaderboard')}
-        aria-label={leaderboardEnabled ? `Score ${score}, ouvrir le classement` : `Score ${score}`}
-      >
-        <span>score</span>
-        <strong>{formatScore(score)}</strong>
+      <button type="button" className="score-chip" onClick={() => leaderboardEnabled && setSheet('leaderboard')} aria-label={leaderboardEnabled ? `Score ${score}, ouvrir le classement` : `Score ${score}`}>
+        <span>score</span><strong>{formatScore(score)}</strong>
       </button>
 
       {sheet && (
@@ -294,11 +259,7 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
               <div className="platform-help">
                 <p>{game.instructions.goal}</p>
                 <ol>{game.instructions.rules.map((rule) => <li key={rule}>{rule}</li>)}</ol>
-                {game.instructions.controls?.length ? (
-                  <div className="platform-controls">
-                    {game.instructions.controls.map((control) => <span key={control}>{control}</span>)}
-                  </div>
-                ) : null}
+                {game.instructions.controls?.length ? <div className="platform-controls">{game.instructions.controls.map((control) => <span key={control}>{control}</span>)}</div> : null}
               </div>
             )}
 
@@ -306,35 +267,12 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
               <div className="platform-leaderboard">
                 {periods.length > 1 && (
                   <div className="platform-tabs">
-                    {periods.map((period) => (
-                      <button
-                        type="button"
-                        className={leaderboardPeriod === period ? 'is-active' : ''}
-                        onClick={() => setLeaderboardPeriod(period)}
-                        key={period}
-                      >
-                        {periodLabel(period)}
-                      </button>
-                    ))}
+                    {periods.map((period) => <button type="button" className={leaderboardPeriod === period ? 'is-active' : ''} onClick={() => setLeaderboardPeriod(period)} key={period}>{periodLabel(period)}</button>)}
                   </div>
                 )}
-                <div className="platform-board-label">
-                  <span>{periodLabel(leaderboardPeriod)} · {selectedBoardId}</span>
-                  <button type="button" onClick={() => void refreshLeaderboard()}>Actualiser</button>
-                </div>
-                {loadingLeaderboard ? (
-                  <p className="platform-muted">Chargement…</p>
-                ) : leaderboard.length === 0 ? (
-                  <p className="platform-muted">Aucun score pour le moment.</p>
-                ) : (
-                  <ol>
-                    {leaderboard.map((entry, index) => (
-                      <li key={entry.id}>
-                        <span><b>{index + 1}</b>{entry.nickname}</span>
-                        <strong>{formatScore(entry.score)}</strong>
-                      </li>
-                    ))}
-                  </ol>
+                <div className="platform-board-label"><span>{periodLabel(leaderboardPeriod)} · {selectedBoardId}</span><button type="button" onClick={() => void refreshLeaderboard()}>Actualiser</button></div>
+                {loadingLeaderboard ? <p className="platform-muted">Chargement…</p> : leaderboard.length === 0 ? <p className="platform-muted">Aucun score pour le moment.</p> : (
+                  <ol>{leaderboard.map((entry, index) => <li key={entry.id}><span><b>{index + 1}</b>{entry.nickname}</span><strong>{formatScore(entry.score)}</strong></li>)}</ol>
                 )}
               </div>
             )}
@@ -342,27 +280,13 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
             {sheet === 'comments' && (
               <div className="platform-comments">
                 <div className="platform-comment-form">
-                  <input
-                    value={nickname}
-                    onChange={(event) => setNickname(event.target.value.slice(0, 20))}
-                    placeholder="Pseudo"
-                    maxLength={20}
-                  />
-                  <textarea
-                    value={commentText}
-                    onChange={(event) => setCommentText(event.target.value.slice(0, 500))}
-                    placeholder="Ton commentaire…"
-                    maxLength={500}
-                    rows={3}
-                  />
+                  <input value={nickname} onChange={(event) => setNickname(event.target.value.slice(0, 20))} placeholder="Pseudo" maxLength={20} />
+                  <textarea value={commentText} onChange={(event) => setCommentText(event.target.value.slice(0, 500))} placeholder="Ton commentaire…" maxLength={500} rows={3} />
                   <button type="button" onClick={() => void postComment()} disabled={!nickname.trim() || !commentText.trim()}>Commenter</button>
                 </div>
                 <div className="platform-comment-list">
                   {comments.length === 0 ? <p className="platform-muted">Aucun commentaire.</p> : comments.map((comment) => (
-                    <article key={comment.id}>
-                      <div><strong>@{comment.nickname}</strong><time>{new Date(comment.createdAt).toLocaleDateString()}</time></div>
-                      <p>{comment.body}</p>
-                    </article>
+                    <article key={comment.id}><div><strong>@{comment.nickname}</strong><time>{new Date(comment.createdAt).toLocaleDateString()}</time></div><p>{comment.body}</p></article>
                   ))}
                 </div>
               </div>
@@ -371,14 +295,7 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
             {sheet === 'creator' && (
               <div className="platform-creator">
                 <p>{creatorGames.length} jeu{creatorGames.length > 1 ? 'x' : ''} publié{creatorGames.length > 1 ? 's' : ''} par @{game.author}.</p>
-                <div className="platform-creator-games">
-                  {creatorGames.map((creatorGame) => (
-                    <article key={creatorGame.id}>
-                      <strong>{creatorGame.title}</strong>
-                      <span>{creatorGame.description}</span>
-                    </article>
-                  ))}
-                </div>
+                <div className="platform-creator-games">{creatorGames.map((creatorGame) => <article key={creatorGame.id}><strong>{creatorGame.title}</strong><span>{creatorGame.description}</span></article>)}</div>
               </div>
             )}
           </section>
@@ -388,28 +305,13 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
       {finished && (
         <div className="platform-finish" role="dialog" aria-modal="true" aria-label="Partie terminée">
           <section className="platform-finish-card">
-            <small>{game.title}</small>
-            <span>Score final</span>
-            <strong>{formatScore(finished.score)}</strong>
-
+            <small>{game.title}</small><span>Score final</span><strong>{formatScore(finished.score)}</strong>
             {leaderboardEnabled && (
               <div className="platform-score-submit">
-                <input
-                  value={nickname}
-                  onChange={(event) => setNickname(event.target.value.slice(0, 20))}
-                  placeholder="Ton pseudo"
-                  maxLength={20}
-                  autoCapitalize="off"
-                  autoComplete="nickname"
-                  disabled={submitted}
-                  aria-label="Pseudo"
-                />
-                <button type="button" onClick={() => void submitFinishedScore()} disabled={!nickname.trim() || submitted}>
-                  {submitted ? 'Enregistré' : 'Enregistrer'}
-                </button>
+                <input value={nickname} onChange={(event) => setNickname(event.target.value.slice(0, 20))} placeholder="Ton pseudo" maxLength={20} autoCapitalize="off" autoComplete="nickname" disabled={submitted} aria-label="Pseudo" />
+                <button type="button" onClick={() => void submitFinishedScore()} disabled={!nickname.trim() || submitted}>{submitted ? 'Enregistré' : 'Enregistrer'}</button>
               </div>
             )}
-
             <div className="platform-finish-actions">
               {leaderboardEnabled && <button type="button" onClick={() => setSheet('leaderboard')}>Classement</button>}
               <button type="button" className="is-primary" onClick={replay}>Rejouer</button>

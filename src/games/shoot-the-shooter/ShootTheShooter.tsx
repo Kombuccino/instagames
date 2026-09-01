@@ -424,14 +424,16 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
   }
 
   const grabRecipe = grab ? recipeById.get(grab.recipeId) ?? null : null
-  const intoxication = Math.max(0, Math.min(1, (view.alcohol - 28) / 72))
+  const intoxication = view.alcohol < 30
+    ? 0
+    : Math.min(1, 0.18 + ((view.alcohol - 30) / 70) * 0.82)
   const visualStyle = {
     '--sts-hue': `${Math.max(0, view.alcohol - 25) * 1.3}deg`,
     '--sts-saturation': `${1 + Math.max(0, view.alcohol - 25) / 48}`,
     '--sts-double': `${Math.max(0, view.alcohol - 48) / 8}px`,
     '--sts-blur': `${Math.max(0, view.alcohol - 80) / 18}px`,
-    '--sts-wave-opacity': `${intoxication * 0.72}`,
-    '--sts-pixel-opacity': `${Math.max(0, intoxication - 0.08) * 0.52}`,
+    '--sts-wave-opacity': `${intoxication * 0.78}`,
+    '--sts-pixel-opacity': `${intoxication * 0.46}`,
     '--sts-pixel-size': `${Math.max(7, 16 - intoxication * 8)}px`,
   } as CSSProperties
 

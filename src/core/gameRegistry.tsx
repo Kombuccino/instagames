@@ -42,15 +42,15 @@ export const gameRegistry: InstagameDefinition[] = [
     instructions: {
       goal: 'Bois le plus de shooters possible sans atteindre 100% d’alcool et sans laisser la ligne s’arrêter.',
       rules: [
-        'Tape quand un shooter traverse la zone DRINK au centre.',
-        'Chaque couleur + forme cache une recette et un effet alcool différent.',
+        'Tape quand un shooter arrive à portée de la main au centre.',
+        'Chaque silhouette de verre et chaque liquide cache une recette et un effet alcool différent.',
         'L’effet d’une recette n’est révélé qu’après l’avoir bue une première fois.',
-        'Certains shooters font baisser le taux d’alcool.',
-        'Chaque shoot relance le momentum. Sans boire, la ligne ralentit puis s’arrête.',
+        'Les rares shooters qui dégrisent font baisser fortement le taux d’alcool.',
+        'Chaque shoot relance la ligne. Si tu arrêtes de boire, elle ralentit progressivement jusqu’au Last Call.',
         'À 100% d’alcool : coma éthylique et fin immédiate.',
-        'Plus le taux monte, moins les couleurs et les formes sont fiables visuellement.',
+        'Plus le taux monte, plus les verres et la main bougent, la vision se dédouble et le timing devient précis.',
       ],
-      controls: ['Tape n’importe où sur la ligne au bon moment', 'Clavier : Espace ou Entrée'],
+      controls: ['Tape n’importe où sur la ligne quand la main peut saisir le verre', 'Clavier : Espace ou Entrée'],
     },
     features: {
       help: true,

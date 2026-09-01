@@ -13,13 +13,22 @@ import {
   type GameComment,
   type GameSocialStats,
 } from './social'
-import type { GameLeaderboardSort } from './types'
+import type { GameLeaderboardPeriod, GameLeaderboardSort } from './types'
 
 export type SubmitScoreInput = {
   gameId: string
   boardId: string
   nickname: string
   score: number
+  metadata?: Record<string, string | number | boolean>
+}
+
+export type SubmitRunScoreInput = {
+  gameId: string
+  nickname: string
+  score: number
+  periods: GameLeaderboardPeriod[]
+  boardId?: string
   metadata?: Record<string, string | number | boolean>
 }
 
@@ -31,6 +40,25 @@ function leaderboardEndpoint(gameId: string, boardId: string) {
 
 function gameEndpoint(gameId: string, suffix: string) {
   return `${API_BASE}/v1/games/${encodeURIComponent(gameId)}/${suffix}`
+}
+
+function utcDayId() {
+  return new Date().toISOString().slice(0, 10)
+}
+
+function isoWeekId(date = new Date()) {
+  const value = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))
+  const day = value.getUTCDay() || 7
+  value.setUTCDate(value.getUTCDate() + 4 - day)
+  const yearStart = new Date(Date.UTC(value.getUTCFullYear(), 0, 1))
+  const week = Math.ceil((((value.getTime() - yearStart.getTime()) / 86_400_000) + 1) / 7)
+  return `${value.getUTCFullYear()}-W${String(week).padStart(2, '0')}`
+}
+
+function localBoardId(period: GameLeaderboardPeriod) {
+  if (period === 'daily') return `day:${utcDayId()}`
+  if (period === 'weekly') return `week:${isoWeekId()}`
+  return 'global'
 }
 
 export function hasRemotePlatformApi() {
@@ -64,22 +92,16 @@ export async function listLeaderboard(
   }
 }
 
+/** Legacy/special-board score submission. New games normally use submitRunScore through Core. */
 export async function submitScore(input: SubmitScoreInput): Promise<LeaderboardEntry | null> {
   if (!API_BASE) return submitLeaderboardScore(input)
 
   try {
     const response = await fetch(leaderboardEndpoint(input.gameId, input.boardId), {
       method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({
-        nickname: input.nickname,
-        score: input.score,
-        metadata: input.metadata,
-      }),
+      body: JSON.stringify({ nickname: input.nickname, score: input.score, metadata: input.metadata }),
     })
     if (!response.ok) throw new Error(`Leaderboard API returned ${response.status}`)
     return await response.json() as LeaderboardEntry
@@ -88,13 +110,51 @@ export async function submitScore(input: SubmitScoreInput): Promise<LeaderboardE
   }
 }
 
+export async function submitRunScore(input: SubmitRunScoreInput): Promise<LeaderboardEntry | null> {
+  if (!API_BASE) {
+    const boardIds = input.boardId ? [input.boardId] : input.periods.map(localBoardId)
+    let first: LeaderboardEntry | null = null
+    for (const boardId of boardIds) {
+      const entry = submitLeaderboardScore({
+        gameId: input.gameId,
+        boardId,
+        nickname: input.nickname,
+        score: input.score,
+      })
+      if (!first && entry) first = entry
+    }
+    return first
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/v1/scores`, {
+      method: 'POST',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(input),
+    })
+    if (!response.ok) throw new Error(`Score API returned ${response.status}`)
+    return await response.json() as LeaderboardEntry
+  } catch {
+    const boardIds = input.boardId ? [input.boardId] : input.periods.map(localBoardId)
+    let first: LeaderboardEntry | null = null
+    for (const boardId of boardIds) {
+      const entry = submitLeaderboardScore({
+        gameId: input.gameId,
+        boardId,
+        nickname: input.nickname,
+        score: input.score,
+      })
+      if (!first && entry) first = entry
+    }
+    return first
+  }
+}
+
 export async function getGameSocialStats(gameId: string): Promise<GameSocialStats> {
   if (!API_BASE) return getLocalSocialStats(gameId)
   try {
-    const response = await fetch(gameEndpoint(gameId, 'stats'), {
-      headers: { Accept: 'application/json' },
-      credentials: 'include',
-    })
+    const response = await fetch(gameEndpoint(gameId, 'stats'), { headers: { Accept: 'application/json' }, credentials: 'include' })
     if (!response.ok) throw new Error(`Stats API returned ${response.status}`)
     return await response.json() as GameSocialStats
   } catch {
@@ -105,11 +165,7 @@ export async function getGameSocialStats(gameId: string): Promise<GameSocialStat
 export async function recordGamePlay(gameId: string): Promise<GameSocialStats> {
   if (!API_BASE) return recordLocalPlay(gameId)
   try {
-    const response = await fetch(gameEndpoint(gameId, 'plays'), {
-      method: 'POST',
-      headers: { Accept: 'application/json' },
-      credentials: 'include',
-    })
+    const response = await fetch(gameEndpoint(gameId, 'plays'), { method: 'POST', headers: { Accept: 'application/json' }, credentials: 'include' })
     if (!response.ok) throw new Error(`Play API returned ${response.status}`)
     return await response.json() as GameSocialStats
   } catch {
@@ -145,10 +201,7 @@ export async function listGameComments(gameId: string, limit = 50): Promise<Game
   if (!API_BASE) return listLocalComments(gameId, limit)
   try {
     const query = new URLSearchParams({ limit: String(Math.max(1, limit)) })
-    const response = await fetch(`${gameEndpoint(gameId, 'comments')}?${query}`, {
-      headers: { Accept: 'application/json' },
-      credentials: 'include',
-    })
+    const response = await fetch(`${gameEndpoint(gameId, 'comments')}?${query}`, { headers: { Accept: 'application/json' }, credentials: 'include' })
     if (!response.ok) throw new Error(`Comments API returned ${response.status}`)
     const payload = await response.json() as GameComment[] | { comments?: GameComment[] }
     const comments = Array.isArray(payload) ? payload : payload.comments
@@ -163,10 +216,7 @@ export async function addGameComment(gameId: string, nickname: string, body: str
   try {
     const response = await fetch(gameEndpoint(gameId, 'comments'), {
       method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({ nickname, body }),
     })

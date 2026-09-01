@@ -2,13 +2,15 @@ import { useEffect, useMemo, useReducer, useRef } from 'react'
 import type { GameComponentProps } from '../../core/types'
 import './CalcDrop.css'
 
-type TileKind = 'number' | 'multiply' | 'divide'
+type TileKind = 'number' | 'multiply' | 'divide' | 'reverse'
+type BonusKind = 'reverse' | 'multiply4' | 'multiply6'
 type ShapeId = 'I' | 'O' | 'T' | 'S' | 'Z' | 'J' | 'L'
 
 type Tile = {
   kind: TileKind
   value: number
   label: string
+  bonus?: BonusKind
 }
 
 type Coord = {
@@ -28,6 +30,8 @@ type LineReport = {
   formula: string
   value: number
   points: number
+  theoreticalMax: number
+  reversed: boolean
 }
 
 type GameState = {
@@ -64,9 +68,11 @@ type ShapeDefinition = {
 const COLS = 10
 const ROWS = 20
 const TARGET = 100_000
-const MAX_CALC = 999_999
+const MAX_NUMBER = 9
+const BASE_MAX_MULTIPLIER = 3
 const LOCK_TICKS = 4
 const MAX_LOCK_RESETS = 12
+const STANDARD_LINE_MAX = MAX_NUMBER * (BASE_MAX_MULTIPLIER ** (COLS - 1))
 
 const SHAPES: Record<ShapeId, ShapeDefinition> = {
   I: { cells: [{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 }, { x: 3, y: 1 }], pivot: { x: 1.5, y: 1.5 } },
@@ -79,6 +85,12 @@ const SHAPES: Record<ShapeId, ShapeDefinition> = {
 }
 
 const SHAPE_IDS = Object.keys(SHAPES) as ShapeId[]
+
+const BONUS_LABELS: Record<BonusKind, string> = {
+  reverse: '⇄',
+  multiply4: '×4',
+  multiply6: '×6',
+}
 
 function mulberry32(seed: number) {
   let state = seed >>> 0
@@ -126,15 +138,35 @@ function tokenFor(random: () => number, level: number): Tile {
   }
 }
 
-function createPiece(seed: number, index: number, level: number): Piece {
+function bonusTile(kind: BonusKind): Tile {
+  if (kind === 'reverse') return { kind: 'reverse', value: 0, label: BONUS_LABELS[kind], bonus: kind }
+  const value = kind === 'multiply4' ? 4 : 6
+  return { kind: 'multiply', value, label: BONUS_LABELS[kind], bonus: kind }
+}
+
+function bonusForClear(lineCount: number): BonusKind | null {
+  if (lineCount >= 4) return 'multiply6'
+  if (lineCount === 3) return 'multiply4'
+  if (lineCount === 2) return 'reverse'
+  return null
+}
+
+function createPiece(seed: number, index: number, level: number, bonus: BonusKind | null = null): Piece {
   const shape = shapeForIndex(seed, index)
   const random = mulberry32((seed ^ Math.imul(index + 17, 0x27d4eb2d) ^ Math.imul(level, 0x165667b1)) >>> 0)
+  const tokens = Array.from({ length: 4 }, () => tokenFor(random, level))
+
+  if (bonus) {
+    const bonusIndex = Math.floor(random() * tokens.length)
+    tokens[bonusIndex] = bonusTile(bonus)
+  }
+
   return {
     shape,
     rotation: 0,
     x: 3,
     y: -1,
-    tokens: Array.from({ length: 4 }, () => tokenFor(random, level)),
+    tokens,
   }
 }
 
@@ -183,27 +215,56 @@ function formatValue(value: number) {
   return value.toFixed(2).replace(/0+$/, '').replace(/\.$/, '').replace('.', ',')
 }
 
+function theoreticalMaxForRow(row: Tile[]) {
+  const reverseCount = row.filter((tile) => tile.kind === 'reverse').length
+  const arithmeticSlots = Math.max(0, row.length - reverseCount)
+  if (arithmeticSlots === 0) return 0
+
+  const strongMultipliers = row
+    .filter((tile) => tile.kind === 'multiply' && tile.value > BASE_MAX_MULTIPLIER)
+    .map((tile) => tile.value)
+    .sort((a, b) => b - a)
+    .slice(0, Math.max(0, arithmeticSlots - 1))
+
+  const normalMultiplierSlots = Math.max(0, arithmeticSlots - 1 - strongMultipliers.length)
+  return Math.round(
+    MAX_NUMBER
+    * strongMultipliers.reduce((product, multiplier) => product * multiplier, 1)
+    * (BASE_MAX_MULTIPLIER ** normalMultiplierSlots),
+  )
+}
+
 function evaluateRow(row: Tile[]): LineReport {
+  const reversed = row.some((tile) => tile.kind === 'reverse')
+  const ordered = reversed ? [...row].reverse() : row
+  const theoreticalMax = theoreticalMaxForRow(row)
   let value = 0
-  for (const tile of row) {
+
+  for (const tile of ordered) {
+    if (tile.kind === 'reverse') continue
     if (tile.kind === 'number') value += tile.value
     if (tile.kind === 'multiply') value *= tile.value
     if (tile.kind === 'divide') value /= tile.value
-    value = Math.min(MAX_CALC, Math.max(0, value))
+    value = Math.min(theoreticalMax, Math.max(0, value))
   }
 
   const points = Math.max(0, Math.round(value))
-  const formula = `0 ${row.map((tile) => tile.kind === 'number' ? `+${tile.label}` : tile.label).join(' ')}`
-  return { formula, value, points }
+  const formulaBody = ordered
+    .filter((tile) => tile.kind !== 'reverse')
+    .map((tile) => tile.kind === 'number' ? `+${tile.label}` : tile.label)
+    .join(' ')
+  const formula = `${reversed ? '←' : '→'} 0 ${formulaBody}${reversed ? ' · ⇄' : ''}`
+  return { formula, value, points, theoreticalMax, reversed }
 }
 
-function summariseClear(reports: LineReport[]) {
+function summariseClear(reports: LineReport[], bonus: BonusKind | null) {
+  const bonusCopy = bonus ? ` · BONUS ${BONUS_LABELS[bonus]} → PIÈCE SUIVANTE` : ''
   if (reports.length === 1) {
     const report = reports[0]
-    return `${report.formula} = ${formatValue(report.value)}`
+    return `${report.formula} = ${formatValue(report.value)}${bonusCopy}`
   }
   const total = reports.reduce((sum, report) => sum + report.points, 0)
-  return `${reports.length} LIGNES · ${reports.map((report) => formatValue(report.value)).join(' + ')} = ${total.toLocaleString('fr-FR')}`
+  return `${reports.length} LIGNES · ${reports.map((report) => formatValue(report.value)).join(' + ')} = ${total.toLocaleString('fr-FR')}${bonusCopy}`
 }
 
 function advanceProgress(progress: number, level: number, gained: number) {
@@ -249,7 +310,8 @@ function lockPiece(state: GameState): GameState {
   const gained = reports.reduce((sum, report) => sum + report.points, 0)
   const progression = advanceProgress(state.stageProgress, state.level, gained)
   const nextIndex = state.pieceIndex + 1
-  const nextPiece = createPiece(state.seed, nextIndex, progression.level)
+  const earnedBonus = bonusForClear(fullRows.length)
+  const nextPiece = createPiece(state.seed, nextIndex, progression.level, earnedBonus)
   const nextSerial = reports.length > 0 ? state.clearSerial + 1 : state.clearSerial
   const gameOver = !canPlace(clearedBoard, nextPiece)
 
@@ -266,7 +328,7 @@ function lockPiece(state: GameState): GameState {
     lockResets: 0,
     gameOver,
     clearSerial: nextSerial,
-    lastClear: reports.length > 0 ? { id: nextSerial, text: summariseClear(reports) } : state.lastClear,
+    lastClear: reports.length > 0 ? { id: nextSerial, text: summariseClear(reports, earnedBonus) } : state.lastClear,
   }
 }
 
@@ -365,6 +427,7 @@ export function CalcDrop({ active, seed, restartToken, session }: GameComponentP
         level: state.level,
         lines: state.lines,
         target: TARGET,
+        standardLineMax: STANDARD_LINE_MAX,
       },
     })
   }, [session, state.gameOver, state.level, state.lines, state.score])
@@ -460,6 +523,7 @@ export function CalcDrop({ active, seed, restartToken, session }: GameComponentP
                   className={[
                     'calc-drop-cell',
                     tile ? `is-${tile.kind}` : '',
+                    tile?.bonus ? 'is-bonus' : '',
                     moving ? 'is-active' : '',
                     settled ? 'is-settled' : '',
                     isGhost ? 'is-ghost' : '',
@@ -479,7 +543,9 @@ export function CalcDrop({ active, seed, restartToken, session }: GameComponentP
         </div>
 
         <div className="calc-drop-equation" key={state.lastClear?.id ?? 0} aria-live="polite">
-          {state.lastClear ? state.lastClear.text : 'LIGNE = calcul de gauche à droite'}
+          {state.lastClear
+            ? state.lastClear.text
+            : `MAX STANDARD · 9 × 3⁹ = ${STANDARD_LINE_MAX.toLocaleString('fr-FR')}`}
         </div>
 
         <div className="calc-drop-controls" aria-label="Contrôles">

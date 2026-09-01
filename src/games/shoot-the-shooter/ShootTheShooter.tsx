@@ -29,7 +29,7 @@ type Shooter = {
   x: number
 }
 
-type EndReason = 'coma' | 'last-call'
+type EndReason = 'coma' | 'last-call' | 'misses'
 
 type World = {
   shooters: Shooter[]
@@ -38,6 +38,8 @@ type World = {
   alcohol: number
   peakAlcohol: number
   speed: number
+  idleSeconds: number
+  misses: number
   discovered: Set<number>
   lastRecipeId: number | null
   finished: boolean
@@ -55,6 +57,7 @@ type RenderState = {
   alcohol: number
   peakAlcohol: number
   speed: number
+  misses: number
   discovered: number[]
   lastRecipeId: number | null
   finished: boolean
@@ -70,11 +73,12 @@ type GrabState = {
 
 const BASE_AIM_X = 80
 const HIT_RADIUS = 5.8
-const START_SPEED = 10.5
-const MAX_SPEED = 18
-const FRICTION_PER_SECOND = 0.56
-const SPEED_BOOST = 1.35
-const MISS_PENALTY = 1.25
+const CRUISE_SPEED = 10.5
+const MAX_SPEED = 13.8
+const SPEED_BOOST = 0.62
+const IDLE_GRACE_SECONDS = 2.8
+const IDLE_FRICTION_PER_SECOND = 1.05
+const MAX_MISSES = 3
 
 const glassTypes: GlassType[] = ['classic', 'tapered', 'tall', 'heavy', 'flared', 'mini']
 
@@ -139,18 +143,12 @@ function liquidStyle(liquid: LiquidStyle) {
 
 function createRecipes(seed: number) {
   const random = mulberry32(seed || 1)
-  const recipeCount = pickInt(random, 3, 5)
-  const combos = shuffle(
-    glassTypes.flatMap((glass) => liquids.map((liquid) => ({ glass, liquid }))),
-    random,
-  ).slice(0, recipeCount)
-
-  const roles: RecipeRole[] = ['sobering', 'bomb']
-  while (roles.length < recipeCount) roles.push('mild')
-  const shuffledRoles = shuffle(roles, random)
+  const selectedGlasses = shuffle(glassTypes, random).slice(0, 5)
+  const selectedLiquids = shuffle(liquids, random).slice(0, 5)
+  const roles = shuffle<RecipeRole>(['mild', 'mild', 'mild', 'sobering', 'bomb'], random)
   const usedNames = new Set<string>()
 
-  return combos.map((combo, index): Recipe => {
+  return selectedGlasses.map((glass, index): Recipe => {
     let name = ''
     for (let attempt = 0; attempt < 10; attempt += 1) {
       name = `${nameStarts[Math.floor(random() * nameStarts.length)]} ${nameEnds[Math.floor(random() * nameEnds.length)]}`
@@ -159,7 +157,7 @@ function createRecipes(seed: number) {
     if (usedNames.has(name)) name = `${name} #${index + 1}`
     usedNames.add(name)
 
-    const role = shuffledRoles[index]
+    const role = roles[index]
     const effect = role === 'sobering'
       ? -pickInt(random, 12, 18)
       : role === 'bomb'
@@ -168,7 +166,8 @@ function createRecipes(seed: number) {
 
     return {
       id: index,
-      ...combo,
+      glass,
+      liquid: selectedLiquids[index],
       name,
       role,
       effect,
@@ -202,7 +201,9 @@ function createWorld(recipes: Recipe[], seed: number): World {
     score: 0,
     alcohol: 0,
     peakAlcohol: 0,
-    speed: START_SPEED,
+    speed: CRUISE_SPEED,
+    idleSeconds: 0,
+    misses: 0,
     discovered: new Set<number>(),
     lastRecipeId: null,
     finished: false,
@@ -229,6 +230,7 @@ function snapshot(world: World): RenderState {
     alcohol: world.alcohol,
     peakAlcohol: world.peakAlcohol,
     speed: world.speed,
+    misses: world.misses,
     discovered: [...world.discovered],
     lastRecipeId: world.lastRecipeId,
     finished: world.finished,
@@ -290,9 +292,10 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
           alcoholPeak: Math.round(world.peakAlcohol),
           finalAlcohol: Math.round(world.alcohol),
           recipesDiscovered: world.discovered.size,
+          misses: world.misses,
         },
       })
-    }, reason === 'coma' ? 700 : 450)
+    }, reason === 'coma' ? 700 : reason === 'misses' ? 520 : 450)
   }, [session])
 
   useEffect(() => {
@@ -323,7 +326,18 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
       previous = now
 
       if (!world.finished) {
-        world.speed = Math.max(0, world.speed - FRICTION_PER_SECOND * dt)
+        world.idleSeconds += dt
+
+        if (world.idleSeconds <= IDLE_GRACE_SECONDS) {
+          if (world.speed < CRUISE_SPEED) {
+            world.speed += (CRUISE_SPEED - world.speed) * Math.min(1, dt * 4)
+          } else if (world.speed > CRUISE_SPEED) {
+            world.speed = Math.max(CRUISE_SPEED, world.speed - 0.28 * dt)
+          }
+        } else {
+          world.speed = Math.max(0, world.speed - IDLE_FRICTION_PER_SECOND * dt)
+        }
+
         const distance = world.speed * dt
         world.shooters.forEach((shooter) => {
           shooter.x += distance
@@ -388,28 +402,30 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
     }
 
     if (!target) {
-      world.speed = Math.max(0, world.speed - MISS_PENALTY)
+      world.misses += 1
       setView(snapshot(world))
       setMissToken((value) => value + 1)
+      if (world.misses >= MAX_MISSES) finishRun('misses')
       return
     }
 
     const recipe = recipeById.get(target.recipeId)
     if (!recipe) return
 
-    const grabbedAt = world.aimX
+    const grabbedAt = target.x
     world.shooters = world.shooters.filter((shooter) => shooter.id !== target?.id)
     world.score += 1
     world.alcohol = Math.max(0, Math.min(100, world.alcohol + recipe.effect))
     world.peakAlcohol = Math.max(world.peakAlcohol, world.alcohol)
-    world.speed = Math.min(MAX_SPEED, world.speed + SPEED_BOOST)
+    world.idleSeconds = 0
+    world.speed = Math.min(MAX_SPEED, Math.max(CRUISE_SPEED, world.speed) + SPEED_BOOST)
     world.discovered.add(recipe.id)
     world.lastRecipeId = recipe.id
 
     grabTokenRef.current += 1
     setGrab({ recipeId: recipe.id, token: grabTokenRef.current, x: grabbedAt })
     if (grabTimerRef.current !== null) window.clearTimeout(grabTimerRef.current)
-    grabTimerRef.current = window.setTimeout(() => setGrab(null), 620)
+    grabTimerRef.current = window.setTimeout(() => setGrab(null), 700)
 
     session.setScore(world.score)
     setView(snapshot(world))
@@ -451,12 +467,22 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
             <i style={{ width: `${view.alcohol}%` }} />
           </div>
         </div>
+
+        <div className="sts-miss-lives" aria-label={`${MAX_MISSES - view.misses} erreurs restantes`}>
+          {Array.from({ length: MAX_MISSES }, (_, index) => (
+            <span key={index} className={index < view.misses ? 'is-lost' : ''} aria-hidden="true" />
+          ))}
+        </div>
       </section>
 
       <section className="sts-stage">
         <div className="sts-callout">
           {view.finished
-            ? view.endReason === 'coma' ? 'COMA ÉTHYLIQUE' : 'LAST CALL'
+            ? view.endReason === 'coma'
+              ? 'COMA ÉTHYLIQUE'
+              : view.endReason === 'misses'
+                ? '3 VERRES RATÉS'
+                : 'LAST CALL'
             : view.alcohol >= 90 ? 'VISE LE POINT. PAS LE VERRE.' : 'TAPE QUAND LE VERRE CROISE LE POINT'}
         </div>
 
@@ -494,7 +520,12 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
             <span />
           </div>
 
-          <div className={`sts-hand ${grab ? 'is-grabbing' : ''}`} key={`hand-${grab?.token ?? 0}`} aria-hidden="true">
+          <div
+            className={`sts-hand ${grab ? 'is-grabbing' : ''}`}
+            key={`hand-${grab?.token ?? 0}`}
+            style={grab ? { '--grab-x': `${grab.x}%` } as CSSProperties : undefined}
+            aria-hidden="true"
+          >
             <span className="sts-hand-emoji">🤏</span>
           </div>
 
@@ -511,7 +542,7 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
 
           {missToken > 0 && (
             <div className="sts-miss" key={`miss-${missToken}`} style={{ left: `${view.aimX}%` }} aria-hidden="true">
-              MISS · SLOW
+              RATÉ · {Math.min(view.misses, MAX_MISSES)}/{MAX_MISSES}
             </div>
           )}
         </div>
@@ -519,8 +550,8 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
 
       <section className="sts-menu" aria-label="Carte des shooters de cette partie">
         <div className="sts-menu-heading">
-          <span>CE SOIR · {recipes.length} SHOOTS</span>
-          <strong>{view.discovered.length}/{recipes.length} GOÛTÉS</strong>
+          <span>CE SOIR · 5 SHOOTS</span>
+          <strong>{view.discovered.length}/5 GOÛTÉS</strong>
         </div>
         <div className="sts-recipe-grid" style={{ '--recipe-count': recipes.length } as CSSProperties}>
           {recipes.map((recipe) => {
@@ -540,8 +571,12 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
 
       <div className="sts-hint">
         {view.finished
-          ? view.endReason === 'coma' ? 'Tu as dépassé la limite.' : 'La ligne s’est arrêtée.'
-          : 'Un miss ralentit la ligne. Chaque verre bu la relance.'}
+          ? view.endReason === 'coma'
+            ? 'Tu as dépassé la limite.'
+            : view.endReason === 'misses'
+              ? 'Trois erreurs : bar fermé.'
+              : 'Tu as arrêté de boire trop longtemps.'
+          : '3 erreurs maximum. La ligne ne ralentit que si tu arrêtes réellement de boire.'}
       </div>
 
       {grabRecipe && grab && (
@@ -553,7 +588,7 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
 
       {view.finished && (
         <div className={`sts-ending is-${view.endReason}`} aria-hidden="true">
-          <strong>{view.endReason === 'coma' ? 'COMA' : 'LAST CALL'}</strong>
+          <strong>{view.endReason === 'coma' ? 'COMA' : view.endReason === 'misses' ? '3 MISSES' : 'LAST CALL'}</strong>
         </div>
       )}
     </div>

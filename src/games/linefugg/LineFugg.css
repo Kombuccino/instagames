@@ -28,8 +28,8 @@
   position: absolute;
   z-index: 8;
   top: max(68px, calc(env(safe-area-inset-top) + 52px));
-  left: 18px;
-  max-width: calc(100% - 86px);
+  left: 12px;
+  max-width: calc(100% - 80px);
   pointer-events: none;
 }
 
@@ -64,22 +64,22 @@
   position: absolute;
   z-index: 5;
   top: max(104px, calc(env(safe-area-inset-top) + 88px));
-  right: 14px;
+  right: 5px;
   bottom: max(158px, calc(env(safe-area-inset-bottom) + 142px));
-  left: 14px;
+  left: 5px;
   display: grid;
-  place-items: center;
+  place-items: start center;
   pointer-events: none;
 }
 
 .linefugg-board-shell {
-  width: min(100%, 48dvh, 430px);
+  width: min(100%, 430px);
   pointer-events: auto;
 }
 
 .linefugg-day {
   height: 25px;
-  padding-left: 3px;
+  padding-left: 5px;
   color: rgba(255,255,255,.42);
   font-size: 11px;
   font-weight: 800;
@@ -100,7 +100,7 @@
   aspect-ratio: 1;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,.18);
-  border-radius: 20px;
+  border-radius: 18px;
   background: rgba(9,9,13,.9);
   box-shadow: 0 24px 72px rgba(0,0,0,.46), inset 0 0 50px rgba(255,255,255,.018);
   touch-action: none;
@@ -130,7 +130,7 @@
 .linefugg-cell span {
   position: relative;
   z-index: 2;
-  font-size: clamp(18px, 5.6vw, 24px);
+  font-size: clamp(19px, 6vw, 25px);
   font-weight: 850;
   line-height: 1;
   letter-spacing: -.045em;
@@ -202,17 +202,17 @@
 
 .linefugg-history {
   display: grid;
-  gap: 7px;
-  min-height: 83px;
-  padding-top: 11px;
+  gap: 6px;
+  min-height: 78px;
+  padding: 9px 3px 0;
 }
 
 .linefugg-history-empty {
   display: grid;
   gap: 4px;
-  min-height: 72px;
+  min-height: 66px;
   align-content: center;
-  padding: 0 4px;
+  padding: 0 5px;
 }
 
 .linefugg-history-empty strong {
@@ -231,8 +231,8 @@
   grid-template-columns: 25px minmax(0, 1fr) auto;
   align-items: center;
   gap: 7px;
-  min-height: 34px;
-  padding: 5px 9px;
+  min-height: 33px;
+  padding: 4px 9px;
   border: 1px solid rgba(255,255,255,.08);
   border-radius: 12px;
   background: rgba(255,255,255,.035);
@@ -267,14 +267,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  min-height: 36px;
-  margin-top: 3px;
+  gap: 10px;
+  min-height: 34px;
+  margin: 2px 3px 0;
 }
 
 .linefugg-local-controls button {
-  min-height: 34px;
-  padding: 6px 11px;
+  min-height: 32px;
+  padding: 5px 10px;
   border: 1px solid rgba(255,255,255,.13);
   border-radius: 11px;
   background: rgba(255,255,255,.055);
@@ -294,23 +294,28 @@
 }
 
 @media (max-height: 720px) {
-  .linefugg-status { top: max(62px, calc(env(safe-area-inset-top) + 46px)); }
-  .linefugg-status p { margin-top: 6px; font-size: 13px; }
+  .linefugg-status { top: max(60px, calc(env(safe-area-inset-top) + 44px)); }
+  .linefugg-status p { margin-top: 5px; font-size: 13px; }
   .linefugg-play-area {
-    top: max(92px, calc(env(safe-area-inset-top) + 76px));
-    bottom: max(146px, calc(env(safe-area-inset-bottom) + 132px));
+    top: max(88px, calc(env(safe-area-inset-top) + 72px));
+    right: 4px;
+    bottom: max(140px, calc(env(safe-area-inset-bottom) + 126px));
+    left: 4px;
   }
-  .linefugg-board-shell { width: min(100%, 39dvh, 330px); }
-  .linefugg-day { height: 20px; font-size: 10px; }
-  .linefugg-history { min-height: 72px; gap: 5px; padding-top: 7px; }
-  .linefugg-history-row { min-height: 30px; padding: 3px 8px; }
-  .linefugg-history-empty { min-height: 62px; }
-  .linefugg-local-controls { min-height: 31px; }
-  .linefugg-local-controls button { min-height: 30px; font-size: 12px; }
+  .linefugg-board-shell { width: min(100%, 430px); }
+  .linefugg-day { height: 19px; padding-left: 4px; font-size: 10px; }
+  .linefugg-history { min-height: 62px; gap: 4px; padding-top: 5px; }
+  .linefugg-history-row { min-height: 28px; padding: 2px 8px; }
+  .linefugg-history-empty { min-height: 56px; }
+  .linefugg-history-empty strong { font-size: 14px; }
+  .linefugg-history-empty span { font-size: 12px; }
+  .linefugg-local-controls { min-height: 29px; margin-top: 0; }
+  .linefugg-local-controls button { min-height: 28px; padding: 4px 9px; font-size: 12px; }
   .linefugg-local-controls span { font-size: 11px; }
 }
 
 @media (min-width: 760px) {
+  .linefugg-play-area { right: 14px; left: 14px; place-items: center; }
   .linefugg-board-shell { width: min(430px, 48dvh); }
 }
 

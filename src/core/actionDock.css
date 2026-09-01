@@ -4,7 +4,8 @@
   --minifugg-core-bottom-reserved: calc(100px + env(safe-area-inset-bottom));
 }
 
-.game-feed {
+.game-feed,
+.game-slot {
   touch-action: pan-y;
 }
 

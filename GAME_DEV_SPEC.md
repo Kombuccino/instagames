@@ -152,7 +152,7 @@ Core maps them to board ids such as:
 - `week:2026-W36`
 - `global`
 
-A game can expose multiple periods simultaneously. In production PostgreSQL should keep the raw score timestamp as the source of truth; day/week are query windows rather than separate game code.
+A game can expose multiple periods simultaneously. In production PostgreSQL keeps the raw score timestamp as the source of truth; day/week are query windows, not duplicate score rows.
 
 Sort direction is declared per game (`desc` for higher-is-better, `asc` for lower-is-better).
 
@@ -162,14 +162,16 @@ Games never call a database directly. Games never own player identity, nickname,
 
 The platform transport lives in `src/core/platformApi.ts`.
 
-When `VITE_MINIFUGG_API_URL` is absent, Core uses browser-local fallbacks for development. When present, Core can use the remote MiniFugg API.
+When `VITE_MINIFUGG_API_URL` is absent, Core uses browser-local fallbacks for development. When present, Core uses the remote MiniFugg API.
 
-Score API:
+Finished-run score API:
 
-- `GET /v1/leaderboards/:gameId/:boardId?limit=10&sort=desc`
-- `POST /v1/leaderboards/:gameId/:boardId`
+- `POST /v1/scores` — insert the finished run **once**
+- `GET /v1/leaderboards/:gameId/:boardId?limit=10&sort=desc` — read a daily/weekly/global ranking window
 
-Social API planned/consumed by Core:
+A board-specific score POST may remain only for legacy or special explicit boards. New games do not call it.
+
+Social API consumed by Core:
 
 - `GET /v1/games/:gameId/stats`
 - `POST /v1/games/:gameId/plays`

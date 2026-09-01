@@ -1,12 +1,44 @@
 import type { ComponentType } from 'react'
 
+export type GameLeaderboardScope = 'daily' | 'global'
+export type GameLeaderboardSort = 'desc' | 'asc'
+
+export type GameLeaderboardConfig = {
+  enabled: true
+  scope: GameLeaderboardScope
+  sort?: GameLeaderboardSort
+  limit?: number
+}
+
+export type GameFeatureConfig = {
+  help?: boolean
+  leaderboard?: GameLeaderboardConfig | false
+  share?: boolean
+  comments?: boolean
+  remix?: boolean
+}
+
+export type GameInstructions = {
+  goal: string
+  rules: string[]
+  controls?: string[]
+}
+
+export type GameFinishPayload = {
+  score: number
+  boardId?: string
+  metadata?: Record<string, string | number | boolean>
+}
+
 export type GameSessionApi = {
   setScore: (score: number) => void
+  finish: (payload: GameFinishPayload) => void
 }
 
 export type GameComponentProps = {
   active: boolean
   seed: number
+  restartToken: number
   session: GameSessionApi
 }
 
@@ -16,4 +48,6 @@ export type InstagameDefinition = {
   description: string
   author?: string
   component: ComponentType<GameComponentProps>
+  instructions?: GameInstructions
+  features?: GameFeatureConfig
 }

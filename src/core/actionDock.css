@@ -1,0 +1,134 @@
+.game-topbar {
+  inset: 0;
+  height: 100%;
+  display: block;
+  padding: max(12px, env(safe-area-inset-top)) 12px 0;
+  background: none;
+  pointer-events: none;
+}
+
+.game-topbar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 96px;
+  background: linear-gradient(180deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.3) 58%, transparent 100%);
+  pointer-events: none;
+}
+
+.game-identity {
+  position: relative;
+  z-index: 1;
+  max-width: calc(100% - 24px);
+  padding: 4px 0;
+}
+
+.game-actions {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 5px 6px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 19px;
+  background: rgba(10,10,14,.72);
+  -webkit-backdrop-filter: blur(22px) saturate(1.2);
+  backdrop-filter: blur(22px) saturate(1.2);
+  box-shadow: 0 12px 34px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.04);
+  pointer-events: auto;
+}
+
+.game-actions button {
+  position: relative;
+  display: grid;
+  min-width: 52px;
+  width: auto;
+  height: 45px;
+  padding: 4px 9px 3px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+.game-actions button + button::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 0;
+  width: 1px;
+  background: rgba(255,255,255,.07);
+}
+
+.game-actions button:hover {
+  background: rgba(255,255,255,.06);
+}
+
+.game-actions button.is-active {
+  border-color: transparent;
+  background: rgba(255,255,255,.1);
+}
+
+.game-actions button span {
+  font-size: 18px;
+  line-height: 19px;
+}
+
+.game-actions button small {
+  max-width: 50px;
+  overflow: hidden;
+  color: rgba(255,255,255,.55);
+  font-size: 7px;
+  line-height: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.score-chip {
+  right: 12px;
+  bottom: calc(max(12px, env(safe-area-inset-bottom)) + 64px);
+}
+
+@media (max-width: 430px) {
+  .game-topbar {
+    gap: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .game-identity {
+    max-width: calc(100% - 20px);
+  }
+
+  .game-actions {
+    gap: 0;
+    max-width: calc(100% - 20px);
+    padding: 4px 5px;
+  }
+
+  .game-actions button {
+    min-width: 49px;
+    width: auto;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .game-actions button small {
+    font-size: 6.5px;
+  }
+}
+
+@media (min-width: 760px) {
+  .swipe-hint {
+    bottom: 88px;
+  }
+}

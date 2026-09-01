@@ -115,6 +115,7 @@ export function GameRuntime({ game, seed, active, mounted }: GameRuntimeProps) {
 
       <header className="game-topbar">
         <div className="brand">MINIFUGG</div>
+        <div className="game-title">{game.title}</div>
       </header>
 
       <aside className="game-actions" aria-label="Options du jeu">
@@ -128,7 +129,6 @@ export function GameRuntime({ game, seed, active, mounted }: GameRuntimeProps) {
 
       <footer className="game-meta">
         <div>
-          <strong>{game.title}</strong>
           <p>{game.description}</p>
           {game.author && <small>@{game.author}</small>}
         </div>

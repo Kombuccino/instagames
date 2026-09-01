@@ -1,6 +1,7 @@
 import type { InstagameDefinition } from './types'
 import { LineFugg } from '../games/linefugg/LineFugg'
 import { ShootTheShooter } from '../games/shoot-the-shooter/ShootTheShooter'
+import { VladsSkewers } from '../games/vlads-skewers/VladsSkewers'
 
 export const gameRegistry: InstagameDefinition[] = [
   {
@@ -54,6 +55,40 @@ export const gameRegistry: InstagameDefinition[] = [
         'À 100% d’alcool : coma éthylique et fin immédiate. Si tu ne bois plus assez longtemps : Last Call.',
       ],
       controls: ['Tape n’importe où sur la ligne au moment où le verre croise la cible', 'Clavier : Espace ou Entrée'],
+    },
+    features: {
+      help: true,
+      love: true,
+      comments: true,
+      bookmark: true,
+      leaderboard: {
+        enabled: true,
+        periods: ['daily', 'weekly'],
+        sort: 'desc',
+        limit: 10,
+      },
+      share: false,
+      remix: false,
+    },
+  },
+  {
+    id: 'vlads-skewers',
+    title: 'Les Brochettes de Vlad',
+    description: 'Empale la commande · évite l’ail',
+    author: 'MiniFugg',
+    component: VladsSkewers,
+    instructions: {
+      goal: 'Sers le plus de clients possible en empalant les ingrédients dans l’ordre exact de leur commande.',
+      rules: [
+        'Le client actif est le premier de la file à droite. Sa commande indique l’ordre exact des ingrédients.',
+        'Chaque client rapporte autant de points qu’il y a d’ingrédients sur sa brochette.',
+        'Les premières commandes sont courtes, puis elles deviennent plus longues et les ingrédients tombent plus vite.',
+        'Empaler un mauvais ingrédient fait partir le client et remet une brochette vide dans la main de Vlad.',
+        'L’ail fait immédiatement fuir le client : Vlad déteste ça.',
+        'Le sang est un bonus : il rend de la patience au client actif et ralentit brièvement les ingrédients.',
+        'Si un client perd toute sa patience, il part. Au troisième client perdu, le service est terminé.',
+      ],
+      controls: ['Maintiens le doigt dans le tiers inférieur de l’écran', 'Glisse librement pour déplacer la brochette', 'Vise avec la pointe métallique'],
     },
     features: {
       help: true,

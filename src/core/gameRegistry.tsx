@@ -42,15 +42,15 @@ export const gameRegistry: InstagameDefinition[] = [
     instructions: {
       goal: 'Bois le plus de shooters possible sans atteindre 100% d’alcool et sans laisser la ligne s’arrêter.',
       rules: [
-        'Tape quand un shooter arrive à portée de la main au centre.',
-        'Chaque silhouette de verre et chaque liquide cache une recette et un effet alcool différent.',
-        'L’effet d’une recette n’est révélé qu’après l’avoir bue une première fois.',
-        'Les rares shooters qui dégrisent font baisser fortement le taux d’alcool.',
-        'Chaque shoot relance la ligne. Si tu arrêtes de boire, elle ralentit progressivement jusqu’au Last Call.',
-        'À 100% d’alcool : coma éthylique et fin immédiate.',
-        'Plus le taux monte, plus les verres et la main bougent, la vision se dédouble et le timing devient précis.',
+        'Chaque partie contient seulement 3 à 5 recettes. Leur carte complète reste visible sous la ligne.',
+        'Les effets restent inconnus jusqu’au premier verre bu : plusieurs faibles, un qui dégrise et un très violent.',
+        'Les verres arrivent de gauche. Tape quand celui que tu veux boire croise le point de visée près de la main.',
+        'Rater un verre ralentit immédiatement la ligne. Boire lui redonne de la vitesse.',
+        'Le point de visée commence à dériver dès que l’alcool monte et devient imprévisible près du coma.',
+        'Dès 30%, une vague colorée et une pixellisation mouvante brouillent progressivement les liquides.',
+        'À 100% d’alcool : coma éthylique et fin immédiate. Si la ligne s’arrête : Last Call.',
       ],
-      controls: ['Tape n’importe où sur la ligne quand la main peut saisir le verre', 'Clavier : Espace ou Entrée'],
+      controls: ['Tape n’importe où sur la ligne au moment où le verre croise la cible', 'Clavier : Espace ou Entrée'],
     },
     features: {
       help: true,

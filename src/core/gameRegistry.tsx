@@ -13,7 +13,7 @@ export const gameRegistry: InstagameDefinition[] = [
       goal: 'Trace trois lignes pour fabriquer le plus gros score possible sur la grille du jour.',
       rules: [
         'Une ligne est horizontale, verticale ou diagonale.',
-        'Une ligne contient au maximum 6 cases.',
+        'Une ligne contient au maximum 5 cases.',
         'Le calcul suit le sens de la flèche.',
         'Deux lignes peuvent partager au maximum une case.',
         'Ton score final est la somme des trois lignes.',

@@ -1,6 +1,6 @@
-# MiniFugg Game Development Contract v1.1
+# MiniFugg Game Development Contract v1.2
 
-This file is the source of truth for every AI or developer creating a MiniFugg game. Read it completely before writing or modifying game code.
+This file is the source of truth for every AI or developer creating a MiniFugg game. Read it completely before writing or modifying game code. Also read `docs/STYLE_SYSTEM.md`.
 
 ## 1. Product idea
 
@@ -16,7 +16,7 @@ When the user explicitly starts a new game, count user prompts starting at 1. Ev
 
 Prompt 10 is the last development prompt. Do not quietly extend the budget. Bug fixes, polish and deployment requests during that game's active creation sequence count.
 
-Do not count work about MiniFugg Core, shared UI, API, deployment, accounts, social features, leaderboards or this specification.
+Do not count work about MiniFugg Core, shared UI, API, deployment, accounts, social features, leaderboards, style-kit infrastructure or this specification.
 
 ## 3. Technical boundary
 
@@ -66,7 +66,7 @@ The Core increments this when the common Replay action is used. A game using `se
 
 ### session.setScore(score)
 
-Reports the live score to MiniFugg. The platform owns the generic score chip. Do not duplicate a generic floating score UI unless the gameplay itself requires a game-specific display.
+Reports the live score to MiniFugg. The platform owns the generic score chip. Do not duplicate a generic floating score UI unless gameplay itself requires a game-specific display.
 
 ### session.finish({ score, boardId?, metadata? })
 
@@ -76,28 +76,48 @@ Do not build generic nickname / save score / leaderboard / replay UI inside a ne
 
 Usually omit `boardId`: Core will publish the score to the leaderboard periods configured for the game. Use an explicit boardId only for a special level, season or challenge that intentionally overrides normal period boards.
 
-## 5. Shared platform chrome
+## 5. Shared platform chrome and safe zones
 
-The general MiniFugg interface is outside the game and is owned by Core.
+The general MiniFugg interface is outside the game and owned by Core.
 
 Current shared chrome includes:
 
-- game title
+- readable game title
 - clickable `@creator`
 - short game description
 - play count
-- rules/help action
-- love action + count
-- comments action + count
-- bookmark action
+- bottom action dock containing rules, love, comments and bookmark
 - generic score module
 - leaderboard sheet
 - common finish/replay flow
 - nickname persistence
 
-A game must not reserve its own UI for these features.
+A game must not recreate these features or place essential content underneath them.
 
-The creator panel is built from the registry/catalog today and will later be backed by creator/game database records.
+Core exposes global layout variables:
+
+```css
+--minifugg-core-top-reserved
+--minifugg-core-bottom-reserved
+```
+
+The top area is reserved for title/creator/description. The bottom area includes the shared action dock.
+
+Background art, particles and non-interactive decoration may extend behind Core chrome. Essential game-owned content must stay outside it: buttons, important text, touch targets, drag endpoints, inventory, timers and critical HUD.
+
+Example:
+
+```css
+.game-safe-layer {
+  position: absolute;
+  top: var(--minifugg-core-top-reserved);
+  bottom: var(--minifugg-core-bottom-reserved);
+  left: 0;
+  right: 0;
+}
+```
+
+A canvas may fill the viewport, but meaningful interactive coordinates should account for the reserved areas.
 
 ## 6. Registry declaration
 
@@ -132,9 +152,58 @@ Shared features are declared in `src/core/gameRegistry.tsx`.
 }
 ```
 
-`love`, `comments` and `bookmark` are platform features. Never implement their persistence inside a game.
+Love, comments and bookmark are platform features. Never implement their persistence inside a game.
 
-## 7. Score and leaderboard model
+## 7. Visual direction and style kits
+
+MiniFugg deliberately does **not** have one visual style for all games. Core is the consistent shell; each game should have its own art direction.
+
+Before visual polish, read:
+
+- `docs/STYLE_SYSTEM.md`
+- `docs/style-kits/README.md`
+- relevant kit file(s)
+- `src/style-kits/catalog.ts`
+
+If the user did not specify a clear style, use the visual preflight defined in `docs/STYLE_SYSTEM.md`. Do not default to dark backgrounds, purple/cyan gradients, glowing blobs, glass panels and tiny pale labels.
+
+Prompt 1 should still advance gameplay. When visual answers are missing, use deliberately neutral temporary art and ask the visual QCM in the same response. If the user explicitly wants to choose art direction before coding, wait for the answers.
+
+Once selected, create `src/games/<game-id>/ART_DIRECTION.md` containing:
+
+- chosen style kit or `custom`;
+- palette and any deviations;
+- typography direction;
+- material/texture language;
+- motion language;
+- reusable kit assets being used;
+- custom characters/props;
+- explicit references and things to avoid.
+
+Future prompts and future agents must preserve this file unless the user asks to change direction.
+
+Existing kits:
+
+- Pixel Dungeon
+- Paper Cut
+- Ink Pulp
+- Toybox
+- Sports Broadcast
+- Editorial Grid
+
+Custom styles and deliberate combinations are allowed. Prefer at most two base kits in one game unless there is a strong art-direction reason.
+
+## 8. Readability
+
+Avoid the tiny-text syndrome. On a phone:
+
+- important readable game text should generally be at least 14px equivalent;
+- primary labels and scores should be substantially larger;
+- prefer fewer strong labels over many tiny ones;
+- touch targets should be comfortably tappable;
+- game HUD should not visually compete with Core identity chrome.
+
+## 9. Score and leaderboard model
 
 Games own scoring logic but **Core owns score storage and rankings**.
 
@@ -156,7 +225,7 @@ A game can expose multiple periods simultaneously. In production PostgreSQL keep
 
 Sort direction is declared per game (`desc` for higher-is-better, `asc` for lower-is-better).
 
-## 8. Platform data/API boundary
+## 10. Platform data/API boundary
 
 Games never call a database directly. Games never own player identity, nickname, plays, loves, bookmarks or comments.
 
@@ -166,10 +235,8 @@ When `VITE_MINIFUGG_API_URL` is absent, Core uses browser-local fallbacks for de
 
 Finished-run score API:
 
-- `POST /v1/scores` — insert the finished run **once**
-- `GET /v1/leaderboards/:gameId/:boardId?limit=10&sort=desc` — read a daily/weekly/global ranking window
-
-A board-specific score POST may remain only for legacy or special explicit boards. New games do not call it.
+- `POST /v1/scores` — insert the finished run once
+- `GET /v1/leaderboards/:gameId/:boardId?limit=10&sort=desc`
 
 Social API consumed by Core:
 
@@ -186,7 +253,7 @@ See `docs/PLATFORM_DATA_MODEL.md` for the recommended PostgreSQL schema.
 
 Client-only score validation is not secure. Competitive ladders will eventually require run proofs or game-specific server validation.
 
-## 9. UX rules for games
+## 11. UX rules for games
 
 Default target: portrait phone.
 
@@ -197,16 +264,15 @@ A MiniFugg game should:
 - be understandable quickly, with details available through the common rules panel;
 - use touch as primary input;
 - remain practical with mouse on desktop when possible;
-- avoid tiny targets/text;
 - avoid conflicting browser scroll/zoom gestures during gameplay;
 - fit inside the game surface;
 - survive pause/resume when swiping away and back;
 - never assume a fixed phone resolution;
-- keep essential game-owned UI clear of platform chrome and safe areas.
+- respect Core safe zones and device safe areas.
 
 Prefer one strong mechanic over menus, progression trees or settings.
 
-## 10. Performance rules
+## 12. Performance rules
 
 Only the active game and neighbours are mounted by the feed. A game must still clean up its own resources:
 
@@ -218,12 +284,12 @@ Only the active game and neighbours are mounted by the feed. A game must still c
 
 Do not make continuous network requests from gameplay. Avoid large assets unless essential.
 
-## 11. Ownership boundary
+## 13. Ownership boundary
 
 ### The game owns
 
 - gameplay
-- game-specific visuals
+- game-specific visuals and art direction
 - game-specific HUD strictly needed for the mechanic
 - run state
 - deterministic generation
@@ -234,6 +300,7 @@ Do not make continuous network requests from gameplay. Avoid large assets unless
 
 - feed/swiping
 - title/creator/description/plays chrome
+- bottom action dock
 - generic score display
 - rules panel
 - daily/weekly/global ladders
@@ -245,19 +312,22 @@ Do not make continuous network requests from gameplay. Avoid large assets unless
 
 When in doubt, do not duplicate a generic platform feature inside the game.
 
-## 12. Security constraints
+## 14. Security constraints
 
 First-party games are compiled with the app today, but code should remain compatible with a future sandboxed public-creation model.
 
 Do not put secrets/API keys in game code. Do not access cookies/auth tokens/private platform state. Do not require arbitrary external scripts. Do not create custom backend endpoints for one game unless explicitly approved as a platform capability.
 
-## 13. Definition of done
+## 15. Definition of done
 
 Before declaring a game finished, check:
 
 - gameplay works on touch;
 - gameplay is understandable quickly;
+- no important content is hidden by Core top/bottom reserved zones;
 - no obvious desktop/mobile overflow;
+- art direction is intentional and recorded in `ART_DIRECTION.md` once selected;
+- important text is readable on phone;
 - score updates through `session.setScore`;
 - finished runs call `session.finish` when using the shared end flow;
 - `restartToken` resets the run;
@@ -267,6 +337,6 @@ Before declaring a game finished, check:
 - TypeScript should build without errors;
 - final code is on `main` when deployment was requested.
 
-## 14. Migration note
+## 16. Migration note
 
-Older games may predate this contract and still contain legacy leaderboard/final-score UI. Do not copy those legacy sections into new games. Preserve gameplay while migrating them deliberately toward the Core-owned flow.
+Older games may predate this contract and still contain legacy UI or generic AI visual patterns. Do not copy those sections into new games. Preserve gameplay while migrating them deliberately toward the Core-owned and style-directed model.

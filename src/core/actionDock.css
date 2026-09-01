@@ -1,3 +1,8 @@
+:root {
+  --minifugg-core-top-reserved: calc(108px + env(safe-area-inset-top));
+  --minifugg-core-bottom-reserved: calc(76px + env(safe-area-inset-bottom));
+}
+
 .game-topbar {
   inset: 0;
   height: 100%;
@@ -13,7 +18,7 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 96px;
+  height: var(--minifugg-core-top-reserved);
   background: linear-gradient(180deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.3) 58%, transparent 100%);
   pointer-events: none;
 }
@@ -23,6 +28,22 @@
   z-index: 1;
   max-width: calc(100% - 24px);
   padding: 4px 0;
+}
+
+.game-heading > strong {
+  font-size: clamp(20px, 5.3vw, 24px);
+  line-height: 1.02;
+  letter-spacing: -.045em;
+}
+
+.creator-link {
+  font-size: 12px;
+}
+
+.game-subline {
+  margin-top: 5px;
+  font-size: 11px;
+  line-height: 1.3;
 }
 
 .game-actions {
@@ -107,6 +128,10 @@
 
   .game-identity {
     max-width: calc(100% - 20px);
+  }
+
+  .game-heading > strong {
+    font-size: clamp(19px, 5.6vw, 22px);
   }
 
   .game-actions {

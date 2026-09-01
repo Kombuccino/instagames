@@ -4,6 +4,7 @@ import './ShootTheShooter.css'
 
 type GlassType = 'classic' | 'tapered' | 'tall' | 'heavy' | 'flared' | 'mini'
 type LiquidPattern = 'solid' | 'gradient' | 'layered'
+type RecipeRole = 'mild' | 'sobering' | 'bomb'
 
 type LiquidStyle = {
   a: string
@@ -18,6 +19,7 @@ type Recipe = {
   liquid: LiquidStyle
   name: string
   effect: number
+  role: RecipeRole
   spawnWeight: number
 }
 
@@ -41,6 +43,9 @@ type World = {
   finished: boolean
   endReason: EndReason | null
   soberingCooldown: number
+  aimX: number
+  aimTargetX: number
+  aimTimer: number
   random: () => number
 }
 
@@ -54,19 +59,22 @@ type RenderState = {
   lastRecipeId: number | null
   finished: boolean
   endReason: EndReason | null
+  aimX: number
 }
 
 type GrabState = {
   recipeId: number
   token: number
+  x: number
 }
 
-const HIT_X = 50
-const HIT_RADIUS = 7.5
-const START_SPEED = 18
-const MAX_SPEED = 33
-const FRICTION_PER_SECOND = 1.25
-const SPEED_BOOST = 2.3
+const BASE_AIM_X = 80
+const HIT_RADIUS = 5.8
+const START_SPEED = 10.5
+const MAX_SPEED = 18
+const FRICTION_PER_SECOND = 0.56
+const SPEED_BOOST = 1.35
+const MISS_PENALTY = 1.25
 
 const glassTypes: GlassType[] = ['classic', 'tapered', 'tall', 'heavy', 'flared', 'mini']
 
@@ -77,7 +85,7 @@ const liquids: LiquidStyle[] = [
   { a: '#b6ff3b', b: '#22d8a0', angle: 160, pattern: 'gradient' },
   { a: '#ffdd38', b: '#ff722e', angle: 180, pattern: 'gradient' },
   { a: '#ff8ad8', b: '#fff0f8', angle: 180, pattern: 'layered' },
-  { a: '#161a28', b: '#7650ff', angle: 180, pattern: 'layered' },
+  { a: '#171a2a', b: '#7650ff', angle: 180, pattern: 'layered' },
   { a: '#33f0c0', b: '#f2ff76', angle: 180, pattern: 'layered' },
   { a: '#ff375f', b: '#ffb13b', angle: 135, pattern: 'gradient' },
   { a: '#f6f2ff', b: '#8f7dff', angle: 180, pattern: 'gradient' },
@@ -131,16 +139,15 @@ function liquidStyle(liquid: LiquidStyle) {
 
 function createRecipes(seed: number) {
   const random = mulberry32(seed || 1)
-  const recipeCount = pickInt(random, 10, 20)
+  const recipeCount = pickInt(random, 3, 5)
   const combos = shuffle(
     glassTypes.flatMap((glass) => liquids.map((liquid) => ({ glass, liquid }))),
     random,
   ).slice(0, recipeCount)
 
-  const soberingCount = recipeCount >= 16 ? 2 : 1
-  const soberingSlots = new Set(
-    shuffle(Array.from({ length: recipeCount }, (_, index) => index), random).slice(0, soberingCount),
-  )
+  const roles: RecipeRole[] = ['sobering', 'bomb']
+  while (roles.length < recipeCount) roles.push('mild')
+  const shuffledRoles = shuffle(roles, random)
   const usedNames = new Set<string>()
 
   return combos.map((combo, index): Recipe => {
@@ -152,13 +159,20 @@ function createRecipes(seed: number) {
     if (usedNames.has(name)) name = `${name} #${index + 1}`
     usedNames.add(name)
 
-    const isSobering = soberingSlots.has(index)
+    const role = shuffledRoles[index]
+    const effect = role === 'sobering'
+      ? -pickInt(random, 12, 18)
+      : role === 'bomb'
+        ? pickInt(random, 19, 26)
+        : pickInt(random, 4, 8)
+
     return {
       id: index,
       ...combo,
       name,
-      effect: isSobering ? -pickInt(random, 12, 22) : pickInt(random, 4, random() < 0.17 ? 17 : 13),
-      spawnWeight: isSobering ? 0.22 : 1,
+      role,
+      effect,
+      spawnWeight: role === 'sobering' ? 0.48 : role === 'bomb' ? 0.72 : 1,
     }
   })
 }
@@ -194,13 +208,16 @@ function createWorld(recipes: Recipe[], seed: number): World {
     finished: false,
     endReason: null,
     soberingCooldown: 0,
+    aimX: BASE_AIM_X,
+    aimTargetX: BASE_AIM_X,
+    aimTimer: 0,
     random: mulberry32((seed ^ 0x9e3779b9) >>> 0 || 1),
   }
 
-  let x = 14
-  while (x < 132) {
+  let x = -12
+  while (x < 110) {
     pushShooter(world, recipes, x)
-    x += 14 + world.random() * 8
+    x += 16 + world.random() * 7
   }
   return world
 }
@@ -216,6 +233,7 @@ function snapshot(world: World): RenderState {
     lastRecipeId: world.lastRecipeId,
     finished: world.finished,
     endReason: world.endReason,
+    aimX: world.aimX,
   }
 }
 
@@ -225,9 +243,9 @@ function effectLabel(effect: number) {
 
 function drunkClass(alcohol: number) {
   if (alcohol >= 90) return 'is-blackout'
-  if (alcohol >= 75) return 'is-wasted'
-  if (alcohol >= 55) return 'is-drunk'
-  if (alcohol >= 28) return 'is-tipsy'
+  if (alcohol >= 72) return 'is-wasted'
+  if (alcohol >= 50) return 'is-drunk'
+  if (alcohol >= 30) return 'is-tipsy'
   return 'is-sober'
 }
 
@@ -252,6 +270,7 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
   const [missToken, setMissToken] = useState(0)
 
   const recipeById = useMemo(() => new Map(recipes.map((recipe) => [recipe.id, recipe])), [recipes])
+  const discovered = useMemo(() => new Set(view.discovered), [view.discovered])
 
   const finishRun = useCallback((reason: EndReason) => {
     const world = worldRef.current
@@ -296,6 +315,7 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
 
     let frame = 0
     let previous = performance.now()
+    let renderAccumulator = 0
 
     const animate = (now: number) => {
       const world = worldRef.current
@@ -306,15 +326,30 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
         world.speed = Math.max(0, world.speed - FRICTION_PER_SECOND * dt)
         const distance = world.speed * dt
         world.shooters.forEach((shooter) => {
-          shooter.x -= distance
+          shooter.x += distance
         })
-        world.shooters = world.shooters.filter((shooter) => shooter.x > -12)
+        world.shooters = world.shooters.filter((shooter) => shooter.x < 114)
 
-        let furthest = world.shooters.reduce((max, shooter) => Math.max(max, shooter.x), -Infinity)
-        if (!Number.isFinite(furthest)) furthest = 90
-        while (furthest < 126) {
-          furthest += 14 + world.random() * 8
-          pushShooter(world, recipes, furthest)
+        let leftmost = world.shooters.reduce((min, shooter) => Math.min(min, shooter.x), Number.POSITIVE_INFINITY)
+        if (!Number.isFinite(leftmost)) leftmost = 18
+        while (leftmost > -18) {
+          leftmost -= 16 + world.random() * 7
+          pushShooter(world, recipes, leftmost)
+        }
+
+        const drunk = Math.max(0, Math.min(1, (world.alcohol - 28) / 72))
+        if (drunk <= 0) {
+          world.aimTargetX = BASE_AIM_X
+          world.aimX += (BASE_AIM_X - world.aimX) * Math.min(1, dt * 8)
+        } else {
+          world.aimTimer -= dt
+          if (world.aimTimer <= 0) {
+            const maxOffset = 1.5 + drunk * 8.5
+            world.aimTargetX = BASE_AIM_X + (world.random() * 2 - 1) * maxOffset
+            world.aimTimer = 0.18 + (1 - drunk) * 0.22 + world.random() * 0.18
+          }
+          const follow = Math.min(1, dt * (5 + drunk * 10))
+          world.aimX += (world.aimTargetX - world.aimX) * follow
         }
 
         if (world.speed <= 0.02) {
@@ -322,7 +357,11 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
           return
         }
 
-        setView(snapshot(world))
+        renderAccumulator += dt
+        if (renderAccumulator >= 1 / 30) {
+          renderAccumulator = 0
+          setView(snapshot(world))
+        }
       }
 
       frame = requestAnimationFrame(animate)
@@ -336,12 +375,12 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
     const world = worldRef.current
     if (!active || world.finished) return
 
-    const tolerance = Math.max(3.8, HIT_RADIUS - world.alcohol * 0.037)
+    const tolerance = Math.max(4.25, HIT_RADIUS - world.alcohol * 0.014)
     let target: Shooter | null = null
     let bestDistance = Number.POSITIVE_INFINITY
 
     for (const shooter of world.shooters) {
-      const distance = Math.abs(shooter.x - HIT_X)
+      const distance = Math.abs(shooter.x - world.aimX)
       if (distance <= tolerance && distance < bestDistance) {
         target = shooter
         bestDistance = distance
@@ -349,6 +388,8 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
     }
 
     if (!target) {
+      world.speed = Math.max(0, world.speed - MISS_PENALTY)
+      setView(snapshot(world))
       setMissToken((value) => value + 1)
       return
     }
@@ -356,6 +397,7 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
     const recipe = recipeById.get(target.recipeId)
     if (!recipe) return
 
+    const grabbedAt = world.aimX
     world.shooters = world.shooters.filter((shooter) => shooter.id !== target?.id)
     world.score += 1
     world.alcohol = Math.max(0, Math.min(100, world.alcohol + recipe.effect))
@@ -365,9 +407,9 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
     world.lastRecipeId = recipe.id
 
     grabTokenRef.current += 1
-    setGrab({ recipeId: recipe.id, token: grabTokenRef.current })
+    setGrab({ recipeId: recipe.id, token: grabTokenRef.current, x: grabbedAt })
     if (grabTimerRef.current !== null) window.clearTimeout(grabTimerRef.current)
-    grabTimerRef.current = window.setTimeout(() => setGrab(null), 720)
+    grabTimerRef.current = window.setTimeout(() => setGrab(null), 620)
 
     session.setScore(world.score)
     setView(snapshot(world))
@@ -381,20 +423,16 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
     drink()
   }
 
-  const lastRecipe = view.lastRecipeId === null ? null : recipeById.get(view.lastRecipeId) ?? null
   const grabRecipe = grab ? recipeById.get(grab.recipeId) ?? null : null
-  const discoveredRecipes = view.discovered
-    .map((id) => recipeById.get(id))
-    .filter((recipe): recipe is Recipe => Boolean(recipe))
-    .slice(-7)
-    .reverse()
-
+  const intoxication = Math.max(0, Math.min(1, (view.alcohol - 28) / 72))
   const visualStyle = {
-    '--sts-blur': `${Math.max(0, (view.alcohol - 34) / 24)}px`,
-    '--sts-hue': `${Math.max(0, view.alcohol - 22) * 1.22}deg`,
-    '--sts-saturation': `${1 + view.alcohol / 70}`,
-    '--sts-double': `${Math.max(0, view.alcohol - 58) / 5.2}px`,
-    '--sts-chaos': `${Math.max(0, view.alcohol - 52) / 48}`,
+    '--sts-hue': `${Math.max(0, view.alcohol - 25) * 1.3}deg`,
+    '--sts-saturation': `${1 + Math.max(0, view.alcohol - 25) / 48}`,
+    '--sts-double': `${Math.max(0, view.alcohol - 48) / 8}px`,
+    '--sts-blur': `${Math.max(0, view.alcohol - 80) / 18}px`,
+    '--sts-wave-opacity': `${intoxication * 0.72}`,
+    '--sts-pixel-opacity': `${Math.max(0, intoxication - 0.08) * 0.52}`,
+    '--sts-pixel-size': `${Math.max(7, 16 - intoxication * 8)}px`,
   } as CSSProperties
 
   return (
@@ -417,22 +455,20 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
         <div className="sts-callout">
           {view.finished
             ? view.endReason === 'coma' ? 'COMA ÉTHYLIQUE' : 'LAST CALL'
-            : view.alcohol >= 90 ? 'TIENS BON.' : 'TAPE POUR ATTRAPER LE SHOOT'}
+            : view.alcohol >= 90 ? 'VISE LE POINT. PAS LE VERRE.' : 'TAPE QUAND LE VERRE CROISE LE POINT'}
         </div>
 
         <div
           className="sts-track"
           role="button"
           tabIndex={0}
-          aria-label="Ligne de shooters. Touchez quand un shooter arrive à portée de la main."
+          aria-label="Les shooters arrivent de gauche. Touchez quand un verre croise le point de visée près de la main."
           onPointerDown={(event) => {
             event.preventDefault()
             drink()
           }}
           onKeyDown={onKeyDown}
         >
-          <div className="sts-grab-marker" aria-hidden="true" />
-
           <div className="sts-belt" aria-hidden="true">
             {view.shooters.map((shooter) => {
               const recipe = recipeById.get(shooter.recipeId)
@@ -449,66 +485,65 @@ export function ShootTheShooter({ active, seed, restartToken, session }: GameCom
             })}
           </div>
 
+          <div className="sts-wave-layer" aria-hidden="true" />
+          <div className="sts-pixel-layer" aria-hidden="true" />
+
+          <div className="sts-aim" style={{ left: `${view.aimX}%` }} aria-hidden="true">
+            <span />
+          </div>
+
           <div className={`sts-hand ${grab ? 'is-grabbing' : ''}`} key={`hand-${grab?.token ?? 0}`} aria-hidden="true">
-            <span className="sts-hand-thumb" />
-            <span className="sts-hand-palm" />
-            <span className="sts-hand-finger f1" />
-            <span className="sts-hand-finger f2" />
-            <span className="sts-hand-finger f3" />
+            <span className="sts-hand-emoji">🤏</span>
           </div>
 
           {grabRecipe && grab && (
-            <div className="sts-grabbed" key={`grab-${grab.token}`} aria-hidden="true">
+            <div
+              className="sts-grabbed"
+              key={`grab-${grab.token}`}
+              style={{ '--grab-x': `${grab.x}%` } as CSSProperties}
+              aria-hidden="true"
+            >
               <GlassVisual recipe={grabRecipe} />
             </div>
           )}
 
-          {missToken > 0 && <div className="sts-miss" key={`miss-${missToken}`} aria-hidden="true">MISS</div>}
-        </div>
-
-        <div className="sts-reveal" aria-live="polite">
-          {lastRecipe ? (
-            <>
-              <GlassVisual recipe={lastRecipe} mini />
-              <div>
-                <strong>{lastRecipe.name}</strong>
-                <span className={lastRecipe.effect < 0 ? 'is-sobering' : 'is-boozy'}>{effectLabel(lastRecipe.effect)} ALCOOL</span>
-              </div>
-            </>
-          ) : (
-            <span>Tu ne connais l’effet d’un shoot qu’après l’avoir bu.</span>
+          {missToken > 0 && (
+            <div className="sts-miss" key={`miss-${missToken}`} style={{ left: `${view.aimX}%` }} aria-hidden="true">
+              MISS · SLOW
+            </div>
           )}
         </div>
       </section>
 
-      <section className="sts-discovery" aria-label="Recettes découvertes">
-        <div className="sts-discovery-heading">
-          <span>BAR MEMORY</span>
-          <strong>{view.discovered.length}/{recipes.length}</strong>
+      <section className="sts-menu" aria-label="Carte des shooters de cette partie">
+        <div className="sts-menu-heading">
+          <span>CE SOIR · {recipes.length} SHOOTS</span>
+          <strong>{view.discovered.length}/{recipes.length} GOÛTÉS</strong>
         </div>
-        <div className="sts-recipe-row">
-          {discoveredRecipes.length === 0 ? (
-            <div className="sts-unknown">???</div>
-          ) : discoveredRecipes.map((recipe) => (
-            <div className="sts-recipe-chip" key={recipe.id}>
-              <GlassVisual recipe={recipe} mini />
-              <div>
+        <div className="sts-recipe-grid" style={{ '--recipe-count': recipes.length } as CSSProperties}>
+          {recipes.map((recipe) => {
+            const known = discovered.has(recipe.id)
+            return (
+              <div className={`sts-recipe-card ${known ? 'is-known' : ''}`} key={recipe.id}>
+                <GlassVisual recipe={recipe} mini />
                 <strong>{recipe.name}</strong>
-                <span className={recipe.effect < 0 ? 'is-sobering' : 'is-boozy'}>{effectLabel(recipe.effect)}</span>
+                <span className={known ? recipe.effect < 0 ? 'is-sobering' : 'is-boozy' : 'is-unknown'}>
+                  {known ? effectLabel(recipe.effect) : '???'}
+                </span>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </section>
 
       <div className="sts-hint">
         {view.finished
           ? view.endReason === 'coma' ? 'Tu as dépassé la limite.' : 'La ligne s’est arrêtée.'
-          : 'Bois pour garder le bar en mouvement.'}
+          : 'Un miss ralentit la ligne. Chaque verre bu la relance.'}
       </div>
 
       {grabRecipe && grab && (
-        <div className={`sts-impact ${grabRecipe.effect < 0 ? 'is-sobering' : 'is-boozy'}`} key={`impact-${grab.token}`} aria-hidden="true">
+        <div className={`sts-impact ${grabRecipe.effect < 0 ? 'is-sobering' : grabRecipe.role === 'bomb' ? 'is-bomb' : 'is-boozy'}`} key={`impact-${grab.token}`} aria-hidden="true">
           <span>{grabRecipe.name}</span>
           <strong>{effectLabel(grabRecipe.effect)}</strong>
         </div>

@@ -14,6 +14,7 @@ export const gameRegistry: InstagameDefinition[] = [
     title: 'Train Fighter',
     description: 'Change de voie · équipe ton train · choisis tes bastons',
     author: 'MiniFugg',
+    status: 'beta',
     orientation: 'portrait',
     component: TrainFighter,
     instructions: {
@@ -48,6 +49,7 @@ export const gameRegistry: InstagameDefinition[] = [
     title: 'LineFugg',
     description: '3 traits · fais le plus gros score',
     author: 'MiniFugg',
+    status: 'fugg',
     orientation: 'portrait',
     component: LineFugg,
     instructions: {
@@ -80,6 +82,7 @@ export const gameRegistry: InstagameDefinition[] = [
     title: 'Shoot the Shooter',
     description: 'Bois, mémorise, tiens jusqu’au blackout',
     author: 'MiniFugg',
+    status: 'fugg',
     orientation: 'landscape',
     component: ShootTheShooter,
     instructions: {
@@ -113,6 +116,7 @@ export const gameRegistry: InstagameDefinition[] = [
     title: 'Les Brochettes de Vlad',
     description: 'Empale la commande · évite l’ail',
     author: 'MiniFugg',
+    status: 'beta',
     orientation: 'portrait',
     component: VladsSkewers,
     instructions: {
@@ -146,6 +150,7 @@ export const gameRegistry: InstagameDefinition[] = [
     title: 'HARI les dents pourries',
     description: 'Aligne les bonbons · pourris toute la mâchoire',
     author: 'MiniFugg',
+    status: 'trash',
     orientation: 'portrait',
     component: HariRottenTeeth,
     instructions: {
@@ -179,6 +184,7 @@ export const gameRegistry: InstagameDefinition[] = [
     title: 'Calc Drop',
     description: 'Complète des lignes · fabrique des calculs monstrueux',
     author: 'MiniFugg',
+    status: 'fugg',
     orientation: 'portrait',
     component: CalcDrop,
     instructions: {
@@ -212,6 +218,7 @@ export const gameRegistry: InstagameDefinition[] = [
     title: 'CrazyPapers',
     description: 'Monte en grade · trie 5 services · survis aux liasses',
     author: 'MiniFugg',
+    status: 'trash',
     orientation: 'portrait',
     component: CrazyPapers,
     instructions: {
@@ -247,6 +254,7 @@ export const gameRegistry: InstagameDefinition[] = [
     title: 'DebthOfLife',
     description: 'Cours ta vie · signe tes choix en sautant · meurs avec le meilleur bilan',
     author: 'MiniFugg',
+    status: 'beta',
     orientation: 'landscape',
     component: DebthOfLife,
     instructions: {

@@ -8,22 +8,46 @@ type GameFeedProps = {
 }
 
 const INITIAL_BATCHES = 4
+const GAME_QUERY_KEY = 'game'
+
+function requestedGameId() {
+  if (typeof window === 'undefined') return null
+  return new URL(window.location.href).searchParams.get(GAME_QUERY_KEY)?.trim() || null
+}
+
+function buildInitialSlots(games: InstagameDefinition[]) {
+  let all: RouletteSlot[] = []
+  let previous: string | undefined
+  for (let index = 0; index < INITIAL_BATCHES; index += 1) {
+    const batch = buildRouletteBatch(games, index, previous)
+    all = [...all, ...batch]
+    previous = batch.at(-1)?.game.id
+  }
+
+  const requested = requestedGameId()
+  if (!requested) return all
+  const requestedIndex = all.findIndex((slot) => slot.game.id === requested)
+  if (requestedIndex <= 0) return all
+
+  const selected = all[requestedIndex]
+  return [selected, ...all.slice(0, requestedIndex), ...all.slice(requestedIndex + 1)]
+}
+
+function updateGameUrl(game: InstagameDefinition) {
+  if (typeof window === 'undefined') return
+  const url = new URL(window.location.href)
+  if (url.searchParams.get(GAME_QUERY_KEY) !== game.id) {
+    url.searchParams.set(GAME_QUERY_KEY, game.id)
+    window.history.replaceState({ gameId: game.id }, '', url)
+  }
+  document.title = `${game.title} · MiniFugg`
+}
 
 export function GameFeed({ games }: GameFeedProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const batchCounter = useRef(0)
+  const batchCounter = useRef(INITIAL_BATCHES)
   const [activeIndex, setActiveIndex] = useState(0)
-  const [slots, setSlots] = useState<RouletteSlot[]>(() => {
-    let all: RouletteSlot[] = []
-    let previous: string | undefined
-    for (let index = 0; index < INITIAL_BATCHES; index += 1) {
-      const batch = buildRouletteBatch(games, index, previous)
-      all = [...all, ...batch]
-      previous = batch.at(-1)?.game.id
-    }
-    batchCounter.current = INITIAL_BATCHES
-    return all
-  })
+  const [slots, setSlots] = useState<RouletteSlot[]>(() => buildInitialSlots(games))
 
   const slotCount = slots.length
 
@@ -58,6 +82,11 @@ export function GameFeed({ games }: GameFeedProps) {
     root.querySelectorAll<HTMLElement>('[data-game-slot]').forEach((node) => observer.observe(node))
     return () => observer.disconnect()
   }, [slotCount])
+
+  useEffect(() => {
+    const activeGame = slots[activeIndex]?.game
+    if (activeGame) updateGameUrl(activeGame)
+  }, [activeIndex, slots])
 
   useEffect(() => {
     if (slots.length > 0 && activeIndex >= slots.length - Math.max(2, games.length)) appendBatch()

@@ -1,0 +1,100 @@
+/* Prompt 4: lower delivery lane + progressive impalement reactions. */
+
+/* The queue descends into the active client. The active card now sits inside
+   the vertical reach of the skewer tip on portrait phones. */
+.vlad-client-rail {
+  top: auto !important;
+  bottom: calc(var(--minifugg-core-bottom-reserved, 82px) + 70px);
+  transform: none !important;
+}
+
+.vlad-waiting-clients {
+  gap: 5px;
+}
+
+.vlad-client.is-waiting {
+  min-height: 52px;
+  padding: 5px 6px;
+}
+
+.vlad-active-row {
+  margin-top: 3px;
+}
+
+.vlad-client.is-active {
+  min-height: 112px;
+}
+
+/* Make the delivery state visually pull the skewer into the reachable card. */
+.vlad-client.is-active.is-ready {
+  animation: vlad-client-ready-low .58s ease-in-out infinite alternate;
+}
+
+@keyframes vlad-client-ready-low {
+  from { transform: translateX(0) scale(1); }
+  to { transform: translateX(-5px) scale(1.025); }
+}
+
+/* A second line gives the impaled ingredient its own tiny horror-movie voice. */
+.vlad-impact em {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 4;
+  min-width: 120px;
+  color: #fff3d6;
+  font-size: clamp(12px, 3.5cqw, 17px);
+  font-style: normal;
+  font-weight: 950;
+  letter-spacing: -.025em;
+  text-align: center;
+  white-space: nowrap;
+  -webkit-text-stroke: 1px rgba(37,16,11,.82);
+  paint-order: stroke fill;
+  text-shadow: 2px 2px 0 rgba(74,17,11,.78);
+  transform: translate(-50%, 2px) rotate(6deg);
+  animation: vlad-impact-cry .54s cubic-bezier(.12,.82,.16,1.15) both;
+}
+
+@keyframes vlad-impact-cry {
+  0% { opacity: 0; transform: translate(-50%, 6px) rotate(10deg) scale(.45); }
+  25% { opacity: 1; transform: translate(-50%, 16px) rotate(5deg) scale(1.12); }
+  72% { opacity: 1; transform: translate(-50%, 27px) rotate(2deg) scale(.96); }
+  100% { opacity: 0; transform: translate(-50%, 42px) rotate(-4deg) scale(.76); }
+}
+
+/* Keep the first seconds visually calmer too: no pulsing hint competing with the
+   sparse early ingredients. The hint disappears normally after first control. */
+.vlad-control-boundary > span {
+  animation-duration: 1.55s;
+}
+
+@container (max-height: 700px) {
+  .vlad-client-rail {
+    top: auto !important;
+    bottom: calc(var(--minifugg-core-bottom-reserved, 70px) + 54px);
+    width: clamp(102px, 25cqw, 122px);
+  }
+  .vlad-client.is-waiting {
+    min-height: 43px;
+    padding: 3px 5px;
+  }
+  .vlad-client.is-waiting .vlad-order {
+    display: none;
+  }
+  .vlad-client.is-active {
+    min-height: 98px;
+    padding-top: 7px;
+  }
+  .vlad-lost {
+    left: -37px;
+    font-size: 26px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vlad-impact em,
+  .vlad-client.is-active.is-ready {
+    animation: none;
+  }
+}

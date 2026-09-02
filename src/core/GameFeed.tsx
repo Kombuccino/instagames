@@ -206,7 +206,13 @@ export function GameFeed({ games }: GameFeedProps) {
   return (
     <main ref={containerRef} className="game-feed" aria-label="MiniFugg game feed">
       {slots.map((slot, index) => (
-        <section className="game-slot" data-game-slot data-index={index} key={slot.key}>
+        <section
+          className="game-slot"
+          data-game-slot
+          data-index={index}
+          data-curation-status={slot.game.status ?? 'fugg'}
+          key={slot.key}
+        >
           <GameRuntimeV2
             game={slot.game}
             catalog={games}

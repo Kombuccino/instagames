@@ -1,0 +1,89 @@
+.train-fighter__obstacle-warning {
+  position: absolute;
+  z-index: 24;
+  left: 50%;
+  bottom: calc(100% + var(--mf-gap-2));
+  width: clamp(184px, 70cqw, 284px);
+  padding: 8px 10px 9px;
+  transform: translateX(-50%);
+  border: 4px solid #252628;
+  background: #fff1c7;
+  box-shadow: 4px 4px 0 #91352f;
+  color: #252628;
+  text-align: center;
+  pointer-events: none;
+  image-rendering: pixelated;
+  animation:
+    train-fighter-obstacle-pop 160ms steps(2, end) both,
+    train-fighter-obstacle-shake 240ms steps(2, end) 160ms infinite alternate;
+}
+
+.train-fighter__obstacle-warning::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -14px;
+  width: 18px;
+  height: 18px;
+  transform: translateX(-50%) rotate(45deg);
+  border-right: 4px solid #252628;
+  border-bottom: 4px solid #252628;
+  background: #fff1c7;
+}
+
+.train-fighter__obstacle-warning span,
+.train-fighter__obstacle-warning b {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
+.train-fighter__obstacle-warning span {
+  margin-bottom: 3px;
+  color: #e65145;
+  font-size: var(--mf-text-sm);
+  font-weight: 1000;
+  line-height: 1;
+  letter-spacing: .035em;
+}
+
+.train-fighter__obstacle-warning b {
+  font-size: var(--mf-text-md);
+  font-weight: 1000;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+@keyframes train-fighter-obstacle-pop {
+  0% {
+    transform: translateX(-50%) scale(.72);
+  }
+  70% {
+    transform: translateX(-50%) scale(1.08);
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+@keyframes train-fighter-obstacle-shake {
+  from {
+    transform: translateX(calc(-50% - 2px)) rotate(-1deg);
+  }
+  to {
+    transform: translateX(calc(-50% + 2px)) rotate(1deg);
+  }
+}
+
+@media (max-width: 360px) {
+  .train-fighter__obstacle-warning {
+    width: clamp(170px, 68cqw, 230px);
+    padding-inline: 7px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .train-fighter__obstacle-warning {
+    animation: none;
+  }
+}

@@ -1,68 +1,135 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import type { GameComponentProps } from '../../core/types'
 import './CrazyPapers.css'
 
-type StampKind = 'approve' | 'reject' | 'archive'
-type DocumentTier = 'training' | 'service' | 'cryptic'
+type Sector = 'accounting' | 'civil' | 'planning'
+type CueKey = 'title' | 'color' | 'layout' | 'content' | 'mark'
+type FormKind = 'ledger' | 'certificate' | 'plan'
 
-type DocumentTemplate = {
+type DocumentModel = {
   key: string
+  sector: Sector
   title: string
-  department: string
-  stamp: StampKind
-  tier: DocumentTier
-  code?: string
+  form: FormKind
+  mark: string
+  fields: string[]
 }
 
-type WorkDocument = DocumentTemplate & {
+type WorkDocument = DocumentModel & {
   instanceId: number
-  returned?: boolean
-  correction?: boolean
+  cues: Record<CueKey, boolean>
+  returnedFrom?: Sector
 }
 
-const MAX_BACKLOG = 10
+const MAX_BACKLOG = 18
+const CUE_KEYS: CueKey[] = ['title', 'color', 'layout', 'content', 'mark']
 
-const STAMPS: Array<{ kind: StampKind; label: string; short: string }> = [
-  { kind: 'approve', label: 'VALIDÉ', short: 'V' },
-  { kind: 'reject', label: 'REFUSÉ', short: 'R' },
-  { kind: 'archive', label: 'ARCHIVÉ', short: 'A' },
+const SECTORS: Array<{ kind: Sector; label: string; short: string }> = [
+  { kind: 'accounting', label: 'COMPTABILITÉ', short: 'COMPTA' },
+  { kind: 'civil', label: 'ÉTAT CIVIL', short: 'CIVIL' },
+  { kind: 'planning', label: 'URBANISME', short: 'URBA' },
 ]
 
-const TRAINING_DOCUMENTS: DocumentTemplate[] = [
-  { key: 'permit', title: 'DEMANDE DE PERMIS', department: 'Autorisations', stamp: 'approve', tier: 'training' },
-  { key: 'renewal', title: 'RENOUVELLEMENT', department: 'Autorisations', stamp: 'approve', tier: 'training' },
-  { key: 'incomplete', title: 'DOSSIER INCOMPLET', department: 'Contrôle', stamp: 'reject', tier: 'training' },
-  { key: 'violation', title: "AVIS D'INFRACTION", department: 'Contrôle', stamp: 'reject', tier: 'training' },
-  { key: 'receipt', title: 'ACCUSÉ DE RÉCEPTION', department: 'Archives', stamp: 'archive', tier: 'training' },
-  { key: 'copy', title: 'COPIE CONFORME', department: 'Archives', stamp: 'archive', tier: 'training' },
+const DOCUMENT_MODELS: DocumentModel[] = [
+  {
+    key: 'invoice',
+    sector: 'accounting',
+    title: 'FACTURE FOURNISSEUR',
+    form: 'ledger',
+    mark: '€',
+    fields: ['HT 1 284,50 €', 'TVA 20 % 256,90 €', 'TOTAL 1 541,40 €', 'IBAN FR76 3000 4000'],
+  },
+  {
+    key: 'expenses',
+    sector: 'accounting',
+    title: 'NOTE DE FRAIS',
+    form: 'ledger',
+    mark: '€',
+    fields: ['REPAS 42,80 €', 'TRANSPORT 118,00 €', 'TOTAL 160,80 €', 'CENTRE DE COÛT 04'],
+  },
+  {
+    key: 'payment-order',
+    sector: 'accounting',
+    title: 'MANDAT DE PAIEMENT',
+    form: 'ledger',
+    mark: '€',
+    fields: ['CRÉANCIER 00481', 'BUDGET 615-22', 'MONTANT 3 840,00 €', 'ÉCHÉANCE 30 JOURS'],
+  },
+  {
+    key: 'refund',
+    sector: 'accounting',
+    title: 'AVOIR / REMBOURSEMENT',
+    form: 'ledger',
+    mark: '€',
+    fields: ['RÉF. FACTURE 88-17', 'TROP-PERÇU 284,20 €', 'NET À RENDRE 236,84 €', 'TVA 47,36 €'],
+  },
+  {
+    key: 'birth',
+    sector: 'civil',
+    title: 'ACTE DE NAISSANCE',
+    form: 'certificate',
+    mark: '✦',
+    fields: ['NOM MARTIN', 'PRÉNOM LÉA', 'NÉ(E) LE 14 / 06 / 1998', 'COMMUNE SAINT-ROCH'],
+  },
+  {
+    key: 'marriage',
+    sector: 'civil',
+    title: 'ACTE DE MARIAGE',
+    form: 'certificate',
+    mark: '✦',
+    fields: ['ÉPOUX DURAND / SIMON', 'DATE 22 / 08 / 2024', 'TÉMOINS 2', 'OFFICIER D’ÉTAT CIVIL'],
+  },
+  {
+    key: 'death',
+    sector: 'civil',
+    title: 'ACTE DE DÉCÈS',
+    form: 'certificate',
+    mark: '✦',
+    fields: ['NOM BERNARD', 'DATE 03 / 11 / 2025', 'HEURE 06 : 42', 'COMMUNE VILLE-BASSE'],
+  },
+  {
+    key: 'family-record',
+    sector: 'civil',
+    title: 'EXTRAIT DE LIVRET DE FAMILLE',
+    form: 'certificate',
+    mark: '✦',
+    fields: ['FOYER MOREAU', 'PARENT 1 / PARENT 2', 'ENFANT 1 / ENFANT 2', 'COPIE CERTIFIÉE'],
+  },
+  {
+    key: 'building-permit',
+    sector: 'planning',
+    title: 'PERMIS DE CONSTRUIRE',
+    form: 'plan',
+    mark: '⌂',
+    fields: ['PARCELLE AB 314', 'SURFACE 148 m²', 'HAUTEUR 7,40 m', 'RUE DES TILLEULS 12'],
+  },
+  {
+    key: 'works',
+    sector: 'planning',
+    title: 'DÉCLARATION PRÉALABLE DE TRAVAUX',
+    form: 'plan',
+    mark: '⌂',
+    fields: ['FAÇADE NORD', 'OUVERTURE 120 × 90 cm', 'PARCELLE F 22', 'ZONE UA-3'],
+  },
+  {
+    key: 'cadastre',
+    sector: 'planning',
+    title: 'RELEVÉ CADASTRAL',
+    form: 'plan',
+    mark: '⌂',
+    fields: ['SECTION C', 'PARCELLE 0087', 'CONTENANCE 05 a 42 ca', 'LIMITE VOIR PLAN'],
+  },
+  {
+    key: 'planning-certificate',
+    sector: 'planning',
+    title: 'CERTIFICAT D’URBANISME',
+    form: 'plan',
+    mark: '⌂',
+    fields: ['TERRAIN 62 RUE HAUTE', 'ZONE UB', 'EMPRISE MAX 40 %', 'RÉSEAUX OUI / NON'],
+  },
 ]
 
-const SERVICE_DOCUMENTS: DocumentTemplate[] = [
-  { key: 'terrace', title: 'OCCUPATION TEMPORAIRE DE VOIRIE', department: 'Bureau 4', stamp: 'approve', tier: 'service' },
-  { key: 'chimney', title: 'DÉCLARATION DE CONDUIT EXTÉRIEUR', department: 'Bureau 4', stamp: 'approve', tier: 'service' },
-  { key: 'missing-bis', title: 'ANNEXE MANQUANTE — DOSSIER BIS', department: 'Bureau 9', stamp: 'reject', tier: 'service' },
-  { key: 'signature', title: 'SIGNATURE NON CONCORDANTE', department: 'Bureau 9', stamp: 'reject', tier: 'service' },
-  { key: 'minutes', title: 'PROCÈS-VERBAL DE TRANSMISSION', department: 'Sous-sol C', stamp: 'archive', tier: 'service' },
-  { key: 'duplicate', title: 'DUPLICATA CERTIFIÉ', department: 'Sous-sol C', stamp: 'archive', tier: 'service' },
-]
-
-const CRYPTIC_DOCUMENTS: DocumentTemplate[] = [
-  { key: 'b17', title: 'FORMULAIRE B-17/4', department: 'Section K', stamp: 'approve', tier: 'cryptic', code: '47-21-08' },
-  { key: 'omega', title: 'ANNEXE Ω-6', department: 'Section K', stamp: 'approve', tier: 'cryptic', code: '06-41-88' },
-  { key: 'cerfa', title: 'CERFA 88-K TER', department: 'Section N', stamp: 'reject', tier: 'cryptic', code: '19-00-13' },
-  { key: 'r31', title: 'DOSSIER R/31', department: 'Section N', stamp: 'reject', tier: 'cryptic', code: '31-31-04' },
-  { key: 'pvx', title: 'PV-XIII / FEUILLET 2', department: 'Dépôt 0', stamp: 'archive', tier: 'cryptic', code: '72-05-44' },
-  { key: 'lila', title: 'REGISTRE LILA-9', department: 'Dépôt 0', stamp: 'archive', tier: 'cryptic', code: '09-62-10' },
-]
-
-const BOSS_LINES = [
-  'VOUS APPELEZ ÇA UN TAMPON ?!',
-  'REPRENEZ CE DOSSIER DEPUIS LE DÉBUT !',
-  'LE MINISTÈRE N’EST PAS UNE KERMESSE !',
-  'ENCORE UNE ERREUR ET JE FAIS UN RAPPORT !',
-  'FORMULAIRE. TAMPON. BON FORMULAIRE. BON TAMPON.',
-  'MAGNIFIQUE. DEUX DOSSIERS DE PLUS À CAUSE DE VOUS.',
-]
+const GENERIC_LINES = ['RÉF. ____________', 'DOSSIER ____________', 'DATE ____ / ____ / ____', 'SIGNATURE ____________']
 
 function mulberry32(seed: number) {
   let state = seed >>> 0
@@ -75,50 +142,143 @@ function mulberry32(seed: number) {
   }
 }
 
-function phaseFor(processed: number): DocumentTier {
-  if (processed < 7) return 'training'
-  if (processed < 18) return 'service'
-  return 'cryptic'
+function sectorLabel(sector: Sector) {
+  return SECTORS.find((item) => item.kind === sector)?.label ?? sector
+}
+
+function cueCountFor(processed: number) {
+  if (processed < 5) return 5
+  if (processed < 12) return 4
+  if (processed < 22) return 3
+  if (processed < 34) return 2
+  return 1
 }
 
 function phaseLabel(processed: number) {
-  const phase = phaseFor(processed)
-  if (phase === 'training') return 'FORMATION'
-  if (phase === 'service') return 'SERVICE OUVERT'
-  return 'PROCÉDURE 9-B'
+  const cues = cueCountFor(processed)
+  if (cues === 5) return 'DOSSIERS COMPLETS'
+  if (cues >= 3) return `${cues} INDICES PAR DOSSIER`
+  if (cues === 2) return 'DOSSIERS INCOMPLETS'
+  return 'UN SEUL INDICE'
 }
 
-function poolFor(processed: number) {
-  const phase = phaseFor(processed)
-  if (phase === 'training') return TRAINING_DOCUMENTS
-  if (phase === 'service') return SERVICE_DOCUMENTS
-  return CRYPTIC_DOCUMENTS
+function makeCueSet(count: number, random: () => number): Record<CueKey, boolean> {
+  const shuffled = [...CUE_KEYS]
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swap = Math.floor(random() * (index + 1))
+    ;[shuffled[index], shuffled[swap]] = [shuffled[swap], shuffled[index]]
+  }
+  const visible = new Set(shuffled.slice(0, Math.max(1, Math.min(5, count))))
+  return {
+    title: visible.has('title'),
+    color: visible.has('color'),
+    layout: visible.has('layout'),
+    content: visible.has('content'),
+    mark: visible.has('mark'),
+  }
 }
 
-function stampLabel(kind: StampKind) {
-  return STAMPS.find((stamp) => stamp.kind === kind)?.label ?? kind
+function renderPile(count: number, key: string) {
+  return (
+    <div className={`crazy-papers-pile pile-${key}`} aria-hidden="true">
+      <div className="crazy-papers-pile-tray" />
+      {Array.from({ length: count }, (_, index) => (
+        <i
+          key={index}
+          className="crazy-papers-pile-sheet"
+          style={{ '--sheet': index } as CSSProperties}
+        />
+      ))}
+    </div>
+  )
+}
+
+function DocumentCard({ document, className = '' }: { document: WorkDocument; className?: string }) {
+  const shownForm = document.cues.layout ? document.form : 'generic'
+  const title = document.cues.title ? document.title : `FORMULAIRE N° ${String(document.instanceId).padStart(5, '0')}`
+  const fields = document.cues.content ? document.fields : GENERIC_LINES
+
+  return (
+    <article
+      className={`crazy-papers-paper crazy-papers-paper-active ${document.cues.color ? `paper-${document.sector}` : 'paper-neutral'} form-${shownForm} ${className}`}
+    >
+      <div className="crazy-papers-paper-topline">
+        <span>RÉPUBLIQUE ADMINISTRATIVE</span>
+        <b>N° {String(document.instanceId).padStart(5, '0')}</b>
+      </div>
+
+      {document.cues.mark && <div className={`crazy-papers-sector-mark mark-${document.sector}`}>{document.mark}</div>}
+
+      <h2>{title}</h2>
+
+      <div className={`crazy-papers-document-form form-visual-${shownForm}`} aria-hidden={!document.cues.layout}>
+        {shownForm === 'ledger' && (
+          <div className="crazy-papers-ledger-head"><i /><i /><i /></div>
+        )}
+        {shownForm === 'certificate' && (
+          <div className="crazy-papers-certificate-seal">✦</div>
+        )}
+        {shownForm === 'plan' && (
+          <div className="crazy-papers-mini-plan"><i /><i /><i /><i /></div>
+        )}
+
+        <div className="crazy-papers-fields">
+          {fields.map((field, index) => <p key={`${field}-${index}`}>{field}</p>)}
+        </div>
+      </div>
+
+      <div className="crazy-papers-signature">SIGNATURE __________________</div>
+
+      {document.returnedFrom && (
+        <div className="crazy-papers-return-stamp">
+          <strong>MAUVAIS SERVICE</strong>
+          <span>RETOUR DE {sectorLabel(document.returnedFrom)}</span>
+        </div>
+      )}
+    </article>
+  )
 }
 
 export function CrazyPapers({ active, seed, restartToken, session }: GameComponentProps) {
   const randomRef = useRef(mulberry32(seed || 1))
   const idRef = useRef(1)
   const finishedRef = useRef(false)
+  const motionTimersRef = useRef<number[]>([])
   const [queue, setQueue] = useState<WorkDocument[]>([])
   const [processed, setProcessed] = useState(0)
   const [mistakes, setMistakes] = useState(0)
   const [streak, setStreak] = useState(0)
   const [scoldTicks, setScoldTicks] = useState(0)
-  const [bossLine, setBossLine] = useState(BOSS_LINES[0])
-  const [lastCorrect, setLastCorrect] = useState<StampKind | null>(null)
+  const [bossLine, setBossLine] = useState('TRIEZ. VITE. ET AU BON SERVICE.')
+  const [lastCorrect, setLastCorrect] = useState<Sector | null>(null)
+  const [departing, setDeparting] = useState<WorkDocument | null>(null)
+  const [returning, setReturning] = useState<WorkDocument | null>(null)
   const [isOver, setIsOver] = useState(false)
 
+  const clearMotionTimers = useCallback(() => {
+    motionTimersRef.current.forEach((timer) => window.clearTimeout(timer))
+    motionTimersRef.current = []
+  }, [])
+
+  const schedule = useCallback((callback: () => void, delay: number) => {
+    const timer = window.setTimeout(() => {
+      motionTimersRef.current = motionTimersRef.current.filter((value) => value !== timer)
+      callback()
+    }, delay)
+    motionTimersRef.current.push(timer)
+  }, [])
+
   const makeDocument = useCallback((progress: number): WorkDocument => {
-    const pool = poolFor(progress)
-    const template = pool[Math.floor(randomRef.current() * pool.length)]
-    return { ...template, instanceId: idRef.current++ }
+    const model = DOCUMENT_MODELS[Math.floor(randomRef.current() * DOCUMENT_MODELS.length)]
+    return {
+      ...model,
+      instanceId: idRef.current++,
+      cues: makeCueSet(cueCountFor(progress), randomRef.current),
+    }
   }, [])
 
   const reset = useCallback(() => {
+    clearMotionTimers()
     randomRef.current = mulberry32((seed || 1) + restartToken * 9973)
     idRef.current = 1
     finishedRef.current = false
@@ -126,16 +286,18 @@ export function CrazyPapers({ active, seed, restartToken, session }: GameCompone
     setMistakes(0)
     setStreak(0)
     setScoldTicks(0)
-    setBossLine(BOSS_LINES[0])
+    setBossLine('TRIEZ. VITE. ET AU BON SERVICE.')
     setLastCorrect(null)
+    setDeparting(null)
+    setReturning(null)
     setIsOver(false)
-    const initial = Array.from({ length: 3 }, () => makeDocument(0))
-    setQueue(initial)
-  }, [makeDocument, restartToken, seed])
+    setQueue(Array.from({ length: 7 }, () => makeDocument(0)))
+  }, [clearMotionTimers, makeDocument, restartToken, seed])
 
   useEffect(() => {
     reset()
-  }, [reset])
+    return clearMotionTimers
+  }, [clearMotionTimers, reset])
 
   useEffect(() => {
     session.setScore(processed)
@@ -143,14 +305,10 @@ export function CrazyPapers({ active, seed, restartToken, session }: GameCompone
 
   useEffect(() => {
     if (!active || isOver) return
-    const delay = queue.length === 0
-      ? 180
-      : Math.max(850, 3000 - processed * 82)
-
+    const delay = Math.max(820, 3300 - processed * 70)
     const timeout = window.setTimeout(() => {
       setQueue((current) => [...current, makeDocument(processed)])
     }, delay)
-
     return () => window.clearTimeout(timeout)
   }, [active, isOver, makeDocument, processed, queue.length])
 
@@ -158,7 +316,7 @@ export function CrazyPapers({ active, seed, restartToken, session }: GameCompone
     if (!active || scoldTicks <= 0) return
     const timeout = window.setTimeout(() => {
       setScoldTicks((ticks) => Math.max(0, ticks - 1))
-    }, 260)
+    }, 220)
     return () => window.clearTimeout(timeout)
   }, [active, scoldTicks])
 
@@ -170,130 +328,121 @@ export function CrazyPapers({ active, seed, restartToken, session }: GameCompone
       score: processed,
       metadata: {
         mistakes,
-        bestStreak: streak,
-        phase: phaseFor(processed),
+        streak,
+        cues: cueCountFor(processed),
       },
     })
   }, [mistakes, processed, queue.length, session, streak])
 
   const activeDocument = queue[0]
-  const phase = phaseFor(processed)
-  const workload = Math.min(100, (queue.length / MAX_BACKLOG) * 100)
+  const backlogDocuments = queue.slice(1)
+  const piles = useMemo(() => {
+    const counts = [0, 0, 0]
+    backlogDocuments.forEach((_, index) => {
+      counts[index % 3] += 1
+    })
+    return counts
+  }, [backlogDocuments])
 
-  const handleStamp = useCallback((kind: StampKind) => {
-    if (!active || isOver || scoldTicks > 0) return
+  const handleStamp = useCallback((sector: Sector) => {
+    if (!active || isOver || scoldTicks > 0 || departing || returning) return
     const document = queue[0]
     if (!document) return
 
-    if (kind === document.stamp) {
-      setQueue((current) => current.slice(1))
+    setQueue((current) => current.slice(1))
+    setDeparting(document)
+    schedule(() => setDeparting(null), 260)
+
+    if (sector === document.sector) {
       setProcessed((value) => value + 1)
       setStreak((value) => value + 1)
-      setLastCorrect(kind)
-      window.setTimeout(() => setLastCorrect(null), 140)
+      setLastCorrect(sector)
+      schedule(() => setLastCorrect(null), 150)
       return
     }
 
     const returnedDocument: WorkDocument = {
       ...document,
-      returned: true,
-      instanceId: idRef.current++,
-    }
-    const correctionDocument: WorkDocument = {
-      ...document,
-      title: `COPIE RECTIFICATIVE — ${document.title}`,
-      department: 'Bureau du supérieur',
-      returned: true,
-      correction: true,
-      instanceId: idRef.current++,
+      returnedFrom: sector,
     }
 
-    setQueue((current) => [...current.slice(1), returnedDocument, correctionDocument])
     setMistakes((value) => value + 1)
     setStreak(0)
-    setBossLine(BOSS_LINES[Math.floor(randomRef.current() * BOSS_LINES.length)])
-    setScoldTicks(6)
-  }, [active, isOver, queue, scoldTicks])
+    setBossLine(`NON ! PAS ${sectorLabel(sector)} — CE DOSSIER VA À ${sectorLabel(document.sector)} !`)
+    setScoldTicks(5)
+
+    schedule(() => {
+      setQueue((current) => [...current, makeDocument(processed)])
+    }, 190)
+
+    schedule(() => {
+      setReturning(returnedDocument)
+    }, 330)
+
+    schedule(() => {
+      setReturning(null)
+      setQueue((current) => [returnedDocument, ...current])
+    }, 720)
+  }, [active, departing, isOver, makeDocument, processed, queue, returning, schedule, scoldTicks])
 
   useEffect(() => {
     if (!active || isOver) return
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.repeat) return
-      if (event.key === '1') handleStamp('approve')
-      if (event.key === '2') handleStamp('reject')
-      if (event.key === '3') handleStamp('archive')
+      if (event.key === '1') handleStamp('accounting')
+      if (event.key === '2') handleStamp('civil')
+      if (event.key === '3') handleStamp('planning')
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [active, handleStamp, isOver])
 
-  const stack = useMemo(() => queue.slice(1, 5), [queue])
-
   return (
     <div className="crazy-papers-game">
       <div className="crazy-papers-wall" aria-hidden="true" />
+
       <div className="mf-game-layout crazy-papers-layout">
         <header className="mf-game-hud crazy-papers-hud">
           <div className="crazy-papers-status">
-            <span>GUICHET 13</span>
+            <span>GUICHET DE TRI 13</span>
             <strong>{phaseLabel(processed)}</strong>
           </div>
-          <div className="crazy-papers-workload" aria-label={`Pile de travail ${queue.length} sur ${MAX_BACKLOG}`}>
-            <div className="crazy-papers-workload-row">
-              <span>PILE</span>
-              <b>{queue.length}/{MAX_BACKLOG}</b>
-            </div>
-            <div className="crazy-papers-workload-track">
-              <i style={{ width: `${workload}%` }} />
-            </div>
+          <div className="crazy-papers-cue-note">
+            <b>{cueCountFor(processed)}</b>
+            <span>INDICE{cueCountFor(processed) > 1 ? 'S' : ''}</span>
           </div>
         </header>
 
         <main className="mf-game-stage crazy-papers-stage">
           <div className="crazy-papers-desk">
-            <div className="crazy-papers-inbox-label">À TRAITER</div>
-            <div className="crazy-papers-paper-stack" aria-live="polite">
-              {stack.map((document) => (
-                <div
-                  className="crazy-papers-paper crazy-papers-paper-back"
-                  key={document.instanceId}
-                  aria-hidden="true"
-                />
-              ))}
+            <div className="crazy-papers-inbox-label">ARRIVÉE</div>
+            <div className="crazy-papers-outbox-label">DÉPART →</div>
 
+            <div className="crazy-papers-backlog" aria-label={`${backlogDocuments.length} documents visibles sur le bureau`}>
+              {renderPile(piles[0], 'left')}
+              {renderPile(piles[1], 'middle')}
+              {renderPile(piles[2], 'right')}
+            </div>
+
+            <div className="crazy-papers-active-slot" aria-live="polite">
               {activeDocument ? (
-                <article className={`crazy-papers-paper crazy-papers-paper-active tier-${phase}`}>
-                  <div className="crazy-papers-paper-topline">
-                    <span>RÉPUBLIQUE ADMINISTRATIVE</span>
-                    <b>N° {String(activeDocument.instanceId).padStart(5, '0')}</b>
-                  </div>
-                  <div className="crazy-papers-seal" aria-hidden="true">◆</div>
-                  <p className="crazy-papers-department">{activeDocument.department}</p>
-                  <h2>{activeDocument.title}</h2>
-                  {activeDocument.code && <p className="crazy-papers-code">RÉF. {activeDocument.code}</p>}
-
-                  {phase === 'training' && !activeDocument.returned && (
-                    <div className={`crazy-papers-training-hint stamp-${activeDocument.stamp}`}>
-                      DESTINATION : {stampLabel(activeDocument.stamp)}
-                    </div>
-                  )}
-
-                  <div className="crazy-papers-form-lines" aria-hidden="true">
-                    <i /><i /><i /><i />
-                  </div>
-                  <div className="crazy-papers-signature">X ________________</div>
-
-                  {activeDocument.returned && (
-                    <div className="crazy-papers-return-stamp">
-                      <strong>MAUVAIS TAMPON</strong>
-                      <span>{activeDocument.correction ? 'COPIE EXIGÉE' : 'À REVOIR'}</span>
-                    </div>
-                  )}
-                </article>
+                <DocumentCard document={activeDocument} />
               ) : (
-                <div className="crazy-papers-empty">PROCHAINE LIASSE…</div>
+                <div className="crazy-papers-empty">PLUS RIEN… POUR L’INSTANT.</div>
               )}
             </div>
+
+            {departing && (
+              <div className="crazy-papers-flight crazy-papers-flight-out" aria-hidden="true">
+                <DocumentCard document={departing} />
+              </div>
+            )}
+
+            {returning && (
+              <div className="crazy-papers-flight crazy-papers-flight-return" aria-hidden="true">
+                <DocumentCard document={returning} />
+              </div>
+            )}
           </div>
 
           {scoldTicks > 0 && (
@@ -308,17 +457,17 @@ export function CrazyPapers({ active, seed, restartToken, session }: GameCompone
 
         <footer className="mf-game-controls crazy-papers-controls">
           <div className="crazy-papers-stamp-row">
-            {STAMPS.map((stamp, index) => (
+            {SECTORS.map((sector, index) => (
               <button
-                key={stamp.kind}
+                key={sector.kind}
                 type="button"
-                className={`crazy-papers-stamp stamp-${stamp.kind} ${lastCorrect === stamp.kind ? 'is-hit' : ''}`}
-                onClick={() => handleStamp(stamp.kind)}
-                disabled={!activeDocument || scoldTicks > 0 || isOver}
-                aria-label={`Tampon ${stamp.label}. Touche ${index + 1}`}
+                className={`crazy-papers-stamp sector-${sector.kind} ${lastCorrect === sector.kind ? 'is-hit' : ''}`}
+                onClick={() => handleStamp(sector.kind)}
+                disabled={!activeDocument || scoldTicks > 0 || isOver || Boolean(departing) || Boolean(returning)}
+                aria-label={`Envoyer à ${sector.label}. Touche ${index + 1}`}
               >
                 <span className="crazy-papers-stamp-handle" aria-hidden="true" />
-                <strong>{stamp.label}</strong>
+                <strong>{sector.label}</strong>
                 <small>{index + 1}</small>
               </button>
             ))}

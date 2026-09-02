@@ -1,1 +1,1 @@
-export { VladsSkewers } from './VladsSkewersV5'
+export { VladsSkewers } from './VladsSkewersV6'

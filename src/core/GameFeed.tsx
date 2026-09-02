@@ -35,17 +35,23 @@ function buildInitialSlots(games: InstagameDefinition[]) {
 
 function updateGameUrl(game: InstagameDefinition) {
   if (typeof window === 'undefined') return
+
   const url = new URL(window.location.href)
-  if (url.searchParams.get(GAME_QUERY_KEY) !== game.id) {
-    url.searchParams.set(GAME_QUERY_KEY, game.id)
-    window.history.replaceState({ gameId: game.id }, '', url)
+  url.searchParams.set(GAME_QUERY_KEY, game.id)
+
+  const nextUrl = `${url.pathname}${url.search}${url.hash}`
+  const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`
+  if (currentUrl !== nextUrl) {
+    window.history.replaceState({ ...(window.history.state ?? {}), gameId: game.id }, '', nextUrl)
   }
+
   document.title = `${game.title} · MiniFugg`
 }
 
 export function GameFeed({ games }: GameFeedProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const batchCounter = useRef(INITIAL_BATCHES)
+  const scrollFrame = useRef<number | null>(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const [slots, setSlots] = useState<RouletteSlot[]>(() => buildInitialSlots(games))
 
@@ -60,28 +66,53 @@ export function GameFeed({ games }: GameFeedProps) {
     })
   }, [games])
 
+  const syncActiveGameFromScroll = useCallback(() => {
+    const root = containerRef.current
+    if (!root) return
+
+    const nodes = Array.from(root.querySelectorAll<HTMLElement>('[data-game-slot]'))
+    if (nodes.length === 0) return
+
+    const rootRect = root.getBoundingClientRect()
+    const centerY = rootRect.top + rootRect.height / 2
+
+    let bestIndex = 0
+    let bestDistance = Number.POSITIVE_INFINITY
+    for (const node of nodes) {
+      const rect = node.getBoundingClientRect()
+      const distance = Math.abs((rect.top + rect.bottom) / 2 - centerY)
+      if (distance < bestDistance) {
+        bestDistance = distance
+        bestIndex = Number(node.dataset.index) || 0
+      }
+    }
+
+    setActiveIndex((current) => current === bestIndex ? current : bestIndex)
+    const activeGame = slots[bestIndex]?.game
+    if (activeGame) updateGameUrl(activeGame)
+  }, [slots])
+
   useEffect(() => {
     const root = containerRef.current
     if (!root) return
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        let best: IntersectionObserverEntry | undefined
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue
-          if (!best || entry.intersectionRatio > best.intersectionRatio) best = entry
-        }
-        if (!best) return
-        const index = Number((best.target as HTMLElement).dataset.index)
-        if (Number.isNaN(index)) return
-        setActiveIndex(index)
-      },
-      { root, threshold: [0.55, 0.75, 0.95] },
-    )
+    const onScroll = () => {
+      if (scrollFrame.current !== null) window.cancelAnimationFrame(scrollFrame.current)
+      scrollFrame.current = window.requestAnimationFrame(() => {
+        scrollFrame.current = null
+        syncActiveGameFromScroll()
+      })
+    }
 
-    root.querySelectorAll<HTMLElement>('[data-game-slot]').forEach((node) => observer.observe(node))
-    return () => observer.disconnect()
-  }, [slotCount])
+    root.addEventListener('scroll', onScroll, { passive: true })
+    syncActiveGameFromScroll()
+
+    return () => {
+      root.removeEventListener('scroll', onScroll)
+      if (scrollFrame.current !== null) window.cancelAnimationFrame(scrollFrame.current)
+      scrollFrame.current = null
+    }
+  }, [slotCount, syncActiveGameFromScroll])
 
   useEffect(() => {
     const activeGame = slots[activeIndex]?.game

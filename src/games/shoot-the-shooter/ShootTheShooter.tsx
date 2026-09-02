@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, 
 import type { GameComponentProps } from '../../core/types'
 import './ShootTheShooter.css'
 import './ShootTheShooter.mobile-fix.css'
+import './ShootTheShooter.landscape.css'
 
 type GlassType = 'classic' | 'tapered' | 'tall' | 'heavy' | 'flared' | 'mini'
 type LiquidPattern = 'solid' | 'gradient' | 'layered'
@@ -30,40 +31,40 @@ type Shooter = {
   x: number
 }
 
-type EndReason = 'coma' | 'last-call' | 'misses'
+type EndReason = 'coma' | 'misses' | 'last-call'
 
 type World = {
+  recipes: Recipe[]
+  recipeById: Map<number, Recipe>
   shooters: Shooter[]
-  nextShooterId: number
+  discovered: Set<number>
   score: number
   alcohol: number
   peakAlcohol: number
-  speed: number
-  idleSeconds: number
   misses: number
-  discovered: Set<number>
-  lastRecipeId: number | null
+  speed: number
+  elapsed: number
+  idleSeconds: number
+  spawnDistance: number
+  nextShooterId: number
+  aimX: number
   finished: boolean
   endReason: EndReason | null
-  soberingCooldown: number
-  aimX: number
-  aimTargetX: number
-  aimTimer: number
+  lastRecipeId: number | null
   random: () => number
 }
 
-type RenderState = {
+type View = {
   shooters: Shooter[]
+  discovered: number[]
   score: number
   alcohol: number
-  peakAlcohol: number
-  speed: number
   misses: number
-  discovered: number[]
-  lastRecipeId: number | null
+  speed: number
+  aimX: number
   finished: boolean
   endReason: EndReason | null
-  aimX: number
+  lastRecipeId: number | null
 }
 
 type GrabState = {
@@ -72,43 +73,47 @@ type GrabState = {
   x: number
 }
 
-const BASE_AIM_X = 76
-const MOBILE_HIT_RADIUS_PX = 34
-const DESKTOP_HIT_RADIUS_PX = 30
-const CRUISE_SPEED = 10.5
-const MAX_SPEED = 13.8
-const SPEED_BOOST = 0.62
-const IDLE_GRACE_SECONDS = 2.8
-const IDLE_FRICTION_PER_SECOND = 1.05
 const MAX_MISSES = 3
+const START_SPEED = 14
+const CRUISE_SPEED = 19
+const MAX_SPEED = 31
+const SPEED_BOOST = 1.8
+const IDLE_SLOW_AFTER = 4.5
+const IDLE_END_AFTER = 12
+const DRINK_RANGE = 6.6
+const SHOOTER_WIDTH = 8.2
+const BASE_AIM_X = 83
 
-const glassTypes: GlassType[] = ['classic', 'tapered', 'tall', 'heavy', 'flared', 'mini']
-
-const liquids: LiquidStyle[] = [
-  { a: '#ff285f', b: '#ff285f', angle: 180, pattern: 'solid' },
-  { a: '#6a35ff', b: '#ff4fd8', angle: 145, pattern: 'gradient' },
-  { a: '#00e5ff', b: '#1565ff', angle: 180, pattern: 'gradient' },
-  { a: '#b6ff3b', b: '#22d8a0', angle: 160, pattern: 'gradient' },
-  { a: '#ffdd38', b: '#ff722e', angle: 180, pattern: 'gradient' },
-  { a: '#ff8ad8', b: '#fff0f8', angle: 180, pattern: 'layered' },
-  { a: '#171a2a', b: '#7650ff', angle: 180, pattern: 'layered' },
-  { a: '#33f0c0', b: '#f2ff76', angle: 180, pattern: 'layered' },
-  { a: '#ff375f', b: '#ffb13b', angle: 135, pattern: 'gradient' },
-  { a: '#f6f2ff', b: '#8f7dff', angle: 180, pattern: 'gradient' },
-  { a: '#00c3a5', b: '#00c3a5', angle: 180, pattern: 'solid' },
-  { a: '#ff5b30', b: '#ff5b30', angle: 180, pattern: 'solid' },
-  { a: '#2b2dff', b: '#26f7e8', angle: 150, pattern: 'gradient' },
-  { a: '#ff2ca3', b: '#772cff', angle: 150, pattern: 'gradient' },
+const GLASSES: GlassType[] = ['classic', 'tapered', 'tall', 'heavy', 'flared', 'mini']
+const NAMES = [
+  'Velours Rouge',
+  'Larme du Patron',
+  'Pétrole Doux',
+  'Baiser Froid',
+  'Dernier Métro',
+  'Petit Jésus',
+  'Marteau Rose',
+  'Dent de Requin',
+  'Mauvaise Idée',
+  'Lendemain 8h',
+  'Tonton Gérard',
+  'Sortie de Route',
+  'Eau Bénite',
+  'Lune Noire',
+  'Feu Follet',
 ]
 
-const nameStarts = [
-  'Turbo', 'Disco', 'Liquid', 'Holy', 'Dirty', 'Midnight', 'Neon', 'Royal', 'Atomic', 'Velvet',
-  'Illegal', 'Sunday', 'Uncle', 'Doctor', 'Electric', 'Tiny', 'Grandma’s', 'Belgian', 'Broken', 'Lucky',
-]
-
-const nameEnds = [
-  'Regret', 'Goblin', 'Divorce', 'Toothpaste', 'Mistake', 'Tractor', 'Redemption', 'Comet', 'Disaster', 'Panic',
-  'Miracle', 'Bad Idea', 'Hangover', 'Penguin', 'Elevator', 'Meteor', 'Bandit', 'Confession', 'Shortcut', 'Afterparty',
+const COLORS = [
+  ['#f83a63', '#ff9c3b'],
+  ['#5d2eff', '#e537ff'],
+  ['#16c99a', '#8affbd'],
+  ['#f7c844', '#ff6f2f'],
+  ['#29b6f6', '#1858d9'],
+  ['#ff77bd', '#ff355e'],
+  ['#d8d2ff', '#8e77ff'],
+  ['#b26932', '#f0a24b'],
+  ['#6ce1ff', '#ef82ff'],
+  ['#f0f2ee', '#b6d8c3'],
 ]
 
 function mulberry32(seed: number) {
@@ -122,140 +127,131 @@ function mulberry32(seed: number) {
   }
 }
 
-function pickInt(random: () => number, min: number, max: number) {
-  return min + Math.floor(random() * (max - min + 1))
+function pick<T>(random: () => number, values: readonly T[]) {
+  return values[Math.floor(random() * values.length)]
 }
 
-function shuffle<T>(items: T[], random: () => number) {
-  const copy = [...items]
-  for (let index = copy.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(random() * (index + 1))
-    ;[copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]]
+function shuffle<T>(random: () => number, values: T[]) {
+  const next = [...values]
+  for (let index = next.length - 1; index > 0; index -= 1) {
+    const target = Math.floor(random() * (index + 1))
+    ;[next[index], next[target]] = [next[target], next[index]]
   }
-  return copy
+  return next
 }
 
-function liquidStyle(liquid: LiquidStyle) {
+function makeLiquid(random: () => number): LiquidStyle {
+  const pair = pick(random, COLORS)
+  const pattern = pick(random, ['solid', 'gradient', 'layered'] as const)
   return {
-    '--liquid-a': liquid.a,
-    '--liquid-b': liquid.b,
-    '--liquid-angle': `${liquid.angle}deg`,
-  } as CSSProperties
-}
-
-function createRecipes(seed: number) {
-  const random = mulberry32(seed || 1)
-  const selectedGlasses = shuffle(glassTypes, random).slice(0, 5)
-  const selectedLiquids = shuffle(liquids, random).slice(0, 5)
-  const roles = shuffle<RecipeRole>(['mild', 'mild', 'mild', 'sobering', 'bomb'], random)
-  const usedNames = new Set<string>()
-
-  return selectedGlasses.map((glass, index): Recipe => {
-    let name = ''
-    for (let attempt = 0; attempt < 10; attempt += 1) {
-      name = `${nameStarts[Math.floor(random() * nameStarts.length)]} ${nameEnds[Math.floor(random() * nameEnds.length)]}`
-      if (!usedNames.has(name)) break
-    }
-    if (usedNames.has(name)) name = `${name} #${index + 1}`
-    usedNames.add(name)
-
-    const role = roles[index]
-    const effect = role === 'sobering'
-      ? -pickInt(random, 12, 18)
-      : role === 'bomb'
-        ? pickInt(random, 19, 26)
-        : pickInt(random, 4, 8)
-
-    return {
-      id: index,
-      glass,
-      liquid: selectedLiquids[index],
-      name,
-      role,
-      effect,
-      spawnWeight: role === 'sobering' ? 0.48 : role === 'bomb' ? 0.72 : 1,
-    }
-  })
-}
-
-function weightedRecipe(random: () => number, recipes: Recipe[], soberingCooldown: number) {
-  const allowed = recipes.filter((recipe) => recipe.effect >= 0 || soberingCooldown <= 0)
-  const total = allowed.reduce((sum, recipe) => sum + recipe.spawnWeight, 0)
-  let roll = random() * total
-  for (const recipe of allowed) {
-    roll -= recipe.spawnWeight
-    if (roll <= 0) return recipe
+    a: pair[0],
+    b: pair[1],
+    angle: 120 + Math.round(random() * 90),
+    pattern,
   }
-  return allowed[allowed.length - 1] ?? recipes[0]
 }
 
-function pushShooter(world: World, recipes: Recipe[], x: number) {
-  const recipe = weightedRecipe(world.random, recipes, world.soberingCooldown)
+function makeRecipes(random: () => number): Recipe[] {
+  const names = shuffle(random, NAMES).slice(0, 5)
+  const effects = shuffle(random, [8, 11, 14, -17, 34])
+  const roles: RecipeRole[] = effects.map((effect) => effect < 0 ? 'sobering' : effect >= 30 ? 'bomb' : 'mild')
+  const glasses = shuffle(random, GLASSES).slice(0, 5)
+
+  return names.map((name, index) => ({
+    id: index + 1,
+    glass: glasses[index],
+    liquid: makeLiquid(random),
+    name,
+    effect: effects[index],
+    role: roles[index],
+    spawnWeight: roles[index] === 'mild' ? 1.3 : roles[index] === 'sobering' ? .75 : .58,
+  }))
+}
+
+function weightedRecipe(random: () => number, recipes: Recipe[], previousRecipeId: number | null) {
+  const pool = recipes.flatMap((recipe) => {
+    const weight = recipe.id === previousRecipeId ? recipe.spawnWeight * .35 : recipe.spawnWeight
+    const copies = Math.max(1, Math.round(weight * 10))
+    return Array.from({ length: copies }, () => recipe)
+  })
+  return pick(random, pool)
+}
+
+function spawnShooter(world: World, x = -SHOOTER_WIDTH) {
+  const previous = world.shooters.at(-1)?.recipeId ?? null
+  const recipe = weightedRecipe(world.random, world.recipes, previous)
   world.shooters.push({ id: world.nextShooterId, recipeId: recipe.id, x })
   world.nextShooterId += 1
-  world.soberingCooldown = recipe.effect < 0 ? 3 : Math.max(0, world.soberingCooldown - 1)
 }
 
-function createWorld(recipes: Recipe[], seed: number): World {
+function createWorld(seed: number): World {
+  const random = mulberry32(seed || 1)
+  const recipes = makeRecipes(random)
+  const recipeById = new Map(recipes.map((recipe) => [recipe.id, recipe]))
   const world: World = {
+    recipes,
+    recipeById,
     shooters: [],
-    nextShooterId: 0,
+    discovered: new Set(),
     score: 0,
     alcohol: 0,
     peakAlcohol: 0,
-    speed: CRUISE_SPEED,
-    idleSeconds: 0,
     misses: 0,
-    discovered: new Set<number>(),
-    lastRecipeId: null,
+    speed: START_SPEED,
+    elapsed: 0,
+    idleSeconds: 0,
+    spawnDistance: 0,
+    nextShooterId: 1,
+    aimX: BASE_AIM_X,
     finished: false,
     endReason: null,
-    soberingCooldown: 0,
-    aimX: BASE_AIM_X,
-    aimTargetX: BASE_AIM_X,
-    aimTimer: 0,
-    random: mulberry32((seed ^ 0x9e3779b9) >>> 0 || 1),
+    lastRecipeId: null,
+    random,
   }
 
-  let x = -12
-  while (x < 110) {
-    pushShooter(world, recipes, x)
-    x += 16 + world.random() * 7
-  }
+  spawnShooter(world, 18)
+  spawnShooter(world, -4)
   return world
 }
 
-function snapshot(world: World): RenderState {
+function snapshot(world: World): View {
   return {
     shooters: world.shooters.map((shooter) => ({ ...shooter })),
+    discovered: [...world.discovered],
     score: world.score,
     alcohol: world.alcohol,
-    peakAlcohol: world.peakAlcohol,
-    speed: world.speed,
     misses: world.misses,
-    discovered: [...world.discovered],
-    lastRecipeId: world.lastRecipeId,
+    speed: world.speed,
+    aimX: world.aimX,
     finished: world.finished,
     endReason: world.endReason,
-    aimX: world.aimX,
+    lastRecipeId: world.lastRecipeId,
   }
 }
 
 function effectLabel(effect: number) {
-  return `${effect > 0 ? '+' : '−'}${Math.abs(effect)}%`
+  return effect < 0 ? `${effect}%` : `+${effect}%`
 }
 
 function drunkClass(alcohol: number) {
   if (alcohol >= 90) return 'is-blackout'
   if (alcohol >= 72) return 'is-wasted'
-  if (alcohol >= 50) return 'is-drunk'
+  if (alcohol >= 48) return 'is-drunk'
   if (alcohol >= 30) return 'is-tipsy'
   return 'is-sober'
 }
 
-function GlassVisual({ recipe, mini = false }: { recipe: Recipe, mini?: boolean }) {
+function GlassVisual({ recipe, mini = false }: { recipe: Recipe; mini?: boolean }) {
   return (
-    <span className={`${mini ? 'sts-glass-icon' : 'sts-glass'} is-${recipe.glass}`} style={liquidStyle(recipe.liquid)}>
+    <span
+      className={`${mini ? 'sts-glass-icon' : 'sts-glass'} is-${recipe.glass}`}
+      style={{
+        '--liquid-a': recipe.liquid.a,
+        '--liquid-b': recipe.liquid.b,
+        '--liquid-angle': `${recipe.liquid.angle}deg`,
+      } as CSSProperties}
+      aria-hidden="true"
+    >
       <span className={`sts-liquid is-${recipe.liquid.pattern}`} />
       <span className="sts-glass-shine" />
     </span>
@@ -263,170 +259,155 @@ function GlassVisual({ recipe, mini = false }: { recipe: Recipe, mini?: boolean 
 }
 
 export function ShootTheShooter({ active, seed, restartToken, session }: GameComponentProps) {
-  const runSeed = useMemo(() => (seed ^ Math.imul(restartToken + 1, 0x45d9f3b)) >>> 0, [restartToken, seed])
-  const recipes = useMemo(() => createRecipes(runSeed), [runSeed])
-  const worldRef = useRef<World>(createWorld(recipes, runSeed))
-  const trackRef = useRef<HTMLDivElement | null>(null)
-  const finishTimerRef = useRef<number | null>(null)
-  const grabTimerRef = useRef<number | null>(null)
-  const grabTokenRef = useRef(0)
-  const [view, setView] = useState<RenderState>(() => snapshot(worldRef.current))
+  const worldRef = useRef<World>(createWorld(seed))
+  const [view, setView] = useState<View>(() => snapshot(worldRef.current))
   const [grab, setGrab] = useState<GrabState | null>(null)
   const [missToken, setMissToken] = useState(0)
+  const grabTokenRef = useRef(0)
+  const grabTimerRef = useRef<number | null>(null)
+  const frameRef = useRef<number | null>(null)
+  const lastFrameRef = useRef<number | null>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const finishedRef = useRef(false)
 
-  const recipeById = useMemo(() => new Map(recipes.map((recipe) => [recipe.id, recipe])), [recipes])
+  const recipes = worldRef.current.recipes
+  const recipeById = worldRef.current.recipeById
   const discovered = useMemo(() => new Set(view.discovered), [view.discovered])
 
   const finishRun = useCallback((reason: EndReason) => {
     const world = worldRef.current
-    if (world.finished) return
-
+    if (finishedRef.current || world.finished) return
+    finishedRef.current = true
     world.finished = true
     world.endReason = reason
-    world.speed = 0
     setView(snapshot(world))
-
-    if (finishTimerRef.current !== null) window.clearTimeout(finishTimerRef.current)
-    finishTimerRef.current = window.setTimeout(() => {
-      session.finish({
-        score: world.score,
-        metadata: {
-          end: reason,
-          alcoholPeak: Math.round(world.peakAlcohol),
-          finalAlcohol: Math.round(world.alcohol),
-          recipesDiscovered: world.discovered.size,
-          misses: world.misses,
-        },
-      })
-    }, reason === 'coma' ? 700 : reason === 'misses' ? 520 : 450)
+    session.finish({
+      score: world.score,
+      metadata: {
+        peakAlcohol: Math.round(world.peakAlcohol),
+        discovered: world.discovered.size,
+        misses: world.misses,
+        reason,
+      },
+    })
   }, [session])
 
   useEffect(() => {
-    if (finishTimerRef.current !== null) window.clearTimeout(finishTimerRef.current)
-    if (grabTimerRef.current !== null) window.clearTimeout(grabTimerRef.current)
-    worldRef.current = createWorld(recipes, runSeed)
-    setView(snapshot(worldRef.current))
+    const world = createWorld(seed)
+    worldRef.current = world
+    finishedRef.current = false
+    setView(snapshot(world))
     setGrab(null)
     setMissToken(0)
+    grabTokenRef.current = 0
+    lastFrameRef.current = null
     session.setScore(0)
-  }, [recipes, runSeed, session])
+  }, [restartToken, seed, session])
 
   useEffect(() => () => {
-    if (finishTimerRef.current !== null) window.clearTimeout(finishTimerRef.current)
     if (grabTimerRef.current !== null) window.clearTimeout(grabTimerRef.current)
+    if (frameRef.current !== null) cancelAnimationFrame(frameRef.current)
   }, [])
 
   useEffect(() => {
-    if (!active || worldRef.current.finished) return
-
-    let frame = 0
-    let previous = performance.now()
-    let renderAccumulator = 0
-
-    const animate = (now: number) => {
-      const world = worldRef.current
-      const dt = Math.min(0.05, Math.max(0, (now - previous) / 1000))
-      previous = now
-
-      if (!world.finished) {
-        world.idleSeconds += dt
-
-        if (world.idleSeconds <= IDLE_GRACE_SECONDS) {
-          if (world.speed < CRUISE_SPEED) {
-            world.speed += (CRUISE_SPEED - world.speed) * Math.min(1, dt * 4)
-          } else if (world.speed > CRUISE_SPEED) {
-            world.speed = Math.max(CRUISE_SPEED, world.speed - 0.28 * dt)
-          }
-        } else {
-          world.speed = Math.max(0, world.speed - IDLE_FRICTION_PER_SECOND * dt)
-        }
-
-        const distance = world.speed * dt
-        world.shooters.forEach((shooter) => {
-          shooter.x += distance
-        })
-        world.shooters = world.shooters.filter((shooter) => shooter.x < 114)
-
-        let leftmost = world.shooters.reduce((min, shooter) => Math.min(min, shooter.x), Number.POSITIVE_INFINITY)
-        if (!Number.isFinite(leftmost)) leftmost = 18
-        while (leftmost > -18) {
-          leftmost -= 16 + world.random() * 7
-          pushShooter(world, recipes, leftmost)
-        }
-
-        const drunk = Math.max(0, Math.min(1, (world.alcohol - 28) / 72))
-        if (drunk <= 0) {
-          world.aimTargetX = BASE_AIM_X
-          world.aimX += (BASE_AIM_X - world.aimX) * Math.min(1, dt * 8)
-        } else {
-          world.aimTimer -= dt
-          if (world.aimTimer <= 0) {
-            const maxOffset = 1.5 + drunk * 8.5
-            world.aimTargetX = BASE_AIM_X + (world.random() * 2 - 1) * maxOffset
-            world.aimTimer = 0.18 + (1 - drunk) * 0.22 + world.random() * 0.18
-          }
-          const follow = Math.min(1, dt * (5 + drunk * 10))
-          world.aimX += (world.aimTargetX - world.aimX) * follow
-        }
-
-        if (world.speed <= 0.02) {
-          finishRun('last-call')
-          return
-        }
-
-        renderAccumulator += dt
-        if (renderAccumulator >= 1 / 30) {
-          renderAccumulator = 0
-          setView(snapshot(world))
-        }
-      }
-
-      frame = requestAnimationFrame(animate)
+    if (!active || finishedRef.current) {
+      lastFrameRef.current = null
+      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current)
+      return
     }
 
-    frame = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(frame)
-  }, [active, finishRun, recipes])
+    const tick = (time: number) => {
+      const previous = lastFrameRef.current ?? time
+      const dt = Math.min(.045, Math.max(0, (time - previous) / 1000))
+      lastFrameRef.current = time
+      const world = worldRef.current
+
+      world.elapsed += dt
+      world.idleSeconds += dt
+
+      if (world.idleSeconds > IDLE_SLOW_AFTER) {
+        const slowFactor = Math.min(1, (world.idleSeconds - IDLE_SLOW_AFTER) / 3.5)
+        world.speed = Math.max(7.2, world.speed - dt * (2.4 + slowFactor * 3.2))
+      } else if (world.speed < CRUISE_SPEED) {
+        world.speed = Math.min(CRUISE_SPEED, world.speed + dt * 2.8)
+      }
+
+      const intoxication = Math.min(1, world.alcohol / 100)
+      const wobble =
+        Math.sin(world.elapsed * (1.1 + intoxication * 1.8)) * intoxication * 4.4 +
+        Math.sin(world.elapsed * (2.7 + intoxication * 2.4) + 1.8) * intoxication * intoxication * 4.1
+      world.aimX = Math.max(70, Math.min(92, BASE_AIM_X + wobble))
+
+      for (const shooter of world.shooters) shooter.x += world.speed * dt
+      world.spawnDistance += world.speed * dt
+
+      const spacing = Math.max(13.2, 21 - world.speed * .22)
+      if (world.spawnDistance >= spacing) {
+        world.spawnDistance %= spacing
+        spawnShooter(world)
+      }
+
+      let missed = false
+      world.shooters = world.shooters.filter((shooter) => {
+        if (shooter.x <= 108) return true
+        world.misses += 1
+        missed = true
+        return false
+      })
+      if (missed) setMissToken((value) => value + 1)
+
+      setView(snapshot(world))
+
+      if (world.misses >= MAX_MISSES) {
+        finishRun('misses')
+        return
+      }
+      if (world.idleSeconds >= IDLE_END_AFTER) {
+        finishRun('last-call')
+        return
+      }
+
+      frameRef.current = requestAnimationFrame(tick)
+    }
+
+    frameRef.current = requestAnimationFrame(tick)
+    return () => {
+      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current)
+      frameRef.current = null
+    }
+  }, [active, finishRun])
 
   const drink = useCallback(() => {
+    if (!active || finishedRef.current) return
     const world = worldRef.current
-    if (!active || world.finished) return
+    if (world.finished) return
 
-    const trackWidth = trackRef.current?.getBoundingClientRect().width ?? 390
-    const hitRadiusPx = trackWidth <= 430 ? MOBILE_HIT_RADIUS_PX : DESKTOP_HIT_RADIUS_PX
-    const tolerance = (hitRadiusPx / Math.max(1, trackWidth)) * 100
-
-    // Judge the exact positions currently painted on screen. This avoids false misses
-    // caused by the simulation being a frame ahead of the rendered mobile UI.
-    let visibleTarget: Shooter | null = null
-    let bestDistance = Number.POSITIVE_INFINITY
-    for (const shooter of view.shooters) {
+    let bestIndex = -1
+    let bestDistance = Infinity
+    for (let index = 0; index < world.shooters.length; index += 1) {
+      const shooter = world.shooters[index]
       const distance = Math.abs(shooter.x - view.aimX)
-      if (distance <= tolerance && distance < bestDistance) {
-        visibleTarget = shooter
+      if (distance <= DRINK_RANGE && distance < bestDistance) {
         bestDistance = distance
+        bestIndex = index
       }
     }
 
-    const target = visibleTarget
-      ? world.shooters.find((shooter) => shooter.id === visibleTarget?.id) ?? null
-      : null
-
-    if (!target || !visibleTarget) {
+    if (bestIndex < 0) {
       world.misses += 1
-      setView(snapshot(world))
       setMissToken((value) => value + 1)
+      setView(snapshot(world))
       if (world.misses >= MAX_MISSES) finishRun('misses')
       return
     }
 
-    const recipe = recipeById.get(target.recipeId)
+    const [shooter] = world.shooters.splice(bestIndex, 1)
+    const recipe = recipeById.get(shooter.recipeId)
     if (!recipe) return
+    const grabbedAt = shooter.x
 
-    const grabbedAt = visibleTarget.x
-    world.shooters = world.shooters.filter((shooter) => shooter.id !== target.id)
-    world.score += 1
     world.alcohol = Math.max(0, Math.min(100, world.alcohol + recipe.effect))
+    world.score += 1
     world.peakAlcohol = Math.max(world.peakAlcohol, world.alcohol)
     world.idleSeconds = 0
     world.speed = Math.min(MAX_SPEED, Math.max(CRUISE_SPEED, world.speed) + SPEED_BOOST)

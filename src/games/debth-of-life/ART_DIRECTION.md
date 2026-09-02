@@ -1,91 +1,101 @@
-# DebthOfLife — Art Direction
+# DebthOfLife — Art Direction v2
 
 ## Direction
 
-Base kit: **Ink Pulp**, heavily recolored into a bright satirical life-runner.
+Custom **financial-paper side scroller**. The world is built from bank statements, contracts, ledger lines, balance sheets, bar charts, stamps and debt marks. It should look like somebody turned a lifetime of paperwork into a running track.
 
-The visual joke is structural: life starts like an optimistic Sunday comic / cheap insurance advert, then debt progressively stains and crushes that image. The same scene must become materially darker as liabilities grow; darkness is gameplay feedback, not decoration.
+This replaces the previous bright comic / emoji-card direction entirely.
+
+## Core visual idea
+
+The runner is a small black human silhouette carrying a briefcase through an enormous moving financial document.
+
+- the ground is a bank-statement strip;
+- distant buildings are financial bar charts / document columns;
+- life decisions are large moving contract panels, one high and one low;
+- unavoidable expenses are literal bills / invoices standing in the road;
+- money pickups are blunt yellow euro coins;
+- debt appears as a red territory advancing from the left toward the runner;
+- as debt pressure rises, the paper becomes dirtier and darker rather than merely receiving a generic dark overlay.
 
 ## Palette
 
-Early-life palette:
+- ledger paper: `#EDE7D7`
+- clean paper: `#F7F1E4`
+- ink: `#151719`
+- institutional navy: `#14324A`
+- secondary blue: `#31566F`
+- warning red: `#B42A22`
+- deep warning red: `#7D211F`
+- salary / action yellow: `#F0BD2D`
+- muted gain green: `#1C6A4F`
 
-- sky blue `#76D7FF`
-- sun yellow `#FFE054`
-- grass green `#8ED47B`
-- road / sand `#EFB94E`
-- opportunity green `#55C878`
-- debt red `#E34F49`
-- paper cream `#FFF6D8`
-- hard ink `#171419`
-
-Debt pressure adds dirty violet/black overlays and muted greys. Do not replace this with neon, glassmorphism, purple/cyan gradients or sci-fi UI.
+No gradients, neon, glassmorphism, rounded app-card language or emoji-based game objects.
 
 ## Typography
 
-- oversized condensed display caps for impact labels;
-- system sans / Arial for compact readable values;
-- thick black outlines and physical offset shadows;
-- important financial values must remain readable on a landscape phone.
+Typography is part of the world, not a HUD skin:
 
-## Material / texture
+- very bold Arial Narrow / condensed grotesk style for contract titles;
+- small accounting labels for details;
+- all consequences written directly on moving contracts;
+- large terse financial impact captions after a choice.
 
-- flat printed colors;
-- thick comic-ink contours;
-- paper-card HUD pieces with imperfect rotation;
-- subtle horizontal print lines / dirty vignette as debt rises;
-- game objects should read as blunt pictograms, not polished app icons.
+The player must be able to read the two incoming choices quickly on a landscape phone.
 
-## Motion
+## Gameplay language
 
-- fast readable side-scroll;
-- player has an exaggerated two-leg run cycle;
-- debt hits cause a short screen shake and red impact flash;
-- financial consequences pop out as short comic captions;
-- aging gradually bends the runner, greys the hair and eventually adds a cane;
-- movement speed and jump strength both decay with age.
+The one-button mechanic is expressed visually as a binary vertical choice:
 
-## World / props
+- stay low = sign the bottom contract;
+- jump = sign the upper contract;
+- longer hold makes the upper choice easier to reach;
+- ageing progressively makes upper choices mechanically harder.
 
-Life-cost encounters:
+Neither lane is coded as universally good or bad. A high option may create debt but increase salary/assets; a low option may preserve cash but sacrifice long-term growth.
 
-- car
-- relationship
-- child
-- dog
-- house
-- credit
-- taxes
-- illness
+Between decision gates, invoice obstacles and euro pickups preserve runner timing and skill.
 
-Opportunities:
+## Debt pressure
 
-- cash / bonus
-- new job
-- raise
-- promotion
-- inheritance
-- lottery
+Debt is a physical pursuer. A red debt zone advances from the left based on financial pressure. It does not instantly kill the player; it communicates how close the life is to being financially swallowed.
 
-Platforms create simple one-button route choices: jumping can both avoid a cost and reach a higher opportunity.
+Increasing pressure also dirties/desaturates the financial-paper world.
+
+## Player ageing
+
+The player remains an abstract black silhouette so the environment carries the visual identity.
+
+Ageing changes:
+
+- running cadence;
+- forward bend;
+- jump strength;
+- scroll speed;
+- eventual cane.
+
+Do not turn ageing into a detailed character illustration system.
 
 ## End state
 
-The game-specific final image is an obituary-like financial balance sheet showing:
+The final game-specific screen is a formal death / estate statement with:
 
-- remaining bank balance;
-- remaining debt;
-- asset value;
+- cash;
+- assets;
+- debt;
 - net worth;
-- life acquisitions (house, car, relationship, children, dog).
+- life acquisitions.
 
-Replay, leaderboard and generic score flow remain MiniFugg Core responsibilities.
+It should look like a final accounting document, not a celebratory game-over card.
 
 ## Avoid
 
-- tiny financial dashboards;
-- generic fintech aesthetics;
-- realistic grim misery from frame one;
-- treating family/pets solely as evil red hazards — they are costly life acquisitions and appear in the final life inventory;
-- separate unrelated mobile and desktop compositions;
-- fullscreen pointer capture or blocking the MiniFugg feed swipe gesture.
+- emojis as objects;
+- cute comic scenery;
+- bright toy colors;
+- obvious red hazard / green reward sorting;
+- generic fintech dashboards;
+- purely decorative darkness unrelated to debt pressure;
+- tiny unreadable contracts;
+- multiple gameplay buttons;
+- fullscreen pointer capture or blocking the MiniFugg feed escape gesture.

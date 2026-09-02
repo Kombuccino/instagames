@@ -14,6 +14,8 @@
 - Accounting paper cue: dirty green `#d4dcc1`
 - Civil-status paper cue: faded salmon `#dfcabb`
 - Planning paper cue: blueprint grey-blue `#bed0d5`
+- Human-resources paper cue: old yellow `#dad39e`
+- Legal paper cue: dusty mauve-grey `#cbc4d0`
 - Ink: `#1d1a14`, `#4b4333`
 - Supervisor / error return: dried red `#a13930`, `#a62f27`
 
@@ -32,28 +34,52 @@ Keep colors dirty, matte and printed. No neon, glass, bloom or modern SaaS cards
 - Paper grain and office-wall texture may use cheap repeating CSS patterns.
 - Documents should feel physical and slightly misaligned, but never so rotated that text becomes hard to read.
 - Sector stamps are large physical desk controls, not rounded UI buttons.
+- Five stamps use a `3 + 2` portrait layout so they stay large and readable instead of becoming five tiny equal-width buttons.
 
 ## Core document language
 
-The player sorts documents into three administrative sectors:
+The player sorts documents into five administrative sectors:
 
 - `COMPTABILITÉ`
 - `ÉTAT CIVIL`
 - `URBANISME`
+- `RESSOURCES HUMAINES`
+- `AFFAIRES JURIDIQUES`
 
-Each sector owns four recurring document models. Every generated document is recognizable through up to five independent cue families:
+Each sector owns four recurring document models, for twenty core models total. Models unlock progressively across early levels instead of exposing the whole vocabulary at once.
+
+Every generated document is recognizable through up to five independent cue families:
 
 1. document title / genre;
 2. sector paper color;
 3. document form / page geometry;
-4. characteristic content (amounts and VAT, names and civil dates, parcels and square metres, etc.);
+4. characteristic content (amounts and VAT, names and civil dates, parcels and square metres, matricules and absences, articles and clauses, etc.);
 5. sector mark / printed symbol.
 
-Difficulty removes cues progressively from five down to one. A document must always preserve at least one independently useful clue; never create a pure guess.
+Difficulty removes cues by level from five down to one. A document must always preserve at least one independently useful clue; never create a pure guess.
+
+## Career / level structure
+
+- A level is a finite administrative workload, not an endless uniform stream.
+- The desk starts with a visible pile and additional mail continues to arrive while the level is active.
+- If the player empties the visible pile before scheduled mail has arrived, the next pending document must arrive almost immediately: never leave a fast keyboard player staring at an empty desk.
+- Once the entire workload has arrived and every sheet is cleared, show a short promotion card and load the next level automatically.
+- Every level grants a more senior absurd administrative grade.
+- Higher levels have larger workloads, faster arrivals, more unlocked document models and fewer visible cues.
+
+## Surprise events
+
+Surprises change pressure but must never make classification unfair:
+
+- `LIASSE DU COURRIER`: three extra documents are dropped onto the desk.
+- `DOSSIER URGENT`: one visibly urgent document jumps to the front of the queue, but follows normal classification rules.
+- `PHOTOCOPIEUSE FOLLE`: the just-seen document family reappears in duplicate with fresh cue combinations.
+
+Use short physical banners and paper effects. Surprises should be intermittent, not constant noise.
 
 ## Physical backlog
 
-- Do not represent workload with a progress bar.
+- Do not replace workload with a progress bar.
 - Pending work must exist as visible stacks of paper on the desk behind the active document.
 - New work visibly adds sheets to the stacks.
 - Taking the next document visibly reduces the stacks.
@@ -65,8 +91,9 @@ Difficulty removes cues progressively from five down to one. A document must alw
 ## Motion
 
 - Dry, stepped, mechanical motion.
-- Correct routing: immediate stamp press and document shoots right.
+- Correct routing: immediate stamp press and document shoots right quickly.
 - Wrong routing: same rightward departure, supervisor interruption, then abrupt left-to-centre return.
+- Promotions and surprise banners use short snapped animations only.
 - Paper-stack growth should be visible but cheap; no particles or floaty easing.
 - Avoid long easing, squash-and-bounce and decorative animation.
 

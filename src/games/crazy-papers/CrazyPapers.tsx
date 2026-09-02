@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { GameComponentProps } from '../../core/types'
 import './CrazyPapers.css'
 
@@ -253,11 +253,10 @@ export function CrazyPapers({ active, seed, restartToken, session }: GameCompone
           <div className="crazy-papers-desk">
             <div className="crazy-papers-inbox-label">À TRAITER</div>
             <div className="crazy-papers-paper-stack" aria-live="polite">
-              {stack.map((document, index) => (
+              {stack.map((document) => (
                 <div
                   className="crazy-papers-paper crazy-papers-paper-back"
                   key={document.instanceId}
-                  style={{ '--stack-index': index + 1 } as CSSProperties}
                   aria-hidden="true"
                 />
               ))}

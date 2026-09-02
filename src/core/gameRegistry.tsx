@@ -6,8 +6,43 @@ import { HariRottenTeeth } from '../games/hari-rotten-teeth/HariRottenTeeth'
 import { CalcDrop } from '../games/calc-drop/CalcDrop'
 import { CrazyPapers } from '../games/crazy-papers/CrazyPapers'
 import { DebthOfLife } from '../games/debth-of-life/DebthOfLife'
+import { TrainFighter } from '../games/train-fighter/TrainFighter'
 
 export const gameRegistry: InstagameDefinition[] = [
+  {
+    id: 'train-fighter',
+    title: 'Train Fighter',
+    description: 'Change de voie · équipe ton train · choisis tes bastons',
+    author: 'MiniFugg',
+    orientation: 'portrait',
+    component: TrainFighter,
+    instructions: {
+      goal: 'Traverse les 4 mondes avec le plus de wagons possible et transforme ta petite loco en machine à baffes.',
+      rules: [
+        'Ton train avance tout seul : LEFT et RIGHT servent uniquement à changer de voie.',
+        'Les wagons derrière ta locomotive sont ta vie. Un combat trop difficile peut en décrocher plusieurs.',
+        'Percute les pièces, armes, wagons, boucliers et turbos que tu veux récupérer.',
+        'Les trains ennemis se battent automatiquement si tu restes sur leur voie. Une meilleure arme et l’armure réduisent les dégâts.',
+        'Entre les mondes, la station te permet de dépenser tes pièces en wagon, arme ou armure.',
+        'Traverse Mossy Forest, Red Canyon, Cloud Mountain puis Aurora Pass pour terminer la partie.',
+      ],
+      controls: ['LEFT / RIGHT pour changer de voie', 'Clavier : ← →, A/D ou Q/D'],
+    },
+    features: {
+      help: true,
+      love: true,
+      comments: true,
+      bookmark: true,
+      leaderboard: {
+        enabled: true,
+        periods: ['daily', 'weekly'],
+        sort: 'desc',
+        limit: 10,
+      },
+      share: false,
+      remix: false,
+    },
+  },
   {
     id: 'linefugg',
     title: 'LineFugg',

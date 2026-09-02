@@ -7,6 +7,7 @@ import './core/actionDock.css'
 import './core/orientation.css'
 import './core/gameLayout.css'
 import './core/comments.css'
+import './core/commentPlayerIcons.css'
 import './core/profileLeaderboard.css'
 import './core/desktopDock.css'
 

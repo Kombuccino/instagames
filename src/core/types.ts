@@ -3,6 +3,8 @@ import type { ComponentType } from 'react'
 export type GameLeaderboardPeriod = 'daily' | 'weekly' | 'global'
 export type GameLeaderboardSort = 'desc' | 'asc'
 export type GameOrientation = 'portrait' | 'landscape' | 'both'
+export type GameCurationStatus = 'fugg' | 'beta' | 'trash'
+export type FeedPreference = 'fugg' | 'beta' | 'all'
 
 export type GameLeaderboardConfig = {
   enabled: true
@@ -52,6 +54,8 @@ export type InstagameDefinition = {
   title: string
   description: string
   author?: string
+  /** Developer-selected curation tier. Defaults to fugg for legacy games. */
+  status?: GameCurationStatus
   /** Preferred gameplay orientation. Core remains responsive in both directions. */
   orientation?: GameOrientation
   component: ComponentType<GameComponentProps>

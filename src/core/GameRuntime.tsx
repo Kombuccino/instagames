@@ -3,12 +3,15 @@ import { getSavedNickname } from './leaderboard'
 import {
   addGameComment,
   getGameSocialStats,
+  getMyProfile,
   listGameComments,
   listLeaderboard,
   recordGamePlay,
   setGameBookmark,
   setGameLove,
   submitRunScore,
+  updateMyProfile,
+  type PlatformProfile,
 } from './platformApi'
 import type { GameComment, GameSocialStats } from './social'
 import type { GameFinishPayload, GameLeaderboardPeriod, InstagameDefinition } from './types'
@@ -22,9 +25,9 @@ type GameRuntimeProps = {
   mounted: boolean
 }
 
-type OpenSheet = 'help' | 'leaderboard' | 'comments' | 'creator' | null
+type OpenSheet = 'help' | 'leaderboard' | 'comments' | 'creator' | 'profile' | null
 
-type IconName = 'rules' | 'heart' | 'comment' | 'bookmark' | 'close'
+type IconName = 'rules' | 'heart' | 'comment' | 'bookmark' | 'profile' | 'close'
 
 const EMPTY_SOCIAL: GameSocialStats = {
   plays: 0,
@@ -93,6 +96,8 @@ function CoreIcon({ name, filled = false }: { name: IconName, filled?: boolean }
     content = <path d="M20.5 11.4a8.4 8.4 0 0 1-8.7 8.1 9.4 9.4 0 0 1-3.2-.6L4 20l1.4-3.7a7.7 7.7 0 0 1-1.9-5.1A8.4 8.4 0 0 1 12.2 3a8.4 8.4 0 0 1 8.3 8.4Z" />
   } else if (name === 'bookmark') {
     content = <path d="M6.4 3.2h11.2c.8 0 1.4.6 1.4 1.4v16.2l-7-4.5-7 4.5V4.6c0-.8.6-1.4 1.4-1.4Z" />
+  } else if (name === 'profile') {
+    content = <><circle cx="12" cy="8" r="3.3" /><path d="M5.2 20c.7-4 3-6 6.8-6s6.1 2 6.8 6" /></>
   } else if (name === 'rules') {
     content = <><circle cx="12" cy="12" r="9" /><path d="M12 10.5v6" /><circle cx="12" cy="7.4" r=".7" className="icon-dot" /></>
   } else {
@@ -118,6 +123,12 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
   const [social, setSocial] = useState<GameSocialStats>(EMPTY_SOCIAL)
   const [comments, setComments] = useState<GameComment[]>([])
   const [commentText, setCommentText] = useState('')
+  const [profile, setProfile] = useState<PlatformProfile | null>(null)
+  const [profileHandle, setProfileHandle] = useState('')
+  const [profileDisplayName, setProfileDisplayName] = useState('')
+  const [profileBio, setProfileBio] = useState('')
+  const [savingProfile, setSavingProfile] = useState(false)
+  const [profileMessage, setProfileMessage] = useState('')
   const playRecorded = useRef(false)
 
   const Game = game.component
@@ -133,6 +144,10 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
     () => game.author ? catalog.filter((candidate) => candidate.author === game.author) : [],
     [catalog, game.author],
   )
+  const favoriteGames = useMemo(() => {
+    const ids = new Set(profile?.bookmarks.map((bookmark) => bookmark.gameId) ?? [])
+    return catalog.filter((candidate) => ids.has(candidate.id))
+  }, [catalog, profile])
 
   const updateScore = useCallback((value: number) => setScore(normalizeScore(value)), [])
   const finish = useCallback((payload: GameFinishPayload) => {
@@ -159,6 +174,15 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
     setComments(await listGameComments(game.id, 50))
   }, [game.id])
 
+  const refreshProfile = useCallback(async () => {
+    const next = await getMyProfile()
+    setProfile(next)
+    setProfileHandle(next.handle ?? '')
+    setProfileDisplayName(next.displayName ?? '')
+    setProfileBio(next.bio ?? '')
+    setProfileMessage('')
+  }, [])
+
   useEffect(() => {
     setScore(0)
     setFinished(null)
@@ -182,7 +206,8 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
   useEffect(() => {
     if (sheet === 'leaderboard') void refreshLeaderboard()
     if (sheet === 'comments') void refreshComments()
-  }, [refreshComments, refreshLeaderboard, sheet])
+    if (sheet === 'profile') void refreshProfile()
+  }, [refreshComments, refreshLeaderboard, refreshProfile, sheet])
 
   const replay = () => {
     setScore(0)
@@ -217,6 +242,27 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
     setCommentText('')
     setComments((current) => [comment, ...current])
     await refreshSocial()
+  }
+
+  const saveProfile = async () => {
+    setSavingProfile(true)
+    setProfileMessage('')
+    const saved = await updateMyProfile({
+      handle: profileHandle || null,
+      displayName: profileDisplayName || null,
+      bio: profileBio || null,
+    })
+    setSavingProfile(false)
+    if (!saved) {
+      setProfileMessage('Handle invalide ou déjà utilisé.')
+      return
+    }
+    const next = { ...saved, bookmarks: saved.bookmarks.length ? saved.bookmarks : profile?.bookmarks ?? [] }
+    setProfile(next)
+    setProfileHandle(next.handle ?? '')
+    setProfileDisplayName(next.displayName ?? '')
+    setProfileBio(next.bio ?? '')
+    setProfileMessage('Profil enregistré.')
   }
 
   const loveEnabled = game.features?.love !== false
@@ -257,6 +303,7 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
           {bookmarkEnabled && (
             <button type="button" className={social.bookmarked ? 'is-active' : ''} onClick={() => void toggleBookmark()} aria-label="Mettre en favori"><CoreIcon name="bookmark" filled={social.bookmarked} /><small>{social.bookmarked ? 'Sauvé' : 'Garder'}</small></button>
           )}
+          <button type="button" onClick={() => setSheet('profile')} aria-label="Mon profil"><CoreIcon name="profile" /><small>Profil</small></button>
         </nav>
       </header>
 
@@ -269,12 +316,13 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
           <section className="platform-sheet" onPointerDown={(event) => event.stopPropagation()} role="dialog" aria-modal="true">
             <div className="platform-sheet-head">
               <div>
-                <small>{game.title}</small>
+                <small>{sheet === 'profile' ? 'MiniFugg' : game.title}</small>
                 <strong>
                   {sheet === 'help' && 'Comment jouer'}
                   {sheet === 'leaderboard' && 'Classement'}
                   {sheet === 'comments' && 'Commentaires'}
                   {sheet === 'creator' && `@${game.author}`}
+                  {sheet === 'profile' && 'Mon profil'}
                 </strong>
               </div>
               <button type="button" onClick={() => setSheet(null)} aria-label="Fermer"><CoreIcon name="close" /></button>
@@ -321,6 +369,33 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
               <div className="platform-creator">
                 <p>{creatorGames.length} jeu{creatorGames.length > 1 ? 'x' : ''} publié{creatorGames.length > 1 ? 's' : ''} par @{game.author}.</p>
                 <div className="platform-creator-games">{creatorGames.map((creatorGame) => <article key={creatorGame.id}><strong>{creatorGame.title}</strong><span>{creatorGame.description}</span></article>)}</div>
+              </div>
+            )}
+
+            {sheet === 'profile' && (
+              <div className="platform-profile">
+                <div className="platform-profile-summary">
+                  <div className="platform-profile-avatar" aria-hidden="true">{(profileDisplayName || profileHandle || '?').slice(0, 1).toUpperCase()}</div>
+                  <div>
+                    <strong>{profileDisplayName || (profileHandle ? `@${profileHandle}` : 'Profil visiteur')}</strong>
+                    <span>{profile?.kind === 'user' ? 'Compte MiniFugg' : 'Identité anonyme persistante'}</span>
+                  </div>
+                </div>
+
+                <div className="platform-profile-form">
+                  <label><span>Handle</span><input value={profileHandle} onChange={(event) => setProfileHandle(event.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 30))} placeholder="minifugger" minLength={3} maxLength={30} /></label>
+                  <label><span>Nom affiché</span><input value={profileDisplayName} onChange={(event) => setProfileDisplayName(event.target.value.slice(0, 50))} placeholder="Ton nom" maxLength={50} /></label>
+                  <label className="is-wide"><span>Bio</span><textarea value={profileBio} onChange={(event) => setProfileBio(event.target.value.slice(0, 280))} placeholder="Quelques mots…" maxLength={280} rows={3} /></label>
+                  <button type="button" onClick={() => void saveProfile()} disabled={savingProfile || (profileHandle.length > 0 && profileHandle.length < 3)}>{savingProfile ? 'Enregistrement…' : 'Enregistrer'}</button>
+                </div>
+                {profileMessage && <p className="platform-profile-message">{profileMessage}</p>}
+
+                <div className="platform-profile-favorites">
+                  <div className="platform-profile-section-title"><strong>Favoris</strong><span>{favoriteGames.length}</span></div>
+                  {favoriteGames.length === 0 ? <p className="platform-muted">Aucun jeu favori pour le moment.</p> : (
+                    <div className="platform-profile-game-list">{favoriteGames.map((favorite) => <article key={favorite.id}><strong>{favorite.title}</strong><span>{favorite.description}</span></article>)}</div>
+                  )}
+                </div>
               </div>
             )}
           </section>

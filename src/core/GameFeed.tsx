@@ -63,18 +63,6 @@ export function GameFeed({ games }: GameFeedProps) {
     if (slots.length > 0 && activeIndex >= slots.length - Math.max(2, games.length)) appendBatch()
   }, [activeIndex, appendBatch, games.length, slots.length])
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
-      event.preventDefault()
-      const direction = event.key === 'ArrowDown' ? 1 : -1
-      const target = Math.max(0, Math.min(activeIndex + direction, slots.length - 1))
-      containerRef.current?.children[target]?.scrollIntoView({ behavior: 'smooth' })
-    }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [activeIndex, slots.length])
-
   const emptyState = useMemo(
     () => (
       <main className="empty-state">

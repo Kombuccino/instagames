@@ -85,7 +85,7 @@ export function VladsSkewers(props: GameComponentProps) {
     const observer = new MutationObserver((mutations) => {
       let deliveries = 0
       for (const mutation of mutations) {
-        for (const added of mutation.addedNodes) {
+        for (const added of Array.from(mutation.addedNodes)) {
           impactsInside(added).forEach(spawnGore)
           deliveries += deliveriesInside(added)
         }

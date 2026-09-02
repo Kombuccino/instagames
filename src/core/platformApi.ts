@@ -32,7 +32,30 @@ export type SubmitRunScoreInput = {
   metadata?: Record<string, string | number | boolean>
 }
 
+export type PlatformProfileBookmark = {
+  gameId: string
+  createdAt: string
+}
+
+export type PlatformProfile = {
+  id: string
+  kind: string
+  handle: string | null
+  displayName: string | null
+  bio: string | null
+  avatarUrl: string | null
+  bookmarks: PlatformProfileBookmark[]
+}
+
+export type UpdatePlatformProfileInput = {
+  handle?: string | null
+  displayName?: string | null
+  bio?: string | null
+  avatarUrl?: string | null
+}
+
 const API_BASE = (import.meta.env.VITE_MINIFUGG_API_URL as string | undefined)?.trim().replace(/\/$/, '')
+const LOCAL_PROFILE_KEY = 'minifugg:profile:v1'
 
 function leaderboardEndpoint(gameId: string, boardId: string) {
   return `${API_BASE}/v1/leaderboards/${encodeURIComponent(gameId)}/${encodeURIComponent(boardId)}`
@@ -61,8 +84,79 @@ function localBoardId(period: GameLeaderboardPeriod) {
   return 'global'
 }
 
+function localProfile(): PlatformProfile {
+  if (typeof window === 'undefined') {
+    return { id: 'local', kind: 'anonymous', handle: null, displayName: null, bio: null, avatarUrl: null, bookmarks: [] }
+  }
+  try {
+    const raw = window.localStorage.getItem(LOCAL_PROFILE_KEY)
+    if (!raw) return { id: 'local', kind: 'anonymous', handle: null, displayName: null, bio: null, avatarUrl: null, bookmarks: [] }
+    const parsed = JSON.parse(raw) as Partial<PlatformProfile>
+    return {
+      id: typeof parsed.id === 'string' ? parsed.id : 'local',
+      kind: typeof parsed.kind === 'string' ? parsed.kind : 'anonymous',
+      handle: typeof parsed.handle === 'string' ? parsed.handle : null,
+      displayName: typeof parsed.displayName === 'string' ? parsed.displayName : null,
+      bio: typeof parsed.bio === 'string' ? parsed.bio : null,
+      avatarUrl: typeof parsed.avatarUrl === 'string' ? parsed.avatarUrl : null,
+      bookmarks: Array.isArray(parsed.bookmarks) ? parsed.bookmarks : [],
+    }
+  } catch {
+    return { id: 'local', kind: 'anonymous', handle: null, displayName: null, bio: null, avatarUrl: null, bookmarks: [] }
+  }
+}
+
+function saveLocalProfile(input: UpdatePlatformProfileInput): PlatformProfile {
+  const current = localProfile()
+  const next: PlatformProfile = {
+    ...current,
+    handle: typeof input.handle === 'string' ? input.handle.trim().toLowerCase().slice(0, 30) || null : input.handle ?? current.handle,
+    displayName: typeof input.displayName === 'string' ? input.displayName.trim().slice(0, 50) || null : input.displayName ?? current.displayName,
+    bio: typeof input.bio === 'string' ? input.bio.trim().slice(0, 280) || null : input.bio ?? current.bio,
+    avatarUrl: typeof input.avatarUrl === 'string' ? input.avatarUrl.trim().slice(0, 500) || null : input.avatarUrl ?? current.avatarUrl,
+  }
+  try {
+    window.localStorage.setItem(LOCAL_PROFILE_KEY, JSON.stringify(next))
+  } catch {
+    // Profile fallback must never make games unplayable.
+  }
+  return next
+}
+
 export function hasRemotePlatformApi() {
   return Boolean(API_BASE)
+}
+
+export async function getMyProfile(): Promise<PlatformProfile> {
+  if (!API_BASE) return localProfile()
+  try {
+    const response = await fetch(`${API_BASE}/v1/me`, {
+      headers: { Accept: 'application/json' },
+      credentials: 'include',
+    })
+    if (!response.ok) throw new Error(`Profile API returned ${response.status}`)
+    const payload = await response.json() as PlatformProfile
+    return { ...payload, bookmarks: Array.isArray(payload.bookmarks) ? payload.bookmarks : [] }
+  } catch {
+    return localProfile()
+  }
+}
+
+export async function updateMyProfile(input: UpdatePlatformProfileInput): Promise<PlatformProfile | null> {
+  if (!API_BASE) return saveLocalProfile(input)
+  try {
+    const response = await fetch(`${API_BASE}/v1/me/profile`, {
+      method: 'PUT',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(input),
+    })
+    if (!response.ok) return null
+    const payload = await response.json() as Omit<PlatformProfile, 'bookmarks'> & { bookmarks?: PlatformProfileBookmark[] }
+    return { ...payload, bookmarks: Array.isArray(payload.bookmarks) ? payload.bookmarks : [] }
+  } catch {
+    return saveLocalProfile(input)
+  }
 }
 
 export async function listLeaderboard(

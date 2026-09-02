@@ -35,27 +35,21 @@ function writeEntries(entries: LeaderboardEntry[]) {
   }
 }
 
-function createVisitorNickname() {
-  return `Fugger${Math.floor(1000 + Math.random() * 9000)}`
-}
-
 export function getSavedNickname() {
-  if (!canUseStorage()) return 'Visiteur'
+  if (!canUseStorage()) return ''
   try {
-    const saved = window.localStorage.getItem(NICKNAME_KEY)?.trim()
-    if (saved) return saved
-    const generated = createVisitorNickname()
-    window.localStorage.setItem(NICKNAME_KEY, generated)
-    return generated
+    return window.localStorage.getItem(NICKNAME_KEY)?.trim().slice(0, 20) ?? ''
   } catch {
-    return 'Visiteur'
+    return ''
   }
 }
 
 export function saveNickname(nickname: string) {
   if (!canUseStorage()) return
   try {
-    window.localStorage.setItem(NICKNAME_KEY, nickname.trim().slice(0, 20))
+    const clean = nickname.trim().slice(0, 20)
+    if (clean) window.localStorage.setItem(NICKNAME_KEY, clean)
+    else window.localStorage.removeItem(NICKNAME_KEY)
   } catch {
     // Ignore storage failures.
   }

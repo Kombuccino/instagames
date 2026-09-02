@@ -11,6 +11,7 @@ export const gameRegistry: InstagameDefinition[] = [
     title: 'LineFugg',
     description: '3 traits · fais le plus gros score',
     author: 'MiniFugg',
+    orientation: 'portrait',
     component: LineFugg,
     instructions: {
       goal: 'Trace trois lignes pour fabriquer le plus gros score possible sur la grille du jour.',
@@ -43,6 +44,7 @@ export const gameRegistry: InstagameDefinition[] = [
     title: 'Shoot the Shooter',
     description: 'Bois, mémorise, tiens jusqu’au blackout',
     author: 'MiniFugg',
+    orientation: 'landscape',
     component: ShootTheShooter,
     instructions: {
       goal: 'Bois le plus de shooters possible sans atteindre 100% d’alcool et sans faire trois erreurs.',
@@ -78,6 +80,7 @@ export const gameRegistry: InstagameDefinition[] = [
     title: 'Les Brochettes de Vlad',
     description: 'Empale la commande · évite l’ail',
     author: 'MiniFugg',
+    orientation: 'portrait',
     component: VladsSkewers,
     instructions: {
       goal: 'Sers le plus de clients possible en empalant les ingrédients dans l’ordre exact de leur commande.',
@@ -112,6 +115,7 @@ export const gameRegistry: InstagameDefinition[] = [
     title: 'HARI les dents pourries',
     description: 'Aligne les bonbons · pourris toute la mâchoire',
     author: 'MiniFugg',
+    orientation: 'portrait',
     component: HariRottenTeeth,
     instructions: {
       goal: 'Fais des alignements de bonbons pour transformer toutes les dents de HARI en vieux chicots.',
@@ -146,6 +150,7 @@ export const gameRegistry: InstagameDefinition[] = [
     title: 'Calc Drop',
     description: 'Complète des lignes · fabrique des calculs monstrueux',
     author: 'MiniFugg',
+    orientation: 'portrait',
     component: CalcDrop,
     instructions: {
       goal: 'Atteins 100 000 points à chaque niveau en construisant les lignes les plus rentables possible.',

@@ -28,19 +28,21 @@
   overflow: visible;
 }
 
+/* Phone-first: one information rail only. Level/progress and NEXT share the
+ * right side, leaving the rest of the width to the 10x20 board. */
 .calc-drop-board-stage {
-  --calc-drop-rail: clamp(48px, 15cqw, 62px);
+  --calc-drop-info-rail: clamp(50px, 14cqw, 60px);
   --calc-drop-control-size: var(--mf-touch-md);
   position: relative;
   width: min(
     100%,
-    calc(50cqh + var(--calc-drop-rail) + var(--calc-drop-rail) + var(--mf-gap-2))
+    calc(50cqh - var(--calc-drop-control-size) + var(--calc-drop-info-rail) + var(--mf-gap-1))
   );
   height: 100%;
   min-width: 0;
   min-height: 0;
   display: grid;
-  grid-template-columns: var(--calc-drop-rail) minmax(0, 1fr) var(--calc-drop-rail);
+  grid-template-columns: minmax(0, 1fr) var(--calc-drop-info-rail);
   gap: var(--mf-gap-1);
   align-items: start;
 }
@@ -60,13 +62,14 @@
 
 .calc-drop-board-shell {
   position: relative;
-  grid-column: 2;
+  grid-column: 1;
   width: 100%;
   height: 100%;
   min-width: 0;
   min-height: 0;
   display: grid;
-  place-items: start center;
+  place-items: start end;
+  overflow: visible;
 }
 
 .calc-drop-board {
@@ -138,18 +141,28 @@
 
 .calc-drop-side {
   container-type: inline-size;
+  grid-column: 2;
   width: 100%;
   align-self: start;
+  justify-self: start;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--mf-gap-1);
   min-width: 0;
-  padding-top: var(--mf-gap-3);
+  padding-top: 0;
   box-sizing: border-box;
 }
-.calc-drop-side-left { grid-column: 1; justify-self: end; }
-.calc-drop-side-right { grid-column: 3; justify-self: start; }
+
+.calc-drop-side-left {
+  z-index: 4;
+}
+
+/* NEXT deliberately starts below the complete level/progress block. */
+.calc-drop-side-right {
+  z-index: 3;
+  margin-top: clamp(154px, 24cqh, 196px);
+}
 
 .calc-drop-level {
   width: 100%;
@@ -175,7 +188,7 @@
 .calc-drop-side-target {
   display: grid;
   grid-template-columns: 1fr 8px;
-  grid-template-rows: auto clamp(56px, 16cqh, 88px) auto;
+  grid-template-rows: auto clamp(52px, 13cqh, 82px) auto;
   gap: var(--mf-gap-1);
   align-items: center;
   width: 100%;
@@ -362,22 +375,31 @@
   transform: translateY(-50%) rotate(-135deg);
 }
 
+/* Final result is always outside the grid, in the continuation of the
+ * calculation direction. Intermediate totals stay over their own cells. */
 .calc-drop-clear-score {
   position: absolute;
   z-index: 20;
   left: calc(100% + var(--mf-gap-1));
+  right: auto;
   top: 50%;
   transform: translateY(-50%);
-  padding: 3px 6px;
+  padding: 3px 5px;
   border: 2px solid #151515;
   background: #f2efe6;
   color: #151515;
-  font-size: var(--mf-text-sm);
+  font-size: clamp(10px, var(--mf-text-xs), 13px);
   line-height: 1;
   font-weight: 1000;
   white-space: nowrap;
   opacity: 0;
-  animation: calc-drop-line-score 850ms ease-out 430ms both;
+  animation: calc-drop-line-score-right 850ms ease-out 430ms both;
+}
+
+.calc-drop-clear-row.is-reversed .calc-drop-clear-score {
+  left: auto;
+  right: calc(100% + var(--mf-gap-1));
+  animation-name: calc-drop-line-score-left;
 }
 
 @keyframes calc-drop-operation-pop {
@@ -405,10 +427,15 @@
   78% { opacity: .9; transform: translateX(-18%) scaleX(.75); }
   100% { opacity: 0; transform: translateX(-55%) scaleX(.15); }
 }
-@keyframes calc-drop-line-score {
+@keyframes calc-drop-line-score-right {
   0% { opacity: 0; transform: translate(-8px, -50%) scale(.82); }
   25%, 76% { opacity: 1; transform: translate(0, -50%) scale(1); }
-  100% { opacity: 0; transform: translate(4px, -50%) scale(.95); }
+  100% { opacity: 0; transform: translate(5px, -50%) scale(.95); }
+}
+@keyframes calc-drop-line-score-left {
+  0% { opacity: 0; transform: translate(8px, -50%) scale(.82); }
+  25%, 76% { opacity: 1; transform: translate(0, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-5px, -50%) scale(.95); }
 }
 
 .calc-drop-controls {
@@ -426,9 +453,11 @@
   pointer-events: none;
 }
 
+/* On a narrow phone the controls use the strip immediately below the board;
+ * this is the minimum vertical reservation compatible with the required
+ * left/right-over-down layout. */
 .calc-drop-move-controls {
   left: 0;
-  width: var(--calc-drop-rail);
   display: grid;
   grid-template-columns: repeat(2, auto);
   grid-template-rows: repeat(2, auto);
@@ -442,7 +471,6 @@
 
 .calc-drop-rotate-controls {
   right: 0;
-  width: var(--calc-drop-rail);
   display: flex;
   justify-content: center;
   gap: var(--mf-gap-2);
@@ -471,58 +499,50 @@
 .calc-drop-controls button.is-down { background: #e0c857; }
 .calc-drop-rotate-controls button { background: #7b9fc5; }
 
+/* Desktop/wide portrait: controls get real side gutters and the board can use
+ * the complete stage height. The information rail stays narrow on the right. */
 @container (min-width: 460px) {
   .calc-drop-board-stage {
-    --calc-drop-rail: clamp(96px, 20cqw, 108px);
+    --calc-drop-control-rail: clamp(88px, 18cqw, 102px);
+    --calc-drop-info-rail: clamp(58px, 12cqw, 68px);
     --calc-drop-control-size: min(var(--mf-touch-sm), 48px);
+    width: min(
+      100%,
+      calc(50cqh + var(--calc-drop-control-rail) + var(--calc-drop-info-rail) + var(--mf-gap-2))
+    );
+    grid-template-columns: var(--calc-drop-control-rail) minmax(0, 1fr) var(--calc-drop-info-rail);
+  }
+
+  .calc-drop-board-shell {
+    grid-column: 2;
   }
 
   .calc-drop-board {
     width: min(100%, 50cqh);
   }
 
+  .calc-drop-side-left,
+  .calc-drop-side-right {
+    grid-column: 3;
+  }
+
+  .calc-drop-side-right {
+    margin-top: clamp(150px, 23cqh, 190px);
+  }
+
   .calc-drop-lock {
     bottom: var(--mf-gap-2);
   }
 
-  .calc-drop-side {
-    padding-top: var(--mf-gap-2);
-  }
-}
-
-@container (max-width: 459px) {
-  .calc-drop-board-stage {
-    width: 100%;
-  }
-
-  .calc-drop-controls {
-    left: 50%;
-    right: auto;
-    width: min(100%, 430px);
-    transform: translateX(-50%);
-  }
-
   .calc-drop-move-controls {
     left: 0;
-    width: auto;
+    width: var(--calc-drop-control-rail);
   }
 
   .calc-drop-rotate-controls {
     right: 0;
-    width: auto;
-  }
-
-  .calc-drop-clear-score {
-    left: auto;
-    right: var(--mf-gap-1);
-    top: auto;
-    bottom: calc(100% + 2px);
-    transform: none;
-  }
-
-  @keyframes calc-drop-line-score {
-    0% { opacity: 0; transform: translateY(4px) scale(.82); }
-    25%, 76% { opacity: 1; transform: translateY(0) scale(1); }
-    100% { opacity: 0; transform: translateY(-3px) scale(.95); }
+    width: var(--calc-drop-info-rail);
+    flex-direction: column;
+    align-items: center;
   }
 }

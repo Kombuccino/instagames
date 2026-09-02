@@ -179,18 +179,21 @@
 }
 
 .crazy-papers-pile-sheet {
-  --sheet: 0;
   position: absolute;
-  z-index: calc(2 + var(--sheet));
   left: 7%;
   right: 7%;
-  bottom: 12px;
   height: 30px;
   border: 2px solid #393225;
   background: #d7c9a0;
   box-shadow: 2px 2px 0 rgba(38, 33, 25, .75);
-  transform: translate(calc(var(--sheet) * 1px), calc(var(--sheet) * -5px)) rotate(calc((var(--sheet) - 2) * .25deg));
 }
+
+.crazy-papers-pile-sheet:nth-of-type(1) { z-index: 2; bottom: 12px; transform: translateX(0) rotate(-.5deg); }
+.crazy-papers-pile-sheet:nth-of-type(2) { z-index: 3; bottom: 17px; transform: translateX(1px) rotate(-.25deg); }
+.crazy-papers-pile-sheet:nth-of-type(3) { z-index: 4; bottom: 22px; transform: translateX(2px) rotate(0deg); }
+.crazy-papers-pile-sheet:nth-of-type(4) { z-index: 5; bottom: 27px; transform: translateX(3px) rotate(.25deg); }
+.crazy-papers-pile-sheet:nth-of-type(5) { z-index: 6; bottom: 32px; transform: translateX(4px) rotate(.5deg); }
+.crazy-papers-pile-sheet:nth-of-type(6) { z-index: 7; bottom: 37px; transform: translateX(5px) rotate(.75deg); }
 
 .crazy-papers-pile-sheet:nth-of-type(3n) { background: #c9d3c2; }
 .crazy-papers-pile-sheet:nth-of-type(3n + 1) { background: #d8c4b6; }

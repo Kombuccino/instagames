@@ -1,0 +1,276 @@
+/* Prompt 5: lower client target, grill atmosphere, persistent gore rain and level cards. */
+
+.vlad-v5-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.vlad-v5-shell > .vlad-game {
+  position: absolute;
+  inset: 0;
+}
+
+/* The active customer ends immediately above the skewer-control boundary. */
+.vlad-client-rail {
+  top: auto !important;
+  bottom: calc(36% + 8px) !important;
+  transform: none !important;
+}
+
+.vlad-control-boundary > span {
+  display: none !important;
+}
+
+/* Grill: visible coals/flames behind a physical rack at the bottom. */
+.vlad-fire {
+  z-index: 2;
+  left: -7%;
+  right: 10%;
+  bottom: calc(var(--minifugg-core-bottom-reserved, 82px) - 76px);
+  height: 168px;
+  opacity: .9;
+}
+
+.vlad-fire::before {
+  opacity: 1;
+  filter: blur(7px);
+}
+
+.vlad-fire i {
+  width: 42px;
+  height: 96px;
+  filter: blur(2px);
+}
+
+.vlad-fire i:nth-child(2) { height: 118px; }
+.vlad-fire i:nth-child(4) { height: 108px; }
+
+.vlad-game::after {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  left: -8%;
+  right: 8%;
+  bottom: calc(var(--minifugg-core-bottom-reserved, 82px) - 20px);
+  height: 86px;
+  pointer-events: none;
+  opacity: .72;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 17px, rgba(22,22,20,.94) 18px 22px, transparent 23px 37px),
+    repeating-linear-gradient(0deg, transparent 0 14px, rgba(18,18,17,.88) 15px 19px, transparent 20px 31px);
+  border-top: 5px solid rgba(72,66,58,.9);
+  box-shadow: 0 -4px 0 rgba(12,10,8,.7), 0 -12px 24px rgba(255,89,22,.18);
+  transform: perspective(280px) rotateX(58deg);
+  transform-origin: 50% 100%;
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+
+/* Ingredients already on the skewer look browned and carry grill marks. */
+.vlad-skewered-stack .vlad-ingredient-icon {
+  filter: sepia(.48) saturate(1.18) brightness(.78) contrast(1.18) drop-shadow(0 4px 4px rgba(0,0,0,.42));
+}
+
+.vlad-skewered-stack::after {
+  content: '';
+  position: absolute;
+  z-index: 5;
+  inset: 1px 2px;
+  border-radius: 16px;
+  pointer-events: none;
+  opacity: .5;
+  background: repeating-linear-gradient(0deg, transparent 0 7px, rgba(55,19,7,.58) 8px 10px, transparent 11px 15px);
+  mix-blend-mode: multiply;
+}
+
+/* The loaded skewer leaks progressively more juice onto Vlad's fist. */
+.vlad-skewer-metal::after {
+  content: '';
+  position: absolute;
+  z-index: 5;
+  left: -3px;
+  bottom: 5px;
+  width: 11px;
+  height: 0;
+  border-radius: 8px 8px 12px 12px;
+  opacity: 0;
+  background: linear-gradient(180deg, rgba(124,18,16,.1), rgba(151,22,18,.88));
+  transition: height .16s ease, opacity .16s ease;
+}
+
+.vlad-hand::before,
+.vlad-hand::after {
+  content: '';
+  position: absolute;
+  z-index: 7;
+  pointer-events: none;
+  opacity: 0;
+  background: #a61d19;
+}
+
+.vlad-hand::before {
+  left: 24px;
+  top: 19px;
+  width: 15px;
+  height: 9px;
+  border-radius: 56% 44% 66% 34%;
+  transform: rotate(18deg);
+}
+
+.vlad-hand::after {
+  left: 32px;
+  top: 28px;
+  width: 7px;
+  height: 13px;
+  border-radius: 60% 40% 70% 30%;
+  animation: vlad-hand-drip 1.15s ease-in infinite;
+}
+
+.vlad-skewer:has(.vlad-skewered-stack .vlad-ingredient-icon:nth-child(2)) .vlad-skewer-metal::after {
+  height: 33px;
+  opacity: .62;
+}
+
+.vlad-skewer:has(.vlad-skewered-stack .vlad-ingredient-icon:nth-child(2)) .vlad-hand::before {
+  opacity: .58;
+}
+
+.vlad-skewer:has(.vlad-skewered-stack .vlad-ingredient-icon:nth-child(4)) .vlad-skewer-metal::after {
+  height: 65px;
+  opacity: .9;
+}
+
+.vlad-skewer:has(.vlad-skewered-stack .vlad-ingredient-icon:nth-child(4)) .vlad-hand::before,
+.vlad-skewer:has(.vlad-skewered-stack .vlad-ingredient-icon:nth-child(4)) .vlad-hand::after {
+  opacity: .92;
+}
+
+.vlad-skewer:has(.vlad-skewered-stack .vlad-ingredient-icon:nth-child(6)) .vlad-hand {
+  text-shadow: 0 5px 8px rgba(107,14,12,.75), 8px 0 0 rgba(120,18,14,.18);
+}
+
+@keyframes vlad-hand-drip {
+  0% { transform: translateY(-2px) scaleY(.55); opacity: 0; }
+  22% { opacity: .95; }
+  72% { transform: translateY(15px) scaleY(1.35); opacity: .8; }
+  100% { transform: translateY(28px) scale(.55); opacity: 0; }
+}
+
+/* Persistent gore layer: below falling ingredients, above background/grill. */
+.vlad-gore-rain {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: layout paint style;
+}
+
+.vlad-gore-bit {
+  position: absolute;
+  display: block;
+  width: var(--gore-size);
+  height: calc(var(--gore-size) * 1.35);
+  background: var(--gore);
+  box-shadow: 0 1px 2px rgba(0,0,0,.28);
+  transform: translate(-50%, -50%);
+  animation: vlad-gore-fall var(--gore-time) cubic-bezier(.18,.58,.26,1) var(--gore-delay) forwards;
+}
+
+.vlad-gore-bit.is-drop {
+  border-radius: 70% 35% 68% 40%;
+}
+
+.vlad-gore-bit.is-chunk {
+  height: calc(var(--gore-size) * .78);
+  border-radius: 54% 24% 62% 32%;
+  outline: 1px solid color-mix(in srgb, var(--gore) 74%, #3c160f);
+}
+
+@keyframes vlad-gore-fall {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translate3d(0, -8px, 0) rotate(0) scale(.55);
+  }
+  8% { opacity: .96; }
+  25% {
+    transform: translate(-50%, -50%) translate3d(calc(var(--gore-x) * .3), 38px, 0) rotate(calc(var(--gore-rot) * .3)) scale(1);
+  }
+  100% {
+    opacity: .74;
+    transform: translate(-50%, -50%) translate3d(var(--gore-x), 105vh, 0) rotate(var(--gore-rot)) scale(.72);
+  }
+}
+
+/* Clear level beat at the start and every three served customers. */
+.vlad-level-card {
+  position: absolute;
+  z-index: 36;
+  left: 43%;
+  top: 41%;
+  display: grid;
+  gap: 3px;
+  min-width: min(230px, 68%);
+  padding: 14px 20px 13px;
+  border: 3px solid #2a1009;
+  outline: 2px solid rgba(255,195,79,.82);
+  color: #fff0cf;
+  text-align: center;
+  background: #7c1e14;
+  box-shadow: 8px 9px 0 rgba(30,8,5,.5), 0 0 42px rgba(255,93,23,.18);
+  pointer-events: none;
+  transform: translate(-50%, -50%) rotate(-2deg);
+  animation: vlad-level-card .94s cubic-bezier(.13,.82,.18,1) both;
+}
+
+.vlad-level-card strong {
+  font-size: var(--mf-text-lg, 25px);
+  font-weight: 1000;
+  letter-spacing: -.045em;
+}
+
+.vlad-level-card span {
+  font-size: var(--mf-text-sm, 14px);
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+@keyframes vlad-level-card {
+  0% { opacity: 0; transform: translate(-50%, -38%) rotate(-7deg) scale(.7); }
+  18% { opacity: 1; transform: translate(-50%, -50%) rotate(2deg) scale(1.07); }
+  72% { opacity: 1; transform: translate(-50%, -52%) rotate(-2deg) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -70%) rotate(3deg) scale(.92); }
+}
+
+@container (max-height: 700px) {
+  .vlad-client-rail {
+    top: auto !important;
+    bottom: calc(39% + 5px) !important;
+  }
+
+  .vlad-client.is-waiting {
+    min-height: 39px;
+    padding: 3px 5px;
+  }
+
+  .vlad-client.is-waiting .vlad-order {
+    display: none;
+  }
+
+  .vlad-fire {
+    bottom: calc(var(--minifugg-core-bottom-reserved, 70px) - 68px);
+    height: 148px;
+  }
+
+  .vlad-game::after {
+    bottom: calc(var(--minifugg-core-bottom-reserved, 70px) - 17px);
+    height: 72px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vlad-gore-bit,
+  .vlad-hand::after,
+  .vlad-level-card { animation: none; }
+}

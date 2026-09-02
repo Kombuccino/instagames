@@ -450,13 +450,18 @@ export function GameRuntimeV2({ game, catalog, seed, active, mounted }: GameRunt
             {sheet === 'comments' && (
               <div className="platform-comments">
                 <div className="platform-comment-form">
+                  <span className="platform-comment-avatar is-composer" aria-hidden="true">{randomProfileIcon(nickname || profileNickname || profile?.id)}</span>
                   <input value={nickname} onChange={(event) => setNickname(event.target.value.slice(0, 20))} placeholder="Pseudo" maxLength={20} />
                   <textarea value={commentText} onChange={(event) => setCommentText(event.target.value.slice(0, 500))} placeholder="Ton commentaire…" maxLength={500} rows={3} />
                   <button type="button" onClick={() => void postComment()} disabled={!nickname.trim() || !commentText.trim()}>Commenter</button>
                 </div>
                 <div className="platform-comment-list">
                   {comments.length === 0 ? <p className="platform-muted">Aucun commentaire.</p> : comments.map((comment) => (
-                    <article key={comment.id}><div><strong>@{comment.nickname}</strong><time>{new Date(comment.createdAt).toLocaleDateString()}</time></div><p>{comment.body}</p></article>
+                    <article key={comment.id}>
+                      <span className="platform-comment-avatar" aria-hidden="true">{randomProfileIcon(comment.nickname)}</span>
+                      <div><strong>@{comment.nickname}</strong><time>{new Date(comment.createdAt).toLocaleDateString()}</time></div>
+                      <p>{comment.body}</p>
+                    </article>
                   ))}
                 </div>
               </div>
@@ -472,7 +477,7 @@ export function GameRuntimeV2({ game, catalog, seed, active, mounted }: GameRunt
             {sheet === 'profile' && (
               <div className="platform-profile is-simple">
                 <div className="platform-profile-summary">
-                  <div className="platform-profile-avatar" aria-hidden="true">{randomProfileIcon(profile?.id)}</div>
+                  <div className="platform-profile-avatar" aria-hidden="true">{randomProfileIcon(profileNickname || nickname || profile?.id)}</div>
                   <strong>{profileNickname || 'Joueur MiniFugg'}</strong>
                 </div>
 

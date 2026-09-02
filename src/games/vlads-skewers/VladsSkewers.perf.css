@@ -1,0 +1,207 @@
+/* Prompt 3 performance + impact pass. This file intentionally overrides the
+   original art-direction CSS without changing the existing visual foundation. */
+
+.vlad-drop-field {
+  overflow: hidden;
+  contain: layout paint style;
+}
+
+.vlad-drop {
+  left: 0;
+  top: 0;
+  filter: none;
+  will-change: auto;
+  text-shadow: 0 7px 6px rgba(0,0,0,.45);
+  transform: translate3d(-100px, -100px, 0);
+  transform-origin: 50% 50%;
+}
+
+.vlad-drop.is-blood {
+  filter: none;
+  text-shadow: 0 0 13px rgba(255,20,55,.76), 0 7px 6px rgba(0,0,0,.45);
+}
+.vlad-drop.is-garlic {
+  filter: none;
+  text-shadow: 0 0 9px rgba(224,239,191,.28), 0 7px 6px rgba(0,0,0,.45);
+}
+.vlad-game.is-slowed .vlad-drop { filter: none; opacity: .94; }
+
+.vlad-client-rail {
+  top: calc(var(--minifugg-core-top-reserved, 72px) + var(--mf-gap-3, 12px));
+  right: var(--mf-pad-x, 10px);
+  width: clamp(108px, 27cqw, 132px);
+  transform: none;
+}
+
+.vlad-rail-label::after { content: ''; }
+.vlad-active-row { position: relative; margin-top: 1px; }
+.vlad-client.is-active { min-height: 116px; padding: 10px 8px 27px; }
+.vlad-client.is-waiting { min-height: 57px; }
+
+/* Big misses live beside the active client, not in the game HUD. */
+.vlad-lost {
+  position: absolute;
+  z-index: 16;
+  left: -43px;
+  top: 50%;
+  display: grid;
+  gap: 4px;
+  color: #ffdec8;
+  font-size: clamp(27px, 7.4cqw, 34px);
+  line-height: .9;
+  text-shadow: 0 3px 9px rgba(0,0,0,.62), 0 0 12px rgba(190,25,24,.2);
+  transform: translateY(-50%);
+}
+.vlad-lost span.is-lost { opacity: .14; transform: scale(.66) rotate(-16deg); }
+.vlad-next-needed { display: none !important; }
+
+.vlad-skewer {
+  left: 0;
+  top: 0;
+  filter: none;
+  will-change: auto;
+  transform: translate3d(-100px, -100px, 0) translate(-50%, -100%);
+}
+.vlad-skewer-metal { box-shadow: inset 0 0 0 1px rgba(0,0,0,.34), 0 0 5px rgba(255,255,255,.18), 0 7px 8px rgba(0,0,0,.38); }
+
+.vlad-skewered-stack .vlad-ingredient-icon {
+  animation: vlad-impale-ultra .23s cubic-bezier(.12,.84,.18,1.38) both;
+}
+@keyframes vlad-impale-ultra {
+  0% { transform: translateY(-36px) scale(1.55, .6) rotate(-13deg); }
+  42% { transform: translateY(7px) scale(.78, 1.34) rotate(8deg); }
+  68% { transform: translateY(-3px) scale(1.15, .91) rotate(-3deg); }
+  100% { transform: translateY(0) scale(1) rotate(0); }
+}
+
+.vlad-impact {
+  position: absolute;
+  z-index: 31;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+.vlad-impact::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--juice) 45%, white) 0 5%, color-mix(in srgb, var(--juice) 72%, transparent) 17%, transparent 62%);
+  transform: translate(-50%, -50%);
+  animation: vlad-impact-flash .34s ease-out both;
+}
+.vlad-impact-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34px;
+  height: 34px;
+  border: 5px solid color-mix(in srgb, var(--juice) 76%, white);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: vlad-impact-ring .42s cubic-bezier(.12,.7,.2,1) both;
+}
+.vlad-impact-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 64px;
+  height: 42px;
+  border-radius: 58% 42% 55% 45%;
+  background: var(--juice);
+  box-shadow: -13px 8px 0 -4px var(--juice), 17px -7px 0 -7px var(--juice), 20px 13px 0 -9px var(--juice);
+  transform: translate(-50%, -50%) rotate(-11deg);
+  animation: vlad-impact-core .42s ease-out both;
+}
+.vlad-impact-slash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 156px;
+  height: 9px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, #fff8dc 19%, var(--juice) 47%, #fff8dc 76%, transparent);
+  transform: translate(-50%, -50%) rotate(-24deg) scaleX(.2);
+  animation: vlad-impact-slash .31s cubic-bezier(.08,.82,.18,1) both;
+}
+.vlad-impact strong {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  color: #fff7df;
+  font-size: clamp(22px, 7cqw, 34px);
+  font-weight: 1000;
+  letter-spacing: -.06em;
+  -webkit-text-stroke: 2px #25100b;
+  paint-order: stroke fill;
+  text-shadow: 3px 4px 0 color-mix(in srgb, var(--juice) 72%, #32100a);
+  white-space: nowrap;
+  transform: translate(-50%, -50%) rotate(-9deg);
+  animation: vlad-impact-word .45s cubic-bezier(.12,.82,.16,1.2) both;
+}
+.vlad-impact i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--pw);
+  height: var(--ph);
+  border-radius: 65% 35% 60% 40%;
+  background: var(--juice);
+  box-shadow: 0 2px 4px rgba(0,0,0,.28);
+  animation: vlad-impact-particle .58s cubic-bezier(.1,.68,.18,1) both;
+}
+@keyframes vlad-impact-flash {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.18); }
+  24% { opacity: .9; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.35); }
+}
+@keyframes vlad-impact-ring {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(.25); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(3.6); }
+}
+@keyframes vlad-impact-core {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(-11deg) scale(.18); }
+  30% { opacity: 1; transform: translate(-50%, -50%) rotate(8deg) scale(1.35); }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(19deg) scale(.7); }
+}
+@keyframes vlad-impact-slash {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(-24deg) scaleX(.12); }
+  35% { opacity: 1; transform: translate(-50%, -50%) rotate(-24deg) scaleX(1.18); }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(-24deg) scaleX(1.45); }
+}
+@keyframes vlad-impact-word {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(-15deg) scale(.25); }
+  28% { opacity: 1; transform: translate(-50%, -72%) rotate(-8deg) scale(1.28); }
+  70% { opacity: 1; transform: translate(-50%, -86%) rotate(-5deg) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -118%) rotate(4deg) scale(.82); }
+}
+@keyframes vlad-impact-particle {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.25) rotate(0); }
+  14% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.56) rotate(var(--pr)); }
+}
+
+@container (max-height: 700px) {
+  .vlad-client-rail {
+    top: calc(var(--minifugg-core-top-reserved, 58px) + 4px);
+    width: clamp(102px, 25cqw, 122px);
+    gap: 4px;
+  }
+  .vlad-client.is-waiting { min-height: 48px; padding: 4px 5px; }
+  .vlad-client.is-waiting .vlad-order { display: none; }
+  .vlad-client.is-active { min-height: 101px; padding-top: 7px; }
+  .vlad-lost { left: -37px; font-size: 26px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vlad-impact::before,
+  .vlad-impact-ring,
+  .vlad-impact-core,
+  .vlad-impact-slash,
+  .vlad-impact strong,
+  .vlad-impact i { animation: none; }
+}

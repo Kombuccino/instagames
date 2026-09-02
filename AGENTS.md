@@ -17,7 +17,8 @@ Before creating or modifying any MiniFugg game, read `GAME_DEV_SPEC.md`, `docs/S
 11. Respect Core safe zones on every supported layout. Essential gameplay UI and touch targets must stay outside `--minifugg-core-top-reserved`, `--minifugg-core-bottom-reserved`, `--minifugg-core-left-reserved` and `--minifugg-core-right-reserved`. Decoration may extend behind them.
 12. Preserve the feed escape gesture. Never apply `touch-action: none` to the fullscreen/root game container. Keep root/default vertical interaction compatible with `pan-y`, and use `touch-action: none` only on the smallest local drag/hold surface that truly needs it.
 13. Never cover or repurpose the bottom Core swipe gutter (`--minifugg-swipe-gutter`). A player must always be able to swipe away from the game.
-14. Use pointer capture only for real local drag/hold interactions and always clean it up on pointer up/cancel and lifecycle cleanup where relevant.
-15. Do not fall back to the generic AI aesthetic. Read the style kit catalog in `docs/style-kits/` and `src/style-kits/catalog.ts`. If visual direction is unclear, use the visual preflight from `docs/STYLE_SYSTEM.md`.
-16. Once a visual direction is chosen, create/read `src/games/<game-id>/ART_DIRECTION.md` and preserve it across later prompts.
-17. If existing game code conflicts with these contracts, treat the contracts as the target architecture and preserve gameplay while migrating deliberately.
+14. Keyboard gameplay controls belong to the active game. Core/feed navigation must not intercept Arrow keys, Space, Enter, WASD/ZQSD or other common gameplay keys. Desktop feed navigation should use mouse wheel/trackpad or pointer/touch-style gestures.
+15. Use pointer capture only for real local drag/hold interactions and always clean it up on pointer up/cancel and lifecycle cleanup where relevant.
+16. Do not fall back to the generic AI aesthetic. Read the style kit catalog in `docs/style-kits/` and `src/style-kits/catalog.ts`. If visual direction is unclear, use the visual preflight from `docs/STYLE_SYSTEM.md`.
+17. Once a visual direction is chosen, create/read `src/games/<game-id>/ART_DIRECTION.md` and preserve it across later prompts.
+18. If existing game code conflicts with these contracts, treat the contracts as the target architecture and preserve gameplay while migrating deliberately.

@@ -1,0 +1,276 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" shape-rendering="crispEdges">
+  <defs>
+    <symbol id="tf-hero" viewBox="0 0 96 96">
+      <g>
+        <rect x="27" y="16" width="42" height="6" fill="#252628"/>
+        <rect x="31" y="10" width="34" height="8" fill="#252628"/>
+        <rect x="35" y="6" width="26" height="6" fill="#E9584C"/>
+        <rect x="38" y="22" width="20" height="7" fill="#252628"/>
+        <rect x="42" y="17" width="12" height="7" fill="#B96545"/>
+        <rect x="18" y="28" width="60" height="45" fill="#252628"/>
+        <rect x="22" y="31" width="52" height="36" fill="#4C9ED9"/>
+        <rect x="24" y="34" width="48" height="8" fill="#6BB9E6"/>
+        <rect x="31" y="35" width="34" height="27" fill="#FFF1C7"/>
+        <rect x="35" y="39" width="9" height="9" fill="#252628"/>
+        <rect x="52" y="39" width="9" height="9" fill="#252628"/>
+        <rect x="38" y="42" width="3" height="3" fill="#FFF1C7"/>
+        <rect x="55" y="42" width="3" height="3" fill="#FFF1C7"/>
+        <rect x="43" y="53" width="10" height="3" fill="#252628"/>
+        <rect x="40" y="56" width="16" height="3" fill="#252628"/>
+        <rect x="16" y="61" width="64" height="12" fill="#E9584C"/>
+        <rect x="22" y="64" width="52" height="4" fill="#F47B65"/>
+        <rect x="12" y="69" width="72" height="7" fill="#252628"/>
+        <rect x="16" y="70" width="64" height="4" fill="#F4C84A"/>
+        <rect x="20" y="77" width="22" height="11" fill="#252628"/>
+        <rect x="54" y="77" width="22" height="11" fill="#252628"/>
+        <rect x="24" y="79" width="14" height="7" fill="#646B68"/>
+        <rect x="58" y="79" width="14" height="7" fill="#646B68"/>
+        <rect x="6" y="43" width="14" height="7" fill="#252628"/>
+        <rect x="2" y="38" width="7" height="17" fill="#252628"/>
+        <rect x="5" y="40" width="4" height="13" fill="#B96545"/>
+        <rect x="76" y="43" width="14" height="7" fill="#252628"/>
+        <rect x="87" y="38" width="7" height="17" fill="#252628"/>
+        <rect x="87" y="40" width="4" height="13" fill="#B96545"/>
+        <rect x="14" y="34" width="7" height="7" fill="#F4C84A"/>
+        <rect x="75" y="34" width="7" height="7" fill="#F4C84A"/>
+      </g>
+    </symbol>
+
+    <symbol id="tf-wagon" viewBox="0 0 72 56">
+      <rect x="8" y="10" width="56" height="34" fill="#252628"/>
+      <rect x="12" y="14" width="48" height="24" fill="#FFF1C7"/>
+      <rect x="12" y="14" width="48" height="6" fill="#B96545"/>
+      <rect x="17" y="21" width="38" height="9" fill="#F5DDA4"/>
+      <rect x="20" y="24" width="12" height="4" fill="#6CBF67"/>
+      <rect x="36" y="24" width="14" height="4" fill="#4C9ED9"/>
+      <rect x="4" y="29" width="8" height="6" fill="#646B68"/>
+      <rect x="60" y="29" width="8" height="6" fill="#646B68"/>
+      <rect x="14" y="42" width="16" height="9" fill="#252628"/>
+      <rect x="42" y="42" width="16" height="9" fill="#252628"/>
+      <rect x="18" y="44" width="8" height="5" fill="#646B68"/>
+      <rect x="46" y="44" width="8" height="5" fill="#646B68"/>
+    </symbol>
+
+    <symbol id="tf-enemy-punk" viewBox="0 0 80 72">
+      <rect x="17" y="20" width="46" height="38" fill="#252628"/>
+      <rect x="21" y="24" width="38" height="28" fill="#805B8F"/>
+      <rect x="25" y="27" width="30" height="7" fill="#A678B1"/>
+      <rect x="26" y="36" width="8" height="8" fill="#252628"/>
+      <rect x="46" y="36" width="8" height="8" fill="#252628"/>
+      <rect x="30" y="45" width="20" height="4" fill="#252628"/>
+      <polygon points="26,20 31,8 36,20" fill="#E9584C"/>
+      <polygon points="36,20 41,5 46,20" fill="#F4C84A"/>
+      <polygon points="46,20 51,9 56,20" fill="#E9584C"/>
+      <polygon points="12,47 2,43 12,39" fill="#BOLT"/>
+      <polygon points="68,47 78,43 68,39" fill="#BOLT"/>
+      <rect x="19" y="56" width="17" height="9" fill="#252628"/>
+      <rect x="44" y="56" width="17" height="9" fill="#252628"/>
+      <rect x="23" y="58" width="9" height="5" fill="#646B68"/>
+      <rect x="48" y="58" width="9" height="5" fill="#646B68"/>
+    </symbol>
+
+    <symbol id="tf-enemy-jaw" viewBox="0 0 88 76">
+      <rect x="15" y="18" width="58" height="41" fill="#252628"/>
+      <rect x="19" y="22" width="50" height="31" fill="#B96545"/>
+      <rect x="24" y="26" width="40" height="8" fill="#D47C58"/>
+      <rect x="25" y="36" width="9" height="9" fill="#252628"/>
+      <rect x="54" y="36" width="9" height="9" fill="#252628"/>
+      <rect x="19" y="50" width="50" height="15" fill="#252628"/>
+      <rect x="23" y="52" width="42" height="9" fill="#646B68"/>
+      <polygon points="25,52 30,60 35,52" fill="#FFF1C7"/>
+      <polygon points="38,52 43,60 48,52" fill="#FFF1C7"/>
+      <polygon points="51,52 56,60 61,52" fill="#FFF1C7"/>
+      <rect x="35" y="10" width="18" height="12" fill="#252628"/>
+      <rect x="39" y="6" width="10" height="8" fill="#BOLT_DARK"/>
+      <rect x="12" y="63" width="22" height="9" fill="#252628"/>
+      <rect x="54" y="63" width="22" height="9" fill="#252628"/>
+    </symbol>
+
+    <symbol id="tf-enemy-tank" viewBox="0 0 92 76">
+      <rect x="9" y="23" width="74" height="38" fill="#252628"/>
+      <rect x="14" y="27" width="64" height="28" fill="#6D8585"/>
+      <rect x="18" y="31" width="56" height="7" fill="#8CA2A0"/>
+      <rect x="24" y="40" width="10" height="9" fill="#252628"/>
+      <rect x="58" y="40" width="10" height="9" fill="#252628"/>
+      <rect x="36" y="49" width="20" height="4" fill="#252628"/>
+      <rect x="20" y="17" width="52" height="9" fill="#252628"/>
+      <rect x="27" y="13" width="38" height="7" fill="#754434"/>
+      <rect x="5" y="34" width="10" height="16" fill="#BOLT_DARK"/>
+      <rect x="77" y="34" width="10" height="16" fill="#BOLT_DARK"/>
+      <rect x="12" y="59" width="26" height="12" fill="#252628"/>
+      <rect x="54" y="59" width="26" height="12" fill="#252628"/>
+      <rect x="18" y="62" width="14" height="6" fill="#646B68"/>
+      <rect x="60" y="62" width="14" height="6" fill="#646B68"/>
+    </symbol>
+
+    <symbol id="tf-enemy-scrap" viewBox="0 0 88 80">
+      <rect x="14" y="22" width="60" height="40" fill="#252628"/>
+      <rect x="18" y="26" width="52" height="30" fill="#8D8B50"/>
+      <rect x="18" y="26" width="22" height="8" fill="#B96545"/>
+      <rect x="45" y="26" width="25" height="8" fill="#4C9ED9"/>
+      <rect x="26" y="38" width="8" height="9" fill="#252628"/>
+      <rect x="53" y="36" width="12" height="12" fill="#252628"/>
+      <rect x="57" y="40" width="4" height="4" fill="#F4C84A"/>
+      <rect x="34" y="50" width="19" height="4" fill="#252628"/>
+      <rect x="22" y="12" width="11" height="13" fill="#252628"/>
+      <rect x="25" y="8" width="5" height="7" fill="#B96545"/>
+      <rect x="51" y="15" width="17" height="10" fill="#252628"/>
+      <rect x="54" y="18" width="11" height="5" fill="#F4C84A"/>
+      <rect x="8" y="38" width="8" height="14" fill="#646B68"/>
+      <rect x="72" y="35" width="8" height="20" fill="#646B68"/>
+      <rect x="18" y="61" width="20" height="11" fill="#252628"/>
+      <rect x="50" y="61" width="20" height="11" fill="#252628"/>
+      <rect x="68" y="54" width="4" height="15" fill="#B96545"/>
+      <rect x="70" y="67" width="8" height="4" fill="#B96545"/>
+    </symbol>
+
+    <symbol id="tf-weapon-glove" viewBox="0 0 48 48">
+      <rect x="12" y="10" width="24" height="22" fill="#252628"/>
+      <rect x="8" y="17" width="10" height="12" fill="#252628"/>
+      <rect x="15" y="13" width="18" height="16" fill="#E9584C"/>
+      <rect x="11" y="19" width="7" height="8" fill="#F47B65"/>
+      <rect x="17" y="32" width="16" height="8" fill="#252628"/>
+      <rect x="20" y="32" width="10" height="6" fill="#FFF1C7"/>
+    </symbol>
+
+    <symbol id="tf-weapon-wrench" viewBox="0 0 48 48">
+      <polygon points="11,7 18,12 25,19 20,24 13,17 7,16 5,10" fill="#252628"/>
+      <polygon points="15,11 23,19 20,22 12,14" fill="#A9B1AA"/>
+      <polygon points="22,21 40,39 34,45 16,27" fill="#252628"/>
+      <polygon points="23,24 37,38 34,41 20,27" fill="#A9B1AA"/>
+      <rect x="27" y="30" width="8" height="5" fill="#E9584C"/>
+    </symbol>
+
+    <symbol id="tf-weapon-hammer" viewBox="0 0 48 48">
+      <rect x="9" y="8" width="28" height="15" fill="#252628"/>
+      <rect x="13" y="11" width="20" height="9" fill="#A9B1AA"/>
+      <rect x="21" y="21" width="7" height="18" fill="#252628"/>
+      <rect x="23" y="23" width="3" height="14" fill="#754434"/>
+      <rect x="18" y="37" width="13" height="5" fill="#E9584C"/>
+    </symbol>
+
+    <symbol id="tf-weapon-saw" viewBox="0 0 48 48">
+      <polygon points="24,4 28,10 35,7 34,14 42,15 36,21 43,26 35,29 38,37 29,35 26,44 21,36 13,41 14,32 5,31 12,24 5,19 14,16 11,8 20,11" fill="#252628"/>
+      <polygon points="24,9 28,14 33,13 32,18 37,20 32,24 36,28 30,29 31,34 26,32 23,38 20,32 15,34 16,28 10,26 15,22 11,18 17,17 16,12 21,14" fill="#A9B1AA"/>
+      <rect x="18" y="18" width="12" height="12" fill="#F4C84A"/>
+      <rect x="21" y="21" width="6" height="6" fill="#252628"/>
+    </symbol>
+
+    <symbol id="tf-weapon-cannon" viewBox="0 0 48 48">
+      <rect x="8" y="14" width="30" height="18" fill="#252628"/>
+      <rect x="12" y="17" width="22" height="12" fill="#6D8585"/>
+      <rect x="34" y="18" width="9" height="10" fill="#252628"/>
+      <rect x="5" y="20" width="8" height="6" fill="#B96545"/>
+      <rect x="15" y="31" width="7" height="10" fill="#252628"/>
+      <rect x="25" y="31" width="7" height="10" fill="#252628"/>
+      <rect x="17" y="34" width="13" height="4" fill="#E9584C"/>
+    </symbol>
+
+    <symbol id="tf-weapon-spring-fist" viewBox="0 0 48 48">
+      <rect x="7" y="9" width="22" height="17" fill="#252628"/>
+      <rect x="10" y="12" width="16" height="11" fill="#E9584C"/>
+      <rect x="27" y="16" width="5" height="5" fill="#F4C84A"/>
+      <rect x="31" y="14" width="4" height="9" fill="#252628"/>
+      <rect x="35" y="17" width="4" height="9" fill="#E9584C"/>
+      <rect x="39" y="20" width="4" height="9" fill="#252628"/>
+      <rect x="38" y="28" width="7" height="8" fill="#252628"/>
+      <rect x="40" y="30" width="4" height="4" fill="#A9B1AA"/>
+    </symbol>
+
+    <symbol id="tf-pickup-coin" viewBox="0 0 48 48">
+      <polygon points="16,5 32,5 43,16 43,32 32,43 16,43 5,32 5,16" fill="#252628"/>
+      <polygon points="17,9 31,9 39,17 39,31 31,39 17,39 9,31 9,17" fill="#FFD354"/>
+      <rect x="14" y="21" width="20" height="6" fill="#C58A2E"/>
+      <rect x="21" y="14" width="6" height="20" fill="#C58A2E"/>
+      <rect x="18" y="18" width="12" height="12" fill="#FFD354"/>
+    </symbol>
+
+    <symbol id="tf-pickup-wagon" viewBox="0 0 48 48">
+      <rect x="7" y="14" width="28" height="21" fill="#252628"/>
+      <rect x="10" y="17" width="22" height="14" fill="#FFF1C7"/>
+      <rect x="12" y="19" width="18" height="4" fill="#B96545"/>
+      <rect x="11" y="35" width="8" height="6" fill="#252628"/>
+      <rect x="24" y="35" width="8" height="6" fill="#252628"/>
+      <rect x="35" y="9" width="6" height="22" fill="#252628"/>
+      <rect x="27" y="17" width="22" height="6" fill="#252628"/>
+      <rect x="37" y="11" width="2" height="18" fill="#6CBF67"/>
+      <rect x="29" y="19" width="18" height="2" fill="#6CBF67"/>
+    </symbol>
+
+    <symbol id="tf-pickup-shield" viewBox="0 0 48 48">
+      <polygon points="24,4 39,9 39,23 34,34 24,43 14,34 9,23 9,9" fill="#252628"/>
+      <polygon points="24,8 35,12 35,22 31,31 24,37 17,31 13,22 13,12" fill="#74D4DF"/>
+      <rect x="18" y="14" width="4" height="12" fill="#BCECEF"/>
+      <rect x="22" y="14" width="8" height="4" fill="#BCECEF"/>
+    </symbol>
+
+    <symbol id="tf-pickup-turbo" viewBox="0 0 48 48">
+      <polygon points="16,5 33,5 42,14 42,33 33,42 16,42 6,32 6,15" fill="#252628"/>
+      <polygon points="18,9 31,9 38,16 38,31 31,38 18,38 10,30 10,17" fill="#E9584C"/>
+      <polygon points="26,11 15,25 22,25 18,37 34,20 27,20" fill="#F8E75A"/>
+    </symbol>
+
+    <symbol id="tf-pickup-weapon" viewBox="0 0 48 48">
+      <rect x="7" y="12" width="34" height="28" fill="#252628"/>
+      <rect x="10" y="16" width="28" height="20" fill="#FFF1C7"/>
+      <rect x="10" y="16" width="28" height="6" fill="#E9584C"/>
+      <rect x="21" y="8" width="7" height="12" fill="#252628"/>
+      <rect x="18" y="26" width="13" height="4" fill="#A9B1AA"/>
+      <rect x="23" y="22" width="4" height="12" fill="#A9B1AA"/>
+    </symbol>
+
+    <symbol id="tf-fx-impact" viewBox="0 0 48 48">
+      <polygon points="24,2 29,14 39,7 35,19 47,21 36,27 44,38 31,34 28,47 22,35 10,43 14,30 1,26 14,21 6,10 19,15" fill="#252628"/>
+      <polygon points="24,8 28,18 35,13 32,22 41,23 33,27 38,34 29,31 27,40 23,31 15,36 18,28 9,25 18,22 13,15 21,19" fill="#F4C84A"/>
+      <rect x="21" y="21" width="8" height="8" fill="#FFF1C7"/>
+    </symbol>
+
+    <symbol id="tf-fx-smoke" viewBox="0 0 48 48">
+      <rect x="7" y="28" width="14" height="10" fill="#252628"/>
+      <rect x="11" y="24" width="16" height="12" fill="#646B68"/>
+      <rect x="21" y="17" width="14" height="13" fill="#414247"/>
+      <rect x="29" y="8" width="12" height="12" fill="#646B68"/>
+      <rect x="33" y="4" width="8" height="7" fill="#A9B1AA"/>
+    </symbol>
+
+    <symbol id="tf-ui-left" viewBox="0 0 48 48">
+      <rect x="5" y="5" width="38" height="38" fill="#252628"/>
+      <rect x="9" y="9" width="30" height="30" fill="#B96545"/>
+      <polygon points="28,13 15,24 28,35 28,29 35,29 35,19 28,19" fill="#FFF1C7"/>
+    </symbol>
+
+    <symbol id="tf-ui-right" viewBox="0 0 48 48">
+      <rect x="5" y="5" width="38" height="38" fill="#252628"/>
+      <rect x="9" y="9" width="30" height="30" fill="#B96545"/>
+      <polygon points="20,13 33,24 20,35 20,29 13,29 13,19 20,19" fill="#FFF1C7"/>
+    </symbol>
+  </defs>
+
+  <rect width="960" height="720" fill="#F5DDA4"/>
+  <rect x="20" y="20" width="920" height="680" fill="#FFF1C7" stroke="#252628" stroke-width="6"/>
+  <text x="48" y="62" font-family="monospace" font-size="26" font-weight="700" fill="#252628">TRAIN FIGHTER — RUNTIME SPRITE SHEET</text>
+  <text x="48" y="88" font-family="monospace" font-size="14" fill="#754434">crisp-edge source • external &lt;use&gt; symbols • post-apo kawaii</text>
+
+  <g transform="translate(55 120)"><use href="#tf-hero" width="144" height="144"/><text x="16" y="160" font-family="monospace" font-size="14" fill="#252628">tf-hero</text></g>
+  <g transform="translate(235 136)"><use href="#tf-wagon" width="144" height="112"/><text x="20" y="146" font-family="monospace" font-size="14" fill="#252628">tf-wagon</text></g>
+  <g transform="translate(420 120)"><use href="#tf-enemy-punk" width="144" height="130"/><text x="8" y="160" font-family="monospace" font-size="14" fill="#252628">enemy-punk</text></g>
+  <g transform="translate(600 120)"><use href="#tf-enemy-jaw" width="150" height="130"/><text x="12" y="160" font-family="monospace" font-size="14" fill="#252628">enemy-jaw</text></g>
+  <g transform="translate(785 120)"><use href="#tf-enemy-tank" width="145" height="130"/><text x="8" y="160" font-family="monospace" font-size="14" fill="#252628">enemy-tank</text></g>
+
+  <g transform="translate(60 325)"><use href="#tf-enemy-scrap" width="135" height="125"/><text x="5" y="148" font-family="monospace" font-size="14" fill="#252628">enemy-scrap</text></g>
+  <g transform="translate(230 334)"><use href="#tf-weapon-glove" width="90" height="90"/><text x="2" y="112" font-family="monospace" font-size="13" fill="#252628">glove</text></g>
+  <g transform="translate(335 334)"><use href="#tf-weapon-wrench" width="90" height="90"/><text x="2" y="112" font-family="monospace" font-size="13" fill="#252628">wrench</text></g>
+  <g transform="translate(440 334)"><use href="#tf-weapon-hammer" width="90" height="90"/><text x="2" y="112" font-family="monospace" font-size="13" fill="#252628">hammer</text></g>
+  <g transform="translate(545 334)"><use href="#tf-weapon-saw" width="90" height="90"/><text x="15" y="112" font-family="monospace" font-size="13" fill="#252628">saw</text></g>
+  <g transform="translate(650 334)"><use href="#tf-weapon-cannon" width="90" height="90"/><text x="2" y="112" font-family="monospace" font-size="13" fill="#252628">cannon</text></g>
+  <g transform="translate(755 334)"><use href="#tf-weapon-spring-fist" width="90" height="90"/><text x="2" y="112" font-family="monospace" font-size="13" fill="#252628">spring fist</text></g>
+
+  <g transform="translate(70 525)"><use href="#tf-pickup-coin" width="80" height="80"/><text x="6" y="102" font-family="monospace" font-size="13" fill="#252628">coin</text></g>
+  <g transform="translate(175 525)"><use href="#tf-pickup-wagon" width="80" height="80"/><text x="2" y="102" font-family="monospace" font-size="13" fill="#252628">wagon+</text></g>
+  <g transform="translate(280 525)"><use href="#tf-pickup-shield" width="80" height="80"/><text x="2" y="102" font-family="monospace" font-size="13" fill="#252628">shield</text></g>
+  <g transform="translate(385 525)"><use href="#tf-pickup-turbo" width="80" height="80"/><text x="5" y="102" font-family="monospace" font-size="13" fill="#252628">turbo</text></g>
+  <g transform="translate(490 525)"><use href="#tf-pickup-weapon" width="80" height="80"/><text x="2" y="102" font-family="monospace" font-size="13" fill="#252628">weapon</text></g>
+  <g transform="translate(595 525)"><use href="#tf-fx-impact" width="80" height="80"/><text x="3" y="102" font-family="monospace" font-size="13" fill="#252628">impact</text></g>
+  <g transform="translate(700 525)"><use href="#tf-fx-smoke" width="80" height="80"/><text x="8" y="102" font-family="monospace" font-size="13" fill="#252628">smoke</text></g>
+  <g transform="translate(800 525)"><use href="#tf-ui-left" width="60" height="60"/><use href="#tf-ui-right" x="62" width="60" height="60"/><text x="7" y="102" font-family="monospace" font-size="13" fill="#252628">switch UI</text></g>
+</svg>

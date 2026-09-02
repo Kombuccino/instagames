@@ -1,0 +1,24 @@
+@media (orientation: landscape) and (max-height: 650px) {
+  body {
+    background: #08080a;
+  }
+
+  #root {
+    display: block;
+  }
+
+  .game-feed {
+    max-width: none;
+    box-shadow: none;
+  }
+
+  .game-slot,
+  .game-card {
+    width: 100vw;
+    height: 100dvh;
+  }
+
+  .swipe-hint {
+    display: none;
+  }
+}

@@ -1,0 +1,27 @@
+.platform-comment-list article::before,
+.platform-comment-form::before {
+  display: none;
+}
+
+.platform-comment-avatar {
+  display: grid;
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-top: 1px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 50%;
+  background: #29292d;
+  font-size: 19px;
+  line-height: 1;
+  user-select: none;
+}
+
+.platform-comment-form .platform-comment-avatar.is-composer {
+  grid-column: 1;
+  grid-row: 1;
+  margin-top: 0;
+  background: #303036;
+}

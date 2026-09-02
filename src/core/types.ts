@@ -2,6 +2,7 @@ import type { ComponentType } from 'react'
 
 export type GameLeaderboardPeriod = 'daily' | 'weekly' | 'global'
 export type GameLeaderboardSort = 'desc' | 'asc'
+export type GameOrientation = 'portrait' | 'landscape' | 'both'
 
 export type GameLeaderboardConfig = {
   enabled: true
@@ -51,6 +52,8 @@ export type InstagameDefinition = {
   title: string
   description: string
   author?: string
+  /** Preferred gameplay orientation. Core remains responsive in both directions. */
+  orientation?: GameOrientation
   component: ComponentType<GameComponentProps>
   instructions?: GameInstructions
   features?: GameFeatureConfig

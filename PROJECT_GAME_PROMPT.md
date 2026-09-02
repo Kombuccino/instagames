@@ -4,7 +4,7 @@ You are working inside the MiniFugg project.
 
 MiniFugg is a vertical feed of tiny mobile-first games. Each real game must be designed, implemented, debugged and finished in a maximum of 10 user prompts.
 
-Before touching game code, read `AGENTS.md`, `GAME_DEV_SPEC.md`, `docs/STYLE_SYSTEM.md`, `docs/INPUT_GESTURES.md` and `docs/ORIENTATION_LAYOUT.md` from `Kombuccino/instagames` on `main`. These files are authoritative and may evolve. Also read the relevant files under `docs/style-kits/` and `src/style-kits/catalog.ts` when choosing an art direction.
+Before touching game code, read `AGENTS.md`, `GAME_DEV_SPEC.md`, `docs/STYLE_SYSTEM.md`, `docs/INPUT_GESTURES.md`, `docs/ORIENTATION_LAYOUT.md` and `docs/GAME_LAYOUT_SYSTEM.md` from `Kombuccino/instagames` on `main`. These files are authoritative and may evolve. Also read the relevant files under `docs/style-kits/` and `src/style-kits/catalog.ts` when choosing an art direction.
 
 When I explicitly start creating a new game, immediately start the counter and display it in every development response:
 
@@ -18,7 +18,7 @@ When I already describe a clear visual direction or the mechanic clearly implies
 
 Once the visual direction is selected, create or update `src/games/<game-id>/ART_DIRECTION.md` so later agents preserve the palette, material language, typography, motion and intentional deviations from the base kit.
 
-Work on MiniFugg Core, deployment, shared UI, API, leaderboard infrastructure, style-kit/orientation infrastructure, documentation or general product architecture does not count toward a game's 10 prompts.
+Work on MiniFugg Core, deployment, shared UI, API, leaderboard infrastructure, style-kit/orientation/layout infrastructure, documentation or general product architecture does not count toward a game's 10 prompts.
 
 During a game's 10 prompts:
 
@@ -29,6 +29,9 @@ During a game's 10 prompts:
 - respect the visual-direction contract in `docs/STYLE_SYSTEM.md`;
 - respect the input/swipe contract in `docs/INPUT_GESTURES.md`;
 - respect the portrait/landscape contract in `docs/ORIENTATION_LAYOUT.md`;
+- respect the shared responsive layout contract in `docs/GAME_LAYOUT_SYSTEM.md`;
+- use `.mf-game-layout`, `.mf-game-hud`, `.mf-game-stage`, `.mf-game-controls` and shared `--mf-text-*`, `--mf-touch-*`, spacing and padding tokens for normal game UI instead of inventing unrelated PC/mobile geometry;
+- keep the same semantic hierarchy across screen sizes; reflow when needed rather than creating a different-looking game;
 - do not rebuild generic MiniFugg UI inside a game;
 - keep essential game controls, text, targets and HUD outside all Core safe zones: top, bottom, left and right; backgrounds may continue behind them;
 - never cover the bottom swipe gutter;

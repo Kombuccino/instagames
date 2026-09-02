@@ -13,10 +13,7 @@ type Tile = {
   bonus?: BonusKind
 }
 
-type Coord = {
-  x: number
-  y: number
-}
+type Coord = { x: number; y: number }
 
 type Piece = {
   shape: ShapeId
@@ -50,6 +47,7 @@ type GameState = {
   lastClear: {
     id: number
     text: string
+    impactPoints: number
   } | null
 }
 
@@ -62,21 +60,20 @@ type Action =
 type ShapeDefinition = {
   cells: Coord[]
   pivot: Coord
-  rotates?: boolean
 }
 
 const COLS = 10
 const ROWS = 20
-const TARGET = 100_000
 const MAX_NUMBER = 9
 const BASE_MAX_MULTIPLIER = 3
 const LOCK_TICKS = 4
 const MAX_LOCK_RESETS = 12
 const STANDARD_LINE_MAX = MAX_NUMBER * (BASE_MAX_MULTIPLIER ** (COLS - 1))
+const BIG_CLEAR_THRESHOLD = 1000
 
 const SHAPES: Record<ShapeId, ShapeDefinition> = {
   I: { cells: [{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 }, { x: 3, y: 1 }], pivot: { x: 1.5, y: 1.5 } },
-  O: { cells: [{ x: 1, y: 0 }, { x: 2, y: 0 }, { x: 1, y: 1 }, { x: 2, y: 1 }], pivot: { x: 1.5, y: 0.5 }, rotates: false },
+  O: { cells: [{ x: 1, y: 0 }, { x: 2, y: 0 }, { x: 1, y: 1 }, { x: 2, y: 1 }], pivot: { x: 1.5, y: 0.5 } },
   T: { cells: [{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 }, { x: 1, y: 0 }], pivot: { x: 1, y: 1 } },
   S: { cells: [{ x: 1, y: 0 }, { x: 2, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }], pivot: { x: 1, y: 1 } },
   Z: { cells: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 2, y: 1 }], pivot: { x: 1, y: 1 } },
@@ -120,11 +117,9 @@ function shapeForIndex(seed: number, index: number) {
   return bag[withinBag]
 }
 
-function tokenFor(random: () => number, level: number): Tile {
-  const operatorChance = Math.min(0.42, 0.24 + (level - 1) * 0.018)
-  const roll = random()
-
-  if (roll > operatorChance) {
+function tokenFor(random: () => number): Tile {
+  const operatorChance = 0.29
+  if (random() > operatorChance) {
     const value = Math.floor(random() * 10)
     return { kind: 'number', value, label: String(value) }
   }
@@ -151,23 +146,17 @@ function bonusForClear(lineCount: number): BonusKind | null {
   return null
 }
 
-function createPiece(seed: number, index: number, level: number, bonus: BonusKind | null = null): Piece {
+function createPiece(seed: number, index: number, bonus: BonusKind | null = null): Piece {
   const shape = shapeForIndex(seed, index)
-  const random = mulberry32((seed ^ Math.imul(index + 17, 0x27d4eb2d) ^ Math.imul(level, 0x165667b1)) >>> 0)
-  const tokens = Array.from({ length: 4 }, () => tokenFor(random, level))
+  const random = mulberry32((seed ^ Math.imul(index + 17, 0x27d4eb2d)) >>> 0)
+  const tokens = Array.from({ length: 4 }, () => tokenFor(random))
 
   if (bonus) {
     const bonusIndex = Math.floor(random() * tokens.length)
     tokens[bonusIndex] = bonusTile(bonus)
   }
 
-  return {
-    shape,
-    rotation: 0,
-    x: 3,
-    y: -1,
-    tokens,
-  }
+  return { shape, rotation: 0, x: 3, y: -1, tokens }
 }
 
 function emptyBoard() {
@@ -185,11 +174,9 @@ function rotateCoord(coord: Coord, pivot: Coord, direction: -1 | 1) {
 function pieceCells(piece: Piece) {
   const definition = SHAPES[piece.shape]
   let coords = definition.cells.map((cell) => ({ ...cell }))
-  if (definition.rotates !== false) {
-    const turns = ((piece.rotation % 4) + 4) % 4
-    for (let turn = 0; turn < turns; turn += 1) {
-      coords = coords.map((coord) => rotateCoord(coord, definition.pivot, 1))
-    }
+  const turns = ((piece.rotation % 4) + 4) % 4
+  for (let turn = 0; turn < turns; turn += 1) {
+    coords = coords.map((coord) => rotateCoord(coord, definition.pivot, 1))
   }
   return coords.map((coord, tokenIndex) => ({
     x: piece.x + coord.x,
@@ -267,11 +254,15 @@ function summariseClear(reports: LineReport[], bonus: BonusKind | null) {
   return `${reports.length} LIGNES · ${reports.map((report) => formatValue(report.value)).join(' + ')} = ${total.toLocaleString('fr-FR')}${bonusCopy}`
 }
 
+function targetForLevel(level: number) {
+  return Math.max(1000, level * 1000)
+}
+
 function advanceProgress(progress: number, level: number, gained: number) {
   let nextProgress = progress + gained
   let nextLevel = level
-  while (nextProgress >= TARGET) {
-    nextProgress -= TARGET
+  while (nextProgress >= targetForLevel(nextLevel)) {
+    nextProgress -= targetForLevel(nextLevel)
     nextLevel += 1
   }
   return { progress: nextProgress, level: nextLevel }
@@ -311,7 +302,7 @@ function lockPiece(state: GameState): GameState {
   const progression = advanceProgress(state.stageProgress, state.level, gained)
   const nextIndex = state.pieceIndex + 1
   const earnedBonus = bonusForClear(fullRows.length)
-  const nextPiece = createPiece(state.seed, nextIndex, progression.level, earnedBonus)
+  const nextPiece = createPiece(state.seed, nextIndex, earnedBonus)
   const nextSerial = reports.length > 0 ? state.clearSerial + 1 : state.clearSerial
   const gameOver = !canPlace(clearedBoard, nextPiece)
 
@@ -328,11 +319,15 @@ function lockPiece(state: GameState): GameState {
     lockResets: 0,
     gameOver,
     clearSerial: nextSerial,
-    lastClear: reports.length > 0 ? { id: nextSerial, text: summariseClear(reports, earnedBonus) } : state.lastClear,
+    lastClear: reports.length > 0 ? {
+      id: nextSerial,
+      text: summariseClear(reports, earnedBonus),
+      impactPoints: gained,
+    } : state.lastClear,
   }
 }
 
-function resetLockAfterManipulation(state: GameState, piece: Piece) {
+function resetLockAfterManipulation(state: GameState) {
   const wasGrounded = isGrounded(state.board, state.active)
   if (!wasGrounded || state.lockResets >= MAX_LOCK_RESETS) {
     return { lockTicks: state.lockTicks, lockResets: state.lockResets }
@@ -345,7 +340,7 @@ function createInitialState(seed: number): GameState {
   return {
     seed: normalizedSeed,
     board: emptyBoard(),
-    active: createPiece(normalizedSeed, 0, 1),
+    active: createPiece(normalizedSeed, 0),
     pieceIndex: 0,
     score: 0,
     level: 1,
@@ -365,9 +360,7 @@ function reducer(state: GameState, action: Action): GameState {
 
   if (action.type === 'TICK') {
     const moved = { ...state.active, y: state.active.y + 1 }
-    if (canPlace(state.board, moved)) {
-      return { ...state, active: moved, lockTicks: 0 }
-    }
+    if (canPlace(state.board, moved)) return { ...state, active: moved, lockTicks: 0 }
     const nextLockTicks = state.lockTicks + 1
     if (nextLockTicks >= LOCK_TICKS) return lockPiece(state)
     return { ...state, lockTicks: nextLockTicks }
@@ -378,29 +371,53 @@ function reducer(state: GameState, action: Action): GameState {
     if (!canPlace(state.board, moved)) return state
     const lock = action.dy > 0
       ? { lockTicks: 0, lockResets: state.lockResets }
-      : resetLockAfterManipulation(state, moved)
+      : resetLockAfterManipulation(state)
     return { ...state, active: moved, ...lock }
   }
 
-  const definition = SHAPES[state.active.shape]
-  if (definition.rotates === false) return state
   const nextRotation = state.active.rotation + action.direction
   const kickOffsets = [0, -1, 1, -2, 2]
   for (const kick of kickOffsets) {
     const rotated = { ...state.active, rotation: nextRotation, x: state.active.x + kick }
     if (!canPlace(state.board, rotated)) continue
-    const lock = resetLockAfterManipulation(state, rotated)
+    const lock = resetLockAfterManipulation(state)
     return { ...state, active: rotated, ...lock }
   }
   return state
 }
 
 function dropDelay(level: number) {
-  return Math.max(110, 760 - (level - 1) * 65)
+  return Math.max(70, Math.round(820 * (0.82 ** (level - 1))))
 }
 
 function cellKey(x: number, y: number) {
   return `${x}:${y}`
+}
+
+function previewCells(piece: Piece) {
+  const cells = pieceCells({ ...piece, x: 0, y: 0 })
+  const minX = Math.min(...cells.map((cell) => cell.x))
+  const minY = Math.min(...cells.map((cell) => cell.y))
+  return cells.map((cell) => ({ ...cell, x: cell.x - minX, y: cell.y - minY }))
+}
+
+function PiecePreview({ piece }: { piece: Piece }) {
+  const cells = previewCells(piece)
+  const map = new Map(cells.map((cell) => [`${cell.x}:${cell.y}`, piece.tokens[cell.tokenIndex]]))
+  return (
+    <div className="calc-drop-preview-grid" aria-hidden="true">
+      {Array.from({ length: 16 }, (_, index) => {
+        const x = index % 4
+        const y = Math.floor(index / 4)
+        const tile = map.get(`${x}:${y}`)
+        return (
+          <span className={tile ? `is-${tile.kind}${tile.bonus ? ' is-bonus' : ''}` : ''} key={index}>
+            {tile?.label ?? ''}
+          </span>
+        )
+      })}
+    </div>
+  )
 }
 
 export function CalcDrop({ active, seed, restartToken, session }: GameComponentProps) {
@@ -426,7 +443,7 @@ export function CalcDrop({ active, seed, restartToken, session }: GameComponentP
       metadata: {
         level: state.level,
         lines: state.lines,
-        target: TARGET,
+        target: targetForLevel(state.level),
         standardLineMax: STANDARD_LINE_MAX,
       },
     })
@@ -478,8 +495,15 @@ export function CalcDrop({ active, seed, restartToken, session }: GameComponentP
     return new Set(pieceCells(ghost).filter(({ y }) => y >= 0).map(({ x, y }) => cellKey(x, y)))
   }, [state.active, state.board])
 
+  const nextPieces = useMemo(() => [
+    createPiece(state.seed, state.pieceIndex + 1),
+    createPiece(state.seed, state.pieceIndex + 2),
+  ], [state.pieceIndex, state.seed])
+
   const grounded = isGrounded(state.board, state.active)
-  const progressPercent = Math.min(100, (state.stageProgress / TARGET) * 100)
+  const target = targetForLevel(state.level)
+  const progressPercent = Math.min(100, (state.stageProgress / target) * 100)
+  const bigImpact = (state.lastClear?.impactPoints ?? 0) > BIG_CLEAR_THRESHOLD
 
   const stopRepeat = () => {
     if (repeatTimer.current === null) return
@@ -491,90 +515,77 @@ export function CalcDrop({ active, seed, restartToken, session }: GameComponentP
     if (!active || state.gameOver) return
     stopRepeat()
     dispatch(action)
-    repeatTimer.current = window.setInterval(() => dispatch(action), action.dy > 0 ? 65 : 105)
+    repeatTimer.current = window.setInterval(() => dispatch(action), action.dy > 0 ? 55 : 100)
   }
 
   return (
     <div className="calc-drop-game">
       <div className="calc-drop-safe">
-        <header className="calc-drop-hud">
-          <div className="calc-drop-level">
-            <span>NIVEAU</span>
-            <strong>{state.level}</strong>
-          </div>
-          <div className="calc-drop-target">
-            <div className="calc-drop-target-copy">
-              <span>OBJECTIF</span>
-              <strong>{state.stageProgress.toLocaleString('fr-FR')} / {TARGET.toLocaleString('fr-FR')}</strong>
+        <div className={`calc-drop-board-stage ${bigImpact ? 'is-impact' : ''}`} key={bigImpact ? `impact-${state.lastClear?.id}` : 'board'}>
+          <aside className="calc-drop-side calc-drop-side-left">
+            <div className="calc-drop-level"><span>LVL</span><strong>{state.level}</strong></div>
+            <div className="calc-drop-side-target">
+              <span>{state.stageProgress.toLocaleString('fr-FR')}</span>
+              <div className="calc-drop-progress-vertical" aria-hidden="true"><i style={{ height: `${progressPercent}%` }} /></div>
+              <strong>{target.toLocaleString('fr-FR')}</strong>
             </div>
-            <div className="calc-drop-progress" aria-hidden="true"><span style={{ width: `${progressPercent}%` }} /></div>
-          </div>
-        </header>
+            <small>{dropDelay(state.level)} ms</small>
+          </aside>
 
-        <div className="calc-drop-board-shell">
-          <div className="calc-drop-board" role="application" aria-label="Grille de calcul 10 colonnes par 20 lignes">
-            {state.board.flatMap((row, y) => row.map((settled, x) => {
-              const key = cellKey(x, y)
-              const moving = activeMap.get(key)
-              const tile = moving ?? settled
-              const isGhost = !tile && ghostCells.has(key)
-              return (
-                <div
-                  className={[
-                    'calc-drop-cell',
-                    tile ? `is-${tile.kind}` : '',
-                    tile?.bonus ? 'is-bonus' : '',
-                    moving ? 'is-active' : '',
-                    settled ? 'is-settled' : '',
-                    isGhost ? 'is-ghost' : '',
-                  ].filter(Boolean).join(' ')}
-                  key={key}
-                  aria-hidden="true"
-                >
-                  {tile ? <span>{tile.label}</span> : null}
-                </div>
-              )
-            }))}
+          <div className="calc-drop-board-shell">
+            <div className="calc-drop-board" role="application" aria-label="Grille de calcul 10 colonnes par 20 lignes">
+              {state.board.flatMap((row, y) => row.map((settled, x) => {
+                const key = cellKey(x, y)
+                const moving = activeMap.get(key)
+                const tile = moving ?? settled
+                const isGhost = !tile && ghostCells.has(key)
+                return (
+                  <div
+                    className={[
+                      'calc-drop-cell',
+                      tile ? `is-${tile.kind}` : '',
+                      tile?.bonus ? 'is-bonus' : '',
+                      moving ? 'is-active' : '',
+                      settled ? 'is-settled' : '',
+                      isGhost ? 'is-ghost' : '',
+                    ].filter(Boolean).join(' ')}
+                    key={key}
+                    aria-hidden="true"
+                  >
+                    {tile ? <span>{tile.label}</span> : null}
+                  </div>
+                )
+              }))}
+            </div>
+
+            <div className={`calc-drop-lock ${grounded ? 'is-visible' : ''}`} aria-hidden="true">
+              {Array.from({ length: LOCK_TICKS }, (_, index) => <span key={index} className={index < state.lockTicks ? 'is-on' : ''} />)}
+            </div>
           </div>
 
-          <div className={`calc-drop-lock ${grounded ? 'is-visible' : ''}`} aria-hidden="true">
-            {Array.from({ length: LOCK_TICKS }, (_, index) => <span key={index} className={index < state.lockTicks ? 'is-on' : ''} />)}
-          </div>
+          <aside className="calc-drop-side calc-drop-side-right">
+            <span className="calc-drop-next-label">NEXT</span>
+            <PiecePreview piece={nextPieces[0]} />
+            <PiecePreview piece={nextPieces[1]} />
+          </aside>
+
+          {bigImpact ? (
+            <div className="calc-drop-impact" aria-live="polite">
+              <strong>WOW!</strong>
+              <span>+{state.lastClear?.impactPoints.toLocaleString('fr-FR')}</span>
+            </div>
+          ) : null}
         </div>
 
         <div className="calc-drop-equation" key={state.lastClear?.id ?? 0} aria-live="polite">
-          {state.lastClear
-            ? state.lastClear.text
-            : `MAX STANDARD · 9 × 3⁹ = ${STANDARD_LINE_MAX.toLocaleString('fr-FR')}`}
+          {state.lastClear ? state.lastClear.text : `MAX STANDARD · ${STANDARD_LINE_MAX.toLocaleString('fr-FR')}`}
         </div>
 
         <div className="calc-drop-controls" aria-label="Contrôles">
           <div className="calc-drop-move-controls">
-            <button
-              type="button"
-              aria-label="Déplacer à gauche"
-              onPointerDown={(event) => { event.preventDefault(); startRepeat({ type: 'MOVE', dx: -1, dy: 0 }) }}
-              onPointerUp={stopRepeat}
-              onPointerCancel={stopRepeat}
-              onPointerLeave={stopRepeat}
-            >←</button>
-            <button
-              type="button"
-              className="is-down"
-              aria-label="Descendre plus vite"
-              onPointerDown={(event) => { event.preventDefault(); startRepeat({ type: 'MOVE', dx: 0, dy: 1 }) }}
-              onPointerUp={stopRepeat}
-              onPointerCancel={stopRepeat}
-              onPointerLeave={stopRepeat}
-            >↓</button>
-            <button
-              type="button"
-              aria-label="Déplacer à droite"
-              onPointerDown={(event) => { event.preventDefault(); startRepeat({ type: 'MOVE', dx: 1, dy: 0 }) }}
-              onPointerUp={stopRepeat}
-              onPointerCancel={stopRepeat}
-              onPointerLeave={stopRepeat}
-            >→</button>
+            <button type="button" aria-label="Déplacer à gauche" onPointerDown={(event) => { event.preventDefault(); startRepeat({ type: 'MOVE', dx: -1, dy: 0 }) }} onPointerUp={stopRepeat} onPointerCancel={stopRepeat} onPointerLeave={stopRepeat}>←</button>
+            <button type="button" className="is-down" aria-label="Descendre plus vite" onPointerDown={(event) => { event.preventDefault(); startRepeat({ type: 'MOVE', dx: 0, dy: 1 }) }} onPointerUp={stopRepeat} onPointerCancel={stopRepeat} onPointerLeave={stopRepeat}>↓</button>
+            <button type="button" aria-label="Déplacer à droite" onPointerDown={(event) => { event.preventDefault(); startRepeat({ type: 'MOVE', dx: 1, dy: 0 }) }} onPointerUp={stopRepeat} onPointerCancel={stopRepeat} onPointerLeave={stopRepeat}>→</button>
           </div>
 
           <div className="calc-drop-rotate-controls">

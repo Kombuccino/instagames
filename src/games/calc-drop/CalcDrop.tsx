@@ -520,68 +520,72 @@ export function CalcDrop({ active, seed, restartToken, session }: GameComponentP
 
   return (
     <div className="calc-drop-game">
-      <div className="calc-drop-safe">
-        <div className={`calc-drop-board-stage ${bigImpact ? 'is-impact' : ''}`} key={bigImpact ? `impact-${state.lastClear?.id}` : 'board'}>
-          <aside className="calc-drop-side calc-drop-side-left">
-            <div className="calc-drop-level"><span>LVL</span><strong>{state.level}</strong></div>
-            <div className="calc-drop-side-target">
-              <span>{state.stageProgress.toLocaleString('fr-FR')}</span>
-              <div className="calc-drop-progress-vertical" aria-hidden="true"><i style={{ height: `${progressPercent}%` }} /></div>
-              <strong>{target.toLocaleString('fr-FR')}</strong>
-            </div>
-            <small>{dropDelay(state.level)} ms</small>
-          </aside>
-
-          <div className="calc-drop-board-shell">
-            <div className="calc-drop-board" role="application" aria-label="Grille de calcul 10 colonnes par 20 lignes">
-              {state.board.flatMap((row, y) => row.map((settled, x) => {
-                const key = cellKey(x, y)
-                const moving = activeMap.get(key)
-                const tile = moving ?? settled
-                const isGhost = !tile && ghostCells.has(key)
-                return (
-                  <div
-                    className={[
-                      'calc-drop-cell',
-                      tile ? `is-${tile.kind}` : '',
-                      tile?.bonus ? 'is-bonus' : '',
-                      moving ? 'is-active' : '',
-                      settled ? 'is-settled' : '',
-                      isGhost ? 'is-ghost' : '',
-                    ].filter(Boolean).join(' ')}
-                    key={key}
-                    aria-hidden="true"
-                  >
-                    {tile ? <span>{tile.label}</span> : null}
-                  </div>
-                )
-              }))}
-            </div>
-
-            <div className={`calc-drop-lock ${grounded ? 'is-visible' : ''}`} aria-hidden="true">
-              {Array.from({ length: LOCK_TICKS }, (_, index) => <span key={index} className={index < state.lockTicks ? 'is-on' : ''} />)}
-            </div>
+      <div className="mf-game-layout calc-drop-layout">
+        <header className="mf-game-hud calc-drop-hud">
+          <div className="calc-drop-equation" key={state.lastClear?.id ?? 0} aria-live="polite">
+            {state.lastClear ? state.lastClear.text : `MAX STANDARD · ${STANDARD_LINE_MAX.toLocaleString('fr-FR')}`}
           </div>
+        </header>
 
-          <aside className="calc-drop-side calc-drop-side-right">
-            <span className="calc-drop-next-label">NEXT</span>
-            <PiecePreview piece={nextPieces[0]} />
-            <PiecePreview piece={nextPieces[1]} />
-          </aside>
+        <main className="mf-game-stage calc-drop-stage">
+          <div className={`calc-drop-board-stage ${bigImpact ? 'is-impact' : ''}`} key={bigImpact ? `impact-${state.lastClear?.id}` : 'board'}>
+            <aside className="calc-drop-side calc-drop-side-left">
+              <div className="calc-drop-level"><span>LVL</span><strong>{state.level}</strong></div>
+              <div className="calc-drop-side-target">
+                <span>{state.stageProgress.toLocaleString('fr-FR')}</span>
+                <div className="calc-drop-progress-vertical" aria-hidden="true"><i style={{ height: `${progressPercent}%` }} /></div>
+                <strong>{target.toLocaleString('fr-FR')}</strong>
+              </div>
+              <small>{dropDelay(state.level)} ms</small>
+            </aside>
 
-          {bigImpact ? (
-            <div className="calc-drop-impact" aria-live="polite">
-              <strong>WOW!</strong>
-              <span>+{state.lastClear?.impactPoints.toLocaleString('fr-FR')}</span>
+            <div className="calc-drop-board-shell">
+              <div className="calc-drop-board" role="application" aria-label="Grille de calcul 10 colonnes par 20 lignes">
+                {state.board.flatMap((row, y) => row.map((settled, x) => {
+                  const key = cellKey(x, y)
+                  const moving = activeMap.get(key)
+                  const tile = moving ?? settled
+                  const isGhost = !tile && ghostCells.has(key)
+                  return (
+                    <div
+                      className={[
+                        'calc-drop-cell',
+                        tile ? `is-${tile.kind}` : '',
+                        tile?.bonus ? 'is-bonus' : '',
+                        moving ? 'is-active' : '',
+                        settled ? 'is-settled' : '',
+                        isGhost ? 'is-ghost' : '',
+                      ].filter(Boolean).join(' ')}
+                      key={key}
+                      aria-hidden="true"
+                    >
+                      {tile ? <span>{tile.label}</span> : null}
+                    </div>
+                  )
+                }))}
+              </div>
+
+              <div className={`calc-drop-lock ${grounded ? 'is-visible' : ''}`} aria-hidden="true">
+                {Array.from({ length: LOCK_TICKS }, (_, index) => <span key={index} className={index < state.lockTicks ? 'is-on' : ''} />)}
+              </div>
             </div>
-          ) : null}
-        </div>
 
-        <div className="calc-drop-equation" key={state.lastClear?.id ?? 0} aria-live="polite">
-          {state.lastClear ? state.lastClear.text : `MAX STANDARD · ${STANDARD_LINE_MAX.toLocaleString('fr-FR')}`}
-        </div>
+            <aside className="calc-drop-side calc-drop-side-right">
+              <span className="calc-drop-next-label">NEXT</span>
+              <PiecePreview piece={nextPieces[0]} />
+              <PiecePreview piece={nextPieces[1]} />
+            </aside>
 
-        <div className="calc-drop-controls" aria-label="Contrôles">
+            {bigImpact ? (
+              <div className="calc-drop-impact" aria-live="polite">
+                <strong>WOW!</strong>
+                <span>+{state.lastClear?.impactPoints.toLocaleString('fr-FR')}</span>
+              </div>
+            ) : null}
+          </div>
+        </main>
+
+        <footer className="mf-game-controls calc-drop-controls" aria-label="Contrôles">
           <div className="calc-drop-move-controls">
             <button type="button" aria-label="Déplacer à gauche" onPointerDown={(event) => { event.preventDefault(); startRepeat({ type: 'MOVE', dx: -1, dy: 0 }) }} onPointerUp={stopRepeat} onPointerCancel={stopRepeat} onPointerLeave={stopRepeat}>←</button>
             <button type="button" className="is-down" aria-label="Descendre plus vite" onPointerDown={(event) => { event.preventDefault(); startRepeat({ type: 'MOVE', dx: 0, dy: 1 }) }} onPointerUp={stopRepeat} onPointerCancel={stopRepeat} onPointerLeave={stopRepeat}>↓</button>
@@ -592,7 +596,7 @@ export function CalcDrop({ active, seed, restartToken, session }: GameComponentP
             <button type="button" aria-label="Tourner à gauche" onClick={() => dispatch({ type: 'ROTATE', direction: -1 })}>↺</button>
             <button type="button" aria-label="Tourner à droite" onClick={() => dispatch({ type: 'ROTATE', direction: 1 })}>↻</button>
           </div>
-        </div>
+        </footer>
       </div>
     </div>
   )

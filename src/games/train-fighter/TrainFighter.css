@@ -1,136 +1,123 @@
 .train-fighter {
-  --tf-ink: #262323;
-  --tf-cream: #fff4d0;
-  --tf-red: #ef5848;
-  --tf-yellow: #ffd64a;
-  --tf-blue: #3c91e6;
-  --tf-green: #4cbf76;
-  --tf-track: #5a4031;
+  --tf-ink: #17191c;
+  --tf-ink-2: #282b2d;
+  --tf-cream: #f2e4b4;
+  --tf-red: #b44939;
+  --tf-yellow: #e8bd45;
+  --tf-blue: #3f79a6;
+  --tf-green: #546f3f;
+  --tf-metal: #858b86;
+  --tf-metal-hi: #c0bfa8;
+  --tf-wood: #69462f;
+  --tf-wood-hi: #976a42;
   position: absolute;
   inset: 0;
   overflow: hidden;
-  color: var(--tf-ink);
-  background: #9de1f1;
-  font-family: "Trebuchet MS", "Arial Rounded MT Bold", system-ui, sans-serif;
+  color: var(--tf-cream);
+  background: #18251d;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-weight: 800;
   touch-action: pan-y;
   container-type: size;
+  image-rendering: pixelated;
 }
 
 .train-fighter--forest {
-  --tf-ground: #76c96a;
-  --tf-ground-dark: #4f9f50;
-  --tf-sky: #96dff2;
-  --tf-horizon: #d7f0b1;
+  --tf-ground: #5a7343;
+  --tf-ground-dark: #334b35;
+  --tf-ground-light: #789051;
+  --tf-sky: #253c2c;
+  --tf-horizon: #4a663e;
 }
 
 .train-fighter--desert {
-  --tf-ground: #e5a75f;
-  --tf-ground-dark: #b96c43;
-  --tf-sky: #75cef0;
-  --tf-horizon: #ffd485;
+  --tf-ground: #b97749;
+  --tf-ground-dark: #774631;
+  --tf-ground-light: #d69a5c;
+  --tf-sky: #5f8da1;
+  --tf-horizon: #d5a45b;
 }
 
 .train-fighter--mountain {
-  --tf-ground: #82aa87;
-  --tf-ground-dark: #547762;
-  --tf-sky: #8ec8ed;
-  --tf-horizon: #d8d6c7;
+  --tf-ground: #687b67;
+  --tf-ground-dark: #3f5049;
+  --tf-ground-light: #8d9b78;
+  --tf-sky: #66869b;
+  --tf-horizon: #a9aa91;
 }
 
 .train-fighter--snow {
-  --tf-ground: #d9edf2;
-  --tf-ground-dark: #9bc8d3;
-  --tf-sky: #597fb7;
-  --tf-horizon: #c9ecff;
+  --tf-ground: #b9ced1;
+  --tf-ground-dark: #6e8c98;
+  --tf-ground-light: #e6eeee;
+  --tf-sky: #4f6795;
+  --tf-horizon: #a8cbdc;
 }
 
 .train-fighter__sky {
   position: absolute;
   inset: 0;
-  background: linear-gradient(var(--tf-sky) 0 45%, var(--tf-horizon) 45% 58%, var(--tf-ground) 58% 100%);
   overflow: hidden;
+  background:
+    linear-gradient(to bottom, var(--tf-sky) 0 38%, var(--tf-horizon) 38% 52%, var(--tf-ground) 52% 100%);
+}
+
+.train-fighter--forest .train-fighter__sky {
+  background:
+    repeating-linear-gradient(0deg, #1c2d22 0 8px, #213426 8px 16px),
+    #1c2d22;
+}
+
+.train-fighter--forest .train-fighter__sun,
+.train-fighter--forest .train-fighter__cloud,
+.train-fighter--forest .train-fighter__mountain {
+  display: none;
 }
 
 .train-fighter__sun {
   position: absolute;
-  width: clamp(48px, 12cqw, 92px);
+  width: clamp(42px, 11cqw, 78px);
   aspect-ratio: 1;
-  border-radius: 50%;
   top: calc(var(--minifugg-core-top-reserved) + var(--mf-gap-3));
   right: 9%;
-  background: #ffe267;
-  box-shadow: inset -9px -9px 0 rgb(222 168 52 / 24%);
-}
-
-.train-fighter--snow .train-fighter__sun {
-  background: #dff4ff;
-  box-shadow: 0 0 28px rgb(197 234 255 / 55%);
+  background: #dfbd54;
+  box-shadow: inset -8px -8px 0 #b8893d;
 }
 
 .train-fighter__cloud {
   position: absolute;
-  width: clamp(70px, 20cqw, 150px);
-  height: clamp(24px, 6cqw, 46px);
-  border-radius: 999px;
-  background: rgb(255 255 255 / 82%);
-  box-shadow: 22px -12px 0 -3px rgb(255 255 255 / 82%), 49px -5px 0 -8px rgb(255 255 255 / 78%);
-  animation: tf-cloud 14s linear infinite alternate;
+  width: clamp(72px, 19cqw, 132px);
+  height: clamp(22px, 5cqw, 36px);
+  background: #d8ddd1;
+  box-shadow: 20px -10px 0 #d8ddd1, 42px -4px 0 #cbd4cd;
+  animation: tf-cloud 16s steps(18, end) infinite alternate;
 }
 
-.train-fighter__cloud--one {
-  top: 18%;
-  left: -4%;
-}
-
-.train-fighter__cloud--two {
-  top: 29%;
-  right: 3%;
-  transform: scale(.72);
-  animation-duration: 18s;
-}
+.train-fighter__cloud--one { top: 19%; left: -4%; }
+.train-fighter__cloud--two { top: 29%; right: 4%; transform: scale(.72); animation-duration: 20s; }
 
 .train-fighter__mountain {
   position: absolute;
   width: 34%;
   aspect-ratio: 1.2;
   bottom: 39%;
-  background: #708a6f;
+  background: #63746a;
   clip-path: polygon(50% 0, 100% 100%, 0 100%);
-  opacity: .36;
+  opacity: .42;
 }
 
 .train-fighter__mountain::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: #eef8f4;
+  background: #d7ddd6;
   clip-path: polygon(50% 0, 67% 34%, 57% 29%, 51% 42%, 43% 31%, 32% 43%);
 }
 
-.train-fighter__mountain--one {
-  left: -5%;
-}
-
-.train-fighter__mountain--two {
-  right: -7%;
-  transform: scale(.78);
-}
-
-.train-fighter--forest .train-fighter__mountain {
-  background: #4c875c;
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
-}
-
-.train-fighter--desert .train-fighter__mountain {
-  background: #b64e3d;
-  clip-path: polygon(25% 22%, 58% 8%, 100% 100%, 0 100%);
-  opacity: .55;
-}
-
-.train-fighter--snow .train-fighter__mountain {
-  opacity: .75;
-  background: #6f88a4;
-}
+.train-fighter__mountain--one { left: -5%; }
+.train-fighter__mountain--two { right: -7%; transform: scale(.78); }
+.train-fighter--desert .train-fighter__mountain { background: #914f3b; opacity: .6; }
+.train-fighter--snow .train-fighter__mountain { background: #657b93; opacity: .78; }
 
 .train-fighter__layout {
   position: absolute;
@@ -140,79 +127,126 @@
 
 .train-fighter__hud {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(120px, 1.5fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, .9fr) minmax(118px, 1.35fr) minmax(0, .9fr);
   align-items: center;
   gap: var(--mf-gap-2);
+  filter: drop-shadow(0 4px 0 #0d0f10);
+}
+
+.train-fighter__status,
+.train-fighter__biome-chip {
+  min-height: clamp(34px, 9cqw, 52px);
+  border: 3px solid #111416;
+  outline: 2px solid #777d78;
+  outline-offset: -5px;
+  background: #25292b;
+  box-shadow: inset 0 3px 0 #3a4042, inset 0 -4px 0 #101214;
+  text-shadow: 2px 2px 0 #111416;
 }
 
 .train-fighter__status {
   display: flex;
   align-items: center;
-  gap: var(--mf-gap-1);
+  gap: .35em;
   min-width: 0;
+  padding: .2em .45em;
   font-size: var(--mf-text-md);
   font-weight: 950;
-  text-shadow: 0 2px 0 rgb(255 255 255 / 55%);
+  letter-spacing: .03em;
 }
 
+.train-fighter__status strong { color: #f2e4b4; }
+
 .train-fighter__status--coins {
+  grid-column: 1;
+  grid-row: 1;
+  justify-content: flex-start;
+}
+
+.train-fighter__status--life {
+  grid-column: 3;
+  grid-row: 1;
   justify-content: flex-end;
+}
+
+.train-fighter__biome-chip {
+  grid-column: 2;
+  grid-row: 1;
+  position: relative;
+  justify-self: stretch;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: .25em .65em .38em;
+  background: #344f35;
+  color: #f4f1d8;
+  text-align: center;
+  font-size: var(--mf-text-sm);
+  font-weight: 950;
+  letter-spacing: .12em;
+}
+
+.train-fighter__biome-chip span { position: relative; z-index: 2; }
+.train-fighter__biome-chip i {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  background: #b9a93e;
+  transition: width .15s steps(8, end);
 }
 
 .train-fighter__hud-icon,
 .train-fighter__coin-mini {
+  position: relative;
+  flex: 0 0 auto;
   display: inline-grid;
   place-items: center;
-  width: 1.55em;
+  width: 1.45em;
   aspect-ratio: 1;
-  font-size: .85em;
-  border: 2px solid var(--tf-ink);
-  box-shadow: 0 3px 0 rgb(38 35 35 / 22%);
-}
-
-.train-fighter__hud-icon {
-  border-radius: 5px;
-  color: #fff;
-  background: var(--tf-red);
+  font-size: 0;
 }
 
 .train-fighter__coin-mini {
-  border-radius: 50%;
-  color: #c98200;
-  background: var(--tf-yellow);
+  width: 1.25em;
+  background: #d89e2d;
+  border: 3px solid #6f4c1d;
+  clip-path: polygon(25% 0, 75% 0, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0 75%, 0 25%);
+  box-shadow: inset 0 0 0 3px #f4d35b;
 }
+
+.train-fighter__coin-mini::after {
+  content: "$";
+  font-size: .62rem;
+  line-height: 1;
+  color: #7b4e19;
+  text-shadow: 1px 1px 0 #f2c64e;
+}
+
+.train-fighter__hud-icon {
+  width: 1.55em;
+  height: 1.05em;
+  background: #3f79a6;
+  border: 3px solid #15191b;
+  box-shadow: inset 0 -4px 0 #264e6d;
+}
+
+.train-fighter__hud-icon::before,
+.train-fighter__hud-icon::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  width: 5px;
+  height: 5px;
+  background: #15191b;
+}
+.train-fighter__hud-icon::before { left: 2px; }
+.train-fighter__hud-icon::after { right: 2px; }
 
 .train-fighter__hud-label {
   font-size: var(--mf-text-xs);
-  letter-spacing: .06em;
-}
-
-.train-fighter__biome-chip {
-  position: relative;
-  justify-self: stretch;
-  overflow: hidden;
-  padding: .38em .7em .48em;
-  border: 2px solid var(--tf-ink);
-  border-radius: 999px;
-  background: rgb(255 244 208 / 88%);
-  box-shadow: 0 3px 0 rgb(38 35 35 / 20%);
-  text-align: center;
-  font-size: var(--mf-text-xs);
-  font-weight: 950;
-  letter-spacing: .08em;
-}
-
-.train-fighter__biome-chip span {
-  position: relative;
-  z-index: 2;
-}
-
-.train-fighter__biome-chip i {
-  position: absolute;
-  inset: auto auto 0 0;
-  height: .28em;
-  background: var(--tf-red);
-  transition: width .15s linear;
+  color: #aab1ab;
+  letter-spacing: .05em;
 }
 
 .train-fighter__stage {
@@ -228,12 +262,27 @@
   min-height: 0;
   margin: 0 auto;
   overflow: hidden;
-  border-radius: clamp(18px, 4cqw, 34px);
-  background:
-    radial-gradient(circle at 10% 20%, rgb(255 255 255 / 28%) 0 2px, transparent 3px),
-    linear-gradient(90deg, transparent 0 8%, rgb(255 255 255 / 8%) 8% 9%, transparent 9% 91%, rgb(255 255 255 / 8%) 91% 92%, transparent 92%),
-    linear-gradient(var(--tf-horizon) 0 15%, var(--tf-ground) 15% 100%);
-  box-shadow: inset 0 0 0 3px rgb(38 35 35 / 14%);
+  border: 4px solid #141718;
+  outline: 2px solid #626963;
+  outline-offset: -6px;
+  background-color: var(--tf-ground);
+  background-image:
+    linear-gradient(90deg, transparent 0 15px, rgb(31 47 34 / 18%) 15px 16px),
+    linear-gradient(0deg, transparent 0 15px, rgb(232 224 165 / 7%) 15px 16px),
+    linear-gradient(90deg, transparent 0 31px, rgb(22 34 25 / 11%) 31px 32px),
+    linear-gradient(0deg, transparent 0 31px, rgb(22 34 25 / 11%) 31px 32px);
+  background-size: 16px 16px, 16px 16px, 32px 32px, 32px 32px;
+  box-shadow: inset 0 0 0 8px rgb(18 24 20 / 12%);
+}
+
+.train-fighter--forest .train-fighter__world {
+  background-color: #5a7343;
+  background-image:
+    linear-gradient(90deg, transparent 0 7px, rgb(35 54 37 / 13%) 7px 8px, transparent 8px 15px, rgb(118 145 78 / 10%) 15px 16px),
+    linear-gradient(0deg, transparent 0 7px, rgb(35 54 37 / 12%) 7px 8px, transparent 8px 15px, rgb(142 151 78 / 8%) 15px 16px),
+    linear-gradient(90deg, transparent 0 31px, rgb(45 62 43 / 11%) 31px 32px),
+    linear-gradient(0deg, transparent 0 31px, rgb(39 56 40 / 10%) 31px 32px);
+  background-size: 16px 16px, 16px 16px, 32px 32px, 32px 32px;
 }
 
 .train-fighter__world::before,
@@ -241,25 +290,25 @@
   content: "";
   position: absolute;
   z-index: 0;
-  top: 13%;
-  bottom: -8%;
-  width: 14%;
-  background: rgb(67 111 58 / 14%);
-  clip-path: polygon(35% 0, 65% 0, 100% 100%, 0 100%);
+  top: 0;
+  bottom: 0;
+  width: 12%;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 12px, #283229 12px 16px, transparent 16px 28px),
+    repeating-linear-gradient(90deg, #344a35 0 6px, #26372a 6px 12px);
+  opacity: .72;
 }
-
-.train-fighter__world::before { left: 0; }
-.train-fighter__world::after { right: 0; }
-
+.train-fighter__world::before { left: 0; border-right: 3px solid #26372a; }
+.train-fighter__world::after { right: 0; border-left: 3px solid #26372a; }
 .train-fighter--desert .train-fighter__world::before,
-.train-fighter--desert .train-fighter__world::after { background: rgb(153 71 48 / 14%); }
-
+.train-fighter--desert .train-fighter__world::after { filter: sepia(.7) hue-rotate(-20deg); }
 .train-fighter--snow .train-fighter__world::before,
-.train-fighter--snow .train-fighter__world::after { background: rgb(67 110 151 / 11%); }
+.train-fighter--snow .train-fighter__world::after { filter: saturate(.4) brightness(1.5); }
 
 .train-fighter__rails {
   position: absolute;
-  inset: 10% 5% -10%;
+  inset: 0 7% -8%;
   z-index: 2;
   pointer-events: none;
 }
@@ -268,20 +317,22 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  width: clamp(24px, 7cqw, 42px);
-  transform: translateX(-50%) perspective(480px) rotateX(1deg);
-  border-left: clamp(4px, 1.3cqw, 8px) solid #5a4031;
-  border-right: clamp(4px, 1.3cqw, 8px) solid #5a4031;
+  width: clamp(34px, 9cqw, 54px);
+  transform: translateX(-50%);
+  border-left: 5px solid #72776f;
+  border-right: 5px solid #72776f;
   background:
+    linear-gradient(90deg, #2e302c 0 3px, transparent 3px calc(100% - 3px), #2e302c calc(100% - 3px)),
     repeating-linear-gradient(
       to bottom,
-      transparent 0 clamp(12px, 3cqh, 22px),
-      #8b6042 clamp(12px, 3cqh, 22px) clamp(17px, 4.2cqh, 30px),
-      transparent clamp(17px, 4.2cqh, 30px) clamp(34px, 8cqh, 58px)
+      transparent 0 9px,
+      #493523 9px 14px,
+      #7c5535 14px 17px,
+      #38291f 17px 20px,
+      transparent 20px 30px
     );
-  filter: drop-shadow(0 3px 0 rgb(0 0 0 / 15%));
-  animation: tf-track-scroll .7s linear infinite;
-  transform-origin: top center;
+  box-shadow: -3px 0 0 #292d2c, 3px 0 0 #292d2c, inset 3px 0 0 #aeb0a0, inset -3px 0 0 #aeb0a0;
+  animation: tf-track-scroll .72s steps(10, end) infinite;
 }
 
 .train-fighter__rail::before,
@@ -291,110 +342,152 @@
   top: 0;
   bottom: 0;
   width: 3px;
-  background: rgb(255 255 255 / 32%);
+  background: #a8aaa0;
+  opacity: .58;
 }
-
-.train-fighter__rail::before { left: -6px; }
-.train-fighter__rail::after { right: -6px; }
-
-.train-fighter__rail.is-current {
-  filter: drop-shadow(0 0 8px rgb(255 226 103 / 55%));
-}
+.train-fighter__rail::before { left: -5px; }
+.train-fighter__rail::after { right: -5px; }
+.train-fighter__rail.is-current::before,
+.train-fighter__rail.is-current::after { background: #d0b64a; opacity: .9; }
 
 .train-fighter__scenery {
   position: absolute;
   inset: 0;
-  pointer-events: none;
   z-index: 1;
+  pointer-events: none;
 }
 
 .train-fighter__scenery-bit {
   position: absolute;
-  width: clamp(18px, 5cqw, 34px);
-  aspect-ratio: 1;
-  border-radius: 48% 52% 44% 56%;
-  background: #2e9859;
-  box-shadow: inset -5px -5px 0 rgb(0 0 0 / 12%);
-  animation: tf-scenery 3.2s linear infinite;
+  animation: tf-scenery 4.4s linear infinite;
 }
 
-.train-fighter__scenery-bit::after {
+.train-fighter--forest .train-fighter__scenery-bit--a,
+.train-fighter--forest .train-fighter__scenery-bit--c {
+  width: clamp(14px, 3.5cqw, 22px);
+  height: clamp(14px, 3.5cqw, 22px);
+  background: #2b4b34;
+  box-shadow:
+    -10px 10px 0 #315b39,
+    10px 10px 0 #315b39,
+    -18px 20px 0 #3d6740,
+    -6px 20px 0 #3d6740,
+    6px 20px 0 #3d6740,
+    18px 20px 0 #3d6740,
+    -22px 30px 0 #315536,
+    -10px 30px 0 #315536,
+    2px 30px 0 #315536,
+    14px 30px 0 #315536,
+    26px 30px 0 #315536;
+}
+.train-fighter--forest .train-fighter__scenery-bit--a::after,
+.train-fighter--forest .train-fighter__scenery-bit--c::after {
   content: "";
   position: absolute;
-  width: 18%;
-  height: 68%;
-  left: 41%;
-  top: 50%;
-  background: #85573e;
-  z-index: -1;
+  left: 5px;
+  top: 32px;
+  width: 7px;
+  height: 18px;
+  background: #65452d;
+  box-shadow: inset -3px 0 0 #3f2f25;
 }
 
-.train-fighter__scenery-bit--a { left: 4%; top: 18%; animation-delay: -.2s; }
-.train-fighter__scenery-bit--b { right: 5%; top: 31%; animation-delay: -1.7s; }
-.train-fighter__scenery-bit--c { left: 8%; top: 58%; animation-delay: -2.6s; }
-.train-fighter__scenery-bit--d { right: 8%; top: 74%; animation-delay: -.9s; }
-
-.train-fighter--desert .train-fighter__scenery-bit {
-  border-radius: 45% 45% 18% 18%;
-  background: #3f9b64;
-  transform: scaleX(.55);
+.train-fighter--forest .train-fighter__scenery-bit--b {
+  width: clamp(44px, 12cqw, 70px);
+  height: clamp(34px, 9cqw, 54px);
+  border: 4px solid #2b211c;
+  background: #6e4b32;
+  box-shadow: inset 0 5px 0 #936642, inset 0 -7px 0 #493326, 5px 5px 0 rgb(21 24 20 / 35%);
 }
-
-.train-fighter--desert .train-fighter__scenery-bit::before,
-.train-fighter--desert .train-fighter__scenery-bit::after {
+.train-fighter--forest .train-fighter__scenery-bit--b::before {
   content: "";
   position: absolute;
-  width: 45%;
-  height: 24%;
-  top: 35%;
-  background: #3f9b64;
-  border-radius: 999px;
+  left: -8px;
+  right: -8px;
+  top: -10px;
+  height: 10px;
+  background: #333737;
+  border: 3px solid #1c2020;
+}
+.train-fighter--forest .train-fighter__scenery-bit--b::after {
+  content: "KEEP\AOUT";
+  white-space: pre;
+  position: absolute;
+  inset: 8px 5px auto;
+  color: #b6c4ad;
+  font-size: clamp(7px, 1.8cqw, 10px);
+  line-height: 1.05;
+  text-align: center;
+  letter-spacing: .08em;
 }
 
-.train-fighter--desert .train-fighter__scenery-bit::before { right: 75%; }
-.train-fighter--desert .train-fighter__scenery-bit::after { left: 75%; }
-
-.train-fighter--mountain .train-fighter__scenery-bit {
-  background: #688b77;
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
-  border-radius: 0;
+.train-fighter--forest .train-fighter__scenery-bit--d {
+  width: clamp(38px, 10cqw, 62px);
+  height: clamp(28px, 7cqw, 44px);
+  border: 4px solid #242728;
+  background:
+    linear-gradient(90deg, #564131 0 33%, #6d5138 33% 66%, #4d3b30 66% 100%);
+  box-shadow: inset 0 5px 0 #8d6a43, 5px 5px 0 rgb(21 24 20 / 35%);
+}
+.train-fighter--forest .train-fighter__scenery-bit--d::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  right: -5px;
+  top: -9px;
+  height: 9px;
+  background: repeating-linear-gradient(90deg, #4f5552 0 9px, #333938 9px 18px);
+  border: 3px solid #202424;
+}
+.train-fighter--forest .train-fighter__scenery-bit--d::after {
+  content: "";
+  position: absolute;
+  right: -12px;
+  bottom: -8px;
+  width: 13px;
+  height: 13px;
+  background: #242728;
+  box-shadow: 0 -10px 0 #242728, -5px -5px 0 #44494a;
 }
 
+.train-fighter__scenery-bit--a { left: 5%; top: 12%; animation-delay: -.3s; }
+.train-fighter__scenery-bit--b { right: 6%; top: 28%; animation-delay: -2.5s; }
+.train-fighter__scenery-bit--c { left: 8%; top: 55%; animation-delay: -3.5s; }
+.train-fighter__scenery-bit--d { right: 8%; top: 72%; animation-delay: -1.2s; }
+
+.train-fighter--desert .train-fighter__scenery-bit,
+.train-fighter--mountain .train-fighter__scenery-bit,
 .train-fighter--snow .train-fighter__scenery-bit {
-  background: #f7fdff;
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
-  border-radius: 0;
+  width: clamp(20px, 5cqw, 34px);
+  aspect-ratio: 1;
+  background: var(--tf-ground-dark);
+  border: 3px solid #28302d;
 }
 
 .train-fighter__junction {
   position: absolute;
   z-index: 4;
-  top: 12%;
+  top: 10%;
   left: 50%;
   display: flex;
   align-items: center;
-  gap: .5em;
-  transform: translate(-50%, -18px) scale(.8);
+  gap: .45em;
+  transform: translate(-50%, -12px);
   opacity: 0;
-  padding: .3em .65em;
-  border: 2px solid var(--tf-ink);
-  border-radius: 999px;
-  background: var(--tf-yellow);
-  box-shadow: 0 4px 0 rgb(38 35 35 / 18%);
+  padding: .3em .55em;
+  border: 3px solid #181a1b;
+  outline: 2px solid #71663d;
+  outline-offset: -5px;
+  background: #c9a53f;
+  color: #251e18;
+  box-shadow: 0 4px 0 #17191a;
   font-size: var(--mf-text-xs);
   font-weight: 950;
-  letter-spacing: .07em;
+  letter-spacing: .06em;
   pointer-events: none;
 }
-
-.train-fighter__junction span {
-  font-size: 1.55em;
-  line-height: .7;
-}
-
-.train-fighter__junction.is-live {
-  animation: tf-junction 1.05s ease both;
-}
+.train-fighter__junction span { font-size: 1.45em; line-height: .7; }
+.train-fighter__junction.is-live { animation: tf-junction .9s steps(6, end) both; }
 
 .train-fighter__objects {
   position: absolute;
@@ -405,7 +498,7 @@
 
 .train-fighter__object {
   position: absolute;
-  width: clamp(44px, 13cqw, 78px);
+  width: clamp(42px, 12cqw, 70px);
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
   display: grid;
@@ -414,40 +507,104 @@
 
 .train-fighter__pickup {
   position: relative;
-  width: 72%;
+  width: 68%;
   aspect-ratio: 1;
   display: grid;
   place-items: center;
-  border: clamp(2px, .7cqw, 4px) solid var(--tf-ink);
-  border-radius: 30%;
-  background: var(--tf-cream);
-  box-shadow: 0 6px 0 rgb(38 35 35 / 20%), inset -5px -5px 0 rgb(0 0 0 / 7%);
-  animation: tf-bob .65s ease-in-out infinite alternate;
+  border: 4px solid #1a1d1e;
+  background: #536b3f;
+  box-shadow: inset 0 5px 0 #788b4d, inset 0 -6px 0 #35442f, 4px 4px 0 rgb(21 23 21 / 42%);
+  animation: tf-bob .7s steps(2, end) infinite alternate;
 }
 
-.train-fighter__pickup > span {
-  font-size: clamp(21px, 6cqw, 38px);
-  line-height: 1;
-}
-
+.train-fighter__pickup > span { font-size: 0; }
 .train-fighter__pickup > b {
   position: absolute;
-  right: -10%;
-  bottom: -11%;
+  right: -16%;
+  bottom: -14%;
   min-width: 1.7em;
-  padding: .15em .25em;
-  border: 2px solid var(--tf-ink);
-  border-radius: 999px;
-  background: var(--tf-yellow);
+  padding: .12em .22em;
+  border: 2px solid #4d3219;
+  background: #dfa431;
+  color: #463019;
   font-size: var(--mf-text-xs);
   line-height: 1;
+  text-align: center;
 }
 
-.train-fighter__object--coin .train-fighter__pickup { border-radius: 50%; background: var(--tf-yellow); color: #bb7300; }
-.train-fighter__object--weapon .train-fighter__pickup { background: #ffb37e; }
-.train-fighter__object--wagon .train-fighter__pickup { background: #ff7b67; color: #fff; }
-.train-fighter__object--shield .train-fighter__pickup { background: #90d9ff; color: #1372a1; border-radius: 50%; }
-.train-fighter__object--turbo .train-fighter__pickup { background: #fff06c; color: #e96a24; transform: rotate(var(--wobble)); }
+.train-fighter__object--coin .train-fighter__pickup {
+  width: 46%;
+  background: #d79d2c;
+  border-color: #6c4b1f;
+  clip-path: polygon(25% 0, 75% 0, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0 75%, 0 25%);
+  box-shadow: inset 0 0 0 4px #f0c24b, 3px 3px 0 rgb(35 26 15 / 35%);
+}
+.train-fighter__object--coin .train-fighter__pickup::before {
+  content: "$";
+  color: #76501f;
+  font-size: clamp(12px, 3.2cqw, 18px);
+  text-shadow: 1px 1px 0 #f4d05b;
+}
+.train-fighter__object--coin .train-fighter__pickup > b { display: none; }
+
+.train-fighter__object--weapon .train-fighter__pickup::before {
+  content: "";
+  width: 64%;
+  height: 12%;
+  background: #aeb3aa;
+  border: 3px solid #24292a;
+  transform: rotate(-38deg);
+  box-shadow: inset 0 3px 0 #d5d2b8;
+}
+.train-fighter__object--weapon .train-fighter__pickup::after {
+  content: "";
+  position: absolute;
+  width: 24%;
+  aspect-ratio: 1;
+  left: 16%;
+  top: 16%;
+  background: #7f8885;
+  border: 3px solid #24292a;
+}
+
+.train-fighter__object--wagon .train-fighter__pickup { background: #3f7196; box-shadow: inset 0 5px 0 #6190aa, inset 0 -6px 0 #294f6b, 4px 4px 0 rgb(21 23 21 / 42%); }
+.train-fighter__object--wagon .train-fighter__pickup::before {
+  content: "";
+  width: 62%;
+  height: 38%;
+  border: 3px solid #252728;
+  background: #8a5b36;
+  box-shadow: inset 0 4px 0 #b47a48;
+}
+.train-fighter__object--wagon .train-fighter__pickup::after {
+  content: "";
+  position: absolute;
+  bottom: 15%;
+  width: 8px;
+  height: 8px;
+  background: #252728;
+  box-shadow: 18px 0 0 #252728;
+}
+
+.train-fighter__object--shield .train-fighter__pickup { background: #447b96; box-shadow: inset 0 5px 0 #70a6b8, inset 0 -6px 0 #2d596f, 4px 4px 0 rgb(21 23 21 / 42%); }
+.train-fighter__object--shield .train-fighter__pickup::before {
+  content: "";
+  width: 48%;
+  height: 58%;
+  background: #aeb9b3;
+  border: 3px solid #222728;
+  clip-path: polygon(50% 0, 100% 18%, 88% 72%, 50% 100%, 12% 72%, 0 18%);
+}
+
+.train-fighter__object--turbo .train-fighter__pickup { background: #aa8c34; }
+.train-fighter__object--turbo .train-fighter__pickup::before {
+  content: "";
+  width: 44%;
+  height: 64%;
+  background: #f0d65a;
+  border: 2px solid #44361b;
+  clip-path: polygon(55% 0, 100% 0, 68% 42%, 92% 42%, 30% 100%, 46% 55%, 12% 55%);
+}
 
 .train-fighter__enemy {
   position: relative;
@@ -455,268 +612,278 @@
   height: 100%;
   display: grid;
   place-items: center;
-  animation: tf-enemy-rattle .24s ease-in-out infinite alternate;
+  animation: tf-enemy-rattle .22s steps(2, end) infinite alternate;
 }
 
 .train-fighter__enemy-body {
   position: relative;
-  width: 68%;
-  height: 58%;
+  width: 62%;
+  height: 66%;
   display: grid;
   place-items: center;
-  border: 3px solid var(--tf-ink);
-  border-radius: 22% 22% 30% 30%;
-  background: #e8544d;
-  box-shadow: 0 6px 0 rgb(38 35 35 / 22%), inset -6px -6px 0 rgb(0 0 0 / 10%);
+  border: 4px solid #17191a;
+  background: #a64a38;
+  box-shadow:
+    inset 0 5px 0 #c36b49,
+    inset 0 -8px 0 #65362f,
+    -7px 9px 0 -4px #1b1d1e,
+    7px 9px 0 -4px #1b1d1e,
+    4px 4px 0 rgb(18 20 20 / 42%);
 }
 
-.train-fighter__enemy.tier-2 .train-fighter__enemy-body { background: #df773c; }
-.train-fighter__enemy.tier-3 .train-fighter__enemy-body { background: #9b5ab1; }
-.train-fighter__enemy.tier-4 .train-fighter__enemy-body { background: #4f4c57; color: #fff; }
+.train-fighter__enemy-body::before,
+.train-fighter__enemy-body::after {
+  content: "";
+  position: absolute;
+  top: 18%;
+  width: 8px;
+  height: 8px;
+  background: #c8c7ac;
+  border: 2px solid #17191a;
+}
+.train-fighter__enemy-body::before { left: -10px; box-shadow: 0 14px 0 #c8c7ac, 0 28px 0 #c8c7ac; }
+.train-fighter__enemy-body::after { right: -10px; box-shadow: 0 14px 0 #c8c7ac, 0 28px 0 #c8c7ac; }
+.train-fighter__enemy.tier-2 .train-fighter__enemy-body { background: #9a6136; }
+.train-fighter__enemy.tier-3 .train-fighter__enemy-body { background: #67526f; }
+.train-fighter__enemy.tier-4 .train-fighter__enemy-body { background: #3e4347; }
 
 .train-fighter__enemy-stack {
   position: absolute;
-  width: 28%;
-  height: 35%;
-  top: -30%;
-  left: 36%;
-  border: 3px solid var(--tf-ink);
+  width: 32%;
+  height: 28%;
+  top: -22%;
+  left: 34%;
+  border: 4px solid #17191a;
   border-bottom: 0;
-  background: inherit;
+  background: #4e5555;
+  box-shadow: inset 0 4px 0 #7e8580;
 }
 
 .train-fighter__enemy-face {
-  font-size: clamp(11px, 3.4cqw, 19px);
-  letter-spacing: -.11em;
-  white-space: nowrap;
+  position: relative;
+  width: 58%;
+  height: 36%;
+  font-size: 0;
+}
+.train-fighter__enemy-face::before {
+  content: "";
+  position: absolute;
+  left: 3%;
+  top: 4%;
+  width: 9px;
+  height: 6px;
+  background: #e7dfc0;
+  box-shadow: 17px 0 0 #e7dfc0;
+}
+.train-fighter__enemy-face::after {
+  content: "";
+  position: absolute;
+  left: 9%;
+  bottom: 1px;
+  width: 30px;
+  height: 7px;
+  background: #251b18;
+  box-shadow: inset 7px 0 0 #d8c9a7, inset -7px 0 0 #d8c9a7;
 }
 
 .train-fighter__enemy-body em {
   position: absolute;
-  bottom: -26%;
+  bottom: -22%;
   font-style: normal;
-  font-size: clamp(7px, 2.1cqw, 12px);
-  color: #ffdf4b;
-  text-shadow: 1px 1px 0 var(--tf-ink);
+  font-size: clamp(7px, 2cqw, 11px);
+  color: #e3bc47;
+  text-shadow: 1px 1px 0 #17191a;
 }
-
-.train-fighter__enemy-arm {
-  position: absolute;
-  z-index: -1;
-  top: 37%;
-  font-weight: 950;
-  font-size: clamp(25px, 7cqw, 40px);
-  color: var(--tf-ink);
-}
-
-.train-fighter__enemy-arm--left { left: 1%; transform: rotate(-25deg); }
-.train-fighter__enemy-arm--right { right: 1%; transform: rotate(25deg); }
+.train-fighter__enemy-arm { display: none; }
 
 .train-fighter__player {
   position: absolute;
   z-index: 8;
   top: 73.5%;
-  width: clamp(72px, 22cqw, 124px);
+  width: clamp(72px, 21cqw, 118px);
   transform: translate(-50%, -50%);
-  transition: left .14s cubic-bezier(.18, .89, .32, 1.28);
+  transition: left .12s steps(3, end);
   pointer-events: none;
 }
-
-.train-fighter__player.is-turbo::before,
-.train-fighter__player.is-turbo::after {
-  content: "";
-  position: absolute;
-  z-index: -2;
-  top: 65%;
-  width: 26%;
-  height: 58%;
-  border-radius: 999px;
-  background: linear-gradient(#fff27b, #ff803b 48%, transparent 50%);
-  animation: tf-flame .12s linear infinite alternate;
-}
-
-.train-fighter__player.is-turbo::before { left: 19%; }
-.train-fighter__player.is-turbo::after { right: 19%; }
 
 .train-fighter__weapon-label {
   position: absolute;
   left: 50%;
-  bottom: 105%;
+  bottom: 107%;
   transform: translateX(-50%);
   width: max-content;
-  max-width: 150%;
-  padding: .22em .55em;
-  border: 2px solid rgb(38 35 35 / 75%);
-  border-radius: 999px;
-  background: rgb(255 244 208 / 92%);
+  max-width: 145%;
+  padding: .2em .45em;
+  border: 3px solid #151819;
+  background: #343a38;
+  color: #d9d6b9;
+  box-shadow: 0 3px 0 #151819;
   font-size: var(--mf-text-xs);
-  font-weight: 900;
   white-space: nowrap;
 }
 
 .train-fighter__locomotive {
   position: relative;
   width: 100%;
-  aspect-ratio: 1.08;
-  animation: tf-engine-bounce .22s ease-in-out infinite alternate;
+  aspect-ratio: 1.02;
+  animation: tf-engine-bounce .22s steps(2, end) infinite alternate;
+}
+
+.train-fighter__locomotive::after {
+  content: "";
+  position: absolute;
+  z-index: 9;
+  left: 24%;
+  right: 24%;
+  bottom: 5%;
+  height: 10%;
+  border: 3px solid #161819;
+  background: repeating-linear-gradient(90deg, #8f9790 0 6px, #33393a 6px 10px);
 }
 
 .train-fighter__cab {
   position: absolute;
   z-index: 3;
-  left: 21%;
-  top: 22%;
-  width: 58%;
-  height: 49%;
-  border: clamp(3px, .9cqw, 5px) solid var(--tf-ink);
-  border-radius: 26% 26% 38% 38%;
-  background: #48a4df;
-  box-shadow: inset -8px -8px 0 rgb(19 87 137 / 22%), 0 7px 0 rgb(38 35 35 / 18%);
+  left: 20%;
+  top: 20%;
+  width: 60%;
+  height: 54%;
+  border: 4px solid #151819;
+  background: #3f79a6;
+  box-shadow: inset 0 6px 0 #6496b6, inset 0 -8px 0 #28526f, 4px 4px 0 rgb(16 19 19 / 35%);
 }
 
 .train-fighter__cab::before {
   content: "";
   position: absolute;
-  left: 16%;
-  right: 16%;
-  top: 13%;
-  height: 31%;
-  border: 3px solid var(--tf-ink);
-  border-radius: 8px;
-  background: #dff4ff;
+  left: 12%;
+  right: 12%;
+  top: 11%;
+  height: 28%;
+  border: 3px solid #17191a;
+  background: #bccfc9;
+  box-shadow: inset 0 -4px 0 #75969a;
 }
 
 .train-fighter__nose {
   position: absolute;
   z-index: 4;
-  left: 31%;
-  top: 55%;
-  width: 38%;
-  height: 30%;
-  border: 3px solid var(--tf-ink);
-  border-radius: 35% 35% 48% 48%;
-  background: #ef5848;
-  box-shadow: inset -6px -5px 0 rgb(150 41 37 / 20%);
+  left: 29%;
+  top: 56%;
+  width: 42%;
+  height: 25%;
+  border: 4px solid #17191a;
+  background: #a94a39;
+  box-shadow: inset 0 5px 0 #d06b4c, inset 0 -5px 0 #70332d;
 }
 
 .train-fighter__chimney {
   position: absolute;
   z-index: 2;
-  left: 63%;
-  top: 0;
-  width: 18%;
-  height: 29%;
-  border: 3px solid var(--tf-ink);
-  border-radius: 8px 8px 3px 3px;
-  background: #ffcf3f;
+  left: 61%;
+  top: 1%;
+  width: 19%;
+  height: 27%;
+  border: 4px solid #17191a;
+  background: #2f4e5a;
+  box-shadow: inset 0 5px 0 #5e7780;
 }
-
 .train-fighter__chimney::after {
   content: "";
   position: absolute;
-  left: -27%;
-  top: -14%;
-  width: 154%;
-  height: 30%;
-  border: 3px solid var(--tf-ink);
-  border-radius: 999px;
-  background: #ffcf3f;
+  left: -28%;
+  top: -10%;
+  width: 156%;
+  height: 24%;
+  border: 3px solid #17191a;
+  background: #59737b;
+}
+.train-fighter__chimney::before {
+  content: "";
+  position: absolute;
+  right: -12px;
+  top: -23px;
+  width: 10px;
+  height: 10px;
+  background: #d6d2b8;
+  box-shadow: -8px -7px 0 #b9b7a6, 2px -14px 0 #95998f;
+  animation: tf-smoke .7s steps(3, end) infinite;
 }
 
 .train-fighter__eye {
   position: absolute;
   z-index: 5;
-  top: 28%;
-  width: 10%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: var(--tf-ink);
+  top: 29%;
+  width: 8%;
+  height: 10%;
+  background: #121517;
 }
-
-.train-fighter__eye--left { left: 33%; }
-.train-fighter__eye--right { right: 33%; }
+.train-fighter__eye--left { left: 34%; }
+.train-fighter__eye--right { right: 34%; }
 
 .train-fighter__smile {
   position: absolute;
   z-index: 6;
   left: 42%;
-  top: 51%;
-  width: 16%;
-  height: 9%;
-  border: 3px solid var(--tf-ink);
-  border-top: 0;
-  border-radius: 0 0 999px 999px;
+  top: 52%;
+  width: 18%;
+  height: 6%;
+  background: #17191a;
+  box-shadow: 4px 4px 0 #17191a, 8px 4px 0 #17191a;
 }
 
 .train-fighter__wheel {
   position: absolute;
   z-index: 7;
-  bottom: 6%;
-  width: 24%;
-  aspect-ratio: 1;
-  border: 3px solid var(--tf-ink);
-  border-radius: 50%;
-  background: #4b4c56;
-  box-shadow: inset 0 0 0 4px #b7c4cb;
-  animation: tf-wheel .33s linear infinite;
+  bottom: 10%;
+  width: 18%;
+  height: 26%;
+  border: 3px solid #151819;
+  background: #303638;
+  box-shadow: inset 0 0 0 4px #707773;
+  animation: tf-wheel .32s steps(4, end) infinite;
 }
-
-.train-fighter__wheel--left { left: 13%; }
-.train-fighter__wheel--right { right: 13%; }
+.train-fighter__wheel--left { left: 12%; }
+.train-fighter__wheel--right { right: 12%; }
 
 .train-fighter__arm {
   position: absolute;
   z-index: 1;
-  top: 40%;
-  width: 31%;
+  top: 43%;
+  width: 30%;
   height: 10%;
-  border: 3px solid var(--tf-ink);
-  border-radius: 999px;
-  background: #ffcf3f;
+  border: 3px solid #17191a;
+  background: #c99f3c;
+  box-shadow: inset 0 3px 0 #e1c15d;
 }
-
+.train-fighter__arm--left { left: -7%; transform: rotate(-8deg); }
+.train-fighter__arm--right { right: -7%; transform: rotate(8deg); }
 .train-fighter__arm i {
   position: absolute;
   top: 50%;
-  font-style: normal;
-  font-size: clamp(17px, 5cqw, 30px);
-  line-height: 1;
+  width: 19px;
+  height: 9px;
+  font-size: 0;
+  border: 3px solid #17191a;
+  background: #8c9590;
+  box-shadow: inset 0 3px 0 #c5c6b4;
 }
-
-.train-fighter__arm--left {
-  left: -8%;
-  transform: rotate(-17deg);
-}
-
-.train-fighter__arm--left i {
-  right: 78%;
-  transform: translateY(-50%) rotate(17deg);
-}
-
-.train-fighter__arm--right {
-  right: -8%;
-  transform: rotate(17deg);
-}
-
-.train-fighter__arm--right i {
-  left: 78%;
-  transform: translateY(-50%) rotate(-17deg) scaleX(-1);
-}
+.train-fighter__arm--left i { right: 78%; transform: translateY(-50%) rotate(-16deg); }
+.train-fighter__arm--right i { left: 78%; transform: translateY(-50%) rotate(16deg); }
 
 .train-fighter__shield-bubble {
   position: absolute;
   z-index: 10;
-  inset: -12%;
+  inset: -10%;
   display: grid;
   place-items: end center;
-  padding-bottom: 6%;
-  border: 3px solid rgb(63 177 230 / 72%);
-  border-radius: 50%;
-  background: rgb(109 213 255 / 13%);
-  box-shadow: inset 0 0 22px rgb(174 236 255 / 35%);
-  color: #0d6590;
+  padding-bottom: 4%;
+  border: 3px solid #65a3ba;
+  outline: 2px dashed #b6d5d4;
+  outline-offset: -6px;
+  background: rgb(79 141 165 / 11%);
+  color: #d2e8e2;
   font-size: var(--mf-text-xs);
-  font-weight: 950;
 }
 
 .train-fighter__armor-badge {
@@ -725,17 +892,17 @@
   top: 54%;
   left: 50%;
   transform: translateX(-50%);
-  padding: .08em .34em;
-  border: 2px solid var(--tf-ink);
-  border-radius: 5px;
-  background: #d8dce0;
+  padding: .08em .28em;
+  border: 2px solid #17191a;
+  background: #aeb4ad;
+  color: #252a2b;
   font-size: var(--mf-text-xs);
 }
 
 .train-fighter__wagons {
   position: absolute;
   z-index: -1;
-  top: 72%;
+  top: 74%;
   left: 50%;
   width: 58%;
   transform: translateX(-50%);
@@ -743,141 +910,155 @@
 
 .train-fighter__wagon {
   position: absolute;
-  top: calc((var(--wagon-index) + 1) * clamp(23px, 7cqw, 42px));
+  top: calc((var(--wagon-index) + 1) * clamp(23px, 7cqw, 40px));
   left: 50%;
   width: 86%;
-  height: clamp(28px, 8cqw, 47px);
+  height: clamp(27px, 7.5cqw, 43px);
   transform: translateX(-50%);
-  border: 3px solid var(--tf-ink);
-  border-radius: 10px 10px 14px 14px;
-  background: #ef6858;
-  box-shadow: inset -7px -5px 0 rgb(143 44 38 / 16%), 0 5px 0 rgb(38 35 35 / 16%);
+  border: 4px solid #17191a;
+  background: #7a4f30;
+  box-shadow: inset 0 5px 0 #a87443, inset 0 -6px 0 #4a3427, 3px 4px 0 rgb(17 20 19 / 32%);
 }
-
-.train-fighter__wagon:nth-child(2) { background: #f2a744; }
-.train-fighter__wagon:nth-child(3) { background: #68b77f; }
-
+.train-fighter__wagon:nth-child(2) { background: #72503a; }
+.train-fighter__wagon:nth-child(3) { background: #596446; }
 .train-fighter__wagon::before,
 .train-fighter__wagon::after {
   content: "";
   position: absolute;
-  bottom: -24%;
-  width: 23%;
-  aspect-ratio: 1;
-  border: 2px solid var(--tf-ink);
-  border-radius: 50%;
-  background: #4b4c56;
+  bottom: -8px;
+  width: 10px;
+  height: 8px;
+  border: 2px solid #17191a;
+  background: #343a3b;
 }
-
-.train-fighter__wagon::before { left: 12%; }
-.train-fighter__wagon::after { right: 12%; }
-
+.train-fighter__wagon::before { left: 10%; }
+.train-fighter__wagon::after { right: 10%; }
 .train-fighter__wagon i {
   position: absolute;
   left: 46%;
-  top: -17%;
+  top: -8px;
   width: 8%;
-  height: 22%;
-  background: var(--tf-ink);
+  height: 8px;
+  background: #17191a;
 }
 
 .train-fighter__hidden-wagons {
   position: absolute;
-  top: calc(4 * clamp(23px, 7cqw, 42px) + 3px);
+  top: calc(4 * clamp(23px, 7cqw, 40px) + 2px);
   left: 50%;
   transform: translateX(-50%);
-  padding: .15em .42em;
-  border: 2px solid var(--tf-ink);
-  border-radius: 999px;
-  background: var(--tf-cream);
+  padding: .12em .35em;
+  border: 2px solid #17191a;
+  background: #d9cfaa;
+  color: #27251f;
   font-size: var(--mf-text-xs);
   white-space: nowrap;
 }
 
+.train-fighter__player.is-turbo::before,
+.train-fighter__player.is-turbo::after {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  top: 65%;
+  width: 18%;
+  height: 52%;
+  background: repeating-linear-gradient(0deg, transparent 0 6px, #dd6637 6px 12px, #e6c94b 12px 18px);
+  animation: tf-flame .12s steps(2, end) infinite alternate;
+}
+.train-fighter__player.is-turbo::before { left: 22%; }
+.train-fighter__player.is-turbo::after { right: 22%; }
+
 .train-fighter__floaters {
   position: absolute;
   z-index: 20;
-  top: 52%;
+  top: 49%;
   left: 50%;
   width: 88%;
   transform: translateX(-50%);
   pointer-events: none;
 }
-
 .train-fighter__floater {
   position: absolute;
   left: 50%;
-  top: calc(var(--floater-index) * 1.55em);
+  top: calc(var(--floater-index) * 1.5em);
   transform: translateX(-50%);
-  padding: .25em .6em;
-  border: 2px solid var(--tf-ink);
-  border-radius: 999px;
-  background: var(--tf-cream);
-  box-shadow: 0 4px 0 rgb(38 35 35 / 18%);
+  padding: .25em .55em;
+  border: 3px solid #17191a;
+  background: #ded4af;
+  color: #2c2b26;
+  box-shadow: 0 4px 0 #17191a;
   font-size: var(--mf-text-sm);
   font-weight: 950;
   white-space: nowrap;
-  animation: tf-floater 1.1s ease-out both;
+  animation: tf-floater 1.05s steps(8, end) both;
 }
+.train-fighter__floater.is-good { background: #91a95d; }
+.train-fighter__floater.is-bad { background: #b75b47; color: #f5e9c8; }
+.train-fighter__floater.is-info { background: #588aa0; color: #edf0d8; }
 
-.train-fighter__floater.is-good { background: #a7e879; }
-.train-fighter__floater.is-bad { background: #ff8c77; }
-.train-fighter__floater.is-info { background: #8ed7ff; }
+.train-fighter__obstacle-warning {
+  position: absolute;
+  z-index: 40;
+  left: 50%;
+  bottom: 118%;
+  transform: translateX(-50%);
+  min-width: 210%;
+  padding: .4em .55em;
+  border: 4px solid #17191a;
+  outline: 2px solid #d4aa3d;
+  outline-offset: -6px;
+  background: #9d3f32;
+  color: #f3e6be;
+  box-shadow: 0 5px 0 #17191a;
+  text-align: center;
+  animation: tf-warning .28s steps(2, end) infinite alternate;
+}
+.train-fighter__obstacle-warning span,
+.train-fighter__obstacle-warning b { display: block; }
+.train-fighter__obstacle-warning span { color: #f1c943; font-size: var(--mf-text-sm); }
+.train-fighter__obstacle-warning b { font-size: var(--mf-text-xs); margin-top: .15em; }
 
 .train-fighter__station {
   position: absolute;
   z-index: 30;
-  inset: 8% 5% 7%;
+  inset: 6% 4% 5%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--mf-gap-2);
   padding: var(--mf-pad-y) var(--mf-pad-x);
-  border: clamp(3px, 1cqw, 6px) solid var(--tf-ink);
-  border-radius: clamp(20px, 5cqw, 34px);
-  background: #fff0c2;
-  box-shadow: 0 10px 0 rgb(38 35 35 / 18%), inset 0 -14px 0 rgb(217 164 72 / 13%);
+  border: 5px solid #17191a;
+  outline: 3px solid #6c736a;
+  outline-offset: -8px;
+  background:
+    repeating-linear-gradient(0deg, #5d4a36 0 12px, #6d563d 12px 24px),
+    #5d4a36;
+  box-shadow: 0 8px 0 rgb(16 18 18 / 44%);
   text-align: center;
-  animation: tf-station-in .3s cubic-bezier(.18, .89, .32, 1.28) both;
+  animation: tf-station-in .28s steps(6, end) both;
 }
-
 .train-fighter__station::before {
   content: "";
   position: absolute;
-  inset: 6% 5% auto;
-  height: 16%;
-  border: 3px solid var(--tf-ink);
-  border-radius: 12px;
-  background: repeating-linear-gradient(90deg, #ef5848 0 11%, #fff3cd 11% 22%);
+  inset: 4% 4% auto;
+  height: 12%;
+  border: 4px solid #17191a;
+  background: repeating-linear-gradient(90deg, #914435 0 16px, #d1c394 16px 32px);
   z-index: -1;
 }
-
 .train-fighter__station-sign {
-  padding: .3em .65em;
-  border: 3px solid var(--tf-ink);
-  border-radius: 8px;
-  background: #53a6d9;
-  color: #fff;
+  padding: .28em .55em;
+  border: 3px solid #17191a;
+  background: #315a6b;
+  color: #e9e4c5;
+  box-shadow: 0 4px 0 #17191a;
   font-size: var(--mf-text-xs);
-  font-weight: 950;
   letter-spacing: .08em;
-  transform: rotate(-1deg);
 }
-
-.train-fighter__station h2 {
-  margin: 0;
-  font-size: var(--mf-text-xl);
-  line-height: .95;
-  letter-spacing: -.04em;
-}
-
-.train-fighter__station p {
-  margin: 0;
-  max-width: 31em;
-  font-size: var(--mf-text-sm);
-  font-weight: 700;
-}
+.train-fighter__station h2 { margin: 0; color: #f0d372; font-size: var(--mf-text-xl); line-height: .95; }
+.train-fighter__station p { margin: 0; max-width: 31em; color: #ded6b6; font-size: var(--mf-text-sm); }
 
 .train-fighter__shop {
   display: grid;
@@ -902,52 +1083,28 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: .1em;
-  padding: .55em .35em;
-  border: 3px solid var(--tf-ink);
-  border-radius: 14px;
-  background: #fff9e7;
-  box-shadow: 0 5px 0 rgb(38 35 35 / 18%);
+  gap: .12em;
+  padding: .5em .3em;
+  border: 4px solid #17191a;
+  background: #3d4941;
+  color: #ebe4c7;
+  box-shadow: inset 0 5px 0 #58665a, 0 5px 0 #17191a;
 }
-
-.train-fighter__shop button > span {
-  font-size: var(--mf-text-lg);
-}
-
-.train-fighter__shop button > b {
-  font-size: var(--mf-text-xs);
-}
-
-.train-fighter__shop button > em {
-  font-style: normal;
-  font-size: var(--mf-text-xs);
-  color: #92630a;
-}
-
-.train-fighter__shop button:disabled {
-  opacity: .38;
-  cursor: default;
-  box-shadow: none;
-  transform: translateY(4px);
-}
+.train-fighter__shop button > span { font-size: var(--mf-text-lg); filter: grayscale(.7); }
+.train-fighter__shop button > b { font-size: var(--mf-text-xs); }
+.train-fighter__shop button > em { font-style: normal; font-size: var(--mf-text-xs); color: #e0b84c; }
+.train-fighter__shop button:disabled { opacity: .38; cursor: default; box-shadow: none; transform: translateY(4px); }
 
 .train-fighter__depart {
   min-height: var(--mf-touch-md);
   min-width: min(78%, 280px);
-  padding: .6em 1.2em;
-  border: 3px solid var(--tf-ink);
-  border-radius: 999px;
-  background: var(--tf-yellow);
-  box-shadow: 0 5px 0 rgb(38 35 35 / 20%);
+  padding: .55em 1.1em;
+  border: 4px solid #17191a;
+  background: #b88b36;
+  color: #2a2119;
+  box-shadow: inset 0 4px 0 #d7b95d, 0 5px 0 #17191a;
   font-size: var(--mf-text-md);
   font-weight: 950;
-}
-
-.train-fighter__depart:active,
-.train-fighter__controls button:active:not(:disabled),
-.train-fighter__shop button:active:not(:disabled) {
-  transform: translateY(3px);
-  box-shadow: 0 2px 0 rgb(38 35 35 / 18%);
 }
 
 .train-fighter__controls {
@@ -962,30 +1119,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: .22em;
-  padding: .25em .65em;
-  border: 3px solid var(--tf-ink);
-  border-radius: 16px;
-  background: #fff1c4;
-  box-shadow: 0 6px 0 rgb(38 35 35 / 21%);
-  font-size: var(--mf-text-md);
+  gap: .15em;
+  padding: .2em .55em;
+  border: 4px solid #17191a;
+  outline: 2px solid #916743;
+  outline-offset: -6px;
+  background: #805134;
+  color: #efd260;
+  box-shadow: inset 0 5px 0 #9d6b43, inset 0 -6px 0 #583925, 0 5px 0 #101213;
+  font-size: var(--mf-text-lg);
   font-weight: 950;
+  text-shadow: 2px 2px 0 #3a261d;
 }
-
-.train-fighter__controls > button:first-child { background: #8fd7ff; }
-.train-fighter__controls > button:last-child { background: #ff9f85; }
-
-.train-fighter__controls > button span {
-  font-size: 1.7em;
-  line-height: .6;
-}
-
-.train-fighter__controls > button:disabled {
-  opacity: .33;
-  cursor: default;
-  box-shadow: none;
-  transform: translateY(5px);
-}
+.train-fighter__controls > button b { display: none; }
+.train-fighter__controls > button span { font-size: 2em; line-height: .6; transform: translateY(-2px); }
+.train-fighter__controls > button:disabled { opacity: .32; cursor: default; box-shadow: none; transform: translateY(5px); }
 
 .train-fighter__gear-pill {
   min-width: var(--mf-touch-md);
@@ -993,90 +1141,102 @@
   display: grid;
   place-items: center;
   align-content: center;
-  padding: .25em .5em;
-  border: 3px solid var(--tf-ink);
-  border-radius: 999px;
-  background: var(--tf-yellow);
-  box-shadow: 0 4px 0 rgb(38 35 35 / 18%);
+  padding: .2em .45em;
+  border: 4px solid #111416;
+  outline: 2px solid #69706c;
+  outline-offset: -6px;
+  background: #252a2b;
+  box-shadow: 0 4px 0 #111416;
   line-height: .9;
 }
+.train-fighter__gear-pill span {
+  display: block;
+  width: 22px;
+  height: 9px;
+  font-size: 0;
+  border: 3px solid #17191a;
+  background: #89938d;
+  box-shadow: inset 0 3px 0 #c1c4b5;
+  transform: rotate(-14deg);
+}
+.train-fighter__gear-pill b { margin-top: 4px; color: #d2bb55; font-size: var(--mf-text-xs); }
 
-.train-fighter__gear-pill span { font-size: var(--mf-text-md); }
-.train-fighter__gear-pill b { font-size: var(--mf-text-xs); }
+.train-fighter__depart:active,
+.train-fighter__controls button:active:not(:disabled),
+.train-fighter__shop button:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #17191a;
+}
 
 @keyframes tf-track-scroll {
-  from { background-position: 0 0; }
-  to { background-position: 0 clamp(34px, 8cqh, 58px); }
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 0 0, 0 30px; }
 }
-
 @keyframes tf-scenery {
-  from { transform: translateY(-22%) scale(.7); }
-  to { transform: translateY(390%) scale(1.25); }
+  from { transform: translateY(-120%); }
+  to { transform: translateY(760%); }
 }
-
 @keyframes tf-cloud {
   from { translate: -6% 0; }
   to { translate: 12% 0; }
 }
-
 @keyframes tf-bob {
-  from { transform: translateY(-4%) rotate(-2deg); }
-  to { transform: translateY(5%) rotate(2deg); }
+  from { transform: translateY(-3px); }
+  to { transform: translateY(3px); }
 }
-
 @keyframes tf-enemy-rattle {
-  from { transform: rotate(-2.5deg) translateX(-2%); }
-  to { transform: rotate(2.5deg) translateX(2%); }
+  from { transform: translateX(-2px); }
+  to { transform: translateX(2px); }
 }
-
 @keyframes tf-engine-bounce {
-  from { transform: translateY(-1.5%) rotate(-.6deg); }
-  to { transform: translateY(1.5%) rotate(.6deg); }
+  from { transform: translateY(-1px); }
+  to { transform: translateY(1px); }
 }
-
 @keyframes tf-wheel {
-  to { transform: rotate(360deg); }
+  from { box-shadow: inset 0 0 0 4px #707773; }
+  to { box-shadow: inset 0 0 0 2px #707773; }
 }
-
+@keyframes tf-smoke {
+  from { transform: translate(0, 0); opacity: .88; }
+  to { transform: translate(4px, -12px); opacity: .22; }
+}
 @keyframes tf-flame {
-  from { transform: scaleY(.78); }
-  to { transform: scaleY(1.13); }
+  from { transform: scaleY(.76); }
+  to { transform: scaleY(1.12); }
 }
-
 @keyframes tf-junction {
-  0% { opacity: 0; transform: translate(-50%, -15px) scale(.7); }
-  18%, 72% { opacity: 1; transform: translate(-50%, 0) scale(1); }
-  100% { opacity: 0; transform: translate(-50%, 14px) scale(.9); }
+  0% { opacity: 0; transform: translate(-50%, -12px); }
+  20%, 72% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, 10px); }
 }
-
 @keyframes tf-floater {
-  0% { opacity: 0; transform: translate(-50%, 8px) scale(.75); }
-  15% { opacity: 1; transform: translate(-50%, 0) scale(1.05); }
+  0% { opacity: 0; transform: translate(-50%, 8px); }
+  18% { opacity: 1; transform: translate(-50%, 0); }
   72% { opacity: 1; }
-  100% { opacity: 0; transform: translate(-50%, -32px) scale(.96); }
+  100% { opacity: 0; transform: translate(-50%, -28px); }
 }
-
 @keyframes tf-station-in {
-  from { opacity: 0; transform: scale(.88) translateY(18px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes tf-warning {
+  from { transform: translateX(-50%) translateY(-2px); }
+  to { transform: translateX(-50%) translateY(2px); }
 }
 
 @media (max-width: 420px) {
   .train-fighter__hud-label { display: none; }
   .train-fighter__shop { gap: var(--mf-gap-1); }
-  .train-fighter__shop button { padding-inline: .2em; }
+  .train-fighter__shop button { padding-inline: .15em; }
   .train-fighter__station { inset-inline: 2%; }
+  .train-fighter__world::before,
+  .train-fighter__world::after { width: 10%; }
 }
 
 @media (orientation: landscape) and (max-height: 650px) {
-  .train-fighter__world {
-    width: min(76%, 640px);
-  }
-
+  .train-fighter__world { width: min(76%, 640px); }
   .train-fighter__weapon-label,
-  .train-fighter__hidden-wagons {
-    display: none;
-  }
+  .train-fighter__hidden-wagons { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1086,7 +1246,6 @@
   .train-fighter__locomotive,
   .train-fighter__wheel,
   .train-fighter__enemy,
-  .train-fighter__pickup {
-    animation-duration: 2s;
-  }
+  .train-fighter__pickup,
+  .train-fighter__chimney::before { animation-duration: 2s; }
 }

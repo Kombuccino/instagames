@@ -171,7 +171,7 @@
   position: absolute;
   display: block;
   width: var(--gore-size);
-  height: calc(var(--gore-size) * 1.35);
+  height: var(--gore-size);
   background: var(--gore);
   box-shadow: 0 1px 2px rgba(0,0,0,.28);
   transform: translate(-50%, -50%);
@@ -183,7 +183,6 @@
 }
 
 .vlad-gore-bit.is-chunk {
-  height: calc(var(--gore-size) * .78);
   border-radius: 54% 24% 62% 32%;
   outline: 1px solid color-mix(in srgb, var(--gore) 74%, #3c160f);
 }
@@ -191,15 +190,15 @@
 @keyframes vlad-gore-fall {
   0% {
     opacity: 0;
-    transform: translate(-50%, -50%) translate3d(0, -8px, 0) rotate(0) scale(.55);
+    transform: translate(-50%, -50%) translate3d(0, -8px, 0) rotate(0) scale(.55,.85);
   }
   8% { opacity: .96; }
   25% {
-    transform: translate(-50%, -50%) translate3d(calc(var(--gore-x) * .3), 38px, 0) rotate(calc(var(--gore-rot) * .3)) scale(1);
+    transform: translate(-50%, -50%) translate3d(0, 38px, 0) rotate(45deg) scale(1,1.25);
   }
   100% {
     opacity: .74;
-    transform: translate(-50%, -50%) translate3d(var(--gore-x), 105vh, 0) rotate(var(--gore-rot)) scale(.72);
+    transform: translate(-50%, -50%) translate3d(var(--gore-x), 105vh, 0) rotate(var(--gore-rot)) scale(.72,.92);
   }
 }
 

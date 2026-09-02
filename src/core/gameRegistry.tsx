@@ -5,6 +5,7 @@ import { VladsSkewers } from '../games/vlads-skewers/VladsSkewers'
 import { HariRottenTeeth } from '../games/hari-rotten-teeth/HariRottenTeeth'
 import { CalcDrop } from '../games/calc-drop/CalcDrop'
 import { CrazyPapers } from '../games/crazy-papers/CrazyPapers'
+import { DebthOfLife } from '../games/debth-of-life/DebthOfLife'
 
 export const gameRegistry: InstagameDefinition[] = [
   {
@@ -188,6 +189,40 @@ export const gameRegistry: InstagameDefinition[] = [
         'À 10 dossiers en attente, le guichet est submergé et la partie se termine.',
       ],
       controls: ['Tape sur l’un des 3 tampons', 'Clavier : 1 = VALIDÉ · 2 = REFUSÉ · 3 = ARCHIVÉ'],
+    },
+    features: {
+      help: true,
+      love: true,
+      comments: true,
+      bookmark: true,
+      leaderboard: {
+        enabled: true,
+        periods: ['daily', 'weekly'],
+        sort: 'desc',
+        limit: 10,
+      },
+      share: false,
+      remix: false,
+    },
+  },
+  {
+    id: 'debth-of-life',
+    title: 'DebthOfLife',
+    description: 'Cours ta vie · saute les dettes · meurs le moins pauvre possible',
+    author: 'MiniFugg',
+    orientation: 'landscape',
+    component: DebthOfLife,
+    instructions: {
+      goal: 'Atteins 85 ans avec le meilleur patrimoine net possible.',
+      rules: [
+        'Tu cours automatiquement : ton seul pouvoir est de sauter.',
+        'Maintiens le saut pour monter plus haut. En vieillissant, tu cours moins vite et sautes moins haut.',
+        'Voiture, couple, enfant, chien, maison, crédit, impôts et maladie coûtent de l’argent et peuvent ajouter de la dette.',
+        'Certains coûts te laissent aussi un acquis qui compte dans ton bilan final.',
+        'Prime, meilleur métier, augmentation, promotion, héritage et loterie donnent de l’argent ou améliorent ton salaire.',
+        'Une partie de ce que tu gagnes rembourse automatiquement tes dettes. Plus elles pèsent lourd, plus le monde s’assombrit.',
+      ],
+      controls: ['Maintiens SAUTE pour régler la hauteur', 'Clavier : Espace, ↑, W ou Z'],
     },
     features: {
       help: true,

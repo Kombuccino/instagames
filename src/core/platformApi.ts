@@ -13,7 +13,7 @@ import {
   type GameComment,
   type GameSocialStats,
 } from './social'
-import type { GameLeaderboardPeriod, GameLeaderboardSort } from './types'
+import type { FeedPreference, GameLeaderboardPeriod, GameLeaderboardSort } from './types'
 
 export type SubmitScoreInput = {
   gameId: string
@@ -44,6 +44,7 @@ export type PlatformProfile = {
   displayName: string | null
   bio: string | null
   avatarUrl: string | null
+  feedPreference: FeedPreference
   bookmarks: PlatformProfileBookmark[]
 }
 
@@ -52,6 +53,7 @@ export type UpdatePlatformProfileInput = {
   displayName?: string | null
   bio?: string | null
   avatarUrl?: string | null
+  feedPreference?: FeedPreference
 }
 
 const API_BASE = (import.meta.env.VITE_MINIFUGG_API_URL as string | undefined)?.trim().replace(/\/$/, '')
@@ -84,13 +86,19 @@ function localBoardId(period: GameLeaderboardPeriod) {
   return 'global'
 }
 
+function normalizeFeedPreference(value: unknown): FeedPreference {
+  return value === 'beta' || value === 'all' ? value : 'fugg'
+}
+
+function emptyLocalProfile(): PlatformProfile {
+  return { id: 'local', kind: 'anonymous', handle: null, displayName: null, bio: null, avatarUrl: null, feedPreference: 'fugg', bookmarks: [] }
+}
+
 function localProfile(): PlatformProfile {
-  if (typeof window === 'undefined') {
-    return { id: 'local', kind: 'anonymous', handle: null, displayName: null, bio: null, avatarUrl: null, bookmarks: [] }
-  }
+  if (typeof window === 'undefined') return emptyLocalProfile()
   try {
     const raw = window.localStorage.getItem(LOCAL_PROFILE_KEY)
-    if (!raw) return { id: 'local', kind: 'anonymous', handle: null, displayName: null, bio: null, avatarUrl: null, bookmarks: [] }
+    if (!raw) return emptyLocalProfile()
     const parsed = JSON.parse(raw) as Partial<PlatformProfile>
     return {
       id: typeof parsed.id === 'string' ? parsed.id : 'local',
@@ -99,10 +107,11 @@ function localProfile(): PlatformProfile {
       displayName: typeof parsed.displayName === 'string' ? parsed.displayName : null,
       bio: typeof parsed.bio === 'string' ? parsed.bio : null,
       avatarUrl: typeof parsed.avatarUrl === 'string' ? parsed.avatarUrl : null,
+      feedPreference: normalizeFeedPreference(parsed.feedPreference),
       bookmarks: Array.isArray(parsed.bookmarks) ? parsed.bookmarks : [],
     }
   } catch {
-    return { id: 'local', kind: 'anonymous', handle: null, displayName: null, bio: null, avatarUrl: null, bookmarks: [] }
+    return emptyLocalProfile()
   }
 }
 
@@ -114,6 +123,7 @@ function saveLocalProfile(input: UpdatePlatformProfileInput): PlatformProfile {
     displayName: typeof input.displayName === 'string' ? input.displayName.trim().slice(0, 50) || null : input.displayName ?? current.displayName,
     bio: typeof input.bio === 'string' ? input.bio.trim().slice(0, 280) || null : input.bio ?? current.bio,
     avatarUrl: typeof input.avatarUrl === 'string' ? input.avatarUrl.trim().slice(0, 500) || null : input.avatarUrl ?? current.avatarUrl,
+    feedPreference: input.feedPreference ? normalizeFeedPreference(input.feedPreference) : current.feedPreference,
   }
   try {
     window.localStorage.setItem(LOCAL_PROFILE_KEY, JSON.stringify(next))
@@ -136,7 +146,11 @@ export async function getMyProfile(): Promise<PlatformProfile> {
     })
     if (!response.ok) throw new Error(`Profile API returned ${response.status}`)
     const payload = await response.json() as PlatformProfile
-    return { ...payload, bookmarks: Array.isArray(payload.bookmarks) ? payload.bookmarks : [] }
+    return {
+      ...payload,
+      feedPreference: normalizeFeedPreference(payload.feedPreference),
+      bookmarks: Array.isArray(payload.bookmarks) ? payload.bookmarks : [],
+    }
   } catch {
     return localProfile()
   }
@@ -153,7 +167,11 @@ export async function updateMyProfile(input: UpdatePlatformProfileInput): Promis
     })
     if (!response.ok) return null
     const payload = await response.json() as Omit<PlatformProfile, 'bookmarks'> & { bookmarks?: PlatformProfileBookmark[] }
-    return { ...payload, bookmarks: Array.isArray(payload.bookmarks) ? payload.bookmarks : [] }
+    return {
+      ...payload,
+      feedPreference: normalizeFeedPreference(payload.feedPreference),
+      bookmarks: Array.isArray(payload.bookmarks) ? payload.bookmarks : [],
+    }
   } catch {
     return saveLocalProfile(input)
   }

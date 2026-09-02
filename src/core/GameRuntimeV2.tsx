@@ -14,7 +14,7 @@ import {
   type PlatformProfile,
 } from './platformApi'
 import type { GameComment, GameSocialStats } from './social'
-import type { GameFinishPayload, GameLeaderboardPeriod, InstagameDefinition } from './types'
+import type { FeedPreference, GameFinishPayload, GameLeaderboardPeriod, InstagameDefinition } from './types'
 import type { LeaderboardEntry } from './leaderboard'
 
 type GameRuntimeProps = {
@@ -23,6 +23,8 @@ type GameRuntimeProps = {
   seed: number
   active: boolean
   mounted: boolean
+  feedPreference: FeedPreference
+  onFeedPreferenceChange: (value: FeedPreference) => void
 }
 
 type OpenSheet = 'help' | 'leaderboard' | 'comments' | 'creator' | 'profile' | null
@@ -119,7 +121,7 @@ function CoreIcon({ name, filled = false }: { name: IconName, filled?: boolean }
   )
 }
 
-export function GameRuntimeV2({ game, catalog, seed, active, mounted }: GameRuntimeProps) {
+export function GameRuntimeV2({ game, catalog, seed, active, mounted, feedPreference, onFeedPreferenceChange }: GameRuntimeProps) {
   const [score, setScore] = useState(0)
   const [restartToken, setRestartToken] = useState(0)
   const [finished, setFinished] = useState<GameFinishPayload | null>(null)
@@ -331,6 +333,14 @@ export function GameRuntimeV2({ game, catalog, seed, active, mounted }: GameRunt
     setProfileMessage('Pseudo enregistré.')
   }
 
+  const changeFeedPreference = async (value: FeedPreference) => {
+    onFeedPreferenceChange(value)
+    const saved = await updateMyProfile({ feedPreference: value })
+    if (saved) {
+      setProfile({ ...saved, bookmarks: saved.bookmarks.length ? saved.bookmarks : profile?.bookmarks ?? [] })
+    }
+  }
+
   const registerFirstScore = async () => {
     const cleanNickname = nickname.trim().slice(0, 20)
     if (!cleanNickname || !finishGateOpen) return
@@ -486,6 +496,16 @@ export function GameRuntimeV2({ game, catalog, seed, active, mounted }: GameRunt
                   <button type="button" onClick={() => void saveProfile()} disabled={savingProfile || !profileNickname.trim()}>{savingProfile ? 'Enregistrement…' : 'Enregistrer'}</button>
                 </div>
                 {profileMessage && <p className="platform-profile-message">{profileMessage}</p>}
+
+                <div className="platform-feed-quality">
+                  <div className="platform-profile-section-title"><strong>Je veux voir</strong></div>
+                  <div className="platform-feed-quality-options" role="group" aria-label="Qualité des jeux affichés">
+                    <button type="button" className={feedPreference === 'fugg' ? 'is-active' : ''} onClick={() => void changeFeedPreference('fugg')}><b>🔥 Fuggs</b><span>Le meilleur uniquement</span></button>
+                    <button type="button" className={feedPreference === 'beta' ? 'is-active' : ''} onClick={() => void changeFeedPreference('beta')}><b>🧪 + Beta</b><span>Concepts encore en chantier</span></button>
+                    <button type="button" className={feedPreference === 'all' ? 'is-active' : ''} onClick={() => void changeFeedPreference('all')}><b>💩 Tout</b><span>Même les grosses merdes</span></button>
+                  </div>
+                  <small>Les Beta à 50+ likes peuvent apparaître dans le feed Fugg.</small>
+                </div>
 
                 <div className="platform-profile-favorites">
                   <div className="platform-profile-section-title"><strong>Favoris</strong><span>{favoriteGames.length}</span></div>

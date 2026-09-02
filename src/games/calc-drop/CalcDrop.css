@@ -15,28 +15,43 @@
 }
 
 .calc-drop-layout {
-  gap: var(--mf-gap-1);
-  padding: var(--mf-gap-1) var(--mf-pad-x);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 0;
+  padding: 0 var(--mf-gap-1) var(--mf-gap-1);
 }
 
+/* The calculation recap is useful only as transient feedback. The old
+ * "MAX STANDARD" placeholder is deliberately not rendered in the layout. */
 .calc-drop-hud {
-  display: block;
-  width: 100%;
+  position: absolute;
+  z-index: 12;
+  top: var(--mf-gap-1);
+  left: 50%;
+  width: min(72%, 440px);
+  height: 0;
+  transform: translateX(-50%);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.calc-drop-equation {
+  display: none;
 }
 
 .calc-drop-stage {
+  grid-row: 1;
   container-type: size;
   display: grid;
-  place-items: center;
+  place-items: start center;
   overflow: visible;
-  --calc-drop-rail: clamp(44px, 14cqw, 66px);
+  --calc-drop-rail: clamp(40px, 12cqw, 58px);
 }
 
 .calc-drop-board-stage {
   position: relative;
   width: min(
     100%,
-    calc(50cqh + var(--calc-drop-rail) + var(--calc-drop-rail) + var(--mf-gap-1) + var(--mf-gap-1))
+    calc(50cqh - var(--mf-touch-md) + var(--calc-drop-rail) + var(--calc-drop-rail) + var(--mf-gap-2))
   );
   height: 100%;
   min-width: 0;
@@ -44,7 +59,7 @@
   display: grid;
   grid-template-columns: var(--calc-drop-rail) minmax(0, 1fr) var(--calc-drop-rail);
   gap: var(--mf-gap-1);
-  align-items: center;
+  align-items: start;
 }
 
 .calc-drop-board-stage.is-impact {
@@ -68,7 +83,7 @@
   min-width: 0;
   min-height: 0;
   display: grid;
-  place-items: center;
+  place-items: start center;
 }
 
 .calc-drop-board {
@@ -76,7 +91,7 @@
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(20, 1fr);
-  width: min(100%, 50cqh);
+  width: min(100%, calc(50cqh - var(--mf-touch-md) - var(--mf-gap-1)));
   aspect-ratio: 1 / 2;
   box-sizing: border-box;
   border: 3px solid #151515;
@@ -121,7 +136,7 @@
 .calc-drop-lock {
   position: absolute;
   right: calc(-1 * var(--mf-gap-2));
-  bottom: var(--mf-gap-2);
+  bottom: calc(var(--mf-touch-md) + var(--mf-touch-md) + var(--mf-gap-3));
   display: flex;
   flex-direction: column-reverse;
   gap: 3px;
@@ -134,12 +149,14 @@
 .calc-drop-side {
   container-type: inline-size;
   width: 100%;
-  align-self: center;
+  align-self: start;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--mf-gap-1);
   min-width: 0;
+  padding-top: var(--mf-gap-3);
+  box-sizing: border-box;
 }
 .calc-drop-side-left { grid-column: 1; justify-self: end; }
 .calc-drop-side-right { grid-column: 3; justify-self: start; }
@@ -265,33 +282,21 @@
   100% { opacity: 0; transform: translate(-50%, -64%) scale(1.05) rotate(-2deg); }
 }
 
-.calc-drop-equation {
-  width: min(100%, 440px);
-  margin: 0 auto;
-  min-height: calc(var(--mf-text-sm) + var(--mf-gap-2));
-  padding: var(--mf-gap-1) var(--mf-gap-2);
-  box-sizing: border-box;
-  border-left: 4px solid #151515;
-  background: rgba(255, 253, 247, 0.8);
-  display: flex;
-  align-items: center;
-  font-size: var(--mf-text-sm);
-  font-weight: 850;
-  line-height: 1.15;
-  overflow: hidden;
-  animation: calc-drop-equation-in 180ms ease-out;
-}
-@keyframes calc-drop-equation-in {
-  from { transform: translateX(7px); opacity: .5; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
+/* Controls share the stage instead of consuming a dedicated layout row.
+ * The shared safe layout still owns their absolute bottom boundary. */
 .calc-drop-controls {
-  width: min(100%, 440px);
-  margin: 0 auto;
+  position: absolute;
+  z-index: 10;
+  left: 50%;
+  right: auto;
+  bottom: 0;
+  width: min(100%, 460px);
+  margin: 0;
+  transform: translateX(-50%);
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   gap: var(--mf-gap-3);
+  pointer-events: none;
 }
 
 .calc-drop-move-controls {
@@ -300,6 +305,7 @@
   grid-template-rows: repeat(2, auto);
   column-gap: var(--mf-gap-3);
   row-gap: var(--mf-gap-2);
+  pointer-events: none;
 }
 .calc-drop-move-controls button:nth-child(1) { grid-column: 1; grid-row: 1; }
 .calc-drop-move-controls button:nth-child(3) { grid-column: 2; grid-row: 1; }
@@ -308,13 +314,15 @@
 .calc-drop-rotate-controls {
   display: flex;
   gap: var(--mf-gap-3);
+  align-items: flex-end;
+  pointer-events: none;
 }
 
 .calc-drop-controls button {
-  width: var(--mf-touch-lg);
-  height: var(--mf-touch-lg);
-  min-width: var(--mf-touch-lg);
-  min-height: var(--mf-touch-lg);
+  width: var(--mf-touch-md);
+  height: var(--mf-touch-md);
+  min-width: var(--mf-touch-md);
+  min-height: var(--mf-touch-md);
   border: 2px solid #151515;
   border-radius: 0;
   background: #f8f4e9;
@@ -322,6 +330,7 @@
   box-shadow: 3px 3px 0 #151515;
   font: 900 var(--mf-text-lg) / 1 system-ui, sans-serif;
   padding: 0;
+  pointer-events: auto;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }

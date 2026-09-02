@@ -176,15 +176,32 @@
 }
 
 .crazy-papers-paper-back {
-  --stack-index: 1;
   position: absolute;
-  z-index: calc(5 - var(--stack-index));
   width: 88%;
   height: 84%;
-  transform: translate(calc(var(--stack-index) * 4px), calc(var(--stack-index) * -5px)) rotate(calc((var(--stack-index) - 2) * .45deg));
   background:
     repeating-linear-gradient(0deg, transparent 0 19px, rgba(69, 59, 41, .12) 19px 21px),
     #d0c397;
+}
+
+.crazy-papers-paper-back:nth-child(1) {
+  z-index: 4;
+  transform: translate(4px, -5px) rotate(-.45deg);
+}
+
+.crazy-papers-paper-back:nth-child(2) {
+  z-index: 3;
+  transform: translate(8px, -10px) rotate(0deg);
+}
+
+.crazy-papers-paper-back:nth-child(3) {
+  z-index: 2;
+  transform: translate(12px, -15px) rotate(.45deg);
+}
+
+.crazy-papers-paper-back:nth-child(4) {
+  z-index: 1;
+  transform: translate(16px, -20px) rotate(.9deg);
 }
 
 .crazy-papers-paper-active {

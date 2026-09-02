@@ -7,6 +7,7 @@ import './core/actionDock.css'
 import './core/orientation.css'
 import './core/gameLayout.css'
 import './core/comments.css'
+import './core/profileLeaderboard.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

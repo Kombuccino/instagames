@@ -166,10 +166,10 @@ export const gameRegistry: InstagameDefinition[] = [
         'Effacer 2 lignes d’un coup injecte ⇄ dans la pièce suivante, 3 lignes injectent ×4, et 4 lignes injectent ×6.',
         'Chaque niveau accélère nettement les ticks de chute. Un gain supérieur à 1 000 points déclenche un WOW et une secousse de l’écran.',
         'Même la pièce carrée pivote : sa silhouette reste carrée mais ses quatre chiffres tournent de position.',
-        'Quand une pièce touche le sol, tu as encore 4 ticks pour la déplacer ou la tourner avant son verrouillage.',
+        'Quand une pièce touche le sol, elle a 3 ticks au total avant verrouillage. Maintenir ↓ consomme aussi ces ticks pour verrouiller plus vite.',
         'Si une nouvelle pièce ne peut plus entrer dans la grille, la partie est terminée.',
       ],
-      controls: ['← et → déplacent la pièce', 'Maintiens ↓ pour accélérer la chute', '↺ et ↻ tournent la pièce', 'Clavier : flèches, Z et X'],
+      controls: ['← et → déplacent la pièce', 'Maintiens ↓ pour accélérer la chute et le verrouillage au sol', '↺ et ↻ tournent la pièce', 'Clavier : flèches, Z et X'],
     },
     features: {
       help: true,

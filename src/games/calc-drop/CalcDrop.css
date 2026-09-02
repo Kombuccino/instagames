@@ -28,10 +28,10 @@
 }
 
 .calc-drop-board-stage {
-  --calc-drop-info-rail: clamp(76px, 20cqw, 86px);
-  --calc-drop-result-gutter: clamp(42px, 11cqw, 48px);
+  --calc-drop-info-rail: clamp(88px, 22cqw, 104px);
+  --calc-drop-result-gutter: clamp(58px, 15cqw, 68px);
   --calc-drop-control-size: var(--mf-touch-md);
-  --calc-drop-height-reserve: 30px;
+  --calc-drop-height-reserve: 42px;
   position: relative;
   width: 100%;
   height: 100%;
@@ -58,7 +58,7 @@
   top: 0;
   left: calc(var(--calc-drop-info-rail) + var(--mf-gap-1));
   right: var(--calc-drop-result-gutter);
-  bottom: calc(var(--calc-drop-control-size) + var(--mf-gap-1));
+  bottom: calc(var(--calc-drop-control-size) + var(--mf-gap-4));
   min-width: 0;
   min-height: 0;
   display: flex;
@@ -137,28 +137,18 @@
 .calc-drop-side {
   container-type: inline-size;
   position: absolute;
+  z-index: 4;
+  top: 0;
   left: 0;
   width: var(--calc-drop-info-rail);
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  min-width: 0;
+  gap: var(--mf-gap-2);
   box-sizing: border-box;
   padding: 0 var(--mf-gap-1);
   text-align: center;
-}
-
-.calc-drop-side-left {
-  z-index: 4;
-  top: 0;
-  gap: var(--mf-gap-1);
-}
-
-.calc-drop-side-right {
-  z-index: 3;
-  top: clamp(245px, 34cqh, 270px);
-  gap: var(--mf-gap-2);
-  align-items: center;
 }
 
 .calc-drop-level {
@@ -185,7 +175,7 @@
 .calc-drop-side-target {
   display: grid;
   grid-template-columns: 1fr 10px;
-  grid-template-rows: auto clamp(72px, 12cqh, 96px) auto;
+  grid-template-rows: auto clamp(82px, 14cqh, 112px) auto;
   gap: var(--mf-gap-1);
   align-items: center;
   width: 100%;
@@ -216,18 +206,20 @@
   background: #d64b36;
   transition: height 160ms ease-out;
 }
-.calc-drop-side small {
-  display: block;
-  margin-top: 2px;
-  font-size: var(--mf-text-xs);
-  line-height: 1;
-  font-weight: 850;
+
+.calc-drop-next-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mf-gap-2);
+  width: 100%;
+  margin-top: var(--mf-gap-2);
+  padding-top: var(--mf-gap-2);
+  border-top: 2px solid #151515;
 }
 
 .calc-drop-next-label {
   width: 100%;
-  padding-top: var(--mf-gap-2);
-  border-top: 2px solid #151515;
 }
 
 .calc-drop-preview-grid {
@@ -235,13 +227,10 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(4, 1fr);
-  width: min(68px, calc(100% - var(--mf-gap-1)));
+  width: min(76px, calc(100% - var(--mf-gap-1)));
   max-width: none;
   aspect-ratio: 1;
   gap: 1px;
-}
-.calc-drop-preview-grid + .calc-drop-preview-grid {
-  margin-top: var(--mf-gap-1);
 }
 .calc-drop-preview-grid span {
   min-width: 0;
@@ -306,10 +295,24 @@
   grid-template-columns: repeat(10, 1fr);
   pointer-events: none;
   overflow: visible;
+  isolation: isolate;
+}
+
+/* Keep the completed row visually isolated until the wipe has genuinely
+ * finished. The board underneath only collapses when COMMIT_CLEAR fires. */
+.calc-drop-clear-row::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background: #ddd8ca;
+  opacity: 1;
+  animation: calc-drop-clear-mask 1180ms linear both;
 }
 
 .calc-drop-clear-cell {
   position: relative;
+  z-index: 1;
   min-width: 0;
   min-height: 0;
   display: flex;
@@ -435,6 +438,10 @@
   78% { opacity: .9; transform: translateX(-18%) scaleX(.75); }
   100% { opacity: 0; transform: translateX(-55%) scaleX(.15); }
 }
+@keyframes calc-drop-clear-mask {
+  0%, 96% { opacity: 1; }
+  100% { opacity: 0; }
+}
 @keyframes calc-drop-line-score-right {
   0% { opacity: 0; transform: translate(-8px, -50%) scale(.82); }
   25%, 76% { opacity: 1; transform: translate(0, -50%) scale(1); }
@@ -508,10 +515,10 @@
 
 @container (min-width: 460px) {
   .calc-drop-board-stage {
-    --calc-drop-info-rail: clamp(102px, 21cqw, 112px);
-    --calc-drop-result-gutter: clamp(56px, 11cqw, 62px);
+    --calc-drop-info-rail: clamp(112px, 23cqw, 124px);
+    --calc-drop-result-gutter: clamp(70px, 14cqw, 80px);
     --calc-drop-control-size: min(var(--mf-touch-md), 60px);
-    --calc-drop-height-reserve: 34px;
+    --calc-drop-height-reserve: 46px;
   }
 
   .calc-drop-side {
@@ -519,11 +526,7 @@
     padding-right: var(--mf-gap-2);
   }
 
-  .calc-drop-side-right {
-    top: clamp(250px, 33cqh, 275px);
-  }
-
   .calc-drop-preview-grid {
-    width: min(76px, calc(100% - var(--mf-gap-1)));
+    width: min(84px, calc(100% - var(--mf-gap-1)));
   }
 }

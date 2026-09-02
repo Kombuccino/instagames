@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import type { GameComponentProps } from '../../core/types'
 import './TrainFighter.css'
+import './TrainFighterObstacles.css'
 
 type PickupKind = 'coin' | 'weapon' | 'wagon' | 'shield' | 'turbo'
 type TrackObjectKind = PickupKind | 'enemy'
+type ObstaclePosition = 'GAUCHE' | 'CENTRE' | 'DROITE'
 
 type TrackObject = {
   id: number
@@ -13,6 +15,13 @@ type TrackObject = {
   tier: number
   value: number
   wobble: number
+}
+
+type HiddenObstacle = {
+  id: number
+  lane: number
+  y: number
+  warned: boolean
 }
 
 type Floater = {
@@ -37,6 +46,11 @@ type World = {
   turbo: number
   kills: number
   objects: TrackObject[]
+  obstacles: HiddenObstacle[]
+  objectsSinceObstacle: number
+  nextObstacleAfter: number
+  warningLane: number | null
+  obstacleCrash: boolean
   floaters: Floater[]
   nextId: number
   spawnClock: number
@@ -64,6 +78,7 @@ type View = {
   kills: number
   objects: TrackObject[]
   floaters: Floater[]
+  obstacleWarning: ObstaclePosition | null
   junctionPulse: number
   stationOpen: boolean
   finished: boolean
@@ -108,17 +123,24 @@ function laneCountFor(world: World) {
   return LANE_COUNTS[world.biomeIndex]
 }
 
+function obstaclePosition(lane: number, laneCount: number): ObstaclePosition {
+  if (lane === 0) return 'GAUCHE'
+  if (lane === laneCount - 1) return 'DROITE'
+  return 'CENTRE'
+}
+
 function scoreFor(world: World) {
   return Math.max(0, Math.round(world.distance + world.coins * 7 + world.kills * 70 + world.wagons * 25 + world.weapon * 90))
 }
 
 function snapshot(world: World): View {
+  const laneCount = laneCountFor(world)
   return {
     distance: Math.round(world.distance),
     biomeIndex: world.biomeIndex,
     biomeDistance: world.biomeDistance,
     lane: world.lane,
-    laneCount: laneCountFor(world),
+    laneCount,
     wagons: world.wagons,
     coins: world.coins,
     weapon: world.weapon,
@@ -128,6 +150,7 @@ function snapshot(world: World): View {
     kills: world.kills,
     objects: world.objects.map((object) => ({ ...object })),
     floaters: world.floaters.map((floater) => ({ ...floater })),
+    obstacleWarning: world.warningLane === null ? null : obstaclePosition(world.warningLane, laneCount),
     junctionPulse: world.junctionPulse,
     stationOpen: world.stationOpen,
     finished: world.finished,
@@ -136,8 +159,9 @@ function snapshot(world: World): View {
 }
 
 function createWorld(seed: number): World {
+  const random = mulberry32(seed || 1)
   return {
-    random: mulberry32(seed || 1),
+    random,
     elapsed: 0,
     distance: 0,
     biomeIndex: 0,
@@ -151,6 +175,11 @@ function createWorld(seed: number): World {
     turbo: 0,
     kills: 0,
     objects: [],
+    obstacles: [],
+    objectsSinceObstacle: 0,
+    nextObstacleAfter: 6 + Math.floor(random() * 4),
+    warningLane: null,
+    obstacleCrash: false,
     floaters: [],
     nextId: 1,
     spawnClock: 0.75,
@@ -167,6 +196,21 @@ function createWorld(seed: number): World {
 function addFloater(world: World, text: string, tone: Floater['tone']) {
   world.floaters.unshift({ id: world.nextId++, text, tone, ttl: 1.15 })
   world.floaters = world.floaters.slice(0, 3)
+}
+
+function spawnHiddenObstacle(world: World) {
+  const laneCount = laneCountFor(world)
+  const position = Math.floor(world.random() * 3)
+  const lane = position === 0 ? 0 : position === 2 ? laneCount - 1 : Math.round((laneCount - 1) / 2)
+
+  world.obstacles.push({
+    id: world.nextId++,
+    lane,
+    y: -0.12,
+    warned: false,
+  })
+  world.objectsSinceObstacle = 0
+  world.nextObstacleAfter = 6 + Math.floor(world.random() * 4)
 }
 
 function spawnObject(world: World) {
@@ -196,6 +240,9 @@ function spawnObject(world: World) {
     value: kind === 'coin' ? 4 + Math.floor(random() * 8) + world.biomeIndex * 2 : 0,
     wobble: random() * Math.PI * 2,
   })
+
+  world.objectsSinceObstacle += 1
+  if (world.objectsSinceObstacle >= world.nextObstacleAfter) spawnHiddenObstacle(world)
 
   const pace = 0.84 - world.biomeIndex * 0.075 - Math.min(0.16, world.elapsed / 180)
   world.spawnClock = Math.max(0.42, pace + random() * 0.34)
@@ -276,20 +323,47 @@ function updateWorld(world: World, dt: number) {
 
   const objectSpeed = 0.31 + world.biomeIndex * 0.022 + (world.turbo > 0 ? 0.045 : 0)
   for (const object of world.objects) object.y += objectSpeed * dt
+  for (const obstacle of world.obstacles) obstacle.y += objectSpeed * dt
 
   const hitLine = 0.735
-  const survivors: TrackObject[] = []
-  for (const object of world.objects) {
-    if (object.y >= hitLine && object.y < hitLine + objectSpeed * dt * 2.4 && object.lane === world.lane) {
-      resolveObject(world, object)
-    } else if (object.y < 1.12) {
-      survivors.push(object)
+
+  const obstacleSurvivors: HiddenObstacle[] = []
+  for (const obstacle of world.obstacles) {
+    const secondsToImpact = (hitLine - obstacle.y) / Math.max(0.001, objectSpeed)
+    if (!obstacle.warned && obstacle.y < hitLine && secondsToImpact <= 2) {
+      obstacle.warned = true
+      world.warningLane = obstacle.lane
     }
+
+    if (obstacle.y >= hitLine && obstacle.y < hitLine + objectSpeed * dt * 2.4) {
+      if (world.warningLane === obstacle.lane) world.warningLane = null
+      if (obstacle.lane === world.lane) {
+        world.obstacleCrash = true
+        world.finished = true
+        addFloater(world, 'CRASH! OBSTACLE!', 'bad')
+      }
+      continue
+    }
+
+    if (obstacle.y < 1.12) obstacleSurvivors.push(obstacle)
+    else if (world.warningLane === obstacle.lane) world.warningLane = null
   }
-  world.objects = survivors
+  world.obstacles = obstacleSurvivors
+
+  if (!world.finished) {
+    const survivors: TrackObject[] = []
+    for (const object of world.objects) {
+      if (object.y >= hitLine && object.y < hitLine + objectSpeed * dt * 2.4 && object.lane === world.lane) {
+        resolveObject(world, object)
+      } else if (object.y < 1.12) {
+        survivors.push(object)
+      }
+    }
+    world.objects = survivors
+  }
 
   world.spawnClock -= dt
-  if (world.spawnClock <= 0) spawnObject(world)
+  if (!world.finished && world.spawnClock <= 0) spawnObject(world)
 
   world.junctionClock -= dt
   world.junctionPulse = Math.max(0, world.junctionPulse - dt)
@@ -302,9 +376,11 @@ function updateWorld(world: World, dt: number) {
     .map((floater) => ({ ...floater, ttl: floater.ttl - dt }))
     .filter((floater) => floater.ttl > 0)
 
-  if (world.biomeDistance >= BIOME_LENGTH) {
+  if (!world.finished && world.biomeDistance >= BIOME_LENGTH) {
     world.biomeDistance = BIOME_LENGTH
     world.objects = []
+    world.obstacles = []
+    world.warningLane = null
     if (world.biomeIndex >= BIOMES.length - 1) world.finished = true
     else world.stationOpen = true
   }
@@ -382,6 +458,7 @@ export function TrainFighter({ active, seed, restartToken, session }: GameCompon
             kills: world.kills,
             wagons: world.wagons,
             weapon: world.weapon,
+            obstacleCrash: world.obstacleCrash,
           },
         })
       }
@@ -469,6 +546,7 @@ export function TrainFighter({ active, seed, restartToken, session }: GameCompon
     world.stationOpen = false
     world.spawnClock = 0.65
     world.lane = Math.min(world.lane, laneCountFor(world) - 1)
+    world.warningLane = null
     addFloater(world, `NEXT: ${BIOMES[world.biomeIndex].short}`, 'info')
     lastTimeRef.current = null
     setView(snapshot(world))
@@ -571,6 +649,14 @@ export function TrainFighter({ active, seed, restartToken, session }: GameCompon
               className={`train-fighter__player ${view.turbo > 0 ? 'is-turbo' : ''}`}
               style={{ left: laneLeft(view.lane, view.laneCount) }}
             >
+              {view.obstacleWarning && (
+                <div className="train-fighter__obstacle-warning" role="status" aria-live="assertive">
+                  <span>GROS ATTENTION !</span>
+                  <b>
+                    OBSTACLE {view.obstacleWarning === 'CENTRE' ? 'AU CENTRE' : `À ${view.obstacleWarning}`}
+                  </b>
+                </div>
+              )}
               <div className="train-fighter__weapon-label">{weapon.name}</div>
               <div className="train-fighter__locomotive">
                 <span className="train-fighter__arm train-fighter__arm--left"><i>{weapon.icon}</i></span>

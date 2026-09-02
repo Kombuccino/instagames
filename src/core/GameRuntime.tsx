@@ -121,6 +121,7 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
   const playRecorded = useRef(false)
 
   const Game = game.component
+  const orientation = game.orientation ?? 'portrait'
   const leaderboardConfig = game.features?.leaderboard || false
   const leaderboardEnabled = Boolean(leaderboardConfig && leaderboardConfig.enabled)
   const periods = useMemo(() => periodsFor(game), [game])
@@ -223,7 +224,7 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
   const bookmarkEnabled = game.features?.bookmark !== false
 
   return (
-    <article className="game-card" aria-label={game.title}>
+    <article className={`game-card game-orientation-${orientation}`} data-preferred-orientation={orientation} aria-label={game.title}>
       <div className="game-surface">
         {mounted ? (
           <Game active={active && !finished} seed={seed} restartToken={restartToken} session={session} />

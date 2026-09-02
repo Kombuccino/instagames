@@ -1,0 +1,145 @@
+:root {
+  --minifugg-layout-reference-portrait: 390 / 844;
+  --minifugg-layout-reference-landscape: 844 / 390;
+}
+
+/*
+ * MiniFugg Layout Grid
+ *
+ * Games should position readable HUD and controls inside these shared zones
+ * instead of inventing viewport-specific offsets with raw vw/vh values.
+ * The game surface itself remains fully available for backgrounds/canvas.
+ */
+.game-surface {
+  container-type: size;
+
+  --mf-pad-x: clamp(10px, 3cqw, 22px);
+  --mf-pad-y: clamp(8px, 1.8cqh, 18px);
+
+  --mf-gap-1: clamp(4px, 0.7cqh, 7px);
+  --mf-gap-2: clamp(7px, 1.1cqh, 11px);
+  --mf-gap-3: clamp(10px, 1.7cqh, 16px);
+  --mf-gap-4: clamp(14px, 2.3cqh, 22px);
+
+  --mf-text-xs: clamp(11px, min(2.8cqw, 1.7cqh), 14px);
+  --mf-text-sm: clamp(13px, min(3.4cqw, 2.1cqh), 16px);
+  --mf-text-md: clamp(16px, min(4.4cqw, 2.8cqh), 22px);
+  --mf-text-lg: clamp(22px, min(6.5cqw, 4.2cqh), 34px);
+  --mf-text-xl: clamp(32px, min(9cqw, 6cqh), 54px);
+
+  --mf-touch-sm: clamp(42px, min(12cqw, 7cqh), 50px);
+  --mf-touch-md: clamp(48px, min(14cqw, 8.5cqh), 60px);
+  --mf-touch-lg: clamp(58px, min(17cqw, 10cqh), 74px);
+
+  --mf-radius-sm: clamp(6px, 1.4cqw, 10px);
+  --mf-radius-md: clamp(10px, 2.4cqw, 16px);
+  --mf-radius-lg: clamp(16px, 4cqw, 26px);
+}
+
+/* Standard safe-area skeleton: HUD / stage / controls. */
+.mf-game-layout {
+  position: absolute;
+  z-index: 1;
+  top: var(--minifugg-core-top-reserved, 0px);
+  right: var(--minifugg-core-right-reserved, 0px);
+  bottom: var(--minifugg-core-bottom-reserved, 0px);
+  left: var(--minifugg-core-left-reserved, 0px);
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: var(--mf-gap-2);
+  padding: var(--mf-pad-y) var(--mf-pad-x);
+  pointer-events: none;
+}
+
+.mf-game-hud,
+.mf-game-stage,
+.mf-game-controls,
+.mf-game-side {
+  min-width: 0;
+  min-height: 0;
+}
+
+.mf-game-hud {
+  grid-row: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--mf-gap-2);
+  font-size: var(--mf-text-sm);
+  pointer-events: none;
+}
+
+.mf-game-stage {
+  grid-row: 2;
+  position: relative;
+  min-height: 0;
+  overflow: visible;
+  pointer-events: auto;
+}
+
+.mf-game-controls {
+  grid-row: 3;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--mf-gap-2);
+  pointer-events: auto;
+}
+
+.mf-game-controls button,
+.mf-touch-target {
+  min-width: var(--mf-touch-md);
+  min-height: var(--mf-touch-md);
+}
+
+.mf-text-xs { font-size: var(--mf-text-xs); }
+.mf-text-sm { font-size: var(--mf-text-sm); }
+.mf-text-md { font-size: var(--mf-text-md); }
+.mf-text-lg { font-size: var(--mf-text-lg); }
+.mf-text-xl { font-size: var(--mf-text-xl); }
+
+/* Common anchors inside the safe layout. */
+.mf-anchor-top-left { position: absolute; top: 0; left: 0; }
+.mf-anchor-top-center { position: absolute; top: 0; left: 50%; transform: translateX(-50%); }
+.mf-anchor-top-right { position: absolute; top: 0; right: 0; }
+.mf-anchor-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.mf-anchor-bottom-left { position: absolute; bottom: 0; left: 0; }
+.mf-anchor-bottom-center { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); }
+.mf-anchor-bottom-right { position: absolute; bottom: 0; right: 0; }
+
+/*
+ * Landscape keeps the same semantic zones, but uses the short dimension as
+ * the typographic/touch constraint so a wide phone does not suddenly inflate UI.
+ */
+@media (orientation: landscape) {
+  .game-surface {
+    --mf-pad-x: clamp(12px, 2.2cqw, 24px);
+    --mf-pad-y: clamp(7px, 2cqh, 14px);
+
+    --mf-gap-1: clamp(4px, 1.1cqh, 7px);
+    --mf-gap-2: clamp(6px, 1.8cqh, 11px);
+    --mf-gap-3: clamp(9px, 2.5cqh, 15px);
+    --mf-gap-4: clamp(12px, 3.2cqh, 20px);
+
+    --mf-text-xs: clamp(10px, 2.6cqh, 13px);
+    --mf-text-sm: clamp(12px, 3.1cqh, 15px);
+    --mf-text-md: clamp(15px, 4cqh, 20px);
+    --mf-text-lg: clamp(20px, 5.5cqh, 30px);
+    --mf-text-xl: clamp(28px, 8cqh, 46px);
+
+    --mf-touch-sm: clamp(40px, 10cqh, 48px);
+    --mf-touch-md: clamp(46px, 12cqh, 58px);
+    --mf-touch-lg: clamp(54px, 15cqh, 70px);
+  }
+}
+
+/* Optional development overlay: add data-layout-debug to a game root. */
+[data-layout-debug] .mf-game-layout {
+  outline: 1px dashed rgba(0, 255, 255, .5);
+}
+
+[data-layout-debug] .mf-game-hud { outline: 1px dashed rgba(255, 220, 0, .55); }
+[data-layout-debug] .mf-game-stage { outline: 1px dashed rgba(80, 255, 120, .55); }
+[data-layout-debug] .mf-game-controls { outline: 1px dashed rgba(255, 80, 160, .55); }

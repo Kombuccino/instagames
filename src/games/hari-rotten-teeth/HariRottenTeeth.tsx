@@ -498,93 +498,101 @@ export function HariRottenTeeth({ active, seed, restartToken, session }: GameCom
     <div className={`hari-game phase-${world.phase}`}>
       <div className="hari-wall" aria-hidden="true" />
 
-      <header className="hari-mouth" aria-label={`${liveTeeth} dents encore saines sur ${TOOTH_COUNT}`}>
-        <div className="hari-level">NIVEAU <strong>{world.level}</strong></div>
-        <div className="hari-gum" aria-hidden="true" />
-        <div className="hari-teeth">
-          {world.teeth.map((tooth, index) => {
-            const decay = tooth.hp <= 0 ? 100 : Math.round((1 - tooth.hp / tooth.maxHp) * 88)
-            return (
-              <div
-                className={`hari-tooth ${tooth.hp <= 0 ? 'is-rotten' : ''}`}
-                key={tooth.id}
-                style={{
-                  '--decay': `${decay}%`,
-                  '--tilt': `${tooth.tilt}deg`,
-                  '--tooth-scale': tooth.size,
-                  '--drop-delay': `${index * 55}ms`,
-                } as CSSProperties}
-              >
-                <span className="hari-tooth-body">
-                  <span className="hari-candy-mark"><Candy kind={tooth.kind} /></span>
-                </span>
-              </div>
-            )
-          })}
-        </div>
-      </header>
-
-      <div className="hari-board-shell">
-        <Board board={world.board} piece={world.piece} />
-        {world.combo > 1 && <div className="hari-combo" key={`${world.score}-${world.combo}`}>CASCADE ×{world.combo}</div>}
-      </div>
-
-      <div className="hari-attacks" aria-hidden="true">
-        {world.attacks.map((attack) => (
-          <div
-            className={`hari-attack is-${attack.kind}`}
-            key={attack.id}
-            style={{ '--target-x': `${((attack.toothIndex + 0.5) / TOOTH_COUNT) * 100}%` } as CSSProperties}
-          >
-            <Candy kind={attack.kind} />
-            {attack.count > 1 && <b>×{attack.count}</b>}
+      <div className="mf-game-layout hari-layout">
+        <header className="mf-game-hud hari-hud">
+          <div className="hari-mouth" aria-label={`${liveTeeth} dents encore saines sur ${TOOTH_COUNT}`}>
+            <div className="hari-level">NIVEAU <strong>{world.level}</strong></div>
+            <div className="hari-gum" aria-hidden="true" />
+            <div className="hari-teeth">
+              {world.teeth.map((tooth, index) => {
+                const decay = tooth.hp <= 0 ? 100 : Math.round((1 - tooth.hp / tooth.maxHp) * 88)
+                return (
+                  <div
+                    className={`hari-tooth ${tooth.hp <= 0 ? 'is-rotten' : ''}`}
+                    key={tooth.id}
+                    style={{
+                      '--decay': `${decay}%`,
+                      '--tilt': `${tooth.tilt}deg`,
+                      '--tooth-scale': tooth.size,
+                      '--drop-delay': `${index * 55}ms`,
+                    } as CSSProperties}
+                  >
+                    <span className="hari-tooth-body">
+                      <span className="hari-candy-mark"><Candy kind={tooth.kind} /></span>
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
           </div>
-        ))}
+        </header>
+
+        <main className="mf-game-stage hari-stage">
+          <div className="hari-board-shell">
+            <Board board={world.board} piece={world.piece} />
+            {world.combo > 1 && <div className="hari-combo" key={`${world.score}-${world.combo}`}>CASCADE ×{world.combo}</div>}
+          </div>
+
+          <div className="hari-attacks" aria-hidden="true">
+            {world.attacks.map((attack) => (
+              <div
+                className={`hari-attack is-${attack.kind}`}
+                key={attack.id}
+                style={{ '--target-x': `${((attack.toothIndex + 0.5) / TOOTH_COUNT) * 100}%` } as CSSProperties}
+              >
+                <Candy kind={attack.kind} />
+                {attack.count > 1 && <b>×{attack.count}</b>}
+              </div>
+            ))}
+          </div>
+        </main>
+
+        <footer className="mf-game-controls hari-controls" aria-label="Contrôles du bloc de bonbons">
+          <div className="hari-control-stack hari-move-stack">
+            <div className="hari-move-controls">
+              <button type="button" onPointerDown={(event) => { event.preventDefault(); moveHorizontal(-1) }} aria-label="Déplacer à gauche">←</button>
+              <button
+                type="button"
+                className="is-drop"
+                onPointerDown={(event) => { event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); startSoftDrop() }}
+                onPointerUp={(event) => { clearSoftDrop(); if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId) }}
+                onPointerCancel={clearSoftDrop}
+                onLostPointerCapture={clearSoftDrop}
+                aria-label="Descendre rapidement"
+              >↓</button>
+              <button type="button" onPointerDown={(event) => { event.preventDefault(); moveHorizontal(1) }} aria-label="Déplacer à droite">→</button>
+            </div>
+            <div className="hari-control-hint" aria-hidden="true">← → / ↓</div>
+          </div>
+
+          <div className="hari-control-stack hari-action-stack">
+            <div className="hari-action-controls">
+              <button type="button" onPointerDown={(event) => { event.preventDefault(); toggleOrientation() }} aria-label="Changer vertical horizontal autour du bonbon central">
+                <span className="hari-orientation-icon">↔</span>
+              </button>
+              <button type="button" onPointerDown={(event) => { event.preventDefault(); cycleCandies() }} aria-label="Faire tourner les bonbons dans le bloc">
+                <span className="hari-cycle-icon">↻</span>
+              </button>
+            </div>
+            <div className="hari-control-hint" aria-hidden="true">FORME · ORDRE</div>
+          </div>
+        </footer>
+
+        {world.phase === 'level-clear' && (
+          <div className="hari-level-clear" aria-hidden="true">
+            <strong>HARI</strong>
+            <span>LES DENTS POURRIES !</span>
+            <small>NIVEAU {world.level + 1}</small>
+          </div>
+        )}
+
+        {world.phase === 'game-over' && (
+          <div className="hari-game-over" aria-hidden="true">
+            <strong>TROP DE SUCRE</strong>
+            <span>Niveau {world.level}</span>
+          </div>
+        )}
       </div>
-
-      <div className="hari-controls" aria-label="Contrôles du bloc de bonbons">
-        <div className="hari-move-controls">
-          <button type="button" onPointerDown={(event) => { event.preventDefault(); moveHorizontal(-1) }} aria-label="Déplacer à gauche">←</button>
-          <button
-            type="button"
-            className="is-drop"
-            onPointerDown={(event) => { event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); startSoftDrop() }}
-            onPointerUp={(event) => { clearSoftDrop(); if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId) }}
-            onPointerCancel={clearSoftDrop}
-            aria-label="Descendre rapidement"
-          >↓</button>
-          <button type="button" onPointerDown={(event) => { event.preventDefault(); moveHorizontal(1) }} aria-label="Déplacer à droite">→</button>
-        </div>
-
-        <div className="hari-action-controls">
-          <button type="button" onPointerDown={(event) => { event.preventDefault(); toggleOrientation() }} aria-label="Changer vertical horizontal autour du bonbon central">
-            <span className="hari-orientation-icon">↔</span>
-          </button>
-          <button type="button" onPointerDown={(event) => { event.preventDefault(); cycleCandies() }} aria-label="Faire tourner les bonbons dans le bloc">
-            <span className="hari-cycle-icon">↻</span>
-          </button>
-        </div>
-      </div>
-
-      <div className="hari-control-hint" aria-hidden="true">
-        <span>← → / ↓</span>
-        <span>FORME · ORDRE</span>
-      </div>
-
-      {world.phase === 'level-clear' && (
-        <div className="hari-level-clear" aria-hidden="true">
-          <strong>HARI</strong>
-          <span>LES DENTS POURRIES !</span>
-          <small>NIVEAU {world.level + 1}</small>
-        </div>
-      )}
-
-      {world.phase === 'game-over' && (
-        <div className="hari-game-over" aria-hidden="true">
-          <strong>TROP DE SUCRE</strong>
-          <span>Niveau {world.level}</span>
-        </div>
-      )}
     </div>
   )
 }

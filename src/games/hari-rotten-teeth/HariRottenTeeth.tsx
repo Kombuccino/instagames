@@ -61,9 +61,9 @@ const TOOTH_COUNT = 8
 const candies: CandySpec[] = [
   { kind: 'strawberry', label: 'fraise', glyph: '●' },
   { kind: 'lemon', label: 'citron', glyph: '✦' },
-  { kind: 'mint', label: 'menthe', glyph: '◆' },
-  { kind: 'cola', label: 'cola', glyph: '■' },
-  { kind: 'grape', label: 'raisin', glyph: '✿' },
+  { kind: 'mint', label: 'menthe', glyph: '×' },
+  { kind: 'cola', label: 'cola', glyph: '≋' },
+  { kind: 'grape', label: 'raisin', glyph: '•' },
 ]
 
 const candyMap = new Map<CandyKind, CandySpec>(candies.map((candy) => [candy.kind, candy]))
@@ -91,7 +91,7 @@ function makePiece(random: () => number): FallingPiece {
   return {
     candies: [randomCandy(random), randomCandy(random), randomCandy(random)],
     x: Math.floor(COLS / 2),
-    y: -2,
+    y: -1,
     orientation: 'vertical',
   }
 }
@@ -136,11 +136,14 @@ function createWorld(seed: number): World {
 }
 
 function pieceCells(piece: FallingPiece) {
-  return piece.candies.map((kind, index) => ({
-    kind,
-    col: piece.x + (piece.orientation === 'horizontal' ? index : 0),
-    row: piece.y + (piece.orientation === 'vertical' ? index : 0),
-  }))
+  return piece.candies.map((kind, index) => {
+    const offset = index - 1
+    return {
+      kind,
+      col: piece.x + (piece.orientation === 'horizontal' ? offset : 0),
+      row: piece.y + (piece.orientation === 'vertical' ? offset : 0),
+    }
+  })
 }
 
 function canPlace(board: Cell[][], piece: FallingPiece) {
@@ -296,7 +299,8 @@ function lockPiece(world: World) {
   const board = cloneBoard(world.board)
   for (const cell of cells) board[cell.row][cell.col] = cell.kind
 
-  const resolved = resolveBoard(world, board)
+  const settledBoard = applyGravity(board)
+  const resolved = resolveBoard(world, settledBoard)
   if (resolved.phase !== 'playing') return { ...resolved, piece: null }
 
   const nextPiece = makePiece(world.random)
@@ -411,14 +415,7 @@ export function HariRottenTeeth({ active, seed, restartToken, session }: GameCom
     setWorld((current) => {
       if (current.phase !== 'playing' || !current.piece) return current
       const orientation: Orientation = current.piece.orientation === 'vertical' ? 'horizontal' : 'vertical'
-      let piece = { ...current.piece, orientation }
-
-      if (piece.orientation === 'horizontal') {
-        piece = { ...piece, x: Math.max(0, Math.min(COLS - 3, piece.x)) }
-      } else {
-        piece = { ...piece, x: Math.max(0, Math.min(COLS - 1, piece.x)) }
-      }
-
+      const piece = { ...current.piece, orientation }
       return canPlace(current.board, piece) ? { ...current, piece } : current
     })
   }, [])
@@ -560,7 +557,7 @@ export function HariRottenTeeth({ active, seed, restartToken, session }: GameCom
         </div>
 
         <div className="hari-action-controls">
-          <button type="button" onPointerDown={(event) => { event.preventDefault(); toggleOrientation() }} aria-label="Changer vertical horizontal">
+          <button type="button" onPointerDown={(event) => { event.preventDefault(); toggleOrientation() }} aria-label="Changer vertical horizontal autour du bonbon central">
             <span className="hari-orientation-icon">↔</span>
           </button>
           <button type="button" onPointerDown={(event) => { event.preventDefault(); cycleCandies() }} aria-label="Faire tourner les bonbons dans le bloc">
@@ -570,7 +567,7 @@ export function HariRottenTeeth({ active, seed, restartToken, session }: GameCom
       </div>
 
       <div className="hari-control-hint" aria-hidden="true">
-        <span>← ↓ →</span>
+        <span>← → / ↓</span>
         <span>FORME · ORDRE</span>
       </div>
 

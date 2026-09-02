@@ -1,6 +1,5 @@
 .mf-home-splash {
-  --mf-home-shell-y: 0px;
-  --mf-home-scene-y: 0px;
+  --mf-home-drag-y: 0px;
   position: fixed;
   inset: 0;
   z-index: 1000;
@@ -14,7 +13,7 @@
   -webkit-user-select: none;
   overscroll-behavior: none;
   outline: none;
-  transform: translateY(var(--mf-home-shell-y));
+  transform: translateY(var(--mf-home-drag-y));
   transition: transform 180ms cubic-bezier(.2,.8,.2,1), opacity 180ms ease;
 }
 
@@ -26,26 +25,16 @@
 .mf-home-splash.is-exiting {
   pointer-events: none;
   transform: translateY(-104dvh);
-  opacity: .12;
-  transition: transform 440ms cubic-bezier(.3,.72,.18,1), opacity 360ms ease 70ms;
-}
-
-.mf-home-splash__backdrop {
-  position: absolute;
-  inset: 0;
-  background: #17120f;
-  pointer-events: none;
+  opacity: 0;
+  transition: transform 420ms cubic-bezier(.3,.72,.18,1), opacity 280ms ease 70ms;
 }
 
 .mf-home-splash__scene {
   position: relative;
   width: max(100vw, 56.28dvh);
   height: max(100dvh, 177.68vw);
-  flex: 0 0 auto;
   overflow: hidden;
-  transform: translateY(var(--mf-home-scene-y));
-  transform-origin: 50% 48%;
-  box-shadow: 0 0 60px rgba(0,0,0,.18);
+  background: #17120f;
 }
 
 .mf-home-splash__art {
@@ -55,45 +44,19 @@
   width: 100%;
   height: 100%;
   object-fit: fill;
-  image-rendering: pixelated;
   -webkit-user-drag: none;
 }
 
 .mf-home-splash__lamp-glow {
   position: absolute;
-  top: -2.5%;
-  right: -9%;
-  width: 55%;
+  top: 0;
+  right: 0;
+  width: 42%;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,206,112,.22) 0 10%, rgba(255,153,45,.08) 32%, transparent 67%);
+  background: radial-gradient(circle, rgba(255,215,130,.11) 0 12%, rgba(255,172,63,.045) 34%, transparent 68%);
   pointer-events: none;
   animation: mf-home-lamp-flicker 7.8s steps(1, end) infinite;
-}
-
-.mf-home-splash__crt-glow {
-  position: absolute;
-  left: 17.5%;
-  top: 21.6%;
-  width: 65%;
-  height: 31.8%;
-  border-radius: 8% / 10%;
-  background: rgba(255,237,182,.035);
-  box-shadow: inset 0 0 22px rgba(255,224,153,.08);
-  pointer-events: none;
-  animation: mf-home-crt-breathe 4.6s ease-in-out infinite;
-}
-
-.mf-home-splash__swipe-glow {
-  position: absolute;
-  left: 28%;
-  top: 45.2%;
-  width: 44%;
-  height: 6.2%;
-  border-radius: 999px;
-  background: radial-gradient(ellipse, rgba(255,196,90,.11), transparent 70%);
-  pointer-events: none;
-  animation: mf-home-swipe-glow 1.55s steps(6, end) infinite;
 }
 
 .mf-home-splash__swipe-pulse {
@@ -112,33 +75,13 @@
   left: 50%;
   width: 46%;
   height: 46%;
-  border-top: max(3px, .45vw) solid rgba(255,164,47,.88);
-  border-left: max(3px, .45vw) solid rgba(255,164,47,.88);
+  border-top: max(3px, .45vw) solid #f6a334;
+  border-left: max(3px, .45vw) solid #f6a334;
   transform: translateX(-50%) rotate(45deg);
 }
 
 .mf-home-splash__swipe-pulse span:first-child { top: 28%; }
-.mf-home-splash__swipe-pulse span:last-child { top: 53%; opacity: .6; }
-
-.mf-home-splash__scanline {
-  position: absolute;
-  left: 18%;
-  top: 21.8%;
-  width: 64%;
-  height: 31.4%;
-  overflow: hidden;
-  border-radius: 8% / 10%;
-  opacity: .055;
-  pointer-events: none;
-}
-
-.mf-home-splash__scanline::after {
-  content: '';
-  position: absolute;
-  inset: -30% 0;
-  background: repeating-linear-gradient(180deg, transparent 0 5px, rgba(43,30,17,.22) 6px 7px);
-  animation: mf-home-scan 8s linear infinite;
-}
+.mf-home-splash__swipe-pulse span:last-child { top: 53%; opacity: .55; }
 
 .mf-home-splash__sr-only {
   position: absolute;
@@ -162,32 +105,15 @@
 }
 
 @keyframes mf-home-swipe-nudge {
-  0%, 20% { transform: translate(-50%, 4px); opacity: .34; }
+  0%, 20% { transform: translate(-50%, 4px); opacity: .32; }
   55% { transform: translate(-50%, -8px); opacity: 1; }
   78%, 100% { transform: translate(-50%, -14px); opacity: 0; }
 }
 
-@keyframes mf-home-swipe-glow {
-  0%, 20% { opacity: .2; transform: scale(.96); }
-  55% { opacity: .75; transform: scale(1.03); }
-  100% { opacity: .12; transform: scale(1); }
-}
-
 @keyframes mf-home-lamp-flicker {
   0%, 9%, 14%, 39%, 43%, 73%, 100% { opacity: .74; }
-  10%, 12%, 41% { opacity: .4; }
+  10%, 12%, 41% { opacity: .38; }
   11%, 13%, 42%, 74% { opacity: .92; }
-}
-
-@keyframes mf-home-crt-breathe {
-  0%, 100% { opacity: .48; }
-  48% { opacity: .72; }
-  52% { opacity: .6; }
-}
-
-@keyframes mf-home-scan {
-  from { transform: translateY(-10%); }
-  to { transform: translateY(10%); }
 }
 
 @media (min-aspect-ratio: 3 / 4) {
@@ -197,35 +123,10 @@
   }
 }
 
-/* Mobile browsers can corrupt large animated layers when filters/blend modes
-   are combined with full-screen transforms. Keep the mobile compositor simple. */
-@media (hover: none), (pointer: coarse) {
-  .mf-home-splash__scene {
-    box-shadow: none;
-  }
-
-  .mf-home-splash__lamp-glow {
-    background: radial-gradient(circle, rgba(255,196,92,.16) 0 9%, rgba(255,153,45,.055) 30%, transparent 64%);
-  }
-
-  .mf-home-splash__crt-glow {
-    background: rgba(255,239,196,.02);
-    box-shadow: none;
-  }
-
-  .mf-home-splash__scanline {
-    display: none;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .mf-home-splash,
-  .mf-home-splash__scene,
   .mf-home-splash__lamp-glow,
-  .mf-home-splash__crt-glow,
-  .mf-home-splash__swipe-glow,
-  .mf-home-splash__swipe-pulse,
-  .mf-home-splash__scanline::after {
+  .mf-home-splash__swipe-pulse {
     animation: none;
     transition-duration: 1ms;
   }

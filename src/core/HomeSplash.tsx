@@ -14,9 +14,10 @@ type HomeSplashProps = {
   onComplete: () => void
 }
 
-const EXIT_DURATION_MS = 440
+const EXIT_DURATION_MS = 420
 const SWIPE_THRESHOLD_PX = 72
 const MAX_DRAG_VH = 34
+const HOME_ART_URL = '/assets/minifugg-home-pixel.webp?v=20260902-3'
 
 export function HomeSplash({ onComplete }: HomeSplashProps) {
   const pointerIdRef = useRef<number | null>(null)
@@ -84,8 +85,7 @@ export function HomeSplash({ onComplete }: HomeSplashProps) {
   }
 
   const style = {
-    '--mf-home-shell-y': `${dragY * -0.34}px`,
-    '--mf-home-scene-y': `${dragY * -0.66}px`,
+    '--mf-home-drag-y': `${dragY * -0.42}px`,
   } as CSSProperties
 
   return (
@@ -102,22 +102,20 @@ export function HomeSplash({ onComplete }: HomeSplashProps) {
       onWheel={handleWheel}
       onKeyDown={handleKeyDown}
     >
-      <div className="mf-home-splash__backdrop" aria-hidden="true" />
       <div className="mf-home-splash__scene" aria-hidden="true">
         <img
           className="mf-home-splash__art"
-          src="/assets/minifugg-home-pixel.webp"
+          src={HOME_ART_URL}
           alt=""
           draggable={false}
+          decoding="sync"
+          fetchPriority="high"
         />
         <div className="mf-home-splash__lamp-glow" />
-        <div className="mf-home-splash__crt-glow" />
-        <div className="mf-home-splash__swipe-glow" />
         <div className="mf-home-splash__swipe-pulse">
           <span />
           <span />
         </div>
-        <div className="mf-home-splash__scanline" />
       </div>
       <span className="mf-home-splash__sr-only">Swipe up to play</span>
     </div>

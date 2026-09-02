@@ -27,26 +27,16 @@
   overflow: visible;
 }
 
-/*
- * One narrow information column on the LEFT and the board on the RIGHT.
- * Row 1 is sized by the board itself. Controls live immediately below it,
- * so they never push the board down from the top of the stage.
- */
 .calc-drop-board-stage {
-  --calc-drop-info-rail: clamp(68px, 19cqw, 88px);
-  --calc-drop-control-size: var(--mf-touch-sm);
+  --calc-drop-info-rail: clamp(76px, 20cqw, 86px);
+  --calc-drop-result-gutter: clamp(42px, 11cqw, 48px);
+  --calc-drop-control-size: var(--mf-touch-md);
+  --calc-drop-height-reserve: 30px;
   position: relative;
   width: 100%;
   height: 100%;
   min-width: 0;
   min-height: 0;
-  display: grid;
-  grid-template-columns: var(--calc-drop-info-rail) minmax(0, 1fr);
-  grid-template-rows: auto minmax(0, 1fr);
-  column-gap: var(--mf-gap-1);
-  row-gap: var(--mf-gap-1);
-  align-content: start;
-  align-items: start;
 }
 
 .calc-drop-board-stage.is-impact {
@@ -63,10 +53,12 @@
 }
 
 .calc-drop-board-shell {
-  position: relative;
-  grid-column: 2;
-  grid-row: 1;
-  width: 100%;
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: calc(var(--calc-drop-info-rail) + var(--mf-gap-1));
+  right: var(--calc-drop-result-gutter);
+  bottom: calc(var(--calc-drop-control-size) + var(--mf-gap-1));
   min-width: 0;
   min-height: 0;
   display: flex;
@@ -81,10 +73,7 @@
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(20, 1fr);
-  width: min(
-    100%,
-    calc(50cqh - var(--calc-drop-control-size) - var(--mf-gap-2))
-  );
+  width: min(100%, calc(50cqh - var(--calc-drop-height-reserve)));
   aspect-ratio: 1 / 2;
   box-sizing: border-box;
   border: 3px solid #151515;
@@ -145,56 +134,58 @@
 .calc-drop-lock span { width: 5px; height: 12px; background: #c9c3b5; border: 1px solid #151515; }
 .calc-drop-lock span.is-on { background: #d64b36; }
 
-/* Both information blocks occupy the left rail. NEXT starts below progress. */
 .calc-drop-side {
   container-type: inline-size;
-  grid-column: 1;
-  grid-row: 1;
-  width: 100%;
-  align-self: start;
-  justify-self: stretch;
+  position: absolute;
+  left: 0;
+  width: var(--calc-drop-info-rail);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: var(--mf-gap-1);
+  align-items: stretch;
   min-width: 0;
   box-sizing: border-box;
+  padding: 0 var(--mf-gap-1);
+  text-align: center;
 }
 
 .calc-drop-side-left {
   z-index: 4;
+  top: 0;
+  gap: var(--mf-gap-1);
 }
 
 .calc-drop-side-right {
   z-index: 3;
-  margin-top: clamp(150px, 22cqh, 184px);
+  top: clamp(220px, 29cqh, 248px);
+  gap: var(--mf-gap-2);
+  align-items: center;
 }
 
 .calc-drop-level {
   width: 100%;
   border-top: 3px solid #151515;
   border-bottom: 1px solid #151515;
-  padding: var(--mf-gap-1) 0;
+  padding: var(--mf-gap-2) 0;
   text-align: center;
 }
 .calc-drop-level span,
 .calc-drop-next-label {
   display: block;
-  font-size: clamp(9px, 18cqw, var(--mf-text-xs));
+  font-size: var(--mf-text-sm);
   font-weight: 950;
   letter-spacing: .08em;
 }
 .calc-drop-level strong {
   display: block;
-  margin-top: 2px;
-  font-size: clamp(var(--mf-text-md), 44cqw, var(--mf-text-lg));
-  line-height: 1;
+  margin-top: 3px;
+  font-size: var(--mf-text-xl);
+  line-height: .95;
 }
 
 .calc-drop-side-target {
   display: grid;
-  grid-template-columns: 1fr 8px;
-  grid-template-rows: auto clamp(50px, 12cqh, 78px) auto;
+  grid-template-columns: 1fr 10px;
+  grid-template-rows: auto clamp(72px, 12cqh, 96px) auto;
   gap: var(--mf-gap-1);
   align-items: center;
   width: 100%;
@@ -204,14 +195,15 @@
 .calc-drop-side-target strong {
   grid-column: 1 / -1;
   text-align: center;
-  font-size: clamp(9px, 18cqw, var(--mf-text-xs));
+  font-size: var(--mf-text-sm);
   line-height: 1.05;
 }
+.calc-drop-side-target strong { font-weight: 1000; }
 .calc-drop-progress-vertical {
   grid-column: 1 / -1;
   justify-self: center;
   position: relative;
-  width: 8px;
+  width: 10px;
   height: 100%;
   background: #d8d3c6;
   border: 1px solid #151515;
@@ -225,8 +217,17 @@
   transition: height 160ms ease-out;
 }
 .calc-drop-side small {
-  font-size: clamp(8px, 16cqw, 10px);
-  font-weight: 800;
+  display: block;
+  margin-top: 2px;
+  font-size: var(--mf-text-xs);
+  line-height: 1;
+  font-weight: 850;
+}
+
+.calc-drop-next-label {
+  width: 100%;
+  padding-top: var(--mf-gap-2);
+  border-top: 2px solid #151515;
 }
 
 .calc-drop-preview-grid {
@@ -234,10 +235,13 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(4, 1fr);
-  width: calc(100% - var(--mf-gap-1));
-  max-width: 58px;
+  width: min(68px, calc(100% - var(--mf-gap-1)));
+  max-width: none;
   aspect-ratio: 1;
   gap: 1px;
+}
+.calc-drop-preview-grid + .calc-drop-preview-grid {
+  margin-top: var(--mf-gap-1);
 }
 .calc-drop-preview-grid span {
   min-width: 0;
@@ -245,7 +249,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(7px, 18cqw, 10px);
+  font-size: clamp(8px, 18cqw, 11px);
   line-height: 1;
   font-weight: 950;
 }
@@ -258,7 +262,7 @@
 .calc-drop-impact {
   position: absolute;
   z-index: 30;
-  left: calc(var(--calc-drop-info-rail) + (100% - var(--calc-drop-info-rail)) / 2);
+  left: calc(var(--calc-drop-info-rail) + (100% - var(--calc-drop-info-rail) - var(--calc-drop-result-gutter)) / 2);
   top: 44%;
   transform: translate(-50%, -50%) rotate(-4deg);
   display: flex;
@@ -384,15 +388,15 @@
 .calc-drop-clear-score {
   position: absolute;
   z-index: 20;
-  left: calc(100% + var(--mf-gap-1));
+  left: calc(100% + 2px);
   right: auto;
   top: 50%;
   transform: translateY(-50%);
-  padding: 3px 5px;
+  padding: 2px 4px;
   border: 2px solid #151515;
   background: #f2efe6;
   color: #151515;
-  font-size: clamp(10px, var(--mf-text-xs), 13px);
+  font-size: clamp(9px, var(--mf-text-xs), 12px);
   line-height: 1;
   font-weight: 1000;
   white-space: nowrap;
@@ -402,7 +406,7 @@
 
 .calc-drop-clear-row.is-reversed .calc-drop-clear-score {
   left: auto;
-  right: calc(100% + var(--mf-gap-1));
+  right: calc(100% + 2px);
   animation-name: calc-drop-line-score-left;
 }
 
@@ -442,44 +446,39 @@
   100% { opacity: 0; transform: translate(-5px, -50%) scale(.95); }
 }
 
-/* Controls are row 2 of the same grid: left group below the info rail,
- * blue rotation buttons directly below the right-aligned board. */
 .calc-drop-controls {
-  position: relative;
+  position: absolute;
   z-index: 12;
-  grid-column: 1 / -1;
-  grid-row: 2;
+  inset: auto 0 0 0;
   width: 100%;
+  height: var(--calc-drop-control-size);
   min-width: 0;
-  display: grid;
-  grid-template-columns: var(--calc-drop-info-rail) minmax(0, 1fr);
-  column-gap: var(--mf-gap-1);
-  align-items: start;
+  display: block;
   pointer-events: none;
 }
 
 .calc-drop-move-controls,
 .calc-drop-rotate-controls {
-  position: static;
+  position: absolute;
+  bottom: 0;
   pointer-events: none;
 }
 
 .calc-drop-move-controls {
-  grid-column: 1;
-  justify-self: start;
+  left: 0;
   display: grid;
-  grid-template-columns: repeat(2, auto);
-  grid-template-rows: repeat(2, auto);
+  grid-template-columns: repeat(2, var(--calc-drop-control-size));
+  grid-template-rows: repeat(2, var(--calc-drop-control-size));
   column-gap: var(--mf-gap-2);
   row-gap: var(--mf-gap-2);
+  transform: translateY(calc(-1 * (var(--calc-drop-control-size) + var(--mf-gap-2))));
 }
 .calc-drop-move-controls button:nth-child(1) { grid-column: 1; grid-row: 1; }
 .calc-drop-move-controls button:nth-child(3) { grid-column: 2; grid-row: 1; }
 .calc-drop-move-controls button.is-down { grid-column: 1 / span 2; grid-row: 2; justify-self: center; }
 
 .calc-drop-rotate-controls {
-  grid-column: 2;
-  justify-self: end;
+  right: 0;
   display: flex;
   justify-content: flex-end;
   gap: var(--mf-gap-2);
@@ -510,11 +509,22 @@
 
 @container (min-width: 460px) {
   .calc-drop-board-stage {
-    --calc-drop-info-rail: clamp(78px, 17cqw, 92px);
-    --calc-drop-control-size: min(var(--mf-touch-sm), 48px);
+    --calc-drop-info-rail: clamp(102px, 21cqw, 112px);
+    --calc-drop-result-gutter: clamp(56px, 11cqw, 62px);
+    --calc-drop-control-size: min(var(--mf-touch-md), 60px);
+    --calc-drop-height-reserve: 34px;
+  }
+
+  .calc-drop-side {
+    padding-left: var(--mf-gap-2);
+    padding-right: var(--mf-gap-2);
   }
 
   .calc-drop-side-right {
-    margin-top: clamp(148px, 21cqh, 180px);
+    top: clamp(228px, 30cqh, 254px);
+  }
+
+  .calc-drop-preview-grid {
+    width: min(76px, calc(100% - var(--mf-gap-1)));
   }
 }

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { GameRuntime } from './GameRuntime'
+import { GameRuntimeV2 } from './GameRuntimeV2'
 import { buildRouletteBatch, type RouletteSlot } from './roulette'
 import type { InstagameDefinition } from './types'
 
@@ -79,7 +79,7 @@ export function GameFeed({ games }: GameFeedProps) {
     <main ref={containerRef} className="game-feed" aria-label="MiniFugg game feed">
       {slots.map((slot, index) => (
         <section className="game-slot" data-game-slot data-index={index} key={slot.key}>
-          <GameRuntime
+          <GameRuntimeV2
             game={slot.game}
             catalog={games}
             seed={slot.seed}

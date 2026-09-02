@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useReducer, useRef } from 'react'
+import type { CSSProperties } from 'react'
 import type { GameComponentProps } from '../../core/types'
 import './CalcDrop.css'
 
@@ -29,6 +30,13 @@ type LineReport = {
   points: number
   theoreticalMax: number
   reversed: boolean
+  steps: Array<number | null>
+}
+
+type ClearRowSnapshot = {
+  rowIndex: number
+  tiles: Tile[]
+  report: LineReport
 }
 
 type GameState = {
@@ -41,13 +49,13 @@ type GameState = {
   stageProgress: number
   lines: number
   lockTicks: number
-  lockResets: number
   gameOver: boolean
   clearSerial: number
   lastClear: {
     id: number
     text: string
     impactPoints: number
+    rows: ClearRowSnapshot[]
   } | null
 }
 
@@ -66,8 +74,7 @@ const COLS = 10
 const ROWS = 20
 const MAX_NUMBER = 9
 const BASE_MAX_MULTIPLIER = 3
-const LOCK_TICKS = 4
-const MAX_LOCK_RESETS = 12
+const LOCK_TICKS = 3
 const STANDARD_LINE_MAX = MAX_NUMBER * (BASE_MAX_MULTIPLIER ** (COLS - 1))
 const BIG_CLEAR_THRESHOLD = 1000
 
@@ -150,12 +157,7 @@ function createPiece(seed: number, index: number, bonus: BonusKind | null = null
   const shape = shapeForIndex(seed, index)
   const random = mulberry32((seed ^ Math.imul(index + 17, 0x27d4eb2d)) >>> 0)
   const tokens = Array.from({ length: 4 }, () => tokenFor(random))
-
-  if (bonus) {
-    const bonusIndex = Math.floor(random() * tokens.length)
-    tokens[bonusIndex] = bonusTile(bonus)
-  }
-
+  if (bonus) tokens[Math.floor(random() * tokens.length)] = bonusTile(bonus)
   return { shape, rotation: 0, x: 3, y: -1, tokens }
 }
 
@@ -202,6 +204,13 @@ function formatValue(value: number) {
   return value.toFixed(2).replace(/0+$/, '').replace(/\.$/, '').replace('.', ',')
 }
 
+function formatStepValue(value: number) {
+  const absolute = Math.abs(value)
+  if (absolute < 1000) return formatValue(value)
+  if (absolute < 1_000_000) return `${(value / 1000).toFixed(1).replace('.0', '')}k`
+  return `${(value / 1_000_000).toFixed(1).replace('.0', '')}M`
+}
+
 function theoreticalMaxForRow(row: Tile[]) {
   const reverseCount = row.filter((tile) => tile.kind === 'reverse').length
   const arithmeticSlots = Math.max(0, row.length - reverseCount)
@@ -223,25 +232,31 @@ function theoreticalMaxForRow(row: Tile[]) {
 
 function evaluateRow(row: Tile[]): LineReport {
   const reversed = row.some((tile) => tile.kind === 'reverse')
-  const ordered = reversed ? [...row].reverse() : row
+  const order = Array.from({ length: row.length }, (_, index) => index)
+  if (reversed) order.reverse()
+
   const theoreticalMax = theoreticalMaxForRow(row)
+  const steps = Array<number | null>(row.length).fill(null)
   let value = 0
 
-  for (const tile of ordered) {
+  for (const column of order) {
+    const tile = row[column]
     if (tile.kind === 'reverse') continue
     if (tile.kind === 'number') value += tile.value
     if (tile.kind === 'multiply') value *= tile.value
     if (tile.kind === 'divide') value /= tile.value
     value = Math.min(theoreticalMax, Math.max(0, value))
+    steps[column] = value
   }
 
   const points = Math.max(0, Math.round(value))
-  const formulaBody = ordered
-    .filter((tile) => tile.kind !== 'reverse')
-    .map((tile) => tile.kind === 'number' ? `+${tile.label}` : tile.label)
+  const formulaBody = order
+    .filter((column) => row[column].kind !== 'reverse')
+    .map((column) => row[column].kind === 'number' ? `+${row[column].label}` : row[column].label)
     .join(' ')
   const formula = `${reversed ? '←' : '→'} 0 ${formulaBody}${reversed ? ' · ⇄' : ''}`
-  return { formula, value, points, theoreticalMax, reversed }
+
+  return { formula, value, points, theoreticalMax, reversed, steps }
 }
 
 function summariseClear(reports: LineReport[], bonus: BonusKind | null) {
@@ -291,6 +306,12 @@ function lockPiece(state: GameState): GameState {
     }
   })
 
+  const clearRows: ClearRowSnapshot[] = fullRows.map((rowIndex, index) => ({
+    rowIndex,
+    tiles: [...(board[rowIndex] as Tile[])],
+    report: reports[index],
+  }))
+
   const clearedBoard = fullRows.length > 0
     ? [
         ...Array.from({ length: fullRows.length }, () => Array<Tile | null>(COLS).fill(null)),
@@ -316,23 +337,15 @@ function lockPiece(state: GameState): GameState {
     stageProgress: progression.progress,
     lines: state.lines + fullRows.length,
     lockTicks: 0,
-    lockResets: 0,
     gameOver,
     clearSerial: nextSerial,
     lastClear: reports.length > 0 ? {
       id: nextSerial,
       text: summariseClear(reports, earnedBonus),
       impactPoints: gained,
+      rows: clearRows,
     } : state.lastClear,
   }
-}
-
-function resetLockAfterManipulation(state: GameState) {
-  const wasGrounded = isGrounded(state.board, state.active)
-  if (!wasGrounded || state.lockResets >= MAX_LOCK_RESETS) {
-    return { lockTicks: state.lockTicks, lockResets: state.lockResets }
-  }
-  return { lockTicks: 0, lockResets: state.lockResets + 1 }
 }
 
 function createInitialState(seed: number): GameState {
@@ -347,7 +360,6 @@ function createInitialState(seed: number): GameState {
     stageProgress: 0,
     lines: 0,
     lockTicks: 0,
-    lockResets: 0,
     gameOver: false,
     clearSerial: 0,
     lastClear: null,
@@ -368,11 +380,21 @@ function reducer(state: GameState, action: Action): GameState {
 
   if (action.type === 'MOVE') {
     const moved = { ...state.active, x: state.active.x + action.dx, y: state.active.y + action.dy }
-    if (!canPlace(state.board, moved)) return state
-    const lock = action.dy > 0
-      ? { lockTicks: 0, lockResets: state.lockResets }
-      : resetLockAfterManipulation(state)
-    return { ...state, active: moved, ...lock }
+
+    if (!canPlace(state.board, moved)) {
+      if (action.dy > 0 && isGrounded(state.board, state.active)) {
+        const nextLockTicks = state.lockTicks + 1
+        if (nextLockTicks >= LOCK_TICKS) return lockPiece(state)
+        return { ...state, lockTicks: nextLockTicks }
+      }
+      return state
+    }
+
+    return {
+      ...state,
+      active: moved,
+      lockTicks: action.dy > 0 || !isGrounded(state.board, moved) ? 0 : state.lockTicks,
+    }
   }
 
   const nextRotation = state.active.rotation + action.direction
@@ -380,9 +402,13 @@ function reducer(state: GameState, action: Action): GameState {
   for (const kick of kickOffsets) {
     const rotated = { ...state.active, rotation: nextRotation, x: state.active.x + kick }
     if (!canPlace(state.board, rotated)) continue
-    const lock = resetLockAfterManipulation(state)
-    return { ...state, active: rotated, ...lock }
+    return {
+      ...state,
+      active: rotated,
+      lockTicks: isGrounded(state.board, rotated) ? state.lockTicks : 0,
+    }
   }
+
   return state
 }
 
@@ -416,6 +442,38 @@ function PiecePreview({ piece }: { piece: Piece }) {
           </span>
         )
       })}
+    </div>
+  )
+}
+
+function ClearRowEffect({ snapshot }: { snapshot: ClearRowSnapshot }) {
+  return (
+    <div
+      className={`calc-drop-clear-row ${snapshot.report.reversed ? 'is-reversed' : ''}`}
+      style={{ '--clear-row': snapshot.rowIndex } as CSSProperties}
+      aria-hidden="true"
+    >
+      {snapshot.tiles.map((tile, column) => {
+        const calculationOrder = snapshot.report.reversed ? COLS - 1 - column : column
+        const effectLabel = tile.kind === 'number' ? `+${tile.label}` : tile.label
+        return (
+          <span
+            className={`calc-drop-clear-cell is-${tile.kind}${tile.bonus ? ' is-bonus' : ''}`}
+            style={{
+              '--wipe-order': COLS - 1 - column,
+              '--calc-order': calculationOrder,
+            } as CSSProperties}
+            key={column}
+          >
+            <b>{effectLabel}</b>
+            {snapshot.report.steps[column] !== null ? (
+              <small>{formatStepValue(snapshot.report.steps[column] as number)}</small>
+            ) : null}
+          </span>
+        )
+      })}
+      <i className="calc-drop-clear-arrow" />
+      <strong className="calc-drop-clear-score">+{snapshot.report.points.toLocaleString('fr-FR')}</strong>
     </div>
   )
 }
@@ -521,12 +579,6 @@ export function CalcDrop({ active, seed, restartToken, session }: GameComponentP
   return (
     <div className="calc-drop-game">
       <div className="mf-game-layout calc-drop-layout">
-        <header className="mf-game-hud calc-drop-hud">
-          <div className="calc-drop-equation" key={state.lastClear?.id ?? 0} aria-live="polite">
-            {state.lastClear ? state.lastClear.text : `MAX STANDARD · ${STANDARD_LINE_MAX.toLocaleString('fr-FR')}`}
-          </div>
-        </header>
-
         <main className="mf-game-stage calc-drop-stage">
           <div className={`calc-drop-board-stage ${bigImpact ? 'is-impact' : ''}`} key={bigImpact ? `impact-${state.lastClear?.id}` : 'board'}>
             <aside className="calc-drop-side calc-drop-side-left">
@@ -563,6 +615,9 @@ export function CalcDrop({ active, seed, restartToken, session }: GameComponentP
                     </div>
                   )
                 }))}
+                {state.lastClear?.rows.map((snapshot) => (
+                  <ClearRowEffect key={`${state.lastClear?.id}-${snapshot.rowIndex}`} snapshot={snapshot} />
+                ))}
               </div>
 
               <div className={`calc-drop-lock ${grounded ? 'is-visible' : ''}`} aria-hidden="true">
@@ -576,6 +631,19 @@ export function CalcDrop({ active, seed, restartToken, session }: GameComponentP
               <PiecePreview piece={nextPieces[1]} />
             </aside>
 
+            <div className="mf-game-controls calc-drop-controls" aria-label="Contrôles">
+              <div className="calc-drop-move-controls">
+                <button type="button" aria-label="Déplacer à gauche" onPointerDown={(event) => { event.preventDefault(); startRepeat({ type: 'MOVE', dx: -1, dy: 0 }) }} onPointerUp={stopRepeat} onPointerCancel={stopRepeat} onPointerLeave={stopRepeat}>←</button>
+                <button type="button" className="is-down" aria-label="Descendre plus vite" onPointerDown={(event) => { event.preventDefault(); startRepeat({ type: 'MOVE', dx: 0, dy: 1 }) }} onPointerUp={stopRepeat} onPointerCancel={stopRepeat} onPointerLeave={stopRepeat}>↓</button>
+                <button type="button" aria-label="Déplacer à droite" onPointerDown={(event) => { event.preventDefault(); startRepeat({ type: 'MOVE', dx: 1, dy: 0 }) }} onPointerUp={stopRepeat} onPointerCancel={stopRepeat} onPointerLeave={stopRepeat}>→</button>
+              </div>
+
+              <div className="calc-drop-rotate-controls">
+                <button type="button" aria-label="Tourner à gauche" onClick={() => dispatch({ type: 'ROTATE', direction: -1 })}>↺</button>
+                <button type="button" aria-label="Tourner à droite" onClick={() => dispatch({ type: 'ROTATE', direction: 1 })}>↻</button>
+              </div>
+            </div>
+
             {bigImpact ? (
               <div className="calc-drop-impact" aria-live="polite">
                 <strong>WOW!</strong>
@@ -584,19 +652,6 @@ export function CalcDrop({ active, seed, restartToken, session }: GameComponentP
             ) : null}
           </div>
         </main>
-
-        <footer className="mf-game-controls calc-drop-controls" aria-label="Contrôles">
-          <div className="calc-drop-move-controls">
-            <button type="button" aria-label="Déplacer à gauche" onPointerDown={(event) => { event.preventDefault(); startRepeat({ type: 'MOVE', dx: -1, dy: 0 }) }} onPointerUp={stopRepeat} onPointerCancel={stopRepeat} onPointerLeave={stopRepeat}>←</button>
-            <button type="button" className="is-down" aria-label="Descendre plus vite" onPointerDown={(event) => { event.preventDefault(); startRepeat({ type: 'MOVE', dx: 0, dy: 1 }) }} onPointerUp={stopRepeat} onPointerCancel={stopRepeat} onPointerLeave={stopRepeat}>↓</button>
-            <button type="button" aria-label="Déplacer à droite" onPointerDown={(event) => { event.preventDefault(); startRepeat({ type: 'MOVE', dx: 1, dy: 0 }) }} onPointerUp={stopRepeat} onPointerCancel={stopRepeat} onPointerLeave={stopRepeat}>→</button>
-          </div>
-
-          <div className="calc-drop-rotate-controls">
-            <button type="button" aria-label="Tourner à gauche" onClick={() => dispatch({ type: 'ROTATE', direction: -1 })}>↺</button>
-            <button type="button" aria-label="Tourner à droite" onClick={() => dispatch({ type: 'ROTATE', direction: 1 })}>↻</button>
-          </div>
-        </footer>
       </div>
     </div>
   )

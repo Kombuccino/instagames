@@ -6,11 +6,13 @@ type IngredientKind = 'meat' | 'tomato' | 'pepper' | 'onion' | 'mushroom' | 'zuc
 type DropKind = IngredientKind | 'blood' | 'garlic'
 type ToastTone = 'good' | 'bad' | 'bonus'
 type EndReason = 'three-lost'
+type LoseReason = 'wrong' | 'extra' | 'garlic' | 'patience'
 
 type IngredientSpec = {
   kind: IngredientKind
   emoji: string
   label: string
+  juice: string
 }
 
 type FallingDrop = {
@@ -19,9 +21,11 @@ type FallingDrop = {
   x: number
   y: number
   speed: number
+  vx: number
   sway: number
   phase: number
   rotation: number
+  spin: number
 }
 
 type Customer = {
@@ -41,6 +45,13 @@ type Delivery = {
   order: IngredientKind[]
 }
 
+type JuiceImpact = {
+  token: number
+  x: number
+  y: number
+  color: string
+}
+
 type World = {
   drops: FallingDrop[]
   customers: Customer[]
@@ -53,6 +64,8 @@ type World = {
   spawnTimer: number
   skewerX: number
   skewerY: number
+  previousTipX: number
+  previousTipY: number
   dragging: boolean
   slowTimer: number
   finished: boolean
@@ -63,6 +76,8 @@ type World = {
   toastToken: number
   delivery: Delivery | null
   deliveryToken: number
+  juiceImpact: JuiceImpact | null
+  juiceToken: number
 }
 
 type RenderState = {
@@ -82,22 +97,31 @@ type RenderState = {
   toastTone: ToastTone
   toastToken: number
   delivery: Delivery | null
+  juiceImpact: JuiceImpact | null
+}
+
+type StageSize = {
+  width: number
+  height: number
+  playMaxX: number
 }
 
 const MAX_LOST = 3
-const CONTROL_TOP = 0.64
-const CONTROL_BOTTOM = 0.89
-const SKEWER_TIP_OFFSET_PX = 136
-const HIT_RADIUS_PX = 38
-const CLIENT_RAIL_PX = 96
+const SKEWER_HEIGHT_PX = 154
+const SKEWER_TIP_OVERHANG_PX = 6
+const SKEWER_TIP_OFFSET_PX = SKEWER_HEIGHT_PX + SKEWER_TIP_OVERHANG_PX
+const TIP_HIT_RADIUS_PX = 18
+const DROP_MIN_X = 0.055
+const DEFAULT_PLAY_MAX_X = 0.74
+const DELIVERY_PAD_PX = 7
 
 const ingredients: IngredientSpec[] = [
-  { kind: 'meat', emoji: '🥩', label: 'viande' },
-  { kind: 'tomato', emoji: '🍅', label: 'tomate' },
-  { kind: 'pepper', emoji: '🫑', label: 'poivron' },
-  { kind: 'onion', emoji: '🧅', label: 'oignon' },
-  { kind: 'mushroom', emoji: '🍄', label: 'champignon' },
-  { kind: 'zucchini', emoji: '🥒', label: 'courgette' },
+  { kind: 'meat', emoji: '🥩', label: 'viande', juice: '#d93b34' },
+  { kind: 'tomato', emoji: '🍅', label: 'tomate', juice: '#f0442f' },
+  { kind: 'pepper', emoji: '🫑', label: 'poivron', juice: '#7fc843' },
+  { kind: 'onion', emoji: '🧅', label: 'oignon', juice: '#c875b9' },
+  { kind: 'mushroom', emoji: '🍄', label: 'champignon', juice: '#e3bd67' },
+  { kind: 'zucchini', emoji: '🥒', label: 'courgette', juice: '#a6cf3d' },
 ]
 
 const ingredientMap = new Map<IngredientKind, IngredientSpec>(ingredients.map((ingredient) => [ingredient.kind, ingredient]))
@@ -135,6 +159,10 @@ function orderLength(score: number, random: () => number) {
   return random() < 0.45 ? 5 : 6
 }
 
+function intensityFor(world: Pick<World, 'score' | 'served'>) {
+  return clamp(world.score / 25 + world.served * 0.045, 0, 2.2)
+}
+
 function createCustomer(world: Pick<World, 'random' | 'nextCustomerId' | 'score'>): Customer {
   const id = world.nextCustomerId
   const length = orderLength(world.score, world.random)
@@ -142,7 +170,7 @@ function createCustomer(world: Pick<World, 'random' | 'nextCustomerId' | 'score'
   for (let index = 0; index < length; index += 1) {
     order.push(randomIngredient(world.random, order[index - 1]))
   }
-  const maxPatience = clamp(13.5 + length * 1.35 - world.score * 0.055, 10.5, 19.5)
+  const maxPatience = clamp(14.5 + length * 1.4 - world.score * 0.045, 10.5, 20.5)
   return {
     id,
     face: customerFaces[id % customerFaces.length],
@@ -164,34 +192,67 @@ function expectedIngredient(world: World) {
   return customer?.order[world.skewered.length]
 }
 
-function spawnDrop(world: World, y = -0.06) {
-  const difficulty = clamp(world.score / 45, 0, 1)
+function spawnDrop(world: World, y = -0.06, playMaxX = DEFAULT_PLAY_MAX_X) {
+  const intensity = intensityFor(world)
   const specialRoll = world.random()
   let kind: DropKind
 
-  if (specialRoll < 0.045 + difficulty * 0.018) {
+  if (specialRoll < 0.045 + intensity * 0.019) {
     kind = 'blood'
-  } else if (specialRoll < 0.095 + difficulty * 0.035) {
+  } else if (specialRoll < 0.10 + intensity * 0.031) {
     kind = 'garlic'
   } else {
     const expected = expectedIngredient(world)
-    kind = expected && world.random() < 0.38
+    const expectedChance = clamp(0.43 - intensity * 0.055, 0.29, 0.43)
+    kind = expected && world.random() < expectedChance
       ? expected
       : randomIngredient(world.random)
   }
 
-  const regularSpeed = 0.105 + world.random() * 0.045 + difficulty * 0.075
+  const regularSpeed = 0.12 + world.random() * 0.06 + intensity * 0.095
+  const obliqueChance = clamp(0.18 + intensity * 0.24, 0.18, 0.72)
+  const goesOblique = world.random() < obliqueChance
+  const direction = world.random() < 0.5 ? -1 : 1
+  const vx = goesOblique
+    ? direction * (0.025 + world.random() * (0.035 + intensity * 0.025))
+    : 0
+  const isRegular = kind !== 'blood' && kind !== 'garlic'
+  const spinChance = clamp(0.42 + intensity * 0.18, 0.42, 0.82)
+  const spin = isRegular && world.random() < spinChance
+    ? (world.random() * 2 - 1) * (105 + intensity * 115)
+    : (world.random() * 2 - 1) * 24
+
   world.drops.push({
     id: world.nextDropId,
     kind,
-    x: 0.07 + world.random() * 0.68,
+    x: DROP_MIN_X + world.random() * Math.max(0.08, playMaxX - DROP_MIN_X),
     y,
     speed: regularSpeed,
-    sway: (world.random() * 2 - 1) * (0.014 + difficulty * 0.012),
+    vx,
+    sway: (world.random() * 2 - 1) * (0.012 + intensity * 0.008),
     phase: world.random() * Math.PI * 2,
-    rotation: (world.random() * 2 - 1) * 24,
+    rotation: (world.random() * 2 - 1) * 30,
+    spin,
   })
   world.nextDropId += 1
+}
+
+function skewerTip(world: Pick<World, 'skewerX' | 'skewerY'>, height: number) {
+  return {
+    x: world.skewerX,
+    y: world.skewerY - SKEWER_TIP_OFFSET_PX / Math.max(1, height),
+  }
+}
+
+function distanceToSegment(px: number, py: number, ax: number, ay: number, bx: number, by: number) {
+  const abX = bx - ax
+  const abY = by - ay
+  const lengthSquared = abX * abX + abY * abY
+  if (lengthSquared <= 0.0001) return Math.hypot(px - ax, py - ay)
+  const t = clamp(((px - ax) * abX + (py - ay) * abY) / lengthSquared, 0, 1)
+  const closestX = ax + abX * t
+  const closestY = ay + abY * t
+  return Math.hypot(px - closestX, py - closestY)
 }
 
 function createWorld(seed: number): World {
@@ -205,8 +266,10 @@ function createWorld(seed: number): World {
     nextDropId: 1,
     nextCustomerId: 1,
     spawnTimer: 0.24,
-    skewerX: 0.43,
+    skewerX: 0.42,
     skewerY: 0.83,
+    previousTipX: 0.42,
+    previousTipY: 0.63,
     dragging: false,
     slowTimer: 0,
     finished: false,
@@ -217,6 +280,8 @@ function createWorld(seed: number): World {
     toastToken: 0,
     delivery: null,
     deliveryToken: 0,
+    juiceImpact: null,
+    juiceToken: 0,
   }
 
   pushCustomer(world)
@@ -247,6 +312,7 @@ function snapshot(world: World): RenderState {
     toastTone: world.toastTone,
     toastToken: world.toastToken,
     delivery: world.delivery ? { ...world.delivery, order: [...world.delivery.order] } : null,
+    juiceImpact: world.juiceImpact ? { ...world.juiceImpact } : null,
   }
 }
 
@@ -271,10 +337,23 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
   const runSeed = useMemo(() => (seed ^ Math.imul(restartToken + 11, 0x27d4eb2d)) >>> 0, [restartToken, seed])
   const worldRef = useRef<World>(createWorld(runSeed))
   const rootRef = useRef<HTMLDivElement | null>(null)
-  const sizeRef = useRef({ width: 390, height: 800 })
+  const controlRef = useRef<HTMLDivElement | null>(null)
+  const customerRef = useRef<HTMLDivElement | null>(null)
+  const pointerIdRef = useRef<number | null>(null)
+  const sizeRef = useRef<StageSize>({ width: 390, height: 800, playMaxX: DEFAULT_PLAY_MAX_X })
   const finishTimerRef = useRef<number | null>(null)
   const [view, setView] = useState<RenderState>(() => snapshot(worldRef.current))
   const [hasControlled, setHasControlled] = useState(false)
+
+  const releasePointer = useCallback(() => {
+    const pointerId = pointerIdRef.current
+    const control = controlRef.current
+    if (pointerId !== null && control?.hasPointerCapture(pointerId)) {
+      control.releasePointerCapture(pointerId)
+    }
+    pointerIdRef.current = null
+    worldRef.current.dragging = false
+  }, [])
 
   const finishRun = useCallback(() => {
     const world = worldRef.current
@@ -299,23 +378,35 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
   }, [session])
 
   useEffect(() => {
+    releasePointer()
     if (finishTimerRef.current !== null) window.clearTimeout(finishTimerRef.current)
     worldRef.current = createWorld(runSeed)
     setView(snapshot(worldRef.current))
     setHasControlled(false)
     session.setScore(0)
-  }, [runSeed, session])
+  }, [releasePointer, runSeed, session])
 
   useEffect(() => () => {
+    releasePointer()
     if (finishTimerRef.current !== null) window.clearTimeout(finishTimerRef.current)
-  }, [])
+  }, [releasePointer])
+
+  useEffect(() => {
+    if (active) return
+    releasePointer()
+  }, [active, releasePointer])
 
   useEffect(() => {
     const root = rootRef.current
     if (!root) return
     const updateSize = () => {
       const rect = root.getBoundingClientRect()
-      sizeRef.current = { width: Math.max(1, rect.width), height: Math.max(1, rect.height) }
+      const customerWidth = customerRef.current?.getBoundingClientRect().width ?? 104
+      sizeRef.current = {
+        width: Math.max(1, rect.width),
+        height: Math.max(1, rect.height),
+        playMaxX: clamp(1 - (customerWidth + 22) / Math.max(1, rect.width), 0.70, 0.84),
+      }
     }
     updateSize()
     const observer = new ResizeObserver(updateSize)
@@ -330,14 +421,28 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
     let previous = performance.now()
     let renderAccumulator = 0
 
-    const loseCurrentCustomer = (reason: 'wrong' | 'garlic' | 'patience') => {
+    const loseCurrentCustomer = (reason: LoseReason) => {
       const world = worldRef.current
       world.lost += 1
       if (reason === 'garlic') showToast(world, 'AIL ! VLAD DÉTESTE ÇA', 'bad')
+      else if (reason === 'extra') showToast(world, 'TROP D’INGRÉDIENTS', 'bad')
       else if (reason === 'wrong') showToast(world, 'MAUVAISE BROCHETTE', 'bad')
       else showToast(world, 'CLIENT PERDU', 'bad')
       rotateCustomer(world)
       if (world.lost >= MAX_LOST) finishRun()
+    }
+
+    const splash = (drop: FallingDrop, kind: IngredientKind) => {
+      const spec = ingredientMap.get(kind)
+      if (!spec) return
+      const world = worldRef.current
+      world.juiceToken += 1
+      world.juiceImpact = {
+        token: world.juiceToken,
+        x: drop.x,
+        y: drop.y,
+        color: spec.juice,
+      }
     }
 
     const catchDrop = (drop: FallingDrop) => {
@@ -346,9 +451,9 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
 
       if (drop.kind === 'blood') {
         const customer = world.customers[0]
-        if (customer) customer.patience = Math.min(customer.maxPatience, customer.patience + 4.2)
-        world.slowTimer = Math.max(world.slowTimer, 2.8)
-        showToast(world, '🩸 SANG FROID · +TEMPS', 'bonus')
+        if (customer) customer.patience = Math.min(customer.maxPatience, customer.patience + 4.8)
+        world.slowTimer = Math.max(world.slowTimer, 3.4)
+        showToast(world, '🩸 SANG FROID · RALENTI', 'bonus')
         return
       }
 
@@ -357,9 +462,17 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
         return
       }
 
+      splash(drop, drop.kind)
       const customer = world.customers[0]
       const expected = customer?.order[world.skewered.length]
-      if (!customer || drop.kind !== expected) {
+      if (!customer) return
+
+      if (world.skewered.length >= customer.order.length) {
+        loseCurrentCustomer('extra')
+        return
+      }
+
+      if (drop.kind !== expected) {
         loseCurrentCustomer('wrong')
         return
       }
@@ -367,8 +480,15 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
       world.skewered.push(drop.kind)
       if (world.skewered.length < customer.order.length) {
         showToast(world, `${world.skewered.length}/${customer.order.length}`, 'good')
-        return
+      } else {
+        showToast(world, 'BROCHETTE PRÊTE · AU CLIENT →', 'good')
       }
+    }
+
+    const serveCurrentCustomer = () => {
+      const world = worldRef.current
+      const customer = world.customers[0]
+      if (!customer || world.skewered.length !== customer.order.length) return false
 
       const value = customer.order.length
       world.score += value
@@ -384,6 +504,7 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
       showToast(world, `SERVI · +${value}`, 'good')
       rotateCustomer(world)
       session.setScore(world.score)
+      return true
     }
 
     const animate = (now: number) => {
@@ -400,43 +521,77 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
 
         if (!world.finished) {
           world.slowTimer = Math.max(0, world.slowTimer - dt)
-          const slowFactor = world.slowTimer > 0 ? 0.56 : 1
-          const difficulty = clamp(world.score / 45, 0, 1)
+          const slowFactor = world.slowTimer > 0 ? 0.48 : 1
+          const intensity = intensityFor(world)
+          const { width, height, playMaxX } = sizeRef.current
 
           world.spawnTimer -= dt
           if (world.spawnTimer <= 0) {
-            spawnDrop(world)
-            const baseGap = 0.82 - difficulty * 0.28
-            world.spawnTimer = baseGap + world.random() * (0.34 - difficulty * 0.08)
+            let burst = 1
+            if (intensity > 0.55 && world.random() < 0.16 + intensity * 0.11) burst += 1
+            if (intensity > 1.35 && world.random() < 0.12 + (intensity - 1.35) * 0.08) burst += 1
+            for (let index = 0; index < burst; index += 1) {
+              spawnDrop(world, -0.055 - index * 0.05, playMaxX)
+            }
+            const baseGap = Math.max(0.15, 0.73 - intensity * 0.245)
+            const randomGap = Math.max(0.10, 0.23 - intensity * 0.045)
+            world.spawnTimer = baseGap + world.random() * randomGap
           }
 
           for (const drop of world.drops) {
             drop.y += drop.speed * slowFactor * dt
-            drop.phase += dt * (1.7 + drop.speed * 5)
-            drop.x += Math.sin(drop.phase) * drop.sway * dt
-            drop.x = clamp(drop.x, 0.045, 0.78)
-            drop.rotation += Math.sin(drop.phase * 0.7) * 8 * dt
+            drop.phase += dt * (1.9 + drop.speed * 5)
+            drop.x += (drop.vx + Math.sin(drop.phase) * drop.sway) * slowFactor * dt
+            if (drop.x <= DROP_MIN_X) {
+              drop.x = DROP_MIN_X
+              drop.vx = Math.abs(drop.vx)
+            } else if (drop.x >= playMaxX) {
+              drop.x = playMaxX
+              drop.vx = -Math.abs(drop.vx)
+            }
+            drop.rotation += drop.spin * slowFactor * dt
           }
           world.drops = world.drops.filter((drop) => drop.y < 1.08)
 
-          if (world.dragging && world.drops.length > 0) {
-            const { width, height } = sizeRef.current
-            const tipX = world.skewerX
-            const tipY = world.skewerY - SKEWER_TIP_OFFSET_PX / height
-            let target: FallingDrop | null = null
-            let targetDistance = Number.POSITIVE_INFINITY
+          const tip = skewerTip(world, height)
+          if (world.dragging) {
+            const rootRect = rootRef.current?.getBoundingClientRect()
+            const customerRect = customerRef.current?.getBoundingClientRect()
+            const customer = world.customers[0]
+            const ready = Boolean(customer && world.skewered.length === customer.order.length)
+            let served = false
 
-            for (const drop of world.drops) {
-              const dx = (drop.x - tipX) * width
-              const dy = (drop.y - tipY) * height
-              const distance = Math.hypot(dx, dy)
-              if (distance <= HIT_RADIUS_PX && distance < targetDistance) {
-                target = drop
-                targetDistance = distance
-              }
+            if (ready && rootRect && customerRect) {
+              const tipViewportX = rootRect.left + tip.x * width
+              const tipViewportY = rootRect.top + tip.y * height
+              const insideCustomer = tipViewportX >= customerRect.left - DELIVERY_PAD_PX
+                && tipViewportX <= customerRect.right + DELIVERY_PAD_PX
+                && tipViewportY >= customerRect.top - DELIVERY_PAD_PX
+                && tipViewportY <= customerRect.bottom + DELIVERY_PAD_PX
+              if (insideCustomer) served = serveCurrentCustomer()
             }
-            if (target) catchDrop(target)
+
+            if (!served && world.drops.length > 0) {
+              let target: FallingDrop | null = null
+              let targetDistance = Number.POSITIVE_INFINITY
+              const ax = world.previousTipX * width
+              const ay = world.previousTipY * height
+              const bx = tip.x * width
+              const by = tip.y * height
+
+              for (const drop of world.drops) {
+                const distance = distanceToSegment(drop.x * width, drop.y * height, ax, ay, bx, by)
+                if (distance <= TIP_HIT_RADIUS_PX && distance < targetDistance) {
+                  target = drop
+                  targetDistance = distance
+                }
+              }
+              if (target) catchDrop(target)
+            }
           }
+
+          world.previousTipX = tip.x
+          world.previousTipY = tip.y
         }
 
         renderAccumulator += dt
@@ -455,21 +610,23 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
 
   const moveSkewer = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
     const root = rootRef.current
+    const control = controlRef.current
     const world = worldRef.current
-    if (!root || !active || world.finished) return
-    const rect = root.getBoundingClientRect()
-    const maxX = clamp(1 - CLIENT_RAIL_PX / Math.max(1, rect.width), 0.68, 0.86)
-    world.skewerX = clamp((event.clientX - rect.left) / rect.width, 0.055, maxX)
-    world.skewerY = clamp((event.clientY - rect.top) / rect.height, CONTROL_TOP, CONTROL_BOTTOM)
+    if (!root || !control || !active || world.finished) return
+    const rootRect = root.getBoundingClientRect()
+    const controlRect = control.getBoundingClientRect()
+    const x = clamp(event.clientX, rootRect.left + 16, rootRect.right - 14)
+    const y = clamp(event.clientY, controlRect.top, controlRect.bottom)
+    world.skewerX = (x - rootRect.left) / Math.max(1, rootRect.width)
+    world.skewerY = (y - rootRect.top) / Math.max(1, rootRect.height)
     setView(snapshot(world))
   }, [active])
 
   const activeCustomer = view.customers[0]
-  const maxSkewerX = clamp(1 - CLIENT_RAIL_PX / Math.max(1, sizeRef.current.width), 0.68, 0.86)
-  const controlWidth = `${maxSkewerX * 100}%`
+  const orderReady = Boolean(activeCustomer && view.skewered.length === activeCustomer.order.length)
 
   return (
-    <div ref={rootRef} className={`vlad-game ${view.slowTimer > 0 ? 'is-slowed' : ''}`}>
+    <div ref={rootRef} className={`vlad-game ${view.slowTimer > 0 ? 'is-slowed' : ''} ${orderReady ? 'is-ready-to-serve' : ''}`}>
       <div className="vlad-bg" aria-hidden="true" />
       <div className="vlad-fire" aria-hidden="true"><i /><i /><i /><i /></div>
 
@@ -479,31 +636,45 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
         ))}
       </div>
 
-      <aside className="vlad-client-rail" aria-label="File des clients">
-        <div className="vlad-rail-label">COMMANDES</div>
-        {view.customers.map((customer, customerIndex) => {
-          const isActive = customerIndex === 0
-          const progress = isActive ? view.skewered.length : 0
-          const patience = clamp(customer.patience / customer.maxPatience, 0, 1)
-          return (
-            <div className={`vlad-client ${isActive ? 'is-active' : ''}`} key={customer.id}>
+      <aside className="vlad-client-rail" aria-label="Clients et commandes">
+        <div className="vlad-rail-label">CLIENT</div>
+        {activeCustomer && (
+          <div ref={customerRef} className={`vlad-client is-active ${orderReady ? 'is-ready' : ''}`} key={activeCustomer.id}>
+            <div className="vlad-client-head">
+              <span className="vlad-face">{activeCustomer.face}</span>
+              <strong>{activeCustomer.name}</strong>
+            </div>
+            <div className="vlad-order">
+              {activeCustomer.order.map((kind, index) => (
+                <IngredientIcon
+                  key={`${activeCustomer.id}-${index}`}
+                  kind={kind}
+                  className={index < view.skewered.length ? 'is-done' : index === view.skewered.length ? 'is-next' : ''}
+                />
+              ))}
+            </div>
+            <div className="vlad-patience" aria-label={`Patience ${Math.round(clamp(activeCustomer.patience / activeCustomer.maxPatience, 0, 1) * 100)}%`}>
+              <i style={{ width: `${clamp(activeCustomer.patience / activeCustomer.maxPatience, 0, 1) * 100}%` }} />
+            </div>
+            <div className="vlad-serve-target">{orderReady ? '→ DONNE-LUI' : 'COMMANDE'}</div>
+          </div>
+        )}
+
+        <div className="vlad-waiting-clients" aria-label="Clients suivants">
+          {view.customers.slice(1).map((customer) => (
+            <div className="vlad-client is-waiting" key={customer.id}>
               <div className="vlad-client-head">
                 <span className="vlad-face">{customer.face}</span>
                 <strong>{customer.name}</strong>
               </div>
               <div className="vlad-order">
                 {customer.order.map((kind, index) => (
-                  <IngredientIcon key={`${customer.id}-${index}`} kind={kind} className={isActive && index < progress ? 'is-done' : isActive && index === progress ? 'is-next' : ''} />
+                  <IngredientIcon key={`${customer.id}-${index}`} kind={kind} />
                 ))}
               </div>
-              {isActive && (
-                <div className="vlad-patience" aria-label={`Patience ${Math.round(patience * 100)}%`}>
-                  <i style={{ width: `${patience * 100}%` }} />
-                </div>
-              )}
             </div>
-          )
-        })}
+          ))}
+        </div>
       </aside>
 
       <main className="vlad-drop-field" aria-label="Ingrédients qui tombent">
@@ -529,12 +700,29 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
         })}
       </main>
 
+      {view.juiceImpact && (
+        <div
+          className="vlad-splash"
+          key={view.juiceImpact.token}
+          style={{
+            left: `${view.juiceImpact.x * 100}%`,
+            top: `${view.juiceImpact.y * 100}%`,
+            '--juice': view.juiceImpact.color,
+          } as CSSProperties}
+          aria-hidden="true"
+        >
+          <b />
+          <i /><i /><i /><i /><i /><i />
+        </div>
+      )}
+
       <div
-        className={`vlad-skewer ${view.dragging ? 'is-held' : ''}`}
+        className={`vlad-skewer ${view.dragging ? 'is-held' : ''} ${orderReady ? 'is-loaded' : ''}`}
         style={{ left: `${view.skewerX * 100}%`, top: `${view.skewerY * 100}%` }}
         aria-hidden="true"
       >
         <div className="vlad-skewer-metal"><i /></div>
+        <span className="vlad-tip-marker" />
         <div className="vlad-skewered-stack">
           {view.skewered.map((kind, index) => (
             <IngredientIcon key={`${kind}-${index}`} kind={kind} />
@@ -543,35 +731,40 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
         <div className="vlad-hand">✊🏻</div>
       </div>
 
-      <div className="vlad-control-boundary" style={{ width: controlWidth }} aria-hidden="true">
-        {!hasControlled && <span>GLISSE ICI · GUIDE LA POINTE</span>}
+      <div className="vlad-control-boundary" aria-hidden="true">
+        {!hasControlled && <span>GLISSE ICI · LA POINTE DORÉE EST LA HITBOX</span>}
       </div>
       <div
+        ref={controlRef}
         className="vlad-control-zone"
-        style={{ width: controlWidth }}
-        onPointerDown={(event) => {
+        onPointerDown={(event: ReactPointerEvent<HTMLDivElement>) => {
           if (!active || worldRef.current.finished) return
           event.preventDefault()
+          pointerIdRef.current = event.pointerId
           event.currentTarget.setPointerCapture(event.pointerId)
           worldRef.current.dragging = true
+          const { height } = sizeRef.current
+          moveSkewer(event)
+          const tip = skewerTip(worldRef.current, height)
+          worldRef.current.previousTipX = tip.x
+          worldRef.current.previousTipY = tip.y
           setHasControlled(true)
-          moveSkewer(event)
           setView(snapshot(worldRef.current))
         }}
-        onPointerMove={(event) => {
-          if (!worldRef.current.dragging) return
+        onPointerMove={(event: ReactPointerEvent<HTMLDivElement>) => {
+          if (!worldRef.current.dragging || pointerIdRef.current !== event.pointerId) return
           event.preventDefault()
           moveSkewer(event)
         }}
-        onPointerUp={(event) => {
-          if (!worldRef.current.dragging) return
+        onPointerUp={(event: ReactPointerEvent<HTMLDivElement>) => {
+          if (pointerIdRef.current !== event.pointerId) return
           event.preventDefault()
-          worldRef.current.dragging = false
+          releasePointer()
           setView(snapshot(worldRef.current))
-          if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
         }}
-        onPointerCancel={() => {
-          worldRef.current.dragging = false
+        onPointerCancel={(event: ReactPointerEvent<HTMLDivElement>) => {
+          if (pointerIdRef.current !== event.pointerId) return
+          releasePointer()
           setView(snapshot(worldRef.current))
         }}
         aria-label="Zone de contrôle de la brochette"
@@ -600,7 +793,7 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
       {view.slowTimer > 0 && <div className="vlad-blood-bonus" aria-hidden="true">SANG FROID</div>}
 
       <div className="vlad-legend" aria-hidden="true">
-        <span>🩸 +TEMPS</span><span>🧄 À ÉVITER</span>
+        <span>🩸 +TEMPS · RALENTIT</span><span>🧄 À ÉVITER</span>
       </div>
 
       {view.finished && (
@@ -611,9 +804,9 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
       )}
 
       {activeCustomer && (
-        <div className="vlad-next-needed" aria-hidden="true">
-          <small>PROCHAIN</small>
-          {activeCustomer.order[view.skewered.length] ? <IngredientIcon kind={activeCustomer.order[view.skewered.length]} /> : <span>✓</span>}
+        <div className={`vlad-next-needed ${orderReady ? 'is-ready' : ''}`} aria-hidden="true">
+          <small>{orderReady ? 'À LIVRER' : 'PROCHAIN'}</small>
+          {activeCustomer.order[view.skewered.length] ? <IngredientIcon kind={activeCustomer.order[view.skewered.length]} /> : <span>→</span>}
         </div>
       )}
     </div>

@@ -5,6 +5,7 @@
 .vlad-gore-bit {
   left: 0 !important;
   top: 0 !important;
+  height: var(--gore-size) !important;
   opacity: .94;
   animation: none !important;
   will-change: transform;
@@ -15,6 +16,7 @@
 }
 
 .vlad-gore-bit.is-chunk {
+  height: var(--gore-size) !important;
   box-shadow: 0 2px 4px rgba(0,0,0,.38);
 }
 

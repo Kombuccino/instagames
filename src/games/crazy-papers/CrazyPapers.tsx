@@ -426,7 +426,7 @@ export function CrazyPapers({ active, seed, restartToken, session }: GameCompone
 
             <div className="crazy-papers-active-slot" aria-live="polite">
               {activeDocument ? (
-                <DocumentCard document={activeDocument} />
+                <DocumentCard key={activeDocument.instanceId} document={activeDocument} className="crazy-papers-paper-from-pile" />
               ) : (
                 <div className="crazy-papers-empty">PLUS RIEN… POUR L’INSTANT.</div>
               )}

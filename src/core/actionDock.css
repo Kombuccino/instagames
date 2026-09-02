@@ -141,6 +141,159 @@
   bottom: auto;
 }
 
+.platform-profile {
+  display: grid;
+  gap: 18px;
+}
+
+.platform-profile-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.platform-profile-avatar {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 50%;
+  background: rgba(255,255,255,.08);
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.platform-profile-summary > div:last-child {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.platform-profile-summary strong {
+  overflow: hidden;
+  font-size: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.platform-profile-summary span {
+  color: rgba(255,255,255,.45);
+  font-size: 10px;
+}
+
+.platform-profile-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+.platform-profile-form label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.platform-profile-form label.is-wide,
+.platform-profile-form > button {
+  grid-column: 1 / -1;
+}
+
+.platform-profile-form label > span {
+  color: rgba(255,255,255,.5);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.platform-profile-form input,
+.platform-profile-form textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px;
+  outline: none;
+  color: #fff;
+  background: rgba(255,255,255,.05);
+  resize: vertical;
+}
+
+.platform-profile-form > button {
+  min-height: 42px;
+  border: 1px solid #fff;
+  border-radius: 12px;
+  color: #09090b;
+  background: #fff;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.platform-profile-form > button:disabled {
+  opacity: .45;
+  cursor: default;
+}
+
+.platform-profile-message {
+  margin: -8px 0 0;
+  color: rgba(255,255,255,.58);
+  font-size: 11px;
+}
+
+.platform-profile-favorites {
+  display: grid;
+  gap: 8px;
+  padding-top: 2px;
+}
+
+.platform-profile-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.platform-profile-section-title strong {
+  font-size: 13px;
+}
+
+.platform-profile-section-title span {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 7px;
+  border-radius: 999px;
+  color: rgba(255,255,255,.6);
+  background: rgba(255,255,255,.07);
+  font-size: 10px;
+}
+
+.platform-profile-game-list {
+  display: grid;
+  gap: 7px;
+}
+
+.platform-profile-game-list article {
+  display: grid;
+  gap: 3px;
+  padding: 11px 12px;
+  border-radius: 13px;
+  background: rgba(255,255,255,.045);
+}
+
+.platform-profile-game-list article strong {
+  font-size: 13px;
+}
+
+.platform-profile-game-list article span {
+  color: rgba(255,255,255,.46);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
 @media (max-width: 430px) {
   .game-topbar {
     gap: 0;
@@ -171,6 +324,15 @@
 
   .game-actions button small {
     font-size: 6.5px;
+  }
+
+  .platform-profile-form {
+    grid-template-columns: 1fr;
+  }
+
+  .platform-profile-form label.is-wide,
+  .platform-profile-form > button {
+    grid-column: 1;
   }
 }
 
@@ -256,6 +418,18 @@
 
   .platform-sheet {
     max-height: min(86dvh, 520px);
+  }
+
+  .platform-profile {
+    gap: 12px;
+  }
+
+  .platform-profile-form {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .platform-profile-form label.is-wide {
+    grid-column: 1 / -1;
   }
 
   .swipe-hint {

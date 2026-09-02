@@ -1,0 +1,147 @@
+@media (orientation: landscape) and (max-height: 650px) {
+  .sts-game {
+    grid-template-columns: minmax(0, 1fr) minmax(205px, 29vw);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    column-gap: clamp(10px, 2vw, 18px);
+    row-gap: 6px;
+    padding:
+      max(58px, calc(env(safe-area-inset-top) + 48px))
+      calc(var(--minifugg-core-right-reserved, 74px) + 10px)
+      calc(var(--minifugg-core-bottom-reserved, 38px) + 6px)
+      max(12px, env(safe-area-inset-left));
+  }
+
+  .sts-topbar {
+    grid-column: 1;
+    grid-row: 1;
+    padding-right: 0;
+  }
+
+  .sts-alcohol {
+    width: min(58%, 300px);
+  }
+
+  .sts-stage {
+    grid-column: 1;
+    grid-row: 2 / 4;
+    min-height: 0;
+    gap: 4px;
+  }
+
+  .sts-callout {
+    min-height: 12px;
+    font-size: 10px;
+  }
+
+  .sts-track {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 150px;
+    margin-inline: 0;
+    border: 1px solid rgba(255,255,255,.075);
+    border-radius: 14px;
+  }
+
+  .sts-menu {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sts-menu-heading {
+    margin-bottom: 5px;
+  }
+
+  .sts-menu-heading span,
+  .sts-menu-heading strong {
+    font-size: 8px;
+  }
+
+  .sts-recipe-grid {
+    flex: 1 1 auto;
+    min-height: 0;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .sts-recipe-card {
+    min-height: 0;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    grid-template-rows: 1fr;
+    justify-items: start;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 7px;
+    border-radius: 9px;
+  }
+
+  .sts-recipe-card .sts-glass-icon {
+    justify-self: center;
+    transform: scale(.72);
+    transform-origin: center;
+  }
+
+  .sts-recipe-card strong {
+    display: block;
+    -webkit-line-clamp: 1;
+    white-space: nowrap;
+    text-align: left;
+    font-size: 9px;
+  }
+
+  .sts-recipe-card > span:last-child {
+    justify-self: end;
+    font-size: 9px;
+  }
+
+  .sts-hint {
+    grid-column: 2;
+    grid-row: 3;
+    align-self: center;
+    font-size: 8px;
+  }
+
+  .sts-shooter {
+    width: 64px;
+    height: 100px;
+  }
+
+  .sts-hand {
+    width: 74px;
+    height: 70px;
+  }
+
+  .sts-hand-emoji {
+    font-size: clamp(50px, 9vh, 64px);
+  }
+
+  .sts-impact strong {
+    font-size: clamp(62px, 18vh, 108px);
+  }
+
+  .sts-ending strong {
+    font-size: clamp(54px, 14vh, 92px);
+  }
+}
+
+@media (orientation: landscape) and (max-height: 430px) {
+  .sts-game {
+    grid-template-columns: minmax(0, 1fr) minmax(190px, 27vw);
+    padding-top: max(54px, calc(env(safe-area-inset-top) + 44px));
+  }
+
+  .sts-track {
+    min-height: 138px;
+  }
+
+  .sts-recipe-card {
+    padding-block: 2px;
+  }
+
+  .sts-recipe-card .sts-glass-icon {
+    transform: scale(.64);
+  }
+}

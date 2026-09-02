@@ -10,11 +10,12 @@
 
 - Wall / office grime: `#504b3d`, `#302d25`
 - Desk wood: `#706145`, `#4c402d`
-- Paper: `#e7d9af`, `#d0c397`
+- Neutral paper: `#ded2ae`
+- Accounting paper cue: dirty green `#d4dcc1`
+- Civil-status paper cue: faded salmon `#dfcabb`
+- Planning paper cue: blueprint grey-blue `#bed0d5`
 - Ink: `#1d1a14`, `#4b4333`
-- Approve: muted bureaucratic green `#52684a`
-- Reject / supervisor: dried red `#8b4438`, `#a13930`
-- Archive: steel blue-grey `#4d5d65`
+- Supervisor / error return: dried red `#a13930`, `#a62f27`
 
 Keep colors dirty, matte and printed. No neon, glass, bloom or modern SaaS cards.
 
@@ -30,24 +31,44 @@ Keep colors dirty, matte and printed. No neon, glass, bloom or modern SaaS cards
 - Hard rectangular edges, 2–4px borders, offset pixel-like shadows.
 - Paper grain and office-wall texture may use cheap repeating CSS patterns.
 - Documents should feel physical and slightly misaligned, but never so rotated that text becomes hard to read.
-- Stamps are large physical controls, not rounded UI buttons.
+- Sector stamps are large physical desk controls, not rounded UI buttons.
+
+## Core document language
+
+The player sorts documents into three administrative sectors:
+
+- `COMPTABILITÉ`
+- `ÉTAT CIVIL`
+- `URBANISME`
+
+Each sector owns four recurring document models. Every generated document is recognizable through up to five independent cue families:
+
+1. document title / genre;
+2. sector paper color;
+3. document form / page geometry;
+4. characteristic content (amounts and VAT, names and civil dates, parcels and square metres, etc.);
+5. sector mark / printed symbol.
+
+Difficulty removes cues progressively from five down to one. A document must always preserve at least one independently useful clue; never create a pure guess.
+
+## Physical backlog
+
+- Do not represent workload with a progress bar.
+- Pending work must exist as visible stacks of paper on the desk behind the active document.
+- New work visibly adds sheets to the stacks.
+- Taking the next document visibly reduces the stacks.
+- The active document is the dominant readable object in the stage.
+- A stamped document exits to the right.
+- A wrongly routed document later returns from the left carrying a large red `MAUVAIS SERVICE` mark.
+- An error also adds extra work while the supervisor blocks the player briefly, so the paper piles keep growing during the interruption.
 
 ## Motion
 
 - Dry, stepped, mechanical motion.
-- Correct stamping: tiny immediate press/hit feedback.
-- Wrong stamping: abrupt red return stamp plus short supervisor shake.
-- Avoid long easing, floaty bounces and decorative particles.
-
-## Gameplay-specific visual language
-
-- The active document is the dominant object in the stage.
-- The backlog is visible as layered papers behind it and through a compact workload meter.
-- Training documents explicitly expose the expected destination stamp.
-- Later documents remove the answer and rely on learned document families.
-- Cryptic documents use recurring fixed codes/titles so difficulty becomes memory/recognition rather than pure randomness.
-- Returned documents carry an obvious red `MAUVAIS TAMPON` mark.
-- The supervisor interruption should feel annoying and funny while leaving the growing workload visible.
+- Correct routing: immediate stamp press and document shoots right.
+- Wrong routing: same rightward departure, supervisor interruption, then abrupt left-to-centre return.
+- Paper-stack growth should be visible but cheap; no particles or floaty easing.
+- Avoid long easing, squash-and-bounce and decorative animation.
 
 ## Layout
 

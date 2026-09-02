@@ -35,12 +35,20 @@ function writeEntries(entries: LeaderboardEntry[]) {
   }
 }
 
+function createVisitorNickname() {
+  return `Fugger${Math.floor(1000 + Math.random() * 9000)}`
+}
+
 export function getSavedNickname() {
-  if (!canUseStorage()) return ''
+  if (!canUseStorage()) return 'Visiteur'
   try {
-    return window.localStorage.getItem(NICKNAME_KEY) ?? ''
+    const saved = window.localStorage.getItem(NICKNAME_KEY)?.trim()
+    if (saved) return saved
+    const generated = createVisitorNickname()
+    window.localStorage.setItem(NICKNAME_KEY, generated)
+    return generated
   } catch {
-    return ''
+    return 'Visiteur'
   }
 }
 

@@ -6,6 +6,7 @@ import './core/coreIcons.css'
 import './core/actionDock.css'
 import './core/orientation.css'
 import './core/gameLayout.css'
+import './core/comments.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -39,6 +39,12 @@ type ClearRowSnapshot = {
   report: LineReport
 }
 
+type PendingClear = {
+  fullRows: number[]
+  gained: number
+  earnedBonus: BonusKind | null
+}
+
 type GameState = {
   seed: number
   board: Array<Array<Tile | null>>
@@ -51,6 +57,7 @@ type GameState = {
   lockTicks: number
   gameOver: boolean
   clearSerial: number
+  pendingClear: PendingClear | null
   lastClear: {
     id: number
     text: string
@@ -64,6 +71,7 @@ type Action =
   | { type: 'TICK' }
   | { type: 'MOVE'; dx: number; dy: number }
   | { type: 'ROTATE'; direction: -1 | 1 }
+  | { type: 'COMMIT_CLEAR' }
 
 type ShapeDefinition = {
   cells: Coord[]
@@ -75,6 +83,7 @@ const ROWS = 20
 const MAX_NUMBER = 9
 const BASE_MAX_MULTIPLIER = 3
 const LOCK_TICKS = 3
+const CLEAR_SETTLE_MS = 1180
 const STANDARD_LINE_MAX = MAX_NUMBER * (BASE_MAX_MULTIPLIER ** (COLS - 1))
 const BIG_CLEAR_THRESHOLD = 1000
 
@@ -306,45 +315,67 @@ function lockPiece(state: GameState): GameState {
     }
   })
 
+  if (fullRows.length === 0) {
+    const nextIndex = state.pieceIndex + 1
+    const nextPiece = createPiece(state.seed, nextIndex)
+    return {
+      ...state,
+      board,
+      active: nextPiece,
+      pieceIndex: nextIndex,
+      lockTicks: 0,
+      gameOver: !canPlace(board, nextPiece),
+    }
+  }
+
   const clearRows: ClearRowSnapshot[] = fullRows.map((rowIndex, index) => ({
     rowIndex,
     tiles: [...(board[rowIndex] as Tile[])],
     report: reports[index],
   }))
-
-  const clearedBoard = fullRows.length > 0
-    ? [
-        ...Array.from({ length: fullRows.length }, () => Array<Tile | null>(COLS).fill(null)),
-        ...board.filter((_, rowIndex) => !fullRows.includes(rowIndex)),
-      ]
-    : board
-
   const gained = reports.reduce((sum, report) => sum + report.points, 0)
-  const progression = advanceProgress(state.stageProgress, state.level, gained)
-  const nextIndex = state.pieceIndex + 1
   const earnedBonus = bonusForClear(fullRows.length)
-  const nextPiece = createPiece(state.seed, nextIndex, earnedBonus)
-  const nextSerial = reports.length > 0 ? state.clearSerial + 1 : state.clearSerial
-  const gameOver = !canPlace(clearedBoard, nextPiece)
+  const nextSerial = state.clearSerial + 1
+
+  return {
+    ...state,
+    board,
+    lockTicks: 0,
+    clearSerial: nextSerial,
+    pendingClear: { fullRows, gained, earnedBonus },
+    lastClear: {
+      id: nextSerial,
+      text: summariseClear(reports, earnedBonus),
+      impactPoints: gained,
+      rows: clearRows,
+    },
+  }
+}
+
+function commitClear(state: GameState): GameState {
+  const pending = state.pendingClear
+  if (!pending) return state
+
+  const clearedBoard = [
+    ...Array.from({ length: pending.fullRows.length }, () => Array<Tile | null>(COLS).fill(null)),
+    ...state.board.filter((_, rowIndex) => !pending.fullRows.includes(rowIndex)),
+  ]
+  const progression = advanceProgress(state.stageProgress, state.level, pending.gained)
+  const nextIndex = state.pieceIndex + 1
+  const nextPiece = createPiece(state.seed, nextIndex, pending.earnedBonus)
 
   return {
     ...state,
     board: clearedBoard,
     active: nextPiece,
     pieceIndex: nextIndex,
-    score: state.score + gained,
+    score: state.score + pending.gained,
     level: progression.level,
     stageProgress: progression.progress,
-    lines: state.lines + fullRows.length,
+    lines: state.lines + pending.fullRows.length,
     lockTicks: 0,
-    gameOver,
-    clearSerial: nextSerial,
-    lastClear: reports.length > 0 ? {
-      id: nextSerial,
-      text: summariseClear(reports, earnedBonus),
-      impactPoints: gained,
-      rows: clearRows,
-    } : state.lastClear,
+    gameOver: !canPlace(clearedBoard, nextPiece),
+    pendingClear: null,
   }
 }
 
@@ -362,13 +393,15 @@ function createInitialState(seed: number): GameState {
     lockTicks: 0,
     gameOver: false,
     clearSerial: 0,
+    pendingClear: null,
     lastClear: null,
   }
 }
 
 function reducer(state: GameState, action: Action): GameState {
   if (action.type === 'RESET') return createInitialState(action.seed)
-  if (state.gameOver) return state
+  if (action.type === 'COMMIT_CLEAR') return commitClear(state)
+  if (state.gameOver || state.pendingClear) return state
 
   if (action.type === 'TICK') {
     const moved = { ...state.active, y: state.active.y + 1 }
@@ -508,10 +541,16 @@ export function CalcDrop({ active, seed, restartToken, session }: GameComponentP
   }, [session, state.gameOver, state.level, state.lines, state.score])
 
   useEffect(() => {
-    if (!active || state.gameOver) return undefined
+    if (!state.pendingClear) return undefined
+    const timer = window.setTimeout(() => dispatch({ type: 'COMMIT_CLEAR' }), CLEAR_SETTLE_MS)
+    return () => window.clearTimeout(timer)
+  }, [state.pendingClear])
+
+  useEffect(() => {
+    if (!active || state.gameOver || state.pendingClear) return undefined
     const timer = window.setInterval(() => dispatch({ type: 'TICK' }), dropDelay(state.level))
     return () => window.clearInterval(timer)
-  }, [active, state.gameOver, state.level])
+  }, [active, state.gameOver, state.level, state.pendingClear])
 
   useEffect(() => {
     if (!active || state.gameOver) return undefined
@@ -532,33 +571,35 @@ export function CalcDrop({ active, seed, restartToken, session }: GameComponentP
   }, [])
 
   useEffect(() => {
-    if (active && !state.gameOver) return
+    if (active && !state.gameOver && !state.pendingClear) return
     if (repeatTimer.current !== null) {
       window.clearInterval(repeatTimer.current)
       repeatTimer.current = null
     }
-  }, [active, state.gameOver])
+  }, [active, state.gameOver, state.pendingClear])
 
   const activeMap = useMemo(() => {
     const map = new Map<string, Tile>()
+    if (state.pendingClear) return map
     for (const { x, y, tokenIndex } of pieceCells(state.active)) {
       if (y >= 0 && y < ROWS && x >= 0 && x < COLS) map.set(cellKey(x, y), state.active.tokens[tokenIndex])
     }
     return map
-  }, [state.active])
+  }, [state.active, state.pendingClear])
 
   const ghostCells = useMemo(() => {
+    if (state.pendingClear) return new Set<string>()
     let ghost = state.active
     while (canPlace(state.board, { ...ghost, y: ghost.y + 1 })) ghost = { ...ghost, y: ghost.y + 1 }
     return new Set(pieceCells(ghost).filter(({ y }) => y >= 0).map(({ x, y }) => cellKey(x, y)))
-  }, [state.active, state.board])
+  }, [state.active, state.board, state.pendingClear])
 
   const nextPieces = useMemo(() => [
-    createPiece(state.seed, state.pieceIndex + 1),
+    createPiece(state.seed, state.pieceIndex + 1, state.pendingClear?.earnedBonus ?? null),
     createPiece(state.seed, state.pieceIndex + 2),
-  ], [state.pieceIndex, state.seed])
+  ], [state.pendingClear, state.pieceIndex, state.seed])
 
-  const grounded = isGrounded(state.board, state.active)
+  const grounded = !state.pendingClear && isGrounded(state.board, state.active)
   const target = targetForLevel(state.level)
   const progressPercent = Math.min(100, (state.stageProgress / target) * 100)
   const bigImpact = (state.lastClear?.impactPoints ?? 0) > BIG_CLEAR_THRESHOLD
@@ -570,7 +611,7 @@ export function CalcDrop({ active, seed, restartToken, session }: GameComponentP
   }
 
   const startRepeat = (action: Extract<Action, { type: 'MOVE' }>) => {
-    if (!active || state.gameOver) return
+    if (!active || state.gameOver || state.pendingClear) return
     stopRepeat()
     dispatch(action)
     repeatTimer.current = window.setInterval(() => dispatch(action), action.dy > 0 ? 55 : 100)
@@ -584,11 +625,15 @@ export function CalcDrop({ active, seed, restartToken, session }: GameComponentP
             <aside className="calc-drop-side calc-drop-side-left">
               <div className="calc-drop-level"><span>LVL</span><strong>{state.level}</strong></div>
               <div className="calc-drop-side-target">
-                <span>{state.stageProgress.toLocaleString('fr-FR')}</span>
-                <div className="calc-drop-progress-vertical" aria-hidden="true"><i style={{ height: `${progressPercent}%` }} /></div>
                 <strong>{target.toLocaleString('fr-FR')}</strong>
+                <div className="calc-drop-progress-vertical" aria-hidden="true"><i style={{ height: `${progressPercent}%` }} /></div>
+                <span>{state.stageProgress.toLocaleString('fr-FR')}</span>
               </div>
-              <small>{dropDelay(state.level)} ms</small>
+              <div className="calc-drop-next-block">
+                <span className="calc-drop-next-label">NEXT</span>
+                <PiecePreview piece={nextPieces[0]} />
+                <PiecePreview piece={nextPieces[1]} />
+              </div>
             </aside>
 
             <div className="calc-drop-board-shell">
@@ -624,12 +669,6 @@ export function CalcDrop({ active, seed, restartToken, session }: GameComponentP
                 {Array.from({ length: LOCK_TICKS }, (_, index) => <span key={index} className={index < state.lockTicks ? 'is-on' : ''} />)}
               </div>
             </div>
-
-            <aside className="calc-drop-side calc-drop-side-right">
-              <span className="calc-drop-next-label">NEXT</span>
-              <PiecePreview piece={nextPieces[0]} />
-              <PiecePreview piece={nextPieces[1]} />
-            </aside>
 
             <div className="mf-game-controls calc-drop-controls" aria-label="Contrôles">
               <div className="calc-drop-move-controls">

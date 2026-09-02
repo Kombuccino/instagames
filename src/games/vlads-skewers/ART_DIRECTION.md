@@ -10,7 +10,7 @@
 - ember orange: `#ff6420`
 - blood red: `#d93b34`
 - warm metal / target gold: `#f4c34f`, `#ffe378`
-- food juice colors follow the ingredient: tomato/meat red, pepper/zucchini green, onion purple, mushroom yellow/tan
+- food juice colors follow the ingredient: tomato/meat red, pepper/zucchini green, onion purple, mushroom yellow/tan, eggplant purple
 
 ## Typography
 
@@ -18,9 +18,7 @@ Use the inherited MiniFugg/system grotesk. Labels are short, heavy and readable.
 
 ## Material / texture language
 
-Dark grill, smoke, ember light, rough metal skewer, hot food and wet splashes. The skewer tip is deliberately gold and luminous because it is the exact gameplay hit point.
-
-The lower scene should visibly read as a barbecue: brighter flames/coals behind a dark metal rack. Ingredients already on Vlad's skewer are visibly browned/grilled and can carry subtle grill marks. As the skewer fills, juice increasingly stains the metal and Vlad's hand.
+Dark grill, smoke, ember light, rough metal skewer, visible BBQ rack, hot food and wet splashes. Ingredients already on the skewer look browned/grilled. As the skewer fills, juice increasingly stains the metal and Vlad's hand. The skewer tip is deliberately gold and luminous because it is the exact gameplay hit point.
 
 ## Motion language
 
@@ -28,17 +26,25 @@ The game should feel excessive rather than delicate: fast falling objects, spinn
 
 Impalement impacts use a varied bank of roughly fifteen disgusting comic onomatopoeias plus a second, smaller pain/horror line spoken by the ingredient. Meat and each vegetable family can have its own absurd reaction vocabulary. The joke should feel like a tiny horror cartoon, not realistic gore.
 
-Impact juice does not vanish with the impact word. Each successful stab ejects a bounded set of colored droplets and small chunks into a persistent background gore layer. They fall beneath the live ingredients until leaving the bottom of the screen. Several rapid impalements should therefore create a temporary rain of vegetable/meat juice and fragments. This layer must be strictly capped and self-cleaning so it never undoes the avalanche performance work.
+The short impact explosion is followed by a longer ballistic juice/chunk shower. Particles first eject upward and sideways like a small firework, then gravity pulls them down through the scene. Their falling motion inherits some of the current level's ingredient speed and the blood slow-motion factor. Persistent particles stay below falling ingredients and are strictly capped so repeated impalements can create a rain of debris without unbounded DOM growth.
 
-The ongoing avalanche must remain cheap to render. Falling ingredients should move with compositor-friendly transforms; expensive visual effects are reserved for short impact moments instead of running continuously on every vegetable.
+Fast correct impalements create a visible multiplier attached to the skewer. The current chain can rise from ×2 to ×6; the best chain achieved on the current skewer multiplies that skewer's base value when it is delivered.
+
+The ongoing avalanche must remain cheap to render. Falling ingredients and persistent gore use compositor-friendly direct transforms; expensive visual effects are reserved for short impact moments instead of running continuously on every vegetable.
 
 ## Progression
 
-Difficulty is deliberately stepped rather than immediately aggressive. Three served customers advance one service tier. Early play is sparse and readable: two-ingredient recipes, very few simultaneous falling objects, slow vertical trajectories and almost no spin/oblique motion. Each tier can increase several dimensions together: recipe length, simultaneous-object ceiling, falling speed, spawn frequency, rotation, oblique trajectories and multi-object bursts. Five/six-ingredient recipes and true avalanches belong to late tiers, not the opening seconds.
+Progression is explicit by level, not derived from score. Level 1 requires 3 served clients, level 2 requires 4, level 3 requires 5, and each following level requires one additional served client. Losing a client does not advance the level.
 
-Every tier begins with a short, central card: `NIVEAU N` / `— 3 CLIENTS —`. It is a visual beat, not a blocking modal. Difficulty changes belong to these three-client boundaries so the player understands why the service suddenly becomes harder.
+The available ingredient vocabulary grows every two levels, from 3 ingredient types at levels 1–2 to a maximum of 7. The seventh normal ingredient is eggplant. Recipe length also grows every two levels: 2 ingredients at levels 1–2, 3 at levels 3–4, 4 at levels 5–6, 5 at levels 7–8, then the hard maximum of 6 ingredients from level 9 onward.
+
+Base skewer values are deliberately nonlinear so difficult large recipes matter: 2 ingredients = 2 points, 3 = 4, 4 = 6, 5 = 10, 6 = 15. A fast-impalement multiplier can multiply that base value.
+
+Difficulty increases every level across several dimensions: simultaneous-object ceiling, falling speed, spawn frequency, rotation, oblique trajectories and multi-object bursts. Early play stays sparse and readable; six-ingredient recipes and true avalanches are late-game states.
 
 Blood should become more strategically important as the screen gets denser and faster. Garlic also appears progressively instead of overwhelming beginners immediately.
+
+Level transitions get a readable high-screen card for roughly three seconds. It shows `NIVEAU N`, the currently unlocked ingredient icons, and the number of clients required. The client rail keeps a compact persistent level/progress label after the card disappears.
 
 ## Characters / props
 
@@ -48,9 +54,9 @@ Emoji ingredients and customers remain the current lightweight character vocabul
 
 The game intentionally uses a freeform full-surface falling-object field rather than the standard HUD/stage/controls DOM skeleton because the skewer is a continuous drag object moving across the lower playfield and into a customer delivery target. Critical UI and the local `touch-action: none` control surface must still respect MiniFugg Core safe zones and the bottom swipe gutter. Shared typography/spacing tokens should be used where practical.
 
-The active customer must sit immediately above the dotted control boundary, inside the physical vertical reach of the skewer tip. Waiting customers stack upward from there. This positioning is more important than vertically centering the queue.
+The active client must sit immediately above the dotted control boundary and inside the physical vertical reach of the skewer tip. On short portrait phones the client rail is compacted so delivery remains practical.
 
-The control boundary limits the skewer position, not pointer tracking: once a drag starts, moving the pointer outside the control area must keep sliding the skewer along the nearest boundary instead of freezing input. The old explanatory text inside the dotted control zone is intentionally removed once the mechanic is visually self-explanatory.
+The control boundary limits the skewer position, not pointer tracking: once a drag starts, moving the pointer outside the control area must keep sliding the skewer along the nearest boundary instead of freezing input. The old explanatory text inside the dotted control zone stays removed.
 
 ## Avoid
 
@@ -58,6 +64,6 @@ The control boundary limits the skewer position, not pointer tracking: once a dr
 - hiding the gold tip or making another part of the skewer interactive
 - tiny critical labels
 - permanent full-screen effects that hide the falling ingredients
-- unbounded DOM growth during late-game avalanches or gore rain
+- unbounded DOM growth during late-game avalanches or juice showers
 - making the opening seconds feel like the end-game avalanche
 - placing the client delivery target outside the actual skewer-tip reach or under Core chrome

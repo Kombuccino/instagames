@@ -2,6 +2,8 @@
   --minifugg-core-top-reserved: calc(108px + env(safe-area-inset-top));
   --minifugg-swipe-gutter: 30px;
   --minifugg-core-bottom-reserved: calc(100px + env(safe-area-inset-bottom));
+  --minifugg-core-right-reserved: 0px;
+  --minifugg-core-left-reserved: 0px;
 }
 
 .game-feed,
@@ -135,7 +137,7 @@
 
 .score-chip {
   top: max(12px, env(safe-area-inset-top));
-  right: 12px;
+  right: max(12px, env(safe-area-inset-right));
   bottom: auto;
 }
 
@@ -172,7 +174,96 @@
   }
 }
 
-@media (min-width: 760px) {
+@media (orientation: landscape) and (max-height: 650px) {
+  :root {
+    --minifugg-core-top-reserved: calc(78px + env(safe-area-inset-top));
+    --minifugg-core-bottom-reserved: calc(38px + env(safe-area-inset-bottom));
+    --minifugg-core-right-reserved: calc(74px + env(safe-area-inset-right));
+  }
+
+  .game-topbar {
+    padding-top: max(8px, env(safe-area-inset-top));
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(10px, env(safe-area-inset-right));
+  }
+
+  .game-topbar::before {
+    height: var(--minifugg-core-top-reserved);
+    background: linear-gradient(180deg, rgba(0,0,0,.72), rgba(0,0,0,.18) 72%, transparent);
+  }
+
+  .game-identity {
+    max-width: min(68%, calc(100% - 180px));
+    padding-top: 2px;
+  }
+
+  .game-heading {
+    gap: 9px;
+  }
+
+  .game-heading > strong {
+    font-size: clamp(20px, 3.1vw, 27px);
+    line-height: 1;
+  }
+
+  .game-subline {
+    max-width: 100%;
+    margin-top: 4px;
+    font-size: 11px;
+  }
+
+  .game-actions {
+    left: auto;
+    right: max(8px, env(safe-area-inset-right));
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    flex-direction: column;
+    padding: 6px 5px;
+    border-radius: 20px;
+  }
+
+  .game-actions button {
+    min-width: 50px;
+    width: 50px;
+    height: 48px;
+    padding: 4px 5px;
+  }
+
+  .game-actions button + button::before {
+    top: 0;
+    bottom: auto;
+    left: 10px;
+    right: 10px;
+    width: auto;
+    height: 1px;
+  }
+
+  .game-actions button small {
+    max-width: 44px;
+  }
+
+  .score-chip {
+    top: max(9px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    min-width: 68px;
+    padding: 8px 10px;
+  }
+
+  .platform-sheet-backdrop {
+    padding-right: calc(var(--minifugg-core-right-reserved) + 8px);
+  }
+
+  .platform-sheet {
+    max-height: min(86dvh, 520px);
+  }
+
+  .swipe-hint {
+    bottom: calc(var(--minifugg-swipe-gutter) + 4px);
+  }
+}
+
+@media (min-width: 760px) and (min-height: 700px) {
   .swipe-hint {
     bottom: calc(var(--minifugg-swipe-gutter) + 72px);
   }

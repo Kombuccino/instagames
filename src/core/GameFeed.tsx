@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { GameRuntimeV2 } from './GameRuntimeV2'
 import { buildRouletteBatch, type RouletteSlot } from './roulette'
 import type { InstagameDefinition } from './types'
@@ -56,6 +56,11 @@ export function GameFeed({ games }: GameFeedProps) {
   const [slots, setSlots] = useState<RouletteSlot[]>(() => buildInitialSlots(games))
 
   const slotCount = slots.length
+
+  useLayoutEffect(() => {
+    const firstGame = slots[0]?.game
+    if (firstGame) updateGameUrl(firstGame)
+  }, [])
 
   const appendBatch = useCallback(() => {
     setSlots((current) => {

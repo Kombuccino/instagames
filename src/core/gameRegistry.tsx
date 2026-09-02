@@ -4,6 +4,7 @@ import { ShootTheShooter } from '../games/shoot-the-shooter/ShootTheShooter'
 import { VladsSkewers } from '../games/vlads-skewers/VladsSkewers'
 import { HariRottenTeeth } from '../games/hari-rotten-teeth/HariRottenTeeth'
 import { CalcDrop } from '../games/calc-drop/CalcDrop'
+import { CrazyPapers } from '../games/crazy-papers/CrazyPapers'
 
 export const gameRegistry: InstagameDefinition[] = [
   {
@@ -154,6 +155,39 @@ export const gameRegistry: InstagameDefinition[] = [
         'Si les pièces atteignent le haut de la grille, la partie est terminée.',
       ],
       controls: ['← → déplacer', '↓ accélérer la chute', '↺ ↻ tourner', 'Clavier : flèches, Z et X'],
+    },
+    features: {
+      help: true,
+      love: true,
+      comments: true,
+      bookmark: true,
+      leaderboard: {
+        enabled: true,
+        periods: ['daily', 'weekly'],
+        sort: 'desc',
+        limit: 10,
+      },
+      share: false,
+      remix: false,
+    },
+  },
+  {
+    id: 'crazy-papers',
+    title: 'CrazyPapers',
+    description: 'Tamponne vite · apprends les règles · ne noie pas le bureau',
+    author: 'MiniFugg',
+    orientation: 'portrait',
+    component: CrazyPapers,
+    instructions: {
+      goal: 'Traite un maximum de documents avant que la pile atteigne 10 dossiers.',
+      rules: [
+        'Chaque document doit recevoir exactement l’un des trois tampons : VALIDÉ, REFUSÉ ou ARCHIVÉ.',
+        'Au début, les dossiers indiquent presque leur destination. Ensuite, tu dois reconnaître les familles de documents.',
+        'Plus tard, les intitulés deviennent des formulaires et codes administratifs récurrents à mémoriser.',
+        'Un mauvais tampon renvoie le dossier dans la pile, ajoute une copie corrective et déclenche une engueulade pendant laquelle le travail continue d’arriver.',
+        'À 10 dossiers en attente, le guichet est submergé et la partie se termine.',
+      ],
+      controls: ['Tape sur l’un des 3 tampons', 'Clavier : 1 = VALIDÉ · 2 = REFUSÉ · 3 = ARCHIVÉ'],
     },
     features: {
       help: true,

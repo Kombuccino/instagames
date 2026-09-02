@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { GameRuntimeV2 } from './GameRuntimeV2'
+import { getGameSocialStats } from './platformApi'
 import { buildRouletteBatch, type RouletteSlot } from './roulette'
-import type { InstagameDefinition } from './types'
+import type { FeedPreference, InstagameDefinition } from './types'
 
 type GameFeedProps = {
   games: InstagameDefinition[]
@@ -9,10 +10,27 @@ type GameFeedProps = {
 
 const INITIAL_BATCHES = 4
 const GAME_QUERY_KEY = 'game'
+const FEED_PREFERENCE_KEY = 'minifugg:feed-preference:v1'
+export const BETA_PUBLIC_LOVE_THRESHOLD = 50
 
 function requestedGameId() {
   if (typeof window === 'undefined') return null
   return new URL(window.location.href).searchParams.get(GAME_QUERY_KEY)?.trim() || null
+}
+
+function readFeedPreference(): FeedPreference {
+  if (typeof window === 'undefined') return 'fugg'
+  const saved = window.localStorage.getItem(FEED_PREFERENCE_KEY)
+  return saved === 'beta' || saved === 'all' ? saved : 'fugg'
+}
+
+function writeFeedPreference(value: FeedPreference) {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(FEED_PREFERENCE_KEY, value)
+  } catch {
+    // Feed curation must never block gameplay.
+  }
 }
 
 function buildInitialSlots(games: InstagameDefinition[]) {
@@ -53,8 +71,39 @@ export function GameFeed({ games }: GameFeedProps) {
   const batchCounter = useRef(INITIAL_BATCHES)
   const scrollFrame = useRef<number | null>(null)
   const [activeIndex, setActiveIndex] = useState(0)
-  const [slots, setSlots] = useState<RouletteSlot[]>(() => buildInitialSlots(games))
+  const [feedPreference, setFeedPreference] = useState<FeedPreference>(() => readFeedPreference())
+  const [betaLoves, setBetaLoves] = useState<Record<string, number>>({})
 
+  useEffect(() => {
+    let cancelled = false
+    const betaGames = games.filter((game) => game.status === 'beta')
+    if (betaGames.length === 0) return
+
+    void Promise.all(betaGames.map(async (game) => {
+      const stats = await getGameSocialStats(game.id)
+      return [game.id, stats.loves] as const
+    })).then((pairs) => {
+      if (!cancelled) setBetaLoves(Object.fromEntries(pairs))
+    })
+
+    return () => { cancelled = true }
+  }, [games])
+
+  const visibleGames = useMemo(() => {
+    const requested = requestedGameId()
+    const filtered = games.filter((game) => {
+      const status = game.status ?? 'fugg'
+      if (game.id === requested) return true
+      if (status === 'fugg') return true
+      if (status === 'trash') return feedPreference === 'all'
+      if (feedPreference === 'beta' || feedPreference === 'all') return true
+      return (betaLoves[game.id] ?? 0) >= BETA_PUBLIC_LOVE_THRESHOLD
+    })
+    return filtered.length > 0 ? filtered : games.slice(0, 1)
+  }, [betaLoves, feedPreference, games])
+
+  const visibleSignature = visibleGames.map((game) => game.id).join('|')
+  const [slots, setSlots] = useState<RouletteSlot[]>(() => buildInitialSlots(visibleGames))
   const slotCount = slots.length
 
   useLayoutEffect(() => {
@@ -62,14 +111,28 @@ export function GameFeed({ games }: GameFeedProps) {
     if (firstGame) updateGameUrl(firstGame)
   }, [])
 
+  useEffect(() => {
+    batchCounter.current = INITIAL_BATCHES
+    setActiveIndex(0)
+    setSlots(buildInitialSlots(visibleGames))
+    if (containerRef.current) containerRef.current.scrollTop = 0
+  // visibleSignature is the intentional stable dependency for the curated catalog.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visibleSignature])
+
+  const changeFeedPreference = useCallback((value: FeedPreference) => {
+    writeFeedPreference(value)
+    setFeedPreference(value)
+  }, [])
+
   const appendBatch = useCallback(() => {
     setSlots((current) => {
       const previous = current.at(-1)?.game.id
-      const batch = buildRouletteBatch(games, batchCounter.current, previous)
+      const batch = buildRouletteBatch(visibleGames, batchCounter.current, previous)
       batchCounter.current += 1
       return [...current, ...batch]
     })
-  }, [games])
+  }, [visibleGames])
 
   const syncActiveGameFromScroll = useCallback(() => {
     const root = containerRef.current
@@ -125,8 +188,8 @@ export function GameFeed({ games }: GameFeedProps) {
   }, [activeIndex, slots])
 
   useEffect(() => {
-    if (slots.length > 0 && activeIndex >= slots.length - Math.max(2, games.length)) appendBatch()
-  }, [activeIndex, appendBatch, games.length, slots.length])
+    if (slots.length > 0 && activeIndex >= slots.length - Math.max(2, visibleGames.length)) appendBatch()
+  }, [activeIndex, appendBatch, slots.length, visibleGames.length])
 
   const emptyState = useMemo(
     () => (
@@ -150,6 +213,8 @@ export function GameFeed({ games }: GameFeedProps) {
             seed={slot.seed}
             active={index === activeIndex}
             mounted={Math.abs(index - activeIndex) <= 1}
+            feedPreference={feedPreference}
+            onFeedPreferenceChange={changeFeedPreference}
           />
         </section>
       ))}

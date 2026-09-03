@@ -1,0 +1,234 @@
+.mf-fugg-welcome {
+  --mf-welcome-x: 0px;
+  --mf-welcome-y: 0px;
+  --mf-welcome-light-x: 50%;
+  --mf-welcome-light-y: 42%;
+  --mf-welcome-object-position: 50% 50%;
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  overflow: hidden;
+  outline: none;
+  background: #090908;
+  isolation: isolate;
+}
+
+.mf-fugg-welcome-backdrop,
+.mf-fugg-welcome-camera,
+.mf-fugg-welcome-light,
+.mf-fugg-welcome-grain,
+.mf-fugg-welcome-interaction {
+  position: absolute;
+}
+
+.mf-fugg-welcome-backdrop {
+  inset: -7%;
+  z-index: -3;
+  background-image: var(--mf-welcome-image);
+  background-position: center;
+  background-size: cover;
+  filter: blur(26px) brightness(.42) saturate(.78);
+  transform: scale(1.08);
+}
+
+.mf-fugg-welcome-camera {
+  inset: 0;
+  z-index: -2;
+  display: grid;
+  place-items: center;
+  transform: translate3d(var(--mf-welcome-x), var(--mf-welcome-y), 0) scale(1.018);
+  transition: transform 180ms ease-out;
+  will-change: transform;
+}
+
+.mf-fugg-welcome-poster {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: var(--mf-welcome-object-position);
+  user-select: none;
+  -webkit-user-drag: none;
+  animation: mf-welcome-breathe 9s ease-in-out infinite alternate;
+}
+
+.mf-fugg-welcome-light {
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at var(--mf-welcome-light-x) var(--mf-welcome-light-y), rgba(255,244,190,.13), transparent 33%),
+    linear-gradient(118deg, transparent 25%, rgba(255,255,255,.045) 45%, transparent 64%);
+  mix-blend-mode: screen;
+  opacity: .85;
+  animation: mf-welcome-light 8s ease-in-out infinite alternate;
+}
+
+.mf-fugg-welcome-grain {
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .17;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(255,255,255,.25) 0 0.5px, transparent .7px),
+    radial-gradient(circle at 75% 62%, rgba(255,255,255,.18) 0 0.5px, transparent .8px),
+    radial-gradient(circle at 42% 80%, rgba(0,0,0,.42) 0 .6px, transparent .9px);
+  background-size: 7px 7px, 11px 11px, 13px 13px;
+  mix-blend-mode: soft-light;
+}
+
+.mf-fugg-welcome-interaction {
+  inset: 0 0 var(--minifugg-swipe-gutter, 30px);
+  z-index: 4;
+  touch-action: none;
+  cursor: grab;
+}
+
+.mf-fugg-welcome-interaction:active { cursor: grabbing; }
+
+.mf-fugg-welcome-meta {
+  position: absolute;
+  left: max(12px, env(safe-area-inset-left));
+  bottom: calc(var(--minifugg-swipe-gutter, 30px) + 14px);
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  max-width: min(72vw, 320px);
+  padding: 5px 8px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 999px;
+  color: rgba(255,255,255,.72);
+  background: rgba(0,0,0,.28);
+  backdrop-filter: blur(10px);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 8px rgba(0,0,0,.8);
+}
+
+.mf-fugg-welcome-meta span:first-child {
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.mf-fugg-welcome-meta span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mf-fugg-welcome-play {
+  position: absolute;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(var(--minifugg-swipe-gutter, 30px) + 10px);
+  z-index: 7;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid rgba(255,255,255,.24);
+  border-radius: 50%;
+  color: #fff;
+  background: rgba(0,0,0,.34);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 28px rgba(0,0,0,.28);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.mf-fugg-welcome-play span {
+  display: block;
+  font-size: 25px;
+  font-weight: 900;
+  line-height: 1;
+  animation: mf-welcome-arrow 1.45s ease-in-out infinite;
+}
+
+.mf-fugg-welcome-tetro {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(3, 7px);
+  grid-template-rows: repeat(2, 7px);
+  width: 21px;
+  height: 14px;
+  opacity: .2;
+  filter: blur(.1px) drop-shadow(0 3px 7px rgba(0,0,0,.5));
+  pointer-events: none;
+}
+
+.mf-fugg-welcome-tetro i {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border: 1px solid rgba(255,255,255,.28);
+  background: rgba(255,255,255,.72);
+}
+
+.mf-fugg-welcome-tetro i:nth-child(1) { grid-column: 1; grid-row: 2; }
+.mf-fugg-welcome-tetro i:nth-child(2) { grid-column: 2; grid-row: 2; }
+.mf-fugg-welcome-tetro i:nth-child(3) { grid-column: 2; grid-row: 1; }
+.mf-fugg-welcome-tetro i:nth-child(4) { grid-column: 3; grid-row: 1; }
+
+.mf-fugg-welcome-tetro-a { left: 8%; top: 22%; transform: rotate(-18deg) scale(1.15); animation: mf-welcome-float-a 7.4s ease-in-out infinite; }
+.mf-fugg-welcome-tetro-b { right: 7%; top: 34%; transform: rotate(21deg) scale(.9); animation: mf-welcome-float-b 9.1s ease-in-out infinite; }
+.mf-fugg-welcome-tetro-c { left: 13%; bottom: 20%; transform: rotate(42deg) scale(.72); animation: mf-welcome-float-c 8.3s ease-in-out infinite; }
+
+.mf-fugg-welcome[data-active='false'] .mf-fugg-welcome-poster,
+.mf-fugg-welcome[data-active='false'] .mf-fugg-welcome-light,
+.mf-fugg-welcome[data-active='false'] .mf-fugg-welcome-play span,
+.mf-fugg-welcome[data-active='false'] .mf-fugg-welcome-tetro {
+  animation-play-state: paused;
+}
+
+@keyframes mf-welcome-breathe {
+  from { transform: scale(1.002); }
+  to { transform: scale(1.014); }
+}
+
+@keyframes mf-welcome-light {
+  from { opacity: .48; transform: translate3d(-1%, -1%, 0); }
+  to { opacity: .9; transform: translate3d(1.4%, 1.2%, 0); }
+}
+
+@keyframes mf-welcome-arrow {
+  0%, 100% { transform: translateY(3px); opacity: .62; }
+  50% { transform: translateY(-4px); opacity: 1; }
+}
+
+@keyframes mf-welcome-float-a {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  50% { translate: 5px -13px; rotate: 8deg; }
+}
+
+@keyframes mf-welcome-float-b {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  50% { translate: -7px 11px; rotate: -7deg; }
+}
+
+@keyframes mf-welcome-float-c {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  50% { translate: 6px -9px; rotate: 11deg; }
+}
+
+@media (hover: none) {
+  .mf-fugg-welcome-camera { transition: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mf-fugg-welcome-poster,
+  .mf-fugg-welcome-light,
+  .mf-fugg-welcome-play span,
+  .mf-fugg-welcome-tetro {
+    animation: none !important;
+  }
+
+  .mf-fugg-welcome-camera {
+    transform: none;
+    transition: none;
+  }
+}

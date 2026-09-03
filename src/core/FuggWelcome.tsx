@@ -300,6 +300,9 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
                 const radians = tuning.motion.direction * Math.PI / 180
                 const motionX = Math.cos(radians) * tuning.motion.intensity
                 const motionY = Math.sin(radians) * tuning.motion.intensity
+                const jitterY = tuning.motion.intensity * (.35 + tuning.motion.irregularity * .65)
+                const motionAngle = tuning.motion.intensity * .18
+                const motionScale = 1 + tuning.motion.intensity / 500
                 const layerStyle = {
                   '--mf-layer-x': `${tuning.x}%`,
                   '--mf-layer-y': `${tuning.y}%`,
@@ -308,9 +311,11 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
                   '--mf-layer-opacity': String(tuning.opacity / 100),
                   '--mf-layer-motion-duration': welcomeMotionDuration(tuning.motion.type, tuning.motion.speed),
                   '--mf-layer-motion-intensity': `${tuning.motion.intensity}px`,
+                  '--mf-layer-motion-jitter-y': `${jitterY}px`,
                   '--mf-layer-motion-x': `${motionX}px`,
                   '--mf-layer-motion-y': `${motionY}px`,
-                  '--mf-layer-motion-irregularity': String(tuning.motion.irregularity),
+                  '--mf-layer-motion-angle': `${motionAngle}deg`,
+                  '--mf-layer-motion-scale': String(motionScale),
                   '--mf-layer-blur': `${tuning.fx.blur}px`,
                   '--mf-layer-glow': `${tuning.fx.glow}px`,
                   objectPosition: layer.objectPosition ?? variant.objectPosition ?? '50% 50%',

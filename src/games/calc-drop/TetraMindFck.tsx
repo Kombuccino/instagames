@@ -3,6 +3,7 @@ import { FuggWelcome, readWelcomeBestScore, recordWelcomeBestScore } from '../..
 import type { GameComponentProps, GameWelcomeVariant } from '../../core/types'
 import { useTetraMindFckMusic } from '../../music/reactiveGameMusic'
 import { CalcDrop } from './CalcDrop'
+import { useTetraMindFckSfx } from './useTetraSfx'
 
 const GAME_ID = 'tetramindfck'
 
@@ -120,12 +121,21 @@ export function TetraMindFck(props: GameComponentProps) {
   const [runFinished, setRunFinished] = useState(false)
   const [bestScore, setBestScore] = useState(() => readWelcomeBestScore(GAME_ID))
   const gameplayActive = props.active && !welcomeOpen && !runFinished
+  const musicActive = props.active && !runFinished
 
   const music = useTetraMindFckMusic({
     rootRef: shellRef,
     armed: props.active,
-    playing: gameplayActive,
+    playing: musicActive,
     seed: props.seed,
+    restartToken: props.restartToken,
+  })
+
+  useTetraMindFckSfx({
+    rootRef: shellRef,
+    armed: props.active,
+    playing: gameplayActive,
+    runFinished,
     restartToken: props.restartToken,
   })
 

@@ -131,7 +131,7 @@ export function MusicLab() {
     return contextRef.current
   }, [])
 
-  const scheduleLoop = useCallback((composition: Composition, state: Playback, origin: number) => {
+  const scheduleLoop: (composition: Composition, state: Playback, origin: number) => void = useCallback((composition, state, origin) => {
     const context = contextRef.current
     const output = outputRef.current
     const noise = noiseRef.current

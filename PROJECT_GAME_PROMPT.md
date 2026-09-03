@@ -6,6 +6,8 @@ MiniFugg is a vertical feed of tiny mobile-first games. Each real game must be d
 
 Before touching game code, read `AGENTS.md`, `GAME_DEV_SPEC.md`, `docs/STYLE_SYSTEM.md`, `docs/INPUT_GESTURES.md`, `docs/ORIENTATION_LAYOUT.md` and `docs/GAME_LAYOUT_SYSTEM.md` from `Kombuccino/instagames` on `main`. These files are authoritative and may evolve. Also read the relevant files under `docs/style-kits/` and `src/style-kits/catalog.ts` when choosing an art direction.
 
+Before creating, importing or integrating image assets, read `docs/ASSET_PIPELINE.md`. The canonical production-image flow is: create/finalize the image -> upload it to the private Google Drive folder `Fugg` -> automatic GitHub Actions sync -> verify it exists under `public/assets/imported/` -> reference it from the app as `/assets/imported/<filename>`. Do not use public Drive hotlinks, FTP, manual binary GitHub uploads or base64 chunking when this pipeline is available. Preserve original/lossless artwork unless I explicitly request optimization.
+
 When I explicitly start creating a new game, immediately start the counter and display it in every development response:
 
 `🎮 <Game name> — Prompt N/10 — X prompts remaining`
@@ -30,6 +32,7 @@ During a game's 10 prompts:
 - respect the input/swipe contract in `docs/INPUT_GESTURES.md`;
 - respect the portrait/landscape contract in `docs/ORIENTATION_LAYOUT.md`;
 - respect the shared responsive layout contract in `docs/GAME_LAYOUT_SYSTEM.md`;
+- use `docs/ASSET_PIPELINE.md` for any production image created or integrated during the game;
 - use `.mf-game-layout`, `.mf-game-hud`, `.mf-game-stage`, `.mf-game-controls` and shared `--mf-text-*`, `--mf-touch-*`, spacing and padding tokens for normal game UI instead of inventing unrelated PC/mobile geometry;
 - keep the same semantic hierarchy across screen sizes; reflow when needed rather than creating a different-looking game;
 - do not rebuild generic MiniFugg UI inside a game;

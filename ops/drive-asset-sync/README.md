@@ -1,132 +1,128 @@
 # MiniFugg Drive -> GitHub image sync
 
-This helper is intentionally narrow. It reads images from one Google Drive folder and writes them only to `public/assets/imported/` in `Kombuccino/instagames`.
+MiniFugg uses a deliberately narrow, keyless import pipeline:
 
-It does **not** expose a web server, open a VPS port, execute uploaded files, accept URLs, delete Drive files, or write outside the imported-assets directory.
+`ChatGPT -> private Google Drive folder Fugg -> GitHub Actions -> public/assets/imported/`
 
-## What is a Google service account?
+There is no public upload endpoint, no FTP, no VPS listener, no Google JSON key, and no long-lived GitHub token.
 
-A service account is a Google identity for a machine instead of a human. It gets an email address such as:
+## Google identity
 
-`minifugg-assets@my-project.iam.gserviceaccount.com`
+Service account:
 
-Share the Drive folder `Fugg` with that email as **Viewer**. The service account then sees only content explicitly shared with it; it does not need access to your whole personal Drive.
+`minifugg-assets@minifugg-assets.iam.gserviceaccount.com`
 
-The VPS authenticates as that machine identity using a JSON key stored only on the VPS. Never commit that JSON file to GitHub.
+Drive folder:
 
-## Google setup
+`Fugg` (`1o7YIB4qEPYNJvOI9yPr_6tUPEW3dDF0H`)
 
-1. Open Google Cloud Console and create/select a small project, for example `MiniFugg Assets`.
-2. Enable **Google Drive API** for that project.
-3. Go to **IAM & Admin -> Service Accounts** and create `minifugg-assets`.
-4. The service account needs no broad Google Cloud role for this job.
-5. Open the service account -> **Keys -> Add key -> Create new key -> JSON** and download the JSON key once.
-6. In Google Drive, share the `Fugg` folder with the service account email as **Viewer** only.
-7. Keep the JSON key private. It will be copied to `/etc/minifugg-drive-sync/service-account.json` on the VPS with restrictive permissions.
+Share the `Fugg` folder with the service-account email as **Viewer** only. This gives the machine identity read access to that folder without granting access to the rest of the user's Drive.
 
-Drive folder currently used by MiniFugg:
+Do **not** disable the organization policy that blocks service-account key creation. No JSON service-account key is required.
 
-`1o7YIB4qEPYNJvOI9yPr_6tUPEW3dDF0H`
+## Keyless authentication
 
-## GitHub token
+GitHub Actions authenticates to Google using OpenID Connect and Google Cloud Workload Identity Federation. Google issues temporary credentials for the service account. There is no permanent Google credential stored in GitHub or on a VPS.
 
-Create a **fine-grained personal access token** dedicated to this sync:
+The Google provider must only trust:
 
-- Resource owner: the owner of `Kombuccino/instagames`
-- Repository access: **Only select repositories -> `instagames`**
-- Repository permission: **Contents: Read and write**
-- Everything else: no access unless GitHub requires metadata read automatically
-- Give it an expiry date and rotate it periodically
+- GitHub repository numeric ID `1352769382` (`Kombuccino/instagames`)
+- branch `refs/heads/main`
 
-Treat this token like a password. It belongs only in `/etc/minifugg-drive-sync/env` on the VPS.
+The numeric repository ID is intentional: unlike the repository name, GitHub does not reuse it.
 
-## VPS install
+## One-time Google Cloud setup
 
-These commands assume Debian/Ubuntu and root access.
+Project: `minifugg-assets`
+
+Open Google Cloud Shell while the `minifugg-assets` project is selected and run:
 
 ```bash
-apt update
-apt install -y python3 python3-venv ca-certificates
+set -euo pipefail
 
-useradd --system --home /nonexistent --shell /usr/sbin/nologin minifugg-sync || true
-install -d -o root -g minifugg-sync -m 0750 /etc/minifugg-drive-sync
-install -d -o minifugg-sync -g minifugg-sync -m 0750 /var/lib/minifugg-drive-sync
-install -d -o root -g root -m 0755 /opt/minifugg-drive-sync
+PROJECT_ID='minifugg-assets'
+SERVICE_ACCOUNT='minifugg-assets@minifugg-assets.iam.gserviceaccount.com'
+POOL_ID='github-actions'
+PROVIDER_ID='instagames'
+REPOSITORY_ID='1352769382'
 
-curl -fsSL https://raw.githubusercontent.com/Kombuccino/instagames/main/ops/drive-asset-sync/sync_drive_assets.py \
-  -o /opt/minifugg-drive-sync/sync_drive_assets.py
-curl -fsSL https://raw.githubusercontent.com/Kombuccino/instagames/main/ops/drive-asset-sync/requirements.txt \
-  -o /opt/minifugg-drive-sync/requirements.txt
+# Required APIs. This leaves service-account key creation disabled.
+gcloud services enable \
+  drive.googleapis.com \
+  iam.googleapis.com \
+  cloudresourcemanager.googleapis.com \
+  iamcredentials.googleapis.com \
+  sts.googleapis.com \
+  --project="$PROJECT_ID"
 
-python3 -m venv /opt/minifugg-drive-sync/venv
-/opt/minifugg-drive-sync/venv/bin/pip install --no-cache-dir -r /opt/minifugg-drive-sync/requirements.txt
-chmod 0755 /opt/minifugg-drive-sync/sync_drive_assets.py
+PROJECT_NUMBER="$(gcloud projects describe "$PROJECT_ID" --format='value(projectNumber)')"
+
+# Create the GitHub workload identity pool.
+gcloud iam workload-identity-pools create "$POOL_ID" \
+  --project="$PROJECT_ID" \
+  --location='global' \
+  --display-name='MiniFugg GitHub Actions'
+
+# Trust only this immutable GitHub repository ID and main branch.
+gcloud iam workload-identity-pools providers create-oidc "$PROVIDER_ID" \
+  --project="$PROJECT_ID" \
+  --location='global' \
+  --workload-identity-pool="$POOL_ID" \
+  --display-name='Kombuccino instagames' \
+  --issuer-uri='https://token.actions.githubusercontent.com/' \
+  --attribute-mapping='google.subject=assertion.sub,attribute.repository_id=assertion.repository_id,attribute.ref=assertion.ref' \
+  --attribute-condition="assertion.repository_id=='${REPOSITORY_ID}' && assertion.ref=='refs/heads/main'"
+
+# Permit only that federated repository identity to impersonate the service account.
+gcloud iam service-accounts add-iam-policy-binding "$SERVICE_ACCOUNT" \
+  --project="$PROJECT_ID" \
+  --role='roles/iam.workloadIdentityUser' \
+  --member="principalSet://iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${POOL_ID}/attribute.repository_id/${REPOSITORY_ID}"
+
+# Print the non-secret provider identifier needed by the GitHub workflow.
+gcloud iam workload-identity-pools providers describe "$PROVIDER_ID" \
+  --project="$PROJECT_ID" \
+  --location='global' \
+  --workload-identity-pool="$POOL_ID" \
+  --format='value(name)'
 ```
 
-Copy the Google JSON key to:
+The final line looks like:
 
-```text
-/etc/minifugg-drive-sync/service-account.json
-```
+`projects/123456789012/locations/global/workloadIdentityPools/github-actions/providers/instagames`
 
-Then:
+It is **not a secret**. It can safely be committed into the workflow.
 
-```bash
-chown root:minifugg-sync /etc/minifugg-drive-sync/service-account.json
-chmod 0640 /etc/minifugg-drive-sync/service-account.json
-```
+## GitHub workflow
 
-Create `/etc/minifugg-drive-sync/env` from `env.example`, replace `GITHUB_TOKEN`, then protect it:
+`.github/workflows/drive-asset-sync.yml` runs every 10 minutes and can also be launched manually. It has only:
 
-```bash
-chown root:minifugg-sync /etc/minifugg-drive-sync/env
-chmod 0640 /etc/minifugg-drive-sync/env
-```
+- `id-token: write` so GitHub can mint the short-lived OIDC identity;
+- `contents: write` so the workflow's own short-lived `GITHUB_TOKEN` can add validated images to this repository.
 
-Install the service and timer:
+No personal access token is stored.
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/Kombuccino/instagames/main/ops/drive-asset-sync/minifugg-drive-sync.service \
-  -o /etc/systemd/system/minifugg-drive-sync.service
-curl -fsSL https://raw.githubusercontent.com/Kombuccino/instagames/main/ops/drive-asset-sync/minifugg-drive-sync.timer \
-  -o /etc/systemd/system/minifugg-drive-sync.timer
+## Asset validation
 
-systemctl daemon-reload
-systemctl enable --now minifugg-drive-sync.timer
-```
+The importer:
 
-Test immediately:
+- is hard-locked to Drive folder `1o7YIB4qEPYNJvOI9yPr_6tUPEW3dDF0H`;
+- is hard-locked to `Kombuccino/instagames`, branch `main`;
+- writes only to `public/assets/imported/`;
+- accepts only PNG, JPEG and WebP;
+- decodes the image and verifies the actual format instead of trusting the filename;
+- rejects files over 10 MiB;
+- rejects images over 40 million pixels and decompression-bomb warnings;
+- sanitizes filenames;
+- never executes uploaded content;
+- compares the image with the existing Git blob and does not create duplicate commits for unchanged files.
 
-```bash
-systemctl start minifugg-drive-sync.service
-journalctl -u minifugg-drive-sync.service -n 100 --no-pager
-```
-
-The current original home image should appear as:
+The current original home image should ultimately be imported as:
 
 `public/assets/imported/minifugg-home-original.png`
 
-## Security boundaries
+## Security model
 
-The script:
+The Drive folder remains private. ChatGPT can add assets through the user's connected Drive. The service account can only read files explicitly shared with it. GitHub proves its repository identity to Google using an OIDC token, and Google returns short-lived credentials. The GitHub workflow also uses an automatically expiring repository token.
 
-- requests Google scope `drive.readonly` only;
-- only sees Drive files shared with the service account;
-- accepts only PNG, JPEG and WebP MIME types;
-- decodes each image with Pillow and verifies declared MIME against actual image format;
-- rejects images over 10 MiB;
-- rejects images over 40 million pixels and Pillow decompression-bomb warnings;
-- sanitizes filenames to ASCII `a-z`, numbers, `.`, `_`, `-`;
-- hard-locks GitHub writes to `public/assets/imported/` even if environment variables are changed;
-- never executes uploaded content;
-- keeps a local file-ID/checksum state so unchanged images are not recommitted;
-- uses a file lock so two timer runs cannot overlap;
-- runs as the unprivileged `minifugg-sync` system user;
-- uses systemd sandboxing and can only write to `/var/lib/minifugg-drive-sync` locally;
-- exposes no TCP/HTTP listener and therefore adds no new inbound VPS port.
-
-## Remaining risk
-
-The GitHub token necessarily has `Contents: write` on the selected repository. If an attacker already compromises the VPS enough to steal that token, GitHub itself cannot restrict a personal access token to one repository subdirectory. The main mitigations are: repository-only fine-grained token, restrictive file permissions, unprivileged service, systemd sandboxing, no inbound network service, short token lifetime, and token rotation.
-
-If MiniFugg later needs a stronger trust boundary, replace the PAT with a GitHub App plus a validation workflow. That is deliberately not part of this first simple version.
+There are therefore no permanent Google or GitHub credentials to steal from a VPS, and this pipeline opens no inbound network service anywhere.

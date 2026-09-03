@@ -9,19 +9,19 @@ const WELCOME_VARIANTS: GameWelcomeVariant[] = [
   {
     id: 'pulp-euro',
     label: 'Pulp européen',
-    image: '/assets/imported/tetramindfck-welcome-v1-pulp-euro.png',
+    image: '/assets/imported/tetramindfck-welcome-v1-pulp-euro.webp',
     unlockScore: 0,
   },
   {
     id: 'micro-euro',
     label: 'Micro Europe 90s',
-    image: '/assets/imported/tetramindfck-welcome-v2-micro-euro.png',
+    image: '/assets/imported/tetramindfck-welcome-v2-micro-euro.webp',
     unlockScore: 5_000,
   },
   {
     id: 'graphic-poster',
     label: 'Affiche graphique',
-    image: '/assets/imported/tetramindfck-welcome-v3-graphic-poster.png',
+    image: '/assets/imported/tetramindfck-welcome-v3-graphic-poster.webp',
     unlockScore: 15_000,
   },
 ]

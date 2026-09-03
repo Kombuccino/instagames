@@ -154,9 +154,9 @@ function primeCascade(maxMode = false): Track[] {
       add(operators, start + index * .5, duration, chord[index % 3] + octave, index % 2 ? 45 : 56)
     }
 
-    // Prime accents on a 16-step grid: 2,3,5,7,11,13.
+    // Prime accents on a 16-step grid: 2,3,5,7,11,13. These stay deliberately behind the groove.
     for (let step = 0; step < 16; step += 1) {
-      if (PRIME_STEPS.has(step)) add(primeHats, start + step * .25, .055, step === 13 ? 46 : 42, step === 2 || step === 7 ? 58 : 43)
+      if (PRIME_STEPS.has(step)) add(primeHats, start + step * .25, .05, step === 13 ? 46 : 42, step === 2 || step === 7 ? 44 : 34)
     }
 
     // Fibonacci degrees; the phrase rotates with each falling 'row'.
@@ -164,7 +164,7 @@ function primeCascade(maxMode = false): Track[] {
       if (!maxMode && index > 7) return
       const degree = (value + bar) % D_MINOR.length
       const spacing = maxMode ? .25 : .5
-      add(fibonacci, start + index * spacing, maxMode ? .17 : .3, D_MINOR[degree] + 12, index === 0 || index === 5 ? 84 : 67)
+      add(fibonacci, start + index * spacing, maxMode ? .17 : .3, D_MINOR[degree] + 12, index === 0 || index === 5 ? 76 : 58)
     })
 
     // Multiplication / division: interval doubles, then collapses by half.
@@ -172,7 +172,7 @@ function primeCascade(maxMode = false): Track[] {
     intervalCycle.forEach((interval, index) => {
       const spacing = maxMode ? .5 : 1
       const base = chord[index % 3] + 12
-      add(multDiv, start + index * spacing + .25, maxMode ? .2 : .38, base + interval, 47 + interval * 2)
+      add(multDiv, start + index * spacing + .25, maxMode ? .2 : .38, base + interval, 40 + interval)
     })
 
     // Modulo 3 against 4/4: audible 'remainder' stabs.
@@ -180,33 +180,33 @@ function primeCascade(maxMode = false): Track[] {
     for (let step = 0; step < moduloSteps; step += 1) {
       if (step % 3 !== bar % 3) continue
       const spacing = 4 / moduloSteps
-      chord.slice(0, 3).forEach((note) => add(modulo, start + step * spacing, .12, note + 12, 32))
+      chord.slice(0, 3).forEach((note) => add(modulo, start + step * spacing, .12, note + 12, 28))
     }
 
-    // Near/max pressure: prime-indexed high sparks; max mode folds primes across two octaves.
+    // Near/max pressure: prime sparks stay in the upper register, but no longer jump a full extra octave.
     for (let step = 0; step < 16; step += 1) {
       if (!PRIME_STEPS.has(step)) continue
-      const pitch = chord[2] + 24 + (maxMode && step % 2 ? 12 : 0)
-      add(panicPrimes, start + step * .25, .07, pitch, maxMode ? 50 : 38)
+      const pitch = chord[2] + 19 + (maxMode && step % 2 ? 5 : 0)
+      add(panicPrimes, start + step * .25, .065, pitch, maxMode ? 34 : 30)
     }
   })
 
   if (maxMode) {
     // Final bar uses a C# leading tone to mathematically 'resolve' back into D when the loop restarts.
-    add(fibonacci, 30.5, .22, 85, 76)
-    add(fibonacci, 31, .22, 86, 86)
-    add(fibonacci, 31.5, .22, 85, 78)
+    add(fibonacci, 30.5, .22, 85, 62)
+    add(fibonacci, 31, .22, 86, 72)
+    add(fibonacci, 31.5, .22, 85, 64)
   }
 
   return [
     track('L1_BINARY_BASS', 'triangle', .17, bass),
     track('L1_EUCLID_DRUM', 'noise', .105, drums),
     track('L1_OPERATOR_PULSE', 'square', .06, operators),
-    track('L2_PRIME_HATS', 'noise', .09, primeHats),
-    track('L3_FIBONACCI_LEAD', 'square', .078, fibonacci),
-    track('L4_MULT_DIV_COUNTER', 'square', .062, multDiv),
-    track('L5_MODULO_STABS', 'square', .052, modulo),
-    track('L6_PANIC_PRIMES', 'square', .047, panicPrimes),
+    track('L2_PRIME_HATS', 'noise', .045, primeHats),
+    track('L3_FIBONACCI_LEAD', 'square', .055, fibonacci),
+    track('L4_MULT_DIV_COUNTER', 'square', .04, multDiv),
+    track('L5_MODULO_STABS', 'square', .032, modulo),
+    track('L6_PANIC_PRIMES', 'square', .018, panicPrimes),
   ]
 }
 
@@ -248,7 +248,7 @@ export const musicCatalog = {
       name: 'Prime Cascade',
       status: 'candidate',
       createdAt: '2026-09-03',
-      summary: 'Une chiptune réellement mathématique : puissances de deux, nombres premiers, Fibonacci, modulo et ×2/÷2 se superposent jusqu’à l’emballement.',
+      summary: 'Une chiptune réellement mathématique : puissances de deux, nombres premiers, Fibonacci, modulo et ×2/÷2 se superposent jusqu’à l’emballement, avec les nouvelles couches mixées derrière le groove central.',
       concept: ['powers of 2', 'prime accents 2·3·5·7', 'Fibonacci melody', '×2 / ÷2 durations', 'modulo 3', 'computational panic'],
       key: 'D minor',
       meter: '4/4',

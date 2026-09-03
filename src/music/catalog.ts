@@ -23,6 +23,12 @@ const CHORDS = [
   [57, 61, 64, 69],
 ]
 
+// Levels 1–5 are derived from CalcDrop's real dropDelay curve:
+// 820ms, 672ms, 551ms, 452ms, 371ms -> ~73, 89, 109, 133, 162 BPM.
+// Beyond that the game reaches ~197/241 BPM; music deliberately groups those
+// clicks and increases subdivision instead of following them literally.
+const GAME_SYNC_BPMS = [73, 89, 109, 133, 162, 166, 170] as const
+
 function track(id: string, wave: Wave, gain: number, notes: Note[]): Track {
   return { id, name: id.replaceAll('_', ' '), wave, gain, notes }
 }
@@ -36,52 +42,59 @@ function reactiveA(): Track[] {
   const arp: Note[] = []
   const drums: Note[] = []
   const hats: Note[] = []
-  const lead: Note[] = []
-  const counter: Note[] = []
-  const stabs: Note[] = []
-  const panic: Note[] = []
+  const ghostDrums: Note[] = []
+  const bassSync: Note[] = []
+  const hook: Note[] = []
+  const driveDrums: Note[] = []
 
   ROOTS.forEach((root, bar) => {
     const start = bar * 4
-    const bassPattern = [root, root, root + 7, root, root + 12, root + 7, root, root + 7]
-    bassPattern.forEach((note, index) => add(bass, start + index * .5, .43, note, index === 0 || index === 4 ? 84 : 70))
-
     const chord = CHORDS[bar]
+
+    const bassPattern = [root, root, root + 7, root, root + 12, root + 7, root, root + 7]
+    bassPattern.forEach((note, index) => add(bass, start + index * .5, .43, note, index === 0 || index === 4 ? 82 : 66))
+
     const arpPattern = [0, 1, 2, 1, 0, 1, 3, 2, 0, 1, 2, 1, 3, 2, 1, 2]
-    arpPattern.forEach((slot, index) => add(arp, start + index * .25, .19, chord[slot], index % 4 === 0 ? 54 : 44))
+    arpPattern.forEach((slot, index) => add(arp, start + index * .25, .18, chord[slot], index % 4 === 0 ? 50 : 39))
 
-    ;[0, 2].forEach((beat) => add(drums, start + beat, .11, 36, 92))
-    ;[1, 3].forEach((beat) => add(drums, start + beat, .11, 38, 86))
-    for (let index = 0; index < 8; index += 1) add(hats, start + index * .5, .07, 42, index % 2 === 0 ? 46 : 34)
+    ;[0, 2].forEach((beat) => add(drums, start + beat, .11, 36, 88))
+    ;[1, 3].forEach((beat) => add(drums, start + beat, .11, 38, 82))
 
-    const leadPattern = [0, 2, 4, 7, 4, 2, 1, 0]
-    const scale = [62, 64, 65, 67, 69, 70, 72, 74]
-    leadPattern.forEach((degree, index) => {
-      if (index === 1 || index === 6) return
-      add(lead, start + index * .5, index % 3 === 0 ? .42 : .28, scale[(degree + bar) % scale.length] + 12, index === 0 || index === 4 ? 82 : 70)
-    })
-
-    const top = chord[2] + 12
-    ;[.5, 1.5, 2.5, 3.5].forEach((offset, index) => add(counter, start + offset, .27, top + [4, 2, 0, -2][index], index === 3 ? 56 : 48))
-
-    ;[.5, 1.5, 2.5, 3.5].forEach((offset) => {
-      chord.slice(0, 3).forEach((note) => add(stabs, start + offset, .18, note + 12, 35))
-    })
-
-    for (let index = 0; index < 16; index += 1) {
-      add(panic, start + index * .25, .1, (index % 2 ? chord[1] : chord[2]) + 24, index % 4 === 0 ? 48 : 34)
+    for (let index = 0; index < 8; index += 1) {
+      add(hats, start + index * .5, .055, 42, index % 2 === 0 ? 38 : 28)
     }
+
+    // Rhythmic escalation first: quiet ghost hits, not a new melody.
+    ;[.75, 1.75, 2.75, 3.75].forEach((offset, index) => {
+      if ((bar + index) % 2 === 0) add(ghostDrums, start + offset, .045, 38, 27)
+    })
+
+    // A low-register syncopated answer that reinforces the bass instead of competing with it.
+    ;[1.5, 3.5].forEach((offset, index) => {
+      add(bassSync, start + offset, .24, index === 0 ? root + 7 : root + 12, 46)
+    })
+
+    // One sparse hook only every other bar, deliberately kept in the middle register.
+    if (bar % 2 === 0) {
+      const phrase = [chord[0] + 5, chord[1] + 5, chord[2] + 3, chord[1] + 5]
+      ;[0, 1, 2.5, 3].forEach((offset, index) => add(hook, start + offset, .3, phrase[index], index === 0 ? 60 : 48))
+    }
+
+    // Final pressure comes from kick/snare subdivision, not another pitched line.
+    ;[.5, 1.5, 2.5, 3.5].forEach((offset, index) => {
+      add(driveDrums, start + offset, .05, index % 2 === 0 ? 36 : 38, index % 2 === 0 ? 44 : 34)
+    })
   })
 
   return [
     track('L1_BASS_CORE', 'triangle', .16, bass),
-    track('L1_ARP_PULSE', 'square', .075, arp),
-    track('L1_DRUM_CORE', 'noise', .1, drums),
-    track('L2_HATS_CLOCK', 'noise', .1, hats),
-    track('L3_LEAD_MAIN', 'square', .075, lead),
-    track('L4_COUNTER_SYNC', 'square', .065, counter),
-    track('L5_DRIVE_STABS', 'square', .055, stabs),
-    track('L6_PANIC_SPARK', 'square', .05, panic),
+    track('L1_ARP_PULSE', 'square', .064, arp),
+    track('L1_DRUM_CORE', 'noise', .095, drums),
+    track('L2_HATS_CLOCK', 'noise', .055, hats),
+    track('L3_GHOST_DRUMS', 'noise', .042, ghostDrums),
+    track('L4_BASS_SYNC', 'triangle', .055, bassSync),
+    track('L5_SPARSE_HOOK', 'square', .042, hook),
+    track('L6_DRIVE_DRUMS', 'noise', .048, driveDrums),
   ]
 }
 
@@ -90,24 +103,20 @@ function reactiveB(): Track[] {
   const bass = tracks.find((item) => item.id === 'L1_BASS_CORE')!
   const drums = tracks.find((item) => item.id === 'L1_DRUM_CORE')!
   const hats = tracks.find((item) => item.id === 'L2_HATS_CLOCK')!
-  const lead = tracks.find((item) => item.id === 'L3_LEAD_MAIN')!
 
   bass.notes = []
   drums.notes = []
   hats.notes = []
-  lead.notes = []
 
   ROOTS.forEach((root, bar) => {
     const start = bar * 4
     for (let index = 0; index < 16; index += 1) {
-      const bassNote = [root, root + 7, root + 12, root + 7][index % 4]
-      add(bass.notes, start + index * .25, .18, bassNote, index % 4 === 0 ? 86 : 68)
-      add(hats.notes, start + index * .25, .06, index === 15 && bar % 4 === 3 ? 46 : 42, index % 4 === 0 ? 48 : 32)
+      const note = index % 4 === 0 ? root : index % 4 === 2 ? root + 7 : root + 12
+      add(bass.notes, start + index * .25, .17, note, index % 4 === 0 ? 76 : 52)
+      add(hats.notes, start + index * .25, .04, 42, index % 4 === 0 ? 34 : 22)
     }
-    ;[0, 1.5, 2, 3].forEach((offset, index) => add(drums.notes, start + offset, .1, index === 1 || index === 3 ? 38 : 36, 88))
-    const chord = CHORDS[bar]
-    const phrase = [chord[0] + 12, chord[1] + 12, chord[2] + 12, chord[3] + 12, chord[2] + 12, chord[1] + 12, chord[0] + 24, chord[2] + 12]
-    phrase.forEach((note, index) => add(lead.notes, start + index * .5, .3, note, index % 4 === 0 ? 88 : 74))
+    ;[0, 1, 2, 3].forEach((beat) => add(drums.notes, start + beat, .07, beat % 2 ? 38 : 36, beat % 2 ? 72 : 82))
+    ;[.5, 1.5, 2.5, 3.5].forEach((offset) => add(drums.notes, start + offset, .04, 36, 34))
   })
 
   return tracks
@@ -122,99 +131,90 @@ function primeCascade(maxMode = false): Track[] {
   const drums: Note[] = []
   const operators: Note[] = []
   const primeHats: Note[] = []
-  const fibonacci: Note[] = []
-  const multDiv: Note[] = []
-  const modulo: Note[] = []
-  const panicPrimes: Note[] = []
+  const fibPerc: Note[] = []
+  const moduloBass: Note[] = []
+  const fibHook: Note[] = []
+  const panicRhythm: Note[] = []
 
   ROOTS.forEach((root, bar) => {
     const start = bar * 4
     const chord = CHORDS[bar]
 
-    // Binary density: 2, 4, 8 then effectively 16 pulses at maximum pressure.
     const binaryPattern = maxMode ? 16 : 8
     for (let index = 0; index < binaryPattern; index += 1) {
       const step = 4 / binaryPattern
       const bit = index % 4
       const note = bit === 0 ? root : bit === 2 ? root + 12 : root + 7
-      add(bass, start + index * step, step * .72, note, bit === 0 ? 88 : 64)
+      add(bass, start + index * step, step * .7, note, bit === 0 ? 84 : 60)
     }
 
-    // Euclidean-ish 5-of-8 rhythm: regular enough to groove, asymmetric enough to feel computed.
-    const kickSlots = maxMode ? [0, 2, 3, 5, 7, 8, 10, 11, 13, 15] : [0, 3, 5, 6]
-    const drumGrid = maxMode ? .25 : .5
-    kickSlots.forEach((slot, index) => add(drums, start + slot * drumGrid, .08, index % 3 === 1 ? 38 : 36, index % 2 ? 76 : 94))
-    add(drums, start + 1, .09, 38, 94)
-    add(drums, start + 3, .09, 38, 94)
+    const kickSlots = maxMode ? [0, 2, 5, 7, 8, 10, 13, 15] : [0, 3, 5, 6]
+    const grid = maxMode ? .25 : .5
+    kickSlots.forEach((slot, index) => add(drums, start + slot * grid, .07, index % 3 === 1 ? 38 : 36, index % 2 ? 68 : 88))
+    add(drums, start + 1, .08, 38, 84)
+    add(drums, start + 3, .08, 38, 84)
 
-    // Operators: ×2 and ÷2 are represented by long/short alternating gates.
+    // ×2 / ÷2 remains part of the core harmony, but stays low and compact.
     for (let index = 0; index < 8; index += 1) {
-      const duration = index % 4 < 2 ? .38 : .19
-      const octave = index % 4 === 1 ? 12 : 0
-      add(operators, start + index * .5, duration, chord[index % 3] + octave, index % 2 ? 45 : 56)
+      const duration = index % 4 < 2 ? .36 : .18
+      const note = chord[index % 3] + (index % 4 === 1 ? 7 : 0)
+      add(operators, start + index * .5, duration, note, index % 2 ? 40 : 48)
     }
 
-    // Prime accents on a 16-step grid: 2,3,5,7,11,13. These stay deliberately behind the groove.
+    // Prime numbers are expressed mostly as percussion positions.
     for (let step = 0; step < 16; step += 1) {
-      if (PRIME_STEPS.has(step)) add(primeHats, start + step * .25, .05, step === 13 ? 46 : 42, step === 2 || step === 7 ? 44 : 34)
+      if (PRIME_STEPS.has(step)) add(primeHats, start + step * .25, .04, 42, step === 2 || step === 7 ? 38 : 28)
     }
 
-    // Fibonacci degrees; the phrase rotates with each falling 'row'.
-    FIB.forEach((value, index) => {
-      if (!maxMode && index > 7) return
-      const degree = (value + bar) % D_MINOR.length
-      const spacing = maxMode ? .25 : .5
-      add(fibonacci, start + index * spacing, maxMode ? .17 : .3, D_MINOR[degree] + 12, index === 0 || index === 5 ? 76 : 58)
+    // Fibonacci becomes a rhythm first: same low tick, Fibonacci-derived placements.
+    const fibSlots = [0, 1, 2, 4, 7, 12]
+    fibSlots.forEach((slot, index) => {
+      if (!maxMode && index > 3) return
+      add(fibPerc, start + (slot % 16) * .25, .045, index % 2 ? 38 : 42, 24 + index * 2)
     })
 
-    // Multiplication / division: interval doubles, then collapses by half.
-    const intervalCycle = maxMode ? [1, 2, 4, 8, 4, 2, 1, 2] : [1, 2, 4, 2]
-    intervalCycle.forEach((interval, index) => {
-      const spacing = maxMode ? .5 : 1
-      const base = chord[index % 3] + 12
-      add(multDiv, start + index * spacing + .25, maxMode ? .2 : .38, base + interval, 40 + interval)
-    })
-
-    // Modulo 3 against 4/4: audible 'remainder' stabs.
+    // Modulo 3 is a low bass punctuation, not a chord stack.
     const moduloSteps = maxMode ? 16 : 8
     for (let step = 0; step < moduloSteps; step += 1) {
       if (step % 3 !== bar % 3) continue
       const spacing = 4 / moduloSteps
-      chord.slice(0, 3).forEach((note) => add(modulo, start + step * spacing, .12, note + 12, 28))
+      add(moduloBass, start + step * spacing, .13, root + 7, 40)
     }
 
-    // Near/max pressure: prime sparks stay in the upper register, but no longer jump a full extra octave.
+    // Only one additional melodic voice: a sparse Fibonacci hook every two bars.
+    if (bar % 2 === 0) {
+      const values = maxMode ? FIB.slice(0, 6) : FIB.slice(0, 4)
+      values.forEach((value, index) => {
+        const degree = (value + bar) % D_MINOR.length
+        const spacing = maxMode ? .5 : .75
+        add(fibHook, start + index * spacing, maxMode ? .2 : .28, D_MINOR[degree] + 5, index === 0 ? 54 : 42)
+      })
+    }
+
+    // Max pressure is another prime-indexed rhythm, deliberately non-pitched.
     for (let step = 0; step < 16; step += 1) {
       if (!PRIME_STEPS.has(step)) continue
-      const pitch = chord[2] + 19 + (maxMode && step % 2 ? 5 : 0)
-      add(panicPrimes, start + step * .25, .065, pitch, maxMode ? 34 : 30)
+      add(panicRhythm, start + step * .25, .035, step % 2 ? 36 : 38, maxMode ? 32 : 22)
     }
   })
 
-  if (maxMode) {
-    // Final bar uses a C# leading tone to mathematically 'resolve' back into D when the loop restarts.
-    add(fibonacci, 30.5, .22, 85, 62)
-    add(fibonacci, 31, .22, 86, 72)
-    add(fibonacci, 31.5, .22, 85, 64)
-  }
-
   return [
-    track('L1_BINARY_BASS', 'triangle', .17, bass),
-    track('L1_EUCLID_DRUM', 'noise', .105, drums),
-    track('L1_OPERATOR_PULSE', 'square', .06, operators),
-    track('L2_PRIME_HATS', 'noise', .045, primeHats),
-    track('L3_FIBONACCI_LEAD', 'square', .055, fibonacci),
-    track('L4_MULT_DIV_COUNTER', 'square', .04, multDiv),
-    track('L5_MODULO_STABS', 'square', .032, modulo),
-    track('L6_PANIC_PRIMES', 'square', .018, panicPrimes),
+    track('L1_BINARY_BASS', 'triangle', .165, bass),
+    track('L1_EUCLID_DRUM', 'noise', .1, drums),
+    track('L1_OPERATOR_PULSE', 'square', .052, operators),
+    track('L2_PRIME_HATS', 'noise', .042, primeHats),
+    track('L3_FIB_RHYTHM', 'noise', .034, fibPerc),
+    track('L4_MODULO_BASS', 'triangle', .045, moduloBass),
+    track('L5_FIB_HOOK', 'square', .038, fibHook),
+    track('L6_PRIME_DRIVE', 'noise', .038, panicRhythm),
   ]
 }
 
-const reactiveTracks = ['L1_BASS_CORE', 'L1_ARP_PULSE', 'L1_DRUM_CORE']
-const mathTracks = ['L1_BINARY_BASS', 'L1_EUCLID_DRUM', 'L1_OPERATOR_PULSE']
+const reactiveCore = ['L1_BASS_CORE', 'L1_ARP_PULSE', 'L1_DRUM_CORE']
+const mathCore = ['L1_BINARY_BASS', 'L1_EUCLID_DRUM', 'L1_OPERATOR_PULSE']
 
 export const musicCatalog = {
-  version: 1,
+  version: 2,
   rule: 'Never delete a music proposal. Change its status to selected or archived.',
   compositions: [
     {
@@ -224,20 +224,20 @@ export const musicCatalog = {
       name: 'Reactive Arithmetic v1',
       status: 'candidate',
       createdAt: '2026-09-03',
-      summary: 'Première chiptune réactive : la vitesse et les couches montent avec le niveau.',
-      concept: ['8-bit handheld', 'layered escalation', 'D minor', 'reactive tempo'],
+      summary: 'Chiptune réactive recalée sur la chute réelle du jeu : le début reste mélodique, puis la pression vient surtout du rythme et de la subdivision.',
+      concept: ['8-bit handheld', 'game-synced tempo', 'rhythm-first escalation', 'D minor'],
       key: 'D minor',
       meter: '4/4',
       loopBeats: LOOP_BEATS,
       midiExports: ['MF-MUS-0001_LoopA.mid', 'MF-MUS-0001_LoopB_Panic.mid'],
       stages: [
-        { label: '1', bpm: 112, variant: 'A', activeTracks: reactiveTracks },
-        { label: '2', bpm: 120, variant: 'A', activeTracks: [...reactiveTracks, 'L2_HATS_CLOCK'] },
-        { label: '3', bpm: 130, variant: 'A', activeTracks: [...reactiveTracks, 'L2_HATS_CLOCK', 'L3_LEAD_MAIN'] },
-        { label: '4', bpm: 141, variant: 'A', activeTracks: [...reactiveTracks, 'L2_HATS_CLOCK', 'L3_LEAD_MAIN', 'L4_COUNTER_SYNC'] },
-        { label: '5', bpm: 153, variant: 'A', activeTracks: [...reactiveTracks, 'L2_HATS_CLOCK', 'L3_LEAD_MAIN', 'L4_COUNTER_SYNC', 'L5_DRIVE_STABS'] },
-        { label: '6', bpm: 166, variant: 'A', activeTracks: [...reactiveTracks, 'L2_HATS_CLOCK', 'L3_LEAD_MAIN', 'L4_COUNTER_SYNC', 'L5_DRIVE_STABS', 'L6_PANIC_SPARK'] },
-        { label: 'MAX', bpm: 180, variant: 'B', activeTracks: [...reactiveTracks, 'L2_HATS_CLOCK', 'L3_LEAD_MAIN', 'L4_COUNTER_SYNC', 'L5_DRIVE_STABS', 'L6_PANIC_SPARK'] },
+        { label: '1', bpm: GAME_SYNC_BPMS[0], variant: 'A', activeTracks: reactiveCore },
+        { label: '2', bpm: GAME_SYNC_BPMS[1], variant: 'A', activeTracks: [...reactiveCore, 'L2_HATS_CLOCK'] },
+        { label: '3', bpm: GAME_SYNC_BPMS[2], variant: 'A', activeTracks: [...reactiveCore, 'L2_HATS_CLOCK', 'L3_GHOST_DRUMS'] },
+        { label: '4', bpm: GAME_SYNC_BPMS[3], variant: 'A', activeTracks: [...reactiveCore, 'L2_HATS_CLOCK', 'L3_GHOST_DRUMS', 'L4_BASS_SYNC'] },
+        { label: '5', bpm: GAME_SYNC_BPMS[4], variant: 'A', activeTracks: [...reactiveCore, 'L2_HATS_CLOCK', 'L3_GHOST_DRUMS', 'L4_BASS_SYNC', 'L5_SPARSE_HOOK'] },
+        { label: '6', bpm: GAME_SYNC_BPMS[5], variant: 'A', activeTracks: [...reactiveCore, 'L2_HATS_CLOCK', 'L3_GHOST_DRUMS', 'L4_BASS_SYNC', 'L5_SPARSE_HOOK', 'L6_DRIVE_DRUMS'] },
+        { label: 'MAX', bpm: GAME_SYNC_BPMS[6], variant: 'B', activeTracks: [...reactiveCore, 'L2_HATS_CLOCK', 'L3_GHOST_DRUMS', 'L4_BASS_SYNC', 'L5_SPARSE_HOOK', 'L6_DRIVE_DRUMS'] },
       ],
       variants: { A: reactiveA(), B: reactiveB() },
     },
@@ -248,20 +248,20 @@ export const musicCatalog = {
       name: 'Prime Cascade',
       status: 'candidate',
       createdAt: '2026-09-03',
-      summary: 'Une chiptune réellement mathématique : puissances de deux, nombres premiers, Fibonacci, modulo et ×2/÷2 se superposent jusqu’à l’emballement, avec les nouvelles couches mixées derrière le groove central.',
-      concept: ['powers of 2', 'prime accents 2·3·5·7', 'Fibonacci melody', '×2 / ÷2 durations', 'modulo 3', 'computational panic'],
+      summary: 'Mathématique mais plus lisible : nombres premiers, Fibonacci et modulo sont désormais surtout des structures rythmiques, avec une seule petite voix mélodique secondaire.',
+      concept: ['powers of 2', 'prime-number rhythm', 'Fibonacci rhythm', 'modulo bass', 'game-synced tempo'],
       key: 'D minor',
       meter: '4/4',
       loopBeats: LOOP_BEATS,
       midiExports: ['MF-MUS-0002_PrimeCascade_A.mid', 'MF-MUS-0002_PrimeCascade_MAX.mid'],
       stages: [
-        { label: '1', bpm: 108, variant: 'A', activeTracks: mathTracks },
-        { label: '2', bpm: 118, variant: 'A', activeTracks: [...mathTracks, 'L2_PRIME_HATS'] },
-        { label: '3', bpm: 130, variant: 'A', activeTracks: [...mathTracks, 'L2_PRIME_HATS', 'L3_FIBONACCI_LEAD'] },
-        { label: '4', bpm: 144, variant: 'A', activeTracks: [...mathTracks, 'L2_PRIME_HATS', 'L3_FIBONACCI_LEAD', 'L4_MULT_DIV_COUNTER'] },
-        { label: '5', bpm: 158, variant: 'A', activeTracks: [...mathTracks, 'L2_PRIME_HATS', 'L3_FIBONACCI_LEAD', 'L4_MULT_DIV_COUNTER', 'L5_MODULO_STABS'] },
-        { label: '6', bpm: 172, variant: 'A', activeTracks: [...mathTracks, 'L2_PRIME_HATS', 'L3_FIBONACCI_LEAD', 'L4_MULT_DIV_COUNTER', 'L5_MODULO_STABS', 'L6_PANIC_PRIMES'] },
-        { label: 'MAX', bpm: 188, variant: 'B', activeTracks: [...mathTracks, 'L2_PRIME_HATS', 'L3_FIBONACCI_LEAD', 'L4_MULT_DIV_COUNTER', 'L5_MODULO_STABS', 'L6_PANIC_PRIMES'] },
+        { label: '1', bpm: GAME_SYNC_BPMS[0], variant: 'A', activeTracks: mathCore },
+        { label: '2', bpm: GAME_SYNC_BPMS[1], variant: 'A', activeTracks: [...mathCore, 'L2_PRIME_HATS'] },
+        { label: '3', bpm: GAME_SYNC_BPMS[2], variant: 'A', activeTracks: [...mathCore, 'L2_PRIME_HATS', 'L3_FIB_RHYTHM'] },
+        { label: '4', bpm: GAME_SYNC_BPMS[3], variant: 'A', activeTracks: [...mathCore, 'L2_PRIME_HATS', 'L3_FIB_RHYTHM', 'L4_MODULO_BASS'] },
+        { label: '5', bpm: GAME_SYNC_BPMS[4], variant: 'A', activeTracks: [...mathCore, 'L2_PRIME_HATS', 'L3_FIB_RHYTHM', 'L4_MODULO_BASS', 'L5_FIB_HOOK'] },
+        { label: '6', bpm: GAME_SYNC_BPMS[5], variant: 'A', activeTracks: [...mathCore, 'L2_PRIME_HATS', 'L3_FIB_RHYTHM', 'L4_MODULO_BASS', 'L5_FIB_HOOK', 'L6_PRIME_DRIVE'] },
+        { label: 'MAX', bpm: GAME_SYNC_BPMS[6], variant: 'B', activeTracks: [...mathCore, 'L2_PRIME_HATS', 'L3_FIB_RHYTHM', 'L4_MODULO_BASS', 'L5_FIB_HOOK', 'L6_PRIME_DRIVE'] },
       ],
       variants: { A: primeCascade(false), B: primeCascade(true) },
     },

@@ -121,6 +121,20 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
     return () => root.removeEventListener('wheel', onWheel)
   }, [active, triggerPlay])
 
+  useEffect(() => {
+    if (!active) return
+
+    const onWindowKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'ArrowDown' && event.key !== 'Enter' && event.key !== ' ') return
+      event.preventDefault()
+      event.stopPropagation()
+      triggerPlay()
+    }
+
+    window.addEventListener('keydown', onWindowKeyDown, true)
+    return () => window.removeEventListener('keydown', onWindowKeyDown, true)
+  }, [active, triggerPlay])
+
   if (!variant) return null
 
   const setParallax = (event: ReactPointerEvent<HTMLElement>) => {

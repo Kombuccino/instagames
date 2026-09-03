@@ -19,6 +19,10 @@ from google.oauth2 import service_account
 from PIL import Image
 
 DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.readonly"
+EXPECTED_DRIVE_FOLDER_ID = "1o7YIB4qEPYNJvOI9yPr_6tUPEW3dDF0H"
+EXPECTED_GITHUB_REPOSITORY = "Kombuccino/instagames"
+EXPECTED_GITHUB_BRANCH = "main"
+EXPECTED_GITHUB_ASSET_PREFIX = "public/assets/imported"
 ALLOWED_MIME_TO_FORMAT = {
     "image/png": ("PNG", ".png"),
     "image/jpeg": ("JPEG", ".jpg"),
@@ -38,7 +42,8 @@ def env(name: str, default: str | None = None) -> str:
 
 
 def positive_int(name: str, default: int) -> int:
-    value = int(os.environ.get(name, str(default)))
+    raw = os.environ.get(name, str(default))
+    value = int(raw)
     if value <= 0:
         raise RuntimeError(f"{name} must be > 0")
     return value
@@ -190,16 +195,22 @@ def main() -> int:
     folder_id = env("DRIVE_FOLDER_ID")
     credentials_path = env("GOOGLE_SERVICE_ACCOUNT_JSON", "/etc/minifugg-drive-sync/service-account.json")
     github_token = env("GITHUB_TOKEN")
-    github_repository = env("GITHUB_REPOSITORY", "Kombuccino/instagames")
-    github_branch = env("GITHUB_BRANCH", "main")
-    github_prefix = env("GITHUB_ASSET_PREFIX", "public/assets/imported").strip("/")
+    github_repository = env("GITHUB_REPOSITORY", EXPECTED_GITHUB_REPOSITORY)
+    github_branch = env("GITHUB_BRANCH", EXPECTED_GITHUB_BRANCH)
+    github_prefix = env("GITHUB_ASSET_PREFIX", EXPECTED_GITHUB_ASSET_PREFIX).strip("/")
     state_path = Path(env("STATE_FILE", "/var/lib/minifugg-drive-sync/state.json"))
     lock_path = Path(env("LOCK_FILE", "/var/lib/minifugg-drive-sync/sync.lock"))
     max_bytes = positive_int("MAX_FILE_BYTES", 10 * 1024 * 1024)
     max_pixels = positive_int("MAX_IMAGE_PIXELS", 40_000_000)
 
-    # Deliberately hard-coded safety boundary: environment variables cannot redirect writes into source code.
-    if github_prefix != "public/assets/imported":
+    # Deliberately hard-coded safety boundaries: environment variables cannot redirect the sync.
+    if folder_id != EXPECTED_DRIVE_FOLDER_ID:
+        raise RuntimeError("DRIVE_FOLDER_ID is intentionally locked to the MiniFugg Fugg folder")
+    if github_repository != EXPECTED_GITHUB_REPOSITORY:
+        raise RuntimeError("GITHUB_REPOSITORY is intentionally locked to Kombuccino/instagames")
+    if github_branch != EXPECTED_GITHUB_BRANCH:
+        raise RuntimeError("GITHUB_BRANCH is intentionally locked to main")
+    if github_prefix != EXPECTED_GITHUB_ASSET_PREFIX:
         raise RuntimeError("GITHUB_ASSET_PREFIX is intentionally locked to public/assets/imported")
 
     lock_path.parent.mkdir(parents=True, exist_ok=True)
@@ -213,6 +224,7 @@ def main() -> int:
         session = drive_session(credentials_path)
         state = load_state(state_path)
         changed = False
+        seen_targets: dict[str, str] = {}
 
         for item in list_drive_images(session, folder_id):
             file_id = str(item.get("id", ""))
@@ -241,8 +253,12 @@ def main() -> int:
                     continue
 
                 safe_name = sanitize_filename(name, canonical_ext)
+                previous_id = seen_targets.get(safe_name)
+                if previous_id and previous_id != file_id:
+                    raise ValueError(f"Filename collision after sanitization: {safe_name}")
+                seen_targets[safe_name] = file_id
                 github_path = f"{github_prefix}/{safe_name}"
-                github_put_image(github_repository, github_path, github_branch, github_token, data, name)
+                github_put_image(github_repository, github_path, github_branch, github_token, data, safe_name)
                 state[file_id] = final_fp
                 changed = True
                 log.info("Synced %s (%dx%d, %d bytes) -> %s", name, width, height, len(data), github_path)

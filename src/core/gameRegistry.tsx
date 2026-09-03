@@ -1,4 +1,5 @@
 import type { InstagameDefinition } from './types'
+import { withStatusWelcome } from './StatusWelcome'
 import { LineFugg } from '../games/linefugg/LineFugg'
 import { ShootTheShooter } from '../games/shoot-the-shooter/ShootTheShooter'
 import { VladsSkewers } from '../games/vlads-skewers/VladsSkewers'
@@ -8,6 +9,11 @@ import { CrazyPapers } from '../games/crazy-papers/CrazyPapers'
 import { DebthOfLife } from '../games/debth-of-life/DebthOfLife'
 import { TrainFighter } from '../games/train-fighter/TrainFighter'
 
+const TrainFighterBeta = withStatusWelcome('beta', 'Train Fighter', 'Change de voie · équipe ton train · choisis tes bastons', TrainFighter)
+const HariBeta = withStatusWelcome('beta', 'HARI les dents pourries', 'Aligne les bonbons · pourris toute la mâchoire', HariRottenTeeth)
+const ShooterCaca = withStatusWelcome('trash', 'Shoot the Shooter', 'Bois, mémorise, tiens jusqu’au blackout', ShootTheShooter)
+const DebthCaca = withStatusWelcome('trash', 'DebthOfLife', 'Cours ta vie · signe tes choix en sautant · meurs avec le meilleur bilan', DebthOfLife)
+
 export const gameRegistry: InstagameDefinition[] = [
   {
     id: 'train-fighter',
@@ -16,7 +22,7 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'beta',
     orientation: 'portrait',
-    component: TrainFighter,
+    component: TrainFighterBeta,
     instructions: {
       goal: 'Traverse les 4 mondes avec le plus de wagons possible et transforme ta petite loco en machine à baffes.',
       rules: [
@@ -84,7 +90,7 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'trash',
     orientation: 'landscape',
-    component: ShootTheShooter,
+    component: ShooterCaca,
     instructions: {
       goal: 'Bois un maximum de shooters sans finir à 100% d’alcool ni rater 3 verres.',
       rules: [
@@ -152,7 +158,7 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'beta',
     orientation: 'portrait',
-    component: HariRottenTeeth,
+    component: HariBeta,
     instructions: {
       goal: 'Aligne les bonbons pour pourrir toutes les dents de HARI.',
       rules: [
@@ -256,7 +262,7 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'trash',
     orientation: 'landscape',
-    component: DebthOfLife,
+    component: DebthCaca,
     instructions: {
       goal: 'Atteins 85 ans avec le meilleur patrimoine net possible.',
       rules: [

@@ -4,7 +4,7 @@ This is the source-of-truth workflow for AI-created MiniFugg music.
 
 ## Goal
 
-Music stays symbolic and editable. A MiniFugg composition should be kept as note/event data and as Standard MIDI files; the browser Music Lab synthesizes the same note data with WebAudio so a phone never depends on its native MIDI player.
+Music stays symbolic and editable. The canonical composition is note/event data: pitches, durations, velocity, tempo stages, layers and loop structure. Standard MIDI is a deterministic export of that source, not the only master. The browser Music Lab synthesizes the same source with WebAudio so a phone never depends on its native MIDI player.
 
 ## God Mode route
 
@@ -16,13 +16,11 @@ This is an obscured internal route, **not authentication**. Do not put secrets o
 
 ## Catalog
 
-Canonical browser catalog:
+Canonical browser/source catalog:
 
-`src/music/catalog.json`
+`src/music/catalog.ts`
 
-MIDI masters:
-
-`public/music/<game-id>/`
+The catalog contains or deterministically builds the exact note events used by the browser player. It also declares stable `.mid` export filenames for each proposal.
 
 Every new proposal gets a permanent sequential id:
 
@@ -39,7 +37,7 @@ Every entry must include:
 - intensity stages / BPM map;
 - separate layers/tracks;
 - exact browser-preview note events;
-- path(s) to the matching `.mid` file(s);
+- intended `.mid` export filename(s);
 - status.
 
 ## Status lifecycle
@@ -50,9 +48,15 @@ Allowed statuses:
 - `selected` — currently retained/approved;
 - `archived` — rejected, superseded or no longer active, but preserved forever.
 
-**Never delete a music proposal or its MIDI files.** When the user makes a choice, update statuses in `src/music/catalog.json`. Old attempts move to `archived`; the retained version becomes `selected`. If the user asks to keep several active choices, preserve that explicitly.
+**Never delete a music proposal or its symbolic MIDI source.** When the user makes a choice, update statuses in `src/music/catalog.ts`. Old attempts move to `archived`; the retained version becomes `selected`. If the user asks to keep several active choices, preserve that explicitly.
 
-The browser panel itself is intentionally read-only for production status. The user can audition there and give the verdict in the development conversation; repository state remains the source of truth instead of unsynced device-local admin state.
+The browser panel itself is intentionally read-only for production status. The user auditions there and gives the verdict in the development conversation; repository state remains the source of truth instead of unsynced device-local admin state.
+
+## MIDI export rule
+
+The catalog note/event data is the master partition. It must remain deterministic and losslessly exportable to Standard MIDI. Do not require a binary `.mid` blob in Git merely to audition music in the Lab.
+
+When a standalone MIDI file is needed, generate it from the catalog source and keep the declared `midiExports` filename stable. A later build/export utility may automate those derivatives without changing the composition identity.
 
 ## Reactive game music
 

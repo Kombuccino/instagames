@@ -132,6 +132,12 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
   }, [gameId])
 
   useEffect(() => {
+    if (!labEnabled) return
+    document.body.classList.add('mf-parallax-lab-active')
+    return () => document.body.classList.remove('mf-parallax-lab-active')
+  }, [labEnabled])
+
+  useEffect(() => {
     if (!labEnabled) {
       setDraftVariants(cloneVariants(variants))
       return
@@ -155,7 +161,7 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
   const unlockedCount = useMemo(() => availableVariants(effectiveVariants, previewScore).length, [effectiveVariants, previewScore])
 
   const triggerPlay = useCallback(() => {
-    if (exiting) return
+    if (labEnabled || exiting) return
     setExiting(true)
     guardResidualForwardWheel()
     if (exitTimerRef.current !== null) window.clearTimeout(exitTimerRef.current)
@@ -163,10 +169,11 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
       exitTimerRef.current = null
       onPlay()
     }, EXIT_DURATION_MS)
-  }, [exiting, onPlay])
+  }, [exiting, labEnabled, onPlay])
 
   useEffect(() => () => {
     if (exitTimerRef.current !== null) window.clearTimeout(exitTimerRef.current)
+    document.body.classList.remove('mf-parallax-lab-active')
   }, [])
 
   useEffect(() => {
@@ -178,7 +185,7 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
 
   useEffect(() => {
     const root = rootRef.current
-    if (!root || !active) return
+    if (!root || !active || labEnabled) return
 
     const onWheel = (event: WheelEvent) => {
       if (event.deltaY <= 6) return
@@ -189,10 +196,10 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
 
     root.addEventListener('wheel', onWheel, { passive: false })
     return () => root.removeEventListener('wheel', onWheel)
-  }, [active, triggerPlay])
+  }, [active, labEnabled, triggerPlay])
 
   useEffect(() => {
-    if (!active) return
+    if (!active || labEnabled) return
 
     const onWindowKeyDown = (event: KeyboardEvent) => {
       if (event.target instanceof Element && event.target.closest('[data-mf-parallax-lab]')) return
@@ -204,7 +211,7 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
 
     window.addEventListener('keydown', onWindowKeyDown, true)
     return () => window.removeEventListener('keydown', onWindowKeyDown, true)
-  }, [active, triggerPlay])
+  }, [active, labEnabled, triggerPlay])
 
   if (!variant) return null
 
@@ -232,7 +239,7 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
   const resetParallax = () => resetParallaxVars(rootRef.current)
 
   const beginSwipe = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!event.isPrimary || exiting) return
+    if (!event.isPrimary || exiting || labEnabled) return
     event.preventDefault()
     event.stopPropagation()
     swipeRef.current = { pointerId: event.pointerId, startY: event.clientY }
@@ -241,7 +248,7 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
 
   const moveSwipe = (event: ReactPointerEvent<HTMLDivElement>) => {
     const swipe = swipeRef.current
-    if (!swipe || swipe.pointerId !== event.pointerId || exiting) return
+    if (!swipe || swipe.pointerId !== event.pointerId || exiting || labEnabled) return
     event.preventDefault()
     event.stopPropagation()
     const delta = Math.min(0, Math.max(-120, event.clientY - swipe.startY))
@@ -249,6 +256,7 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
   }
 
   const endSwipe = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (labEnabled) return
     event.preventDefault()
     event.stopPropagation()
     const swipe = swipeRef.current
@@ -363,6 +371,7 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
             className={`mf-fugg-welcome-play${hasRasterLayers ? ' is-integrated' : ''}`}
             onClick={triggerPlay}
             aria-label="Swipe to play"
+            disabled={labEnabled}
           >
             <span>↑</span>
           </button>

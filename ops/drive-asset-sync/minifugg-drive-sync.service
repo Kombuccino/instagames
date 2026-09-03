@@ -10,16 +10,23 @@ Group=minifugg-sync
 EnvironmentFile=/etc/minifugg-drive-sync/env
 ExecStart=/opt/minifugg-drive-sync/venv/bin/python /opt/minifugg-drive-sync/sync_drive_assets.py
 WorkingDirectory=/opt/minifugg-drive-sync
+TimeoutStartSec=180
+MemoryMax=512M
+TasksMax=32
+UMask=0077
 
 # Harden the process: no inbound service, no root privileges, no host writes except its tiny state directory.
 NoNewPrivileges=true
 PrivateTmp=true
+PrivateDevices=true
 ProtectSystem=strict
 ProtectHome=true
 ReadWritePaths=/var/lib/minifugg-drive-sync
 ProtectKernelTunables=true
 ProtectKernelModules=true
 ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
 RestrictSUIDSGID=true
 LockPersonality=true
 MemoryDenyWriteExecute=true

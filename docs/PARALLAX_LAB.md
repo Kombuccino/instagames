@@ -4,13 +4,29 @@ Desktop tuning tool for Fugg welcome covers.
 
 ## Access
 
-Use `/?game=<game-id>&usr=moigod` to open the selected game with the tuning panel on desktop.
+Use `/?game=<game-id>&usr=moigod` to open the selected game cover with the tuning panel on desktop.
 
 Example: `/?game=tetramindfck&usr=moigod`.
 
 `usr=moigod` is deliberately only a hidden workshop switch, not a security mechanism. The Lab cannot publish or write to the repository.
 
-The panel is only rendered on desktop-width screens (currently 980 px+). The game/cover preview uses the remaining viewport area and the Lab occupies the right side.
+The panel is only rendered on desktop-width screens (currently 980 px+).
+
+## Workspace rule
+
+Parallax Lab is a **cover-only workshop**. It is not a gameplay preview.
+
+While Lab mode is active:
+
+- the selected cover occupies the entire viewport area left of the admin panel;
+- the complete cover must remain visible inside that area;
+- the right admin panel never overlays or crops the cover workspace;
+- normal MiniFugg top bars, score chips and feed UI are hidden;
+- the feed is frozen on the requested game;
+- swipe, wheel and keyboard cannot dismiss the cover into gameplay;
+- the underlying game remains paused and is irrelevant to tuning.
+
+The purpose is to judge the actual cover composition and motion at the largest useful size while keeping every control visible beside it.
 
 ## Panel
 
@@ -110,9 +126,9 @@ followed by formatted JSON.
 
 Core files:
 - `src/core/ParallaxLab.tsx` — desktop editor and copy/reset workflow;
-- `src/core/parallaxLab.css` — right-side workshop UI;
+- `src/core/parallaxLab.css` — cover-only workspace plus right-side workshop UI;
 - `src/core/welcomeTuning.ts` — shared defaults and motion timing;
-- `src/core/FuggWelcome.tsx` — live preview/runtime interpreter;
+- `src/core/FuggWelcome.tsx` — live cover interpreter;
 - `src/core/types.ts` — production tuning data model.
 
 The first implemented test case is TetraMindFck `pulp-euro`.

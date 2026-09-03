@@ -180,7 +180,7 @@ export const gameRegistry: InstagameDefinition[] = [
     },
   },
   {
-    id: 'calc-drop',
+    id: 'tetramindfck',
     title: 'TetraMindFck',
     description: 'Complète des lignes · fabrique des calculs monstrueux',
     author: 'MiniFugg',

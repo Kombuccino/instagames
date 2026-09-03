@@ -11,6 +11,24 @@ const WELCOME_VARIANTS: GameWelcomeVariant[] = [
     label: 'Pulp européen',
     image: '/assets/imported/tetramindfck-welcome-v1-pulp-euro.webp',
     unlockScore: 0,
+    layers: [
+      {
+        role: 'background',
+        image: '/assets/imported/tetramindfck-welcome-v1-parallax-bg.webp',
+      },
+      {
+        role: 'midground',
+        image: '/assets/imported/tetramindfck-welcome-v1-parallax-burst.webp',
+      },
+      {
+        role: 'foreground',
+        image: '/assets/imported/tetramindfck-welcome-v1-parallax-subject.webp',
+      },
+      {
+        role: 'overlay',
+        image: '/assets/imported/tetramindfck-welcome-v1-parallax-title.webp',
+      },
+    ],
   },
   {
     id: 'micro-euro',

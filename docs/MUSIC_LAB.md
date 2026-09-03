@@ -1,10 +1,14 @@
-# MiniFugg Music Lab
+# MiniFugg Audio Lab
 
-This is the source-of-truth workflow for AI-created MiniFugg music.
+This is the source-of-truth workflow for AI-created MiniFugg music **and procedural sound design**.
 
 ## Goal
 
-Music stays symbolic and editable. The canonical composition is note/event data: pitches, durations, velocity, tempo stages, layers and loop structure. Standard MIDI is a deterministic export of that source, not the only master. The browser Music Lab synthesizes the same source with WebAudio so a phone never depends on its native MIDI player.
+Audio stays symbolic, editable and lightweight whenever possible.
+
+Music is canonical note/event data: pitches, durations, velocity, tempo stages, layers and loop structure. Standard MIDI is a deterministic export of that source, not the only master. The browser Audio Lab synthesizes the same source with WebAudio so a phone never depends on its native MIDI player.
+
+Short sound effects use procedural WebAudio recipes when that is sufficient. A sound can later be replaced or augmented by a real sample if the art direction needs material that synthesis cannot represent, but common interaction language should stay identifiable.
 
 ## God Mode route
 
@@ -12,9 +16,11 @@ Open:
 
 `/?usr=moigod&lab=music`
 
+The historical route name stays `music`, but the page is now the **Audio Lab** and contains both music and SFX.
+
 This is an obscured internal route, **not authentication**. Do not put secrets or privileged server actions behind this query parameter.
 
-## Catalog
+## Music catalog
 
 Canonical browser/source catalog:
 
@@ -40,7 +46,7 @@ Every entry must include:
 - intended `.mid` export filename(s);
 - status.
 
-## Status lifecycle
+## Music status lifecycle
 
 Allowed statuses:
 
@@ -77,6 +83,50 @@ If the game's mechanical cadence becomes too fast to map literally to musical BP
 
 The game engine should own live tempo and layer activation. Do not render the only production source to a fixed WAV when the music is meant to react to gameplay.
 
+## Sound-design catalog
+
+Canonical procedural SFX catalog:
+
+`src/audio/sfxCatalog.ts`
+
+Playback engine:
+
+`src/audio/sfxEngine.ts`
+
+Every authored MiniFugg sound identity gets a permanent sequential id:
+
+`MF-SFX-0001`, `MF-SFX-0002`, ...
+
+Do not delete an SFX identity merely because it is replaced. Keep the id and mark/supersede/archive it so old games and decisions remain understandable.
+
+The first shared vocabulary is intentionally small:
+
+- `move` — tiny positional feedback;
+- `rotate` — orientation/change feedback;
+- `softDrop` — deliberate downward acceleration;
+- `land` — an object taking its final place;
+- `levelUp` — common MiniFugg progression signature;
+- `success` — compact positive confirmation;
+- `fail` — compact negative/end confirmation.
+
+Games should **reuse the semantic event first**, then apply a game accent instead of inventing an unrelated sound. A palette may transpose, darken, shorten or soften the common sound. Add a fully game-specific SFX only when the mechanic has a genuinely specific event such as TetraMindFck's arithmetic scan.
+
+Game palettes live beside the catalog in `src/audio/sfxCatalog.ts` and map semantic events to sound identities.
+
+### Mixing rule
+
+SFX support the music; they do not compete with it.
+
+For repeatable controls:
+
+- use very short sounds;
+- enforce cooldowns/throttling;
+- do not sonify every automatic simulation tick;
+- prefer low/mid-register feedback over piercing high beeps;
+- reserve longer/stronger signatures for rare events such as level-up, major success or failure.
+
+When music is active, common SFX should normally be perceived as tactile feedback rather than a second composition.
+
 ## Tetra MindFuck pilot direction
 
 The Tetra MindFuck music should make mathematics perceptible without becoming a novelty tune:
@@ -91,14 +141,25 @@ The Tetra MindFuck music should make mathematics perceptible without becoming a 
 - modulo/polyrhythmic accents;
 - a final max-speed state that feels computationally overloaded while keeping the original groove readable.
 
+Its first SFX set demonstrates the shared-vocabulary model:
+
+- common move / rotate / soft-drop / land / level-up / fail with a slightly lower, tighter Tetra accent;
+- `Arithmetic Scan` for a completed calculation;
+- `Times Two` for arithmetic bonus feedback;
+- `Big Number Thump` for unusually large results.
+
+The automatic falling tick is intentionally silent. Manual movement and meaningful state changes carry the tactile audio feedback so the soundtrack keeps breathing room.
+
 ## Browser playback
 
-`src/core/MusicLab.tsx` intentionally uses native WebAudio and the catalog note data. Do not add a MIDI playback dependency merely for the Lab unless the custom playback layer becomes insufficient.
+`src/core/MusicLab.tsx` and `src/core/SoundDesignLab.tsx` intentionally use native WebAudio and symbolic catalogs. Do not add a MIDI or SFX playback dependency merely for the Lab unless the custom playback layer becomes insufficient.
 
 The Lab must remain practical on a phone:
 
 - one tap to listen;
-- stage/intensity audition controls;
+- stage/intensity audition controls for music;
 - an automatic `1 → MAX` escalation preview;
-- stop works immediately;
-- playback cleans up AudioContext scheduling when the Lab unmounts.
+- direct preview of common and game-accented SFX;
+- stop works immediately for music;
+- playback cleans up continuous music scheduling when the Lab unmounts;
+- the page remains vertically scrollable.

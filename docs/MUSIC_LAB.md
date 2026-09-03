@@ -66,10 +66,14 @@ A reactive composition should expose:
 
 - an initial core that works alone;
 - additive layers that can enter on bar boundaries;
-- a BPM/intensity map;
+- a BPM/intensity map tied to real gameplay cadence when the game has one;
 - an optional compatible max-pressure variation;
 - stable bar/loop boundaries so transitions stay musical;
 - recognizable motifs at every intensity.
+
+**Escalation should be rhythm-first, not melody-stack-first.** When intensity rises, prefer tempo, subdivisions, ghost notes, percussion density, syncopated bass, accents and rhythmic transformations before adding another pitched voice. New layers must preserve the hierarchy of the existing groove instead of taking over it. As a default, keep at most one clearly foreground melodic voice active at a time.
+
+If the game's mechanical cadence becomes too fast to map literally to musical BPM, group several game ticks into one beat and increase rhythmic subdivision instead of driving the whole composition into unusable tempos.
 
 The game engine should own live tempo and layer activation. Do not render the only production source to a fixed WAV when the music is meant to react to gameplay.
 
@@ -79,12 +83,13 @@ The Tetra MindFuck music should make mathematics perceptible without becoming a 
 
 - handheld 8-bit / early portable-console timbre;
 - modern arrangement and escalation;
+- tempo derived from the falling-block cadence;
 - density growth based on powers of two;
-- prime-number accents (2/3/5/7 etc.);
-- Fibonacci-derived phrases where useful;
-- multiply/divide ideas expressed through note duration or interval transformations;
+- prime-number accents (2/3/5/7 etc.) expressed mainly rhythmically;
+- Fibonacci-derived timing or phrases where useful;
+- multiply/divide ideas expressed through note duration, interval or subdivision transformations;
 - modulo/polyrhythmic accents;
-- a final max-speed state that feels computationally overloaded while keeping the original motif recognizable.
+- a final max-speed state that feels computationally overloaded while keeping the original groove readable.
 
 ## Browser playback
 

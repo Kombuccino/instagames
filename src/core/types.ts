@@ -7,6 +7,26 @@ export type GameCurationStatus = 'fugg' | 'beta' | 'trash'
 export type FeedPreference = 'fugg' | 'beta' | 'all'
 
 export type GameWelcomeLayerRole = 'background' | 'midground' | 'foreground' | 'overlay'
+export type GameWelcomeMotionType = 'none' | 'float' | 'vibrate' | 'breathe' | 'drift' | 'sway'
+
+export type GameWelcomeMotion = {
+  type: GameWelcomeMotionType
+  /** Multiplier around 1.0. Higher values animate faster. */
+  speed?: number
+  /** Visual displacement/intensity in CSS pixels for motion presets. */
+  intensity?: number
+  /** Direction in degrees for directional presets such as drift/float. */
+  direction?: number
+  /** 0..1. Used mostly by vibrate to make the motion less mechanical. */
+  irregularity?: number
+}
+
+export type GameWelcomeLayerFx = {
+  /** CSS blur radius in pixels. Keep subtle. */
+  blur?: number
+  /** Drop-shadow/glow radius in pixels. 0 disables it. */
+  glow?: number
+}
 
 export type GameWelcomeLayer = {
   /** Repository-served raster asset. Production layers must come through the Drive asset pipeline. */
@@ -15,6 +35,19 @@ export type GameWelcomeLayer = {
   role: GameWelcomeLayerRole
   /** Optional object-position override; keep matching layers aligned when possible. */
   objectPosition?: string
+  /** Layer scale in percent. 100 means the authored canvas size. */
+  scale?: number
+  /** Layer translation as a percentage of the authored full-canvas layer size. */
+  x?: number
+  y?: number
+  rotation?: number
+  /** 0..100 */
+  opacity?: number
+  /** Pointer/device parallax amplitude in CSS pixels at full tilt. */
+  parallaxX?: number
+  parallaxY?: number
+  motion?: GameWelcomeMotion
+  fx?: GameWelcomeLayerFx
 }
 
 export type GameWelcomeVariant = {

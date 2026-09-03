@@ -6,6 +6,23 @@ export type GameOrientation = 'portrait' | 'landscape' | 'both'
 export type GameCurationStatus = 'fugg' | 'beta' | 'trash'
 export type FeedPreference = 'fugg' | 'beta' | 'all'
 
+export type GameWelcomeVariant = {
+  id: string
+  label: string
+  image: string
+  unlockScore?: number
+  /** Optional object-position override for crop-safe responsive rendering. */
+  objectPosition?: string
+}
+
+export type GameWelcomeConfig = {
+  variants: GameWelcomeVariant[]
+  /** Stable per-feed-slot rotation among unlocked covers. */
+  selection?: 'seeded' | 'first'
+  /** Enables subtle image movement/light effects; never required for gameplay. */
+  motion?: 'subtle' | 'none'
+}
+
 export type GameLeaderboardConfig = {
   enabled: true
   periods?: GameLeaderboardPeriod[]
@@ -58,6 +75,8 @@ export type InstagameDefinition = {
   status?: GameCurationStatus
   /** Preferred gameplay orientation. Core remains responsive in both directions. */
   orientation?: GameOrientation
+  /** Premium collectible intro art. Reserved for curated Fugg games. */
+  welcome?: GameWelcomeConfig
   component: ComponentType<GameComponentProps>
   instructions?: GameInstructions
   features?: GameFeatureConfig

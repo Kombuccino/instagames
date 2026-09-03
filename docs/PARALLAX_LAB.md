@@ -8,23 +8,29 @@ Use `/?game=<game-id>&usr=moigod` to open the selected game with the tuning pane
 
 Example: `/?game=tetramindfck&usr=moigod`.
 
+`usr=moigod` is deliberately only a hidden workshop switch, not a security mechanism. The Lab cannot publish or write to the repository.
+
+The panel is only rendered on desktop-width screens (currently 980 px+). The game/cover preview uses the remaining viewport area and the Lab occupies the right side.
+
 ## Panel
 
 The panel appears on the right and provides live controls for the selected cover and raster layer.
 
 Per cover:
-- choose variant;
+- choose any variant, including currently locked variants;
 - edit unlock score;
-- simulate a player score to preview locked/unlocked variants;
-- reset values;
-- copy the final configuration.
+- simulate a player score to preview locked/unlocked states;
+- reset one variant or the whole local draft;
+- copy the selected variant or the whole game's welcome configuration.
 
 Per layer:
 - scale in percent;
 - X/Y position;
-- optional rotation and opacity;
+- rotation and opacity;
 - parallax amplitude X/Y;
-- autonomous motion type and parameters.
+- autonomous motion type and parameters;
+- subtle blur/glow FX;
+- optional layer guides while tuning.
 
 Initial autonomous motion presets:
 - none;
@@ -34,9 +40,9 @@ Initial autonomous motion presets:
 - drift;
 - sway.
 
-Motion parameters can include intensity, speed, direction and optional irregularity. For example, the TetraMindFck character can use a restrained irregular vibration while the tetromino burst uses a slower floating motion.
+Motion parameters include intensity, speed, direction and irregularity. For example, the TetraMindFck character starts with a restrained irregular `vibrate`, while the tetromino burst starts with a slower `float`.
 
-Optional visual FX may include subtle light, glow, blur or opacity pulse. FX must not replace artwork that should exist as a real raster layer.
+FX must not replace artwork that should exist as a real raster layer.
 
 ## Data model
 
@@ -51,35 +57,66 @@ Representative layer settings:
   scale: 112,
   x: 0,
   y: 8,
+  rotation: 0,
+  opacity: 100,
   parallaxX: 10,
   parallaxY: 7,
   motion: {
     type: 'vibrate',
     intensity: 3,
     speed: 1.4,
+    direction: -90,
+    irregularity: 0.7,
+  },
+  fx: {
+    blur: 0,
+    glow: 0,
   },
 }
 ```
 
+## Draft persistence
+
+Lab changes are stored only in browser `localStorage` under a per-game draft key. This makes refreshes convenient but does not change production configuration.
+
+`Reset variante` restores the selected variant from repository values.
+
+`Reset tout` deletes the local draft and restores all repository values.
+
 ## Handoff workflow
 
-The first version does not need direct repository saving.
+The Lab intentionally has no backend/repository write access.
 
 1. Tune the cover live in the browser.
-2. Draft values may be preserved in localStorage.
-3. Press `Copy configuration`.
-4. The panel generates one complete structured text block containing game id, variant id, unlock score, asset paths and all layer settings.
+2. Draft values are preserved in localStorage.
+3. Press `Copier la variante` or `Copier tout le jeu`.
+4. The panel generates a structured text block containing game id, variant ids, unlock scores, asset paths and layer settings.
 5. Paste that block into the MiniFugg ChatGPT conversation.
-6. ChatGPT applies the values to the production configuration and updates the repository.
+6. ChatGPT applies the reviewed values to production configuration and updates the repository.
 
 The repository remains the authoritative production configuration.
 
-The copied block should start with a stable marker such as:
+Copied blocks start with one of these markers:
 
 `MINIFUGG_PARALLAX_CONFIG v1 — game=tetramindfck — variant=pulp-euro`
 
-followed by complete JSON or TypeScript-like structured data.
+or
+
+`MINIFUGG_PARALLAX_CONFIG v1 — game=tetramindfck — all-variants`
+
+followed by formatted JSON.
+
+## Current implementation
+
+Core files:
+- `src/core/ParallaxLab.tsx` — desktop editor and copy/reset workflow;
+- `src/core/parallaxLab.css` — right-side workshop UI;
+- `src/core/welcomeTuning.ts` — shared defaults and motion timing;
+- `src/core/FuggWelcome.tsx` — live preview/runtime interpreter;
+- `src/core/types.ts` — production tuning data model.
+
+The first implemented test case is TetraMindFck `pulp-euro`.
 
 ## Production rule
 
-Every Fugg cover with parallax must first have its real raster layer bundle produced through `docs/ASSET_PIPELINE.md`, then be tuned with this tool, exported, and applied to the repository through the normal development workflow.
+Every Fugg cover with parallax must first have its real raster layer bundle produced through `docs/ASSET_PIPELINE.md`, then be tuned with this tool, exported as text, and applied to the repository through the normal development workflow.

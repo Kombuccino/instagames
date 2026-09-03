@@ -1,9 +1,65 @@
+body.mf-parallax-lab-active {
+  --mf-parallax-lab-width: 380px;
+  overflow: hidden;
+  background: #111116;
+}
+
+body.mf-parallax-lab-active .game-feed {
+  width: calc(100vw - var(--mf-parallax-lab-width));
+  height: 100dvh;
+  overflow: hidden;
+  scroll-snap-type: none;
+  overscroll-behavior: none;
+  background: #111116;
+}
+
+body.mf-parallax-lab-active .game-slot {
+  display: none;
+}
+
+body.mf-parallax-lab-active .game-slot:first-child {
+  display: block;
+  width: 100%;
+  height: 100dvh;
+}
+
+body.mf-parallax-lab-active .game-topbar,
+body.mf-parallax-lab-active .score-chip,
+body.mf-parallax-lab-active .swipe-hint,
+body.mf-parallax-lab-active .game-slot::after {
+  display: none !important;
+}
+
+body.mf-parallax-lab-active .game-card,
+body.mf-parallax-lab-active .game-surface {
+  width: 100%;
+  height: 100%;
+  background: #111116;
+}
+
+body.mf-parallax-lab-active .mf-fugg-welcome[data-lab='true'] {
+  inset: 0;
+  background: #111116;
+}
+
+body.mf-parallax-lab-active .mf-fugg-welcome[data-lab='true'] .mf-fugg-welcome-scene,
+body.mf-parallax-lab-active .mf-fugg-welcome[data-lab='true'] .mf-fugg-welcome-layer-stack,
+body.mf-parallax-lab-active .mf-fugg-welcome[data-lab='true'] .mf-fugg-welcome-camera {
+  background: #111116;
+}
+
+body.mf-parallax-lab-active .mf-fugg-welcome[data-lab='true'] .mf-fugg-welcome-meta,
+body.mf-parallax-lab-active .mf-fugg-welcome[data-lab='true'] .mf-fugg-welcome-play,
+body.mf-parallax-lab-active .mf-fugg-welcome[data-lab='true'] .mf-fugg-welcome-interaction {
+  display: none;
+}
+
 .mf-parallax-lab {
   position: fixed;
   top: 0;
   right: 0;
   z-index: 200;
-  width: 360px;
+  width: var(--mf-parallax-lab-width, 380px);
   height: 100dvh;
   overflow-y: auto;
   padding: 14px;

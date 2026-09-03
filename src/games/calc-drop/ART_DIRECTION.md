@@ -92,11 +92,47 @@ The composition should make the game's arithmetic theme perceptible in the music
 
 - powers-of-two density increases as the game accelerates;
 - prime-number accents such as 2/3/5/7;
-- Fibonacci-derived melodic phrases where they remain musical;
+- Fibonacci-derived timing or phrases where they remain musical;
 - multiplication/division expressed by doubling or halving durations / intervals;
 - modulo or small-polyrhythm patterns for mounting cognitive pressure;
 - layers enter progressively on musical boundaries;
-- tempo rises with game speed;
-- the maximum-speed state becomes deliberately computational and frantic without losing the core motif.
+- tempo rises with game speed but is capped before becoming unreadable;
+- escalation is rhythm-first rather than an accumulation of competing melodies;
+- the maximum-speed state becomes computational and frantic without losing the core groove.
 
-All proposals stay in the shared Music Lab according to `docs/MUSIC_LAB.md`. The final production candidate has not yet been selected.
+Both `MF-MUS-0001 Reactive Arithmetic v1` and `MF-MUS-0002 Prime Cascade` are currently selected production arrangements. Runs alternate between them deterministically.
+
+Music begins at level-1 intensity while the welcome cover is visible whenever browser autoplay policy allows it. Sliding the cover away must not restart or interrupt the loop; gameplay continues from the same musical state and then follows the live level.
+
+## Sound-design direction
+
+TetraMindFck is also the reference game for the first shared MiniFugg SFX vocabulary documented in `docs/MUSIC_LAB.md`.
+
+Use the common semantic sounds for:
+
+- move;
+- rotate;
+- deliberate soft drop;
+- landing / locking a piece;
+- level-up;
+- failure/end.
+
+Tetra applies a slightly lower, tighter accent to those shared sounds instead of replacing their identity.
+
+Game-specific signatures:
+
+- `MF-SFX-0008 Arithmetic Scan` — line calculation;
+- `MF-SFX-0009 Times Two` — arithmetic bonus;
+- `MF-SFX-0010 Big Number Thump` — unusually large result.
+
+Mixing rules:
+
+- keep movement feedback extremely short and quiet;
+- do not sonify every automatic falling tick;
+- landing should feel tactile rather than explosive;
+- calculation sounds may be more distinctive but must sit behind the music;
+- level-up uses the common MiniFugg progression signature;
+- avoid piercing high-register beeps and long arcade jingles;
+- sound effects should give the blocks physical and mathematical presence without becoming a second soundtrack.
+
+All music and SFX identities stay visible in the shared Audio Lab at `/?usr=moigod&lab=music` and follow the preservation rules in `docs/MUSIC_LAB.md`.

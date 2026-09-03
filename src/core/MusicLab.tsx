@@ -1,33 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import musicCatalogSource from '../music/catalog.json'
+import { musicCatalog as source } from '../music/catalog'
 import './musicLab.css'
 
-type MusicStatus = 'candidate' | 'selected' | 'archived'
-type MusicWave = 'square' | 'triangle' | 'sawtooth' | 'noise'
-
-type MusicNote = [startBeat: number, durationBeats: number, midi: number, velocity: number]
-
-type MusicTrack = {
-  id: string
-  name: string
-  wave: MusicWave
-  gain: number
-  notes: MusicNote[]
-}
-
-type MusicStage = {
-  label: string
-  bpm: number
-  variant: string
-  activeTracks: string[]
-}
-
-type MusicComposition = {
+type Status = 'candidate' | 'selected' | 'archived'
+type Wave = 'square' | 'triangle' | 'sawtooth' | 'noise'
+type Note = [startBeat: number, durationBeats: number, midi: number, velocity: number]
+type Track = { id: string, name: string, wave: Wave, gain: number, notes: Note[] }
+type Stage = { label: string, bpm: number, variant: string, activeTracks: string[] }
+type Composition = {
   id: string
   gameId: string
   gameTitle: string
   name: string
-  status: MusicStatus
+  status: Status
   createdAt: string
   summary: string
   concept: string[]
@@ -35,366 +20,212 @@ type MusicComposition = {
   meter: string
   loopBeats: number
   midiExports: string[]
-  stages: MusicStage[]
-  variants: Record<string, MusicTrack[]>
+  stages: Stage[]
+  variants: Record<string, Track[]>
 }
+type Catalog = { version: number, rule: string, compositions: Composition[] }
+type Filter = Status | 'all'
+type Playback = { compositionId: string, stageIndex: number, escalation: boolean }
+type SourceNode = OscillatorNode | AudioBufferSourceNode
 
-type MusicCatalog = {
-  version: number
-  rule: string
-  compositions: MusicComposition[]
-}
+const musicCatalog = source as unknown as Catalog
+const FILTERS: Array<[Filter, string]> = [['candidate', 'À ÉCOUTER'], ['selected', 'RETENUES'], ['archived', 'ARCHIVES'], ['all', 'TOUT']]
+const STATUS_LABEL: Record<Status, string> = { candidate: 'À ÉCOUTER', selected: 'RETENUE', archived: 'ARCHIVE' }
 
-type Filter = 'candidate' | 'selected' | 'archived' | 'all'
-type PlaybackMode = 'single' | 'escalation'
+function hz(note: number) { return 440 * Math.pow(2, (note - 69) / 12) }
+function clamp(value: number, min: number, max: number) { return Math.max(min, Math.min(max, value)) }
 
-type PlaybackState = {
-  compositionId: string
-  stageIndex: number
-  mode: PlaybackMode
-}
-
-type ScheduledSource = OscillatorNode | AudioBufferSourceNode
-
-const musicCatalog = musicCatalogSource as unknown as MusicCatalog
-
-const FILTERS: Array<{ id: Filter, label: string }> = [
-  { id: 'candidate', label: 'À ÉCOUTER' },
-  { id: 'selected', label: 'RETENUES' },
-  { id: 'archived', label: 'ARCHIVES' },
-  { id: 'all', label: 'TOUT' },
-]
-
-const STATUS_LABEL: Record<MusicStatus, string> = {
-  candidate: 'À ÉCOUTER',
-  selected: 'RETENUE',
-  archived: 'ARCHIVE',
-}
-
-function midiFrequency(note: number) {
-  return 440 * Math.pow(2, (note - 69) / 12)
-}
-
-function clamp(value: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, value))
-}
-
-function makeNoiseBuffer(context: AudioContext) {
-  const length = Math.max(1, Math.floor(context.sampleRate * 0.7))
-  const buffer = context.createBuffer(1, length, context.sampleRate)
+function noiseBuffer(context: AudioContext) {
+  const buffer = context.createBuffer(1, Math.floor(context.sampleRate * .5), context.sampleRate)
   const data = buffer.getChannelData(0)
-  let value = 0
-  for (let index = 0; index < data.length; index += 1) {
-    value = value * 0.62 + (Math.random() * 2 - 1) * 0.38
-    data[index] = value
+  let previous = 0
+  for (let i = 0; i < data.length; i += 1) {
+    previous = previous * .58 + (Math.random() * 2 - 1) * .42
+    data[i] = previous
   }
   return buffer
 }
 
-function scheduleTone(
-  context: AudioContext,
-  destination: AudioNode,
-  track: MusicTrack,
-  note: MusicNote,
-  startTime: number,
-  secondsPerBeat: number,
-  sources: ScheduledSource[],
-) {
-  const [startBeat, durationBeats, midi, velocity] = note
-  const start = startTime + startBeat * secondsPerBeat
-  const duration = Math.max(0.025, durationBeats * secondsPerBeat)
+function scheduleTone(context: AudioContext, output: AudioNode, track: Track, note: Note, origin: number, beatSeconds: number, sources: SourceNode[]) {
+  const [beat, durationBeats, midi, velocity] = note
+  const start = origin + beat * beatSeconds
+  const duration = Math.max(.025, durationBeats * beatSeconds)
   const end = start + duration
-  const oscillator = context.createOscillator()
-  const envelope = context.createGain()
-  oscillator.type = track.wave === 'triangle' ? 'triangle' : track.wave === 'sawtooth' ? 'sawtooth' : 'square'
-  oscillator.frequency.setValueAtTime(midiFrequency(midi), start)
-  const level = clamp((velocity / 127) * track.gain, 0.002, 0.22)
-  envelope.gain.setValueAtTime(0.0001, start)
-  envelope.gain.exponentialRampToValueAtTime(level, start + Math.min(0.009, duration * 0.2))
-  envelope.gain.setValueAtTime(level, Math.max(start + 0.01, end - 0.024))
-  envelope.gain.exponentialRampToValueAtTime(0.0001, end)
-  oscillator.connect(envelope).connect(destination)
-  oscillator.start(start)
-  oscillator.stop(end + 0.025)
-  sources.push(oscillator)
+  const osc = context.createOscillator()
+  const gain = context.createGain()
+  osc.type = track.wave === 'triangle' ? 'triangle' : track.wave === 'sawtooth' ? 'sawtooth' : 'square'
+  osc.frequency.setValueAtTime(hz(midi), start)
+  const level = clamp(velocity / 127 * track.gain, .002, .2)
+  gain.gain.setValueAtTime(.0001, start)
+  gain.gain.exponentialRampToValueAtTime(level, start + Math.min(.009, duration * .2))
+  gain.gain.setValueAtTime(level, Math.max(start + .01, end - .02))
+  gain.gain.exponentialRampToValueAtTime(.0001, end)
+  osc.connect(gain).connect(output)
+  osc.start(start)
+  osc.stop(end + .02)
+  sources.push(osc)
 }
 
-function scheduleNoise(
-  context: AudioContext,
-  destination: AudioNode,
-  noiseBuffer: AudioBuffer,
-  track: MusicTrack,
-  note: MusicNote,
-  startTime: number,
-  secondsPerBeat: number,
-  sources: ScheduledSource[],
-) {
-  const [startBeat, durationBeats, midi, velocity] = note
-  const start = startTime + startBeat * secondsPerBeat
-  const duration = Math.max(0.028, Math.min(0.16, durationBeats * secondsPerBeat))
+function scheduleNoise(context: AudioContext, output: AudioNode, buffer: AudioBuffer, track: Track, note: Note, origin: number, beatSeconds: number, sources: SourceNode[]) {
+  const [beat, durationBeats, midi, velocity] = note
+  const start = origin + beat * beatSeconds
+  const duration = Math.max(.025, Math.min(.15, durationBeats * beatSeconds))
   const source = context.createBufferSource()
   const filter = context.createBiquadFilter()
-  const envelope = context.createGain()
-  source.buffer = noiseBuffer
-  if (midi <= 37) {
-    filter.type = 'lowpass'
-    filter.frequency.setValueAtTime(260, start)
-  } else if (midi <= 40) {
-    filter.type = 'bandpass'
-    filter.frequency.setValueAtTime(1200, start)
-    filter.Q.setValueAtTime(0.8, start)
-  } else {
-    filter.type = 'highpass'
-    filter.frequency.setValueAtTime(midi >= 46 ? 6000 : 3600, start)
-  }
-  const level = clamp((velocity / 127) * track.gain * 1.45, 0.004, 0.24)
-  envelope.gain.setValueAtTime(level, start)
-  envelope.gain.exponentialRampToValueAtTime(0.0001, start + duration)
-  source.connect(filter).connect(envelope).connect(destination)
+  const gain = context.createGain()
+  source.buffer = buffer
+  if (midi <= 37) { filter.type = 'lowpass'; filter.frequency.value = 260 }
+  else if (midi <= 40) { filter.type = 'bandpass'; filter.frequency.value = 1200 }
+  else { filter.type = 'highpass'; filter.frequency.value = midi >= 46 ? 6000 : 3600 }
+  gain.gain.setValueAtTime(clamp(velocity / 127 * track.gain * 1.4, .004, .22), start)
+  gain.gain.exponentialRampToValueAtTime(.0001, start + duration)
+  source.connect(filter).connect(gain).connect(output)
   source.start(start)
-  source.stop(start + duration + 0.02)
+  source.stop(start + duration + .02)
   sources.push(source)
 }
 
 export function MusicLab() {
   const [filter, setFilter] = useState<Filter>('candidate')
-  const [gameFilter, setGameFilter] = useState('all')
-  const [stageByComposition, setStageByComposition] = useState<Record<string, number>>({})
-  const [playback, setPlayback] = useState<PlaybackState | null>(null)
-  const audioContextRef = useRef<AudioContext | null>(null)
-  const masterRef = useRef<GainNode | null>(null)
-  const noiseBufferRef = useRef<AudioBuffer | null>(null)
-  const scheduledSourcesRef = useRef<ScheduledSource[]>([])
-  const loopTimerRef = useRef<number | null>(null)
-  const playbackRef = useRef<PlaybackState | null>(null)
-  const nextLoopStartRef = useRef(0)
+  const [game, setGame] = useState('all')
+  const [stages, setStages] = useState<Record<string, number>>({})
+  const [playback, setPlayback] = useState<Playback | null>(null)
+  const contextRef = useRef<AudioContext | null>(null)
+  const outputRef = useRef<GainNode | null>(null)
+  const noiseRef = useRef<AudioBuffer | null>(null)
+  const sourcesRef = useRef<SourceNode[]>([])
+  const timerRef = useRef<number | null>(null)
+  const stateRef = useRef<Playback | null>(null)
+  const nextStartRef = useRef(0)
 
-  const games = useMemo(() => {
-    const unique = new Map<string, string>()
-    for (const composition of musicCatalog.compositions) unique.set(composition.gameId, composition.gameTitle)
-    return [...unique.entries()].map(([id, title]) => ({ id, title }))
-  }, [])
+  const games = useMemo(() => [...new Map(musicCatalog.compositions.map((item) => [item.gameId, item.gameTitle])).entries()], [])
+  const shown = useMemo(() => musicCatalog.compositions
+    .filter((item) => filter === 'all' || item.status === filter)
+    .filter((item) => game === 'all' || item.gameId === game)
+    .slice().sort((a, b) => b.id.localeCompare(a.id)), [filter, game])
 
-  const compositions = useMemo(() => {
-    return musicCatalog.compositions
-      .filter((composition) => filter === 'all' || composition.status === filter)
-      .filter((composition) => gameFilter === 'all' || composition.gameId === gameFilter)
-      .slice()
-      .sort((left, right) => right.id.localeCompare(left.id))
-  }, [filter, gameFilter])
-
-  const stopPlayback = useCallback(() => {
-    if (loopTimerRef.current !== null) {
-      window.clearTimeout(loopTimerRef.current)
-      loopTimerRef.current = null
-    }
-    for (const source of scheduledSourcesRef.current) {
-      try { source.stop() } catch { /* Already stopped. */ }
-    }
-    scheduledSourcesRef.current = []
-    playbackRef.current = null
+  const stop = useCallback(() => {
+    if (timerRef.current !== null) window.clearTimeout(timerRef.current)
+    timerRef.current = null
+    sourcesRef.current.forEach((node) => { try { node.stop() } catch { /* already ended */ } })
+    sourcesRef.current = []
+    stateRef.current = null
     setPlayback(null)
   }, [])
 
   const ensureAudio = useCallback(async () => {
-    let context = audioContextRef.current
-    if (!context) {
-      context = new AudioContext({ latencyHint: 'interactive' })
-      const master = context.createGain()
+    if (!contextRef.current) {
+      const context = new AudioContext({ latencyHint: 'interactive' })
+      const output = context.createGain()
       const compressor = context.createDynamicsCompressor()
-      master.gain.value = 0.72
+      output.gain.value = .72
       compressor.threshold.value = -15
       compressor.knee.value = 8
       compressor.ratio.value = 5
-      compressor.attack.value = 0.004
-      compressor.release.value = 0.14
-      master.connect(compressor).connect(context.destination)
-      audioContextRef.current = context
-      masterRef.current = master
-      noiseBufferRef.current = makeNoiseBuffer(context)
+      output.connect(compressor).connect(context.destination)
+      contextRef.current = context
+      outputRef.current = output
+      noiseRef.current = noiseBuffer(context)
     }
-    if (context.state === 'suspended') await context.resume()
-    return context
+    if (contextRef.current.state === 'suspended') await contextRef.current.resume()
+    return contextRef.current
   }, [])
 
-  const scheduleLoop = useCallback((composition: MusicComposition, state: PlaybackState, loopStart: number) => {
-    const context = audioContextRef.current
-    const master = masterRef.current
-    const noiseBuffer = noiseBufferRef.current
-    if (!context || !master || !noiseBuffer) return
-
+  const scheduleLoop = useCallback((composition: Composition, state: Playback, origin: number) => {
+    const context = contextRef.current
+    const output = outputRef.current
+    const noise = noiseRef.current
+    if (!context || !output || !noise) return
     const stage = composition.stages[state.stageIndex]
-    if (!stage) return
     const tracks = composition.variants[stage.variant] ?? []
-    const activeTracks = new Set(stage.activeTracks)
-    const secondsPerBeat = 60 / stage.bpm
-    const loopDuration = composition.loopBeats * secondsPerBeat
+    const enabled = new Set(stage.activeTracks)
+    const beatSeconds = 60 / stage.bpm
+    const loopSeconds = composition.loopBeats * beatSeconds
 
-    for (const track of tracks) {
-      if (!activeTracks.has(track.id)) continue
-      for (const note of track.notes) {
-        if (track.wave === 'noise') {
-          scheduleNoise(context, master, noiseBuffer, track, note, loopStart, secondsPerBeat, scheduledSourcesRef.current)
-        } else {
-          scheduleTone(context, master, track, note, loopStart, secondsPerBeat, scheduledSourcesRef.current)
-        }
-      }
-    }
+    tracks.filter((track) => enabled.has(track.id)).forEach((track) => track.notes.forEach((note) => {
+      if (track.wave === 'noise') scheduleNoise(context, output, noise, track, note, origin, beatSeconds, sourcesRef.current)
+      else scheduleTone(context, output, track, note, origin, beatSeconds, sourcesRef.current)
+    }))
 
-    nextLoopStartRef.current = loopStart + loopDuration
-    const delay = Math.max(60, (loopDuration - 0.18) * 1000)
-    loopTimerRef.current = window.setTimeout(() => {
-      const current = playbackRef.current
+    nextStartRef.current = origin + loopSeconds
+    timerRef.current = window.setTimeout(() => {
+      const current = stateRef.current
       if (!current || current.compositionId !== composition.id) return
-      let nextState = current
-      if (current.mode === 'escalation' && current.stageIndex < composition.stages.length - 1) {
-        nextState = { ...current, stageIndex: current.stageIndex + 1 }
-        playbackRef.current = nextState
-        setPlayback(nextState)
-        setStageByComposition((previous) => ({ ...previous, [composition.id]: nextState.stageIndex }))
+      let next = current
+      if (current.escalation && current.stageIndex < composition.stages.length - 1) {
+        next = { ...current, stageIndex: current.stageIndex + 1 }
+        stateRef.current = next
+        setPlayback(next)
+        setStages((old) => ({ ...old, [composition.id]: next.stageIndex }))
       }
-      scheduleLoop(composition, nextState, nextLoopStartRef.current)
-    }, delay)
+      scheduleLoop(composition, next, nextStartRef.current)
+    }, Math.max(80, (loopSeconds - .15) * 1000))
   }, [])
 
-  const play = useCallback(async (composition: MusicComposition, mode: PlaybackMode, explicitStage?: number) => {
-    stopPlayback()
+  const play = useCallback(async (composition: Composition, escalation = false, requestedStage?: number) => {
+    stop()
     const context = await ensureAudio()
-    const requestedStage = clamp(explicitStage ?? stageByComposition[composition.id] ?? 0, 0, composition.stages.length - 1)
-    const stageIndex = mode === 'escalation' ? 0 : requestedStage
-    const state: PlaybackState = { compositionId: composition.id, stageIndex, mode }
-    playbackRef.current = state
+    const stageIndex = escalation ? 0 : clamp(requestedStage ?? stages[composition.id] ?? 0, 0, composition.stages.length - 1)
+    const state = { compositionId: composition.id, stageIndex, escalation }
+    stateRef.current = state
     setPlayback(state)
-    if (mode === 'escalation') setStageByComposition((previous) => ({ ...previous, [composition.id]: 0 }))
-    const startAt = context.currentTime + 0.06
-    nextLoopStartRef.current = startAt
-    scheduleLoop(composition, state, startAt)
-  }, [ensureAudio, scheduleLoop, stageByComposition, stopPlayback])
+    if (escalation) setStages((old) => ({ ...old, [composition.id]: 0 }))
+    scheduleLoop(composition, state, context.currentTime + .06)
+  }, [ensureAudio, scheduleLoop, stages, stop])
 
-  const changeStage = useCallback((composition: MusicComposition, nextStage: number) => {
-    const bounded = clamp(nextStage, 0, composition.stages.length - 1)
-    setStageByComposition((previous) => ({ ...previous, [composition.id]: bounded }))
-    const current = playbackRef.current
-    if (current?.compositionId === composition.id) {
-      void play(composition, 'single', bounded)
-    }
+  const chooseStage = useCallback((composition: Composition, index: number) => {
+    setStages((old) => ({ ...old, [composition.id]: index }))
+    if (stateRef.current?.compositionId === composition.id) void play(composition, false, index)
   }, [play])
 
   useEffect(() => {
-    const previousTitle = document.title
+    const oldTitle = document.title
     document.title = 'Music Lab · MiniFugg God Mode'
-    return () => { document.title = previousTitle }
+    return () => { document.title = oldTitle }
   }, [])
 
   useEffect(() => () => {
-    stopPlayback()
-    const context = audioContextRef.current
-    if (context) void context.close()
-  }, [stopPlayback])
+    stop()
+    if (contextRef.current) void contextRef.current.close()
+  }, [stop])
 
   return (
     <main className="mf-music-lab">
       <header className="mf-music-lab__head">
-        <div>
-          <small>MINIFUGG / USR: MOIGOD</small>
-          <h1>MUSIC LAB</h1>
-          <p>Écoute directe dans le navigateur. Aucun lecteur MIDI du téléphone n’est utilisé.</p>
-        </div>
-        <div className="mf-music-lab__counter">
-          <b>{musicCatalog.compositions.length}</b>
-          <span>CRÉATIONS CONSERVÉES</span>
-        </div>
+        <div><small>MINIFUGG / USR: MOIGOD</small><h1>MUSIC LAB</h1><p>Écoute directe WebAudio. Le lecteur MIDI du téléphone n’intervient jamais.</p></div>
+        <div className="mf-music-lab__counter"><b>{musicCatalog.compositions.length}</b><span>CRÉATIONS CONSERVÉES</span></div>
       </header>
 
-      <section className="mf-music-lab__toolbar" aria-label="Filtres Music Lab">
-        <div className="mf-music-lab__tabs">
-          {FILTERS.map((item) => (
-            <button type="button" data-active={filter === item.id} onClick={() => setFilter(item.id)} key={item.id}>{item.label}</button>
-          ))}
-        </div>
-        <label>
-          <span>JEU</span>
-          <select value={gameFilter} onChange={(event) => setGameFilter(event.target.value)}>
-            <option value="all">Tous</option>
-            {games.map((game) => <option value={game.id} key={game.id}>{game.title}</option>)}
-          </select>
-        </label>
+      <section className="mf-music-lab__toolbar">
+        <div className="mf-music-lab__tabs">{FILTERS.map(([id, label]) => <button type="button" data-active={filter === id} onClick={() => setFilter(id)} key={id}>{label}</button>)}</div>
+        <label><span>JEU</span><select value={game} onChange={(event) => setGame(event.target.value)}><option value="all">Tous</option>{games.map(([id, title]) => <option value={id} key={id}>{title}</option>)}</select></label>
       </section>
 
       <section className="mf-music-lab__list">
-        {compositions.map((composition) => {
-          const selectedStage = clamp(stageByComposition[composition.id] ?? 0, 0, composition.stages.length - 1)
-          const stage = composition.stages[selectedStage]
+        {shown.map((composition) => {
+          const chosen = clamp(stages[composition.id] ?? 0, 0, composition.stages.length - 1)
           const isPlaying = playback?.compositionId === composition.id
-          const liveStage = isPlaying ? composition.stages[playback.stageIndex] : stage
+          const liveIndex = isPlaying ? playback.stageIndex : chosen
+          const live = composition.stages[liveIndex]
           return (
             <article className="mf-music-card" data-status={composition.status} data-playing={isPlaying ? 'true' : 'false'} key={composition.id}>
-              <div className="mf-music-card__number">
-                <span>{composition.id}</span>
-                <b>{STATUS_LABEL[composition.status]}</b>
-              </div>
-
-              <div className="mf-music-card__title">
-                <small>{composition.gameTitle}</small>
-                <h2>{composition.name}</h2>
-                <p>{composition.summary}</p>
-              </div>
-
-              <div className="mf-music-card__tags">
-                {composition.concept.map((tag) => <span key={tag}>{tag}</span>)}
-              </div>
-
-              <div className="mf-music-card__math">
-                <span>{composition.key}</span>
-                <span>{composition.meter}</span>
-                <span>{composition.loopBeats / 4} mesures</span>
-                <span>{composition.midiExports.length} exports MIDI</span>
-              </div>
-
+              <div className="mf-music-card__number"><span>{composition.id}</span><b>{STATUS_LABEL[composition.status]}</b></div>
+              <div className="mf-music-card__title"><small>{composition.gameTitle}</small><h2>{composition.name}</h2><p>{composition.summary}</p></div>
+              <div className="mf-music-card__tags">{composition.concept.map((tag) => <span key={tag}>{tag}</span>)}</div>
+              <div className="mf-music-card__math"><span>{composition.key}</span><span>{composition.meter}</span><span>{composition.loopBeats / 4} mesures</span><span>{composition.midiExports.length} exports MIDI</span></div>
               <div className="mf-music-card__stages">
-                <div className="mf-music-card__stage-head">
-                  <strong>INTENSITÉ</strong>
-                  <span>{liveStage.label} · {liveStage.bpm} BPM</span>
-                </div>
-                <div className="mf-music-card__stage-buttons">
-                  {composition.stages.map((candidate, index) => (
-                    <button
-                      type="button"
-                      data-active={(isPlaying ? playback.stageIndex : selectedStage) === index}
-                      onClick={() => changeStage(composition, index)}
-                      aria-label={`Niveau ${candidate.label}, ${candidate.bpm} BPM`}
-                      key={`${composition.id}-${candidate.label}`}
-                    >
-                      <b>{candidate.label}</b><small>{candidate.bpm}</small>
-                    </button>
-                  ))}
-                </div>
+                <div className="mf-music-card__stage-head"><strong>INTENSITÉ</strong><span>{live.label} · {live.bpm} BPM</span></div>
+                <div className="mf-music-card__stage-buttons">{composition.stages.map((stage, index) => <button type="button" data-active={liveIndex === index} onClick={() => chooseStage(composition, index)} key={stage.label}><b>{stage.label}</b><small>{stage.bpm}</small></button>)}</div>
               </div>
-
-              <div className="mf-music-card__transport">
-                <button type="button" className="primary" onClick={() => isPlaying ? stopPlayback() : void play(composition, 'single')}>
-                  {isPlaying ? '■ STOP' : '▶ ÉCOUTER'}
-                </button>
-                <button type="button" onClick={() => void play(composition, 'escalation')}>↗ 1 → MAX</button>
-              </div>
-
-              <footer>
-                <span>Créée le {composition.createdAt}</span>
-                <span>Les fichiers MIDI restent archivés même après décision.</span>
-              </footer>
+              <div className="mf-music-card__transport"><button type="button" className="primary" onClick={() => isPlaying ? stop() : void play(composition)}>{isPlaying ? '■ STOP' : '▶ ÉCOUTER'}</button><button type="button" onClick={() => void play(composition, true)}>↗ 1 → MAX</button></div>
+              <footer><span>Créée le {composition.createdAt}</span><span>La source MIDI symbolique reste archivée après décision.</span></footer>
             </article>
           )
         })}
-
-        {compositions.length === 0 && (
-          <div className="mf-music-lab__empty">Aucune création dans ce filtre.</div>
-        )}
+        {shown.length === 0 && <div className="mf-music-lab__empty">Aucune création dans ce filtre.</div>}
       </section>
 
-      <footer className="mf-music-lab__rule">
-        <strong>RÈGLE DU LAB</strong>
-        <span>{musicCatalog.rule}</span>
-      </footer>
+      <footer className="mf-music-lab__rule"><strong>RÈGLE DU LAB</strong><span>{musicCatalog.rule}</span></footer>
     </main>
   )
 }

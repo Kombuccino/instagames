@@ -121,6 +121,17 @@ The current original home image should ultimately be imported as:
 
 `public/assets/imported/minifugg-home-original.png`
 
+## Welcome parallax bundles
+
+A Fugg welcome cover that uses parallax should be treated as a small asset bundle, not as one flat image plus CSS-drawn decorations. Keep a flat poster/master for reference and generate aligned raster layers such as:
+
+- background/environment;
+- midground burst/objects;
+- foreground character or hero object;
+- title/logo/CTA overlay.
+
+Transparent layers should use PNG masters and may also have WebP runtime derivatives. All files still enter through the same private `Fugg` Drive inbox and are verified under `public/assets/imported/` before the code references them.
+
 ## Security model
 
 The Drive folder remains private. ChatGPT can add assets through the user's connected Drive. The service account can only read files explicitly shared with it. GitHub proves its repository identity to Google using an OIDC token, and Google returns short-lived credentials. The GitHub workflow also uses an automatically expiring repository token.

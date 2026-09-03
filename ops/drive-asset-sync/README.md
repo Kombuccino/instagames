@@ -126,3 +126,7 @@ The current original home image should ultimately be imported as:
 The Drive folder remains private. ChatGPT can add assets through the user's connected Drive. The service account can only read files explicitly shared with it. GitHub proves its repository identity to Google using an OIDC token, and Google returns short-lived credentials. The GitHub workflow also uses an automatically expiring repository token.
 
 There are therefore no permanent Google or GitHub credentials to steal from a VPS, and this pipeline opens no inbound network service anywhere.
+
+## Production usage
+
+For the canonical AI/game-development procedure, filenames, verification requirements and application URL rules, use `docs/ASSET_PIPELINE.md`. Production conversations should treat that document as the source of truth and should not reference `/assets/imported/...` until the corresponding file is confirmed in the repository.

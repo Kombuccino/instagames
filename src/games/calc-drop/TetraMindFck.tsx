@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { FuggWelcome, readWelcomeBestScore, recordWelcomeBestScore } from '../../core/FuggWelcome'
 import type { GameComponentProps, GameWelcomeVariant } from '../../core/types'
+import { useTetraMindFckMusic } from '../../music/reactiveGameMusic'
 import { CalcDrop } from './CalcDrop'
 
 const GAME_ID = 'tetramindfck'
@@ -114,22 +115,44 @@ const WELCOME_VARIANTS: GameWelcomeVariant[] = [
 ]
 
 export function TetraMindFck(props: GameComponentProps) {
+  const shellRef = useRef<HTMLDivElement>(null)
   const [welcomeOpen, setWelcomeOpen] = useState(true)
+  const [runFinished, setRunFinished] = useState(false)
   const [bestScore, setBestScore] = useState(() => readWelcomeBestScore(GAME_ID))
+  const gameplayActive = props.active && !welcomeOpen && !runFinished
+
+  const music = useTetraMindFckMusic({
+    rootRef: shellRef,
+    armed: props.active,
+    playing: gameplayActive,
+    seed: props.seed,
+    restartToken: props.restartToken,
+  })
+
+  useEffect(() => {
+    setRunFinished(false)
+  }, [props.restartToken, props.seed])
 
   const session = useMemo(() => ({
     setScore: props.session.setScore,
     finish: (payload: Parameters<GameComponentProps['session']['finish']>[0]) => {
+      setRunFinished(true)
       setBestScore(recordWelcomeBestScore(GAME_ID, payload.score))
-      props.session.finish(payload)
+      props.session.finish({
+        ...payload,
+        metadata: {
+          ...(payload.metadata ?? {}),
+          musicId: music.compositionId ?? 'none',
+        },
+      })
     },
-  }), [props.session])
+  }), [music.compositionId, props.session])
 
   return (
-    <>
+    <div ref={shellRef} style={{ display: 'contents' }}>
       <CalcDrop
         {...props}
-        active={props.active && !welcomeOpen}
+        active={gameplayActive}
         session={session}
       />
       {welcomeOpen && (
@@ -143,6 +166,6 @@ export function TetraMindFck(props: GameComponentProps) {
           onPlay={() => setWelcomeOpen(false)}
         />
       )}
-    </>
+    </div>
   )
 }

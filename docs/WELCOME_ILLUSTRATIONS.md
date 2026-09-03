@@ -129,6 +129,8 @@ Use lightweight runtime effects first:
 
 Do not block the MiniFugg vertical feed gesture. The welcome surface must preserve the Core swipe escape contract.
 
+For flattened artwork, the first implementation may use a subtle camera shift + moving light + independent foreground motifs. True multi-plane parallax should only be used when the art has been exported as separated layers.
+
 ## 7. Asset strategy
 
 ### Master
@@ -169,24 +171,29 @@ Gameplay concept that the welcome art must represent:
 - a person or mind under pressure, fracturing, exploding or being overwhelmed;
 - the game name is **TetraMindFck**, never `Calc Drop` on marketing art.
 
-Existing approved direction experiments:
+Approved full-resolution directions:
 
 - expressive hand-painted / pulp poster with a mind exploding;
 - retro European micro-computer cover;
 - graphic / Eastern-European poster treatment.
 
-Foreign-edition candidates to explore include Japanese and Chinese treatments.
+Foreign-edition style candidates already explored in concept boards:
 
-### Initial unlock proposal
+- Japanese edition;
+- Chinese edition.
 
-Keep values easy to tune in registry/config rather than hard-code them in artwork:
+Do **not** crop those concept boards into production art. A cultural edition must be regenerated/finalized as its own standalone full-resolution master before entering the Drive pipeline.
+
+### Initial unlock thresholds
+
+The pilot currently uses best-run score milestones:
 
 - variant 1: unlocked by default;
-- variant 2: score milestone 5,000;
-- variant 3: score milestone 15,000;
-- variant 4: score milestone 30,000.
+- variant 2: 5,000;
+- variant 3: 15,000;
+- variant 4: target 30,000 once the cultural master is approved.
 
-Additional rare editions can use higher thresholds or achievements later.
+Unlocked state is currently persisted locally as a pilot. Cross-device/profile unlock persistence can move into the platform data model later.
 
 ## 10. Global MiniFugg home
 
@@ -211,3 +218,31 @@ These are platform-level visuals, not tied to one game's unlock score.
 6. Add generic Bêta and Caca status intros.
 7. Apply the system to the next Fugg games.
 8. Rework the global MiniFugg home using the same authored approach.
+
+## 12. Current implementation state
+
+Implemented on `main`:
+
+- reusable `src/core/FuggWelcome.tsx` welcome layer;
+- lightweight camera/parallax response, moving light, floating tetromino motifs and animated upward arrow;
+- animations pause when the slot is inactive and respect reduced-motion preferences;
+- local central swipe surface leaves the Core bottom swipe gutter free;
+- TetraMindFck wrapper pauses gameplay until the welcome is dismissed;
+- unlocked TetraMindFck covers rotate deterministically from the feed seed;
+- best-run score persists locally for unlocks;
+- generic BÊTA and CACA intro gates are wired to the games carrying those curation statuses;
+- the BÊTA copy explicitly asks for player feedback/comments;
+- the CACA copy explicitly warns that the game may never leave the box.
+
+Verified production assets now present in the repository:
+
+- `/assets/imported/tetramindfck-welcome-v1-pulp-euro.png`
+- `/assets/imported/tetramindfck-welcome-v2-micro-euro.png`
+- `/assets/imported/tetramindfck-welcome-v3-graphic-poster.png`
+
+Pending before the first four-cover TetraMindFck set is complete:
+
+- choose the cultural direction (Japanese vs Chinese, or another candidate);
+- generate it as one standalone portrait master;
+- import it through Drive;
+- add it as the 30,000-point fourth variant.

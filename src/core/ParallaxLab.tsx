@@ -5,22 +5,30 @@ import './parallaxLab.css'
 
 const DRAFT_PREFIX = 'minifugg:parallax-lab:v1:'
 
+function productionFingerprint(variants: GameWelcomeVariant[]) {
+  return JSON.stringify(variants)
+}
+
 export function readParallaxLabDraft(gameId: string, fallback: GameWelcomeVariant[]) {
   if (typeof window === 'undefined') return fallback
   try {
     const raw = window.localStorage.getItem(`${DRAFT_PREFIX}${gameId}`)
     if (!raw) return fallback
-    const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed as GameWelcomeVariant[] : fallback
+    const parsed = JSON.parse(raw) as { base?: string, variants?: GameWelcomeVariant[] }
+    if (!parsed || parsed.base !== productionFingerprint(fallback) || !Array.isArray(parsed.variants)) return fallback
+    return parsed.variants
   } catch {
     return fallback
   }
 }
 
-export function writeParallaxLabDraft(gameId: string, variants: GameWelcomeVariant[]) {
+export function writeParallaxLabDraft(gameId: string, variants: GameWelcomeVariant[], productionVariants: GameWelcomeVariant[]) {
   if (typeof window === 'undefined') return
   try {
-    window.localStorage.setItem(`${DRAFT_PREFIX}${gameId}`, JSON.stringify(variants))
+    window.localStorage.setItem(`${DRAFT_PREFIX}${gameId}`, JSON.stringify({
+      base: productionFingerprint(productionVariants),
+      variants,
+    }))
   } catch {
     // A tuning tool must never break the actual game if storage is unavailable.
   }
@@ -72,8 +80,16 @@ function cloneVariant(variant: GameWelcomeVariant) {
   return JSON.parse(JSON.stringify(variant)) as GameWelcomeVariant
 }
 
-function writeClipboard(text: string) {
-  if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text)
+async function writeClipboard(text: string) {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text)
+      return
+    }
+  } catch {
+    // Fall through to the old synchronous clipboard path.
+  }
+
   const textarea = document.createElement('textarea')
   textarea.value = text
   textarea.style.position = 'fixed'
@@ -82,7 +98,6 @@ function writeClipboard(text: string) {
   textarea.select()
   document.execCommand('copy')
   textarea.remove()
-  return Promise.resolve()
 }
 
 function updateLayerInVariant(

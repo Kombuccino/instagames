@@ -1,0 +1,55 @@
+name: Sync Drive assets
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/10 * * * *'
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: minifugg-drive-asset-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: ${{ vars.GCP_WIF_PROVIDER != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Authenticate to Google Cloud without a key
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: minifugg-assets@minifugg-assets.iam.gserviceaccount.com
+          project_id: minifugg-assets
+          create_credentials_file: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: ops/drive-asset-sync/requirements.txt
+
+      - name: Install importer dependencies
+        run: python -m pip install --disable-pip-version-check --no-cache-dir -r ops/drive-asset-sync/requirements.txt
+
+      - name: Import validated images from Drive
+        env:
+          DRIVE_FOLDER_ID: 1o7YIB4qEPYNJvOI9yPr_6tUPEW3dDF0H
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: Kombuccino/instagames
+          GITHUB_BRANCH: main
+          GITHUB_ASSET_PREFIX: public/assets/imported
+          STATE_FILE: /tmp/minifugg-drive-sync-state.json
+          LOCK_FILE: /tmp/minifugg-drive-sync.lock
+          MAX_FILE_BYTES: '10485760'
+          MAX_IMAGE_PIXELS: '40000000'
+        run: python ops/drive-asset-sync/sync_drive_assets.py

@@ -4,6 +4,8 @@ Before creating or modifying any MiniFugg game, read `GAME_DEV_SPEC.md`, `docs/S
 
 Before creating, importing or integrating image assets, also read `docs/ASSET_PIPELINE.md`. It is the normative Drive -> GitHub image pipeline. Use that pipeline instead of manual binary GitHub uploads, base64 chunking, public Drive links or FTP.
 
+Before creating or modifying Fugg welcome covers / splash art, also read `docs/WELCOME_ILLUSTRATIONS.md`. It defines the collectible-cover system, Fugg/Bêta/Caca behavior, parallax asset bundles, unlocks and the `SWIPE TO PLAY ↑` interaction contract.
+
 ## Mandatory rules
 
 1. A newly started real game has a strict budget of 10 user prompts.
@@ -27,3 +29,4 @@ Before creating, importing or integrating image assets, also read `docs/ASSET_PI
 19. Once a visual direction is chosen, create/read `src/games/<game-id>/ART_DIRECTION.md` and preserve it across later prompts.
 20. If existing game code conflicts with these contracts, treat the contracts as the target architecture and preserve gameplay while migrating deliberately.
 21. For production image assets, use the `Fugg` Drive inbox documented in `docs/ASSET_PIPELINE.md`, wait for/verify the automatic sync into `public/assets/imported/`, and reference only `/assets/imported/...` from the app. Never hotlink Drive.
+22. A Fugg welcome cover that claims parallax must use real generated raster layers (background / midground / foreground / overlay as appropriate), imported through the asset pipeline. Do not substitute CSS-drawn props or generic JS particles for the actual artwork. While a welcome cover is visible, its first forward swipe, wheel-down or `ArrowDown` gesture reveals the current game; only after the cover is gone does normal gameplay/feed behavior resume. The protected bottom swipe gutter remains untouched.

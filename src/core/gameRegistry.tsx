@@ -3,7 +3,7 @@ import { LineFugg } from '../games/linefugg/LineFugg'
 import { ShootTheShooter } from '../games/shoot-the-shooter/ShootTheShooter'
 import { VladsSkewers } from '../games/vlads-skewers/VladsSkewers'
 import { HariRottenTeeth } from '../games/hari-rotten-teeth/HariRottenTeeth'
-import { CalcDrop } from '../games/calc-drop/CalcDrop'
+import { TetraMindFck } from '../games/calc-drop/TetraMindFck'
 import { CrazyPapers } from '../games/crazy-papers/CrazyPapers'
 import { DebthOfLife } from '../games/debth-of-life/DebthOfLife'
 import { TrainFighter } from '../games/train-fighter/TrainFighter'
@@ -186,7 +186,7 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'fugg',
     orientation: 'portrait',
-    component: CalcDrop,
+    component: TetraMindFck,
     instructions: {
       goal: 'Complète des lignes et construis les calculs les plus rentables possible.',
       rules: [

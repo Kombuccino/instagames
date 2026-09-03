@@ -2,6 +2,8 @@
 
 Before creating or modifying any MiniFugg game, read `GAME_DEV_SPEC.md`, `docs/STYLE_SYSTEM.md`, `docs/INPUT_GESTURES.md`, `docs/ORIENTATION_LAYOUT.md` and `docs/GAME_LAYOUT_SYSTEM.md` completely. They are the normative game-development, visual-direction, input, orientation and layout contracts for this repository.
 
+Before creating, importing or integrating image assets, also read `docs/ASSET_PIPELINE.md`. It is the normative Drive -> GitHub image pipeline. Use that pipeline instead of manual binary GitHub uploads, base64 chunking, public Drive links or FTP.
+
 ## Mandatory rules
 
 1. A newly started real game has a strict budget of 10 user prompts.
@@ -24,3 +26,4 @@ Before creating or modifying any MiniFugg game, read `GAME_DEV_SPEC.md`, `docs/S
 18. Do not fall back to the generic AI aesthetic. Read the style kit catalog in `docs/style-kits/` and `src/style-kits/catalog.ts`. If visual direction is unclear, use the visual preflight from `docs/STYLE_SYSTEM.md`.
 19. Once a visual direction is chosen, create/read `src/games/<game-id>/ART_DIRECTION.md` and preserve it across later prompts.
 20. If existing game code conflicts with these contracts, treat the contracts as the target architecture and preserve gameplay while migrating deliberately.
+21. For production image assets, use the `Fugg` Drive inbox documented in `docs/ASSET_PIPELINE.md`, wait for/verify the automatic sync into `public/assets/imported/`, and reference only `/assets/imported/...` from the app. Never hotlink Drive.

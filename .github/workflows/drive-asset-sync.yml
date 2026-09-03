@@ -4,6 +4,12 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '*/10 * * * *'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/drive-asset-sync.yml'
+      - 'ops/drive-asset-sync/**'
 
 permissions:
   contents: write
@@ -15,7 +21,6 @@ concurrency:
 
 jobs:
   sync:
-    if: ${{ vars.GCP_WIF_PROVIDER != '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -26,7 +31,7 @@ jobs:
       - name: Authenticate to Google Cloud without a key
         uses: google-github-actions/auth@v3
         with:
-          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          workload_identity_provider: projects/484757798037/locations/global/workloadIdentityPools/github-actions/providers/instagames
           service_account: minifugg-assets@minifugg-assets.iam.gserviceaccount.com
           project_id: minifugg-assets
           create_credentials_file: true

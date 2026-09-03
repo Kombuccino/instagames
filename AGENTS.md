@@ -4,6 +4,8 @@ Before creating or modifying any MiniFugg game, read `GAME_DEV_SPEC.md`, `docs/S
 
 Before creating, importing or integrating image assets, also read `docs/ASSET_PIPELINE.md`. It is the normative Drive -> GitHub image pipeline. Use that pipeline instead of manual binary GitHub uploads, base64 chunking, public Drive links or FTP.
 
+Before creating or modifying MiniFugg music, MIDI compositions or reactive game audio, also read `docs/MUSIC_LAB.md`. Every AI-created music proposal must be registered in the Music Lab catalog and preserved through the candidate/selected/archived lifecycle instead of being deleted.
+
 Before creating or modifying Fugg welcome covers / splash art, also read `docs/WELCOME_ILLUSTRATIONS.md`. It defines the collectible-cover system, Fugg/Bêta/Caca behavior, parallax asset bundles, unlocks and the `SWIPE TO PLAY ↑` interaction contract. Before tuning layer position, scale, parallax, motion, FX or unlock scores, also read `docs/PARALLAX_LAB.md`.
 
 ## Mandatory rules
@@ -31,3 +33,4 @@ Before creating or modifying Fugg welcome covers / splash art, also read `docs/W
 21. For production image assets, use the `Fugg` Drive inbox documented in `docs/ASSET_PIPELINE.md`, wait for/verify the automatic sync into `public/assets/imported/`, and reference only `/assets/imported/...` from the app. Never hotlink Drive.
 22. A Fugg welcome cover that claims parallax must use real generated raster layers (background / midground / foreground / overlay as appropriate), imported through the asset pipeline. Do not substitute CSS-drawn props or generic JS particles for the actual artwork. While a welcome cover is visible, its first forward swipe, wheel-down or `ArrowDown` gesture reveals the current game; only after the cover is gone does normal gameplay/feed behavior resume. The protected bottom swipe gutter remains untouched.
 23. Use the desktop Parallax Lab (`/?game=<game-id>&usr=moigod`) to tune Fugg cover layers when practical. The Lab is preview-only: it may save drafts locally and copy a `MINIFUGG_PARALLAX_CONFIG` text block, but it must not write directly to GitHub or production. Apply validated copied configs through the normal repository workflow.
+24. Every AI-created MiniFugg music proposal gets a permanent `MF-MUS-####` id, appears in `/?usr=moigod&lab=music`, keeps its symbolic MIDI source and stable MIDI export identity, and is never deleted. User decisions change catalog status to `selected` or `archived` according to `docs/MUSIC_LAB.md`.

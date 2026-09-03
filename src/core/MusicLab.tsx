@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { musicCatalog as source } from '../music/catalog'
+import { SoundDesignLab } from './SoundDesignLab'
 import './musicLab.css'
 
 type Status = 'candidate' | 'selected' | 'archived'
@@ -86,7 +87,7 @@ function scheduleNoise(context: AudioContext, output: AudioNode, buffer: AudioBu
 }
 
 export function MusicLab() {
-  const [filter, setFilter] = useState<Filter>('candidate')
+  const [filter, setFilter] = useState<Filter>('all')
   const [game, setGame] = useState('all')
   const [stages, setStages] = useState<Record<string, number>>({})
   const [playback, setPlayback] = useState<Playback | null>(null)
@@ -180,7 +181,7 @@ export function MusicLab() {
 
   useEffect(() => {
     const oldTitle = document.title
-    document.title = 'Music Lab · MiniFugg God Mode'
+    document.title = 'Audio Lab · MiniFugg God Mode'
     return () => { document.title = oldTitle }
   }, [])
 
@@ -192,8 +193,8 @@ export function MusicLab() {
   return (
     <main className="mf-music-lab">
       <header className="mf-music-lab__head">
-        <div><small>MINIFUGG / USR: MOIGOD</small><h1>MUSIC LAB</h1><p>Écoute directe WebAudio. Le lecteur MIDI du téléphone n’intervient jamais.</p></div>
-        <div className="mf-music-lab__counter"><b>{musicCatalog.compositions.length}</b><span>CRÉATIONS CONSERVÉES</span></div>
+        <div><small>MINIFUGG / USR: MOIGOD</small><h1>AUDIO LAB</h1><p>Musiques réactives et sound design procédural, écoutables directement dans le navigateur.</p></div>
+        <div className="mf-music-lab__counter"><b>{musicCatalog.compositions.length}</b><span>CRÉATIONS MUSICALES</span></div>
       </header>
 
       <section className="mf-music-lab__toolbar">
@@ -225,7 +226,8 @@ export function MusicLab() {
         {shown.length === 0 && <div className="mf-music-lab__empty">Aucune création dans ce filtre.</div>}
       </section>
 
-      <footer className="mf-music-lab__rule"><strong>RÈGLE DU LAB</strong><span>{musicCatalog.rule}</span></footer>
+      <footer className="mf-music-lab__rule"><strong>RÈGLE MUSIQUE</strong><span>{musicCatalog.rule}</span></footer>
+      <SoundDesignLab />
     </main>
   )
 }

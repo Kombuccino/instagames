@@ -9,12 +9,12 @@ const WELCOME_VARIANTS: GameWelcomeVariant[] = [
   {
     id: 'pulp-euro',
     label: 'Pulp européen',
-    image: '/assets/imported/tetramindfck-welcome-v1-pulp-euro.webp',
+    image: '/assets/imported/tetramindfck/welcome/variants/v1-pulp-euro.webp',
     unlockScore: 0,
     layers: [
       {
         role: 'background',
-        image: '/assets/imported/tetramindfck-welcome-v1-parallax-bg.webp',
+        image: '/assets/imported/tetramindfck/welcome/parallax/v1/bg.webp',
         scale: 104,
         parallaxX: 2.2,
         parallaxY: 1.6,
@@ -22,7 +22,7 @@ const WELCOME_VARIANTS: GameWelcomeVariant[] = [
       },
       {
         role: 'midground',
-        image: '/assets/imported/tetramindfck-welcome-v1-parallax-burst.webp',
+        image: '/assets/imported/tetramindfck/welcome/parallax/v1/burst.webp',
         scale: 103,
         parallaxX: 6.5,
         parallaxY: 4.5,
@@ -30,7 +30,7 @@ const WELCOME_VARIANTS: GameWelcomeVariant[] = [
       },
       {
         role: 'foreground',
-        image: '/assets/imported/tetramindfck-welcome-v1-parallax-subject.webp',
+        image: '/assets/imported/tetramindfck/welcome/parallax/v1/subject.webp',
         scale: 102,
         y: 2,
         parallaxX: 10,
@@ -39,7 +39,7 @@ const WELCOME_VARIANTS: GameWelcomeVariant[] = [
       },
       {
         role: 'overlay',
-        image: '/assets/imported/tetramindfck-welcome-v1-parallax-title.webp',
+        image: '/assets/imported/tetramindfck/welcome/parallax/v1/title.webp',
         scale: 100,
         parallaxX: .8,
         parallaxY: .6,
@@ -50,13 +50,13 @@ const WELCOME_VARIANTS: GameWelcomeVariant[] = [
   {
     id: 'micro-euro',
     label: 'Micro Europe 90s',
-    image: '/assets/imported/tetramindfck-welcome-v2-micro-euro.webp',
+    image: '/assets/imported/tetramindfck/welcome/variants/v2-micro-euro.webp',
     unlockScore: 5_000,
   },
   {
     id: 'graphic-poster',
     label: 'Affiche graphique',
-    image: '/assets/imported/tetramindfck-welcome-v3-graphic-poster.webp',
+    image: '/assets/imported/tetramindfck/welcome/variants/v3-graphic-poster.webp',
     unlockScore: 15_000,
   },
 ]

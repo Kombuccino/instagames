@@ -17,7 +17,7 @@ type HomeSplashProps = {
 const EXIT_DURATION_MS = 420
 const SWIPE_THRESHOLD_PX = 72
 const MAX_DRAG_VH = 34
-const HOME_ART_URL = '/assets/minifugg-home-pixel.webp?v=20260902-3'
+const HOME_ART_URL = '/assets/imported/minifugg-home-original.png'
 
 export function HomeSplash({ onComplete }: HomeSplashProps) {
   const pointerIdRef = useRef<number | null>(null)

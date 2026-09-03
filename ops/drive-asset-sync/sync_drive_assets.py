@@ -9,6 +9,7 @@ import os
 import re
 import unicodedata
 import warnings
+from collections import deque
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +23,9 @@ EXPECTED_DRIVE_FOLDER_ID = "1o7YIB4qEPYNJvOI9yPr_6tUPEW3dDF0H"
 EXPECTED_GITHUB_REPOSITORY = "Kombuccino/instagames"
 EXPECTED_GITHUB_BRANCH = "main"
 EXPECTED_GITHUB_ASSET_PREFIX = "public/assets/imported"
+DRIVE_FOLDER_MIME = "application/vnd.google-apps.folder"
+MAX_FOLDER_DEPTH = 8
+MAX_FOLDER_COUNT = 500
 ALLOWED_MIME_TO_FORMAT = {
     "image/png": ("PNG", ".png"),
     "image/jpeg": ("JPEG", ".jpg"),
@@ -41,20 +45,27 @@ def env(name: str, default: str | None = None) -> str:
 
 
 def positive_int(name: str, default: int) -> int:
-    raw = os.environ.get(name, str(default))
-    value = int(raw)
+    value = int(os.environ.get(name, str(default)))
     if value <= 0:
         raise RuntimeError(f"{name} must be > 0")
     return value
 
 
-def sanitize_filename(original_name: str, canonical_ext: str) -> str:
-    stem = Path(original_name).stem
-    normalized = unicodedata.normalize("NFKD", stem).encode("ascii", "ignore").decode("ascii")
+def normalize_name(value: str, fallback: str, max_length: int) -> str:
+    normalized = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
     normalized = SAFE_NAME_RE.sub("-", normalized).strip("-._").lower()
     if not normalized:
-        normalized = "image"
-    return f"{normalized[:100]}{canonical_ext}"
+        normalized = fallback
+    return normalized[:max_length]
+
+
+def sanitize_folder_name(name: str) -> str:
+    return normalize_name(name, "folder", 80)
+
+
+def sanitize_filename(original_name: str, canonical_ext: str) -> str:
+    stem = normalize_name(Path(original_name).stem, "image", 100)
+    return f"{stem}{canonical_ext}"
 
 
 def load_state(path: Path) -> dict[str, str]:
@@ -79,34 +90,74 @@ def save_state(path: Path, state: dict[str, str]) -> None:
 
 
 def drive_session() -> AuthorizedSession:
-    # Application Default Credentials supports keyless Workload Identity Federation
-    # in GitHub Actions, while still allowing local credentials for diagnostics.
     credentials, _ = google.auth.default(scopes=[DRIVE_SCOPE])
     return AuthorizedSession(credentials)
 
 
-def list_drive_images(session: AuthorizedSession, folder_id: str) -> list[dict[str, Any]]:
-    query = f"'{folder_id}' in parents and trashed = false"
-    params = {
-        "q": query,
+def list_drive_children(session: AuthorizedSession, folder_id: str) -> list[dict[str, Any]]:
+    params: dict[str, Any] = {
+        "q": f"'{folder_id}' in parents and trashed = false",
         "fields": "nextPageToken,files(id,name,mimeType,size,md5Checksum,modifiedTime)",
         "pageSize": 100,
         "orderBy": "createdTime asc",
         "supportsAllDrives": "true",
         "includeItemsFromAllDrives": "true",
     }
-    files: list[dict[str, Any]] = []
+    items: list[dict[str, Any]] = []
     page_token: str | None = None
     while True:
         if page_token:
             params["pageToken"] = page_token
+        elif "pageToken" in params:
+            del params["pageToken"]
         response = session.get("https://www.googleapis.com/drive/v3/files", params=params, timeout=30)
         response.raise_for_status()
         payload = response.json()
-        files.extend(payload.get("files", []))
+        items.extend(payload.get("files", []))
         page_token = payload.get("nextPageToken")
         if not page_token:
-            return files
+            return items
+
+
+def walk_drive_files(session: AuthorizedSession, root_folder_id: str) -> list[dict[str, Any]]:
+    queue: deque[tuple[str, tuple[str, ...], int]] = deque([(root_folder_id, tuple(), 0)])
+    visited_folder_ids: set[str] = set()
+    normalized_folder_paths: dict[str, str] = {"": root_folder_id}
+    files: list[dict[str, Any]] = []
+
+    while queue:
+        folder_id, relative_parts, depth = queue.popleft()
+        if folder_id in visited_folder_ids:
+            continue
+        visited_folder_ids.add(folder_id)
+        if len(visited_folder_ids) > MAX_FOLDER_COUNT:
+            raise RuntimeError(f"Drive tree exceeds safety limit of {MAX_FOLDER_COUNT} folders")
+
+        for item in list_drive_children(session, folder_id):
+            item_id = str(item.get("id", ""))
+            name = str(item.get("name", ""))
+            mime = str(item.get("mimeType", ""))
+            if not item_id or not name:
+                continue
+
+            if mime == DRIVE_FOLDER_MIME:
+                if depth >= MAX_FOLDER_DEPTH:
+                    log.warning("Skipping folder deeper than %d levels: %s", MAX_FOLDER_DEPTH, name)
+                    continue
+                safe_segment = sanitize_folder_name(name)
+                next_parts = (*relative_parts, safe_segment)
+                normalized_path = "/".join(next_parts)
+                previous_id = normalized_folder_paths.get(normalized_path)
+                if previous_id and previous_id != item_id:
+                    raise RuntimeError(f"Drive folder collision after normalization: {normalized_path}")
+                normalized_folder_paths[normalized_path] = item_id
+                queue.append((item_id, next_parts, depth + 1))
+                continue
+
+            item["_relative_dir"] = "/".join(relative_parts)
+            files.append(item)
+
+    return files
 
 
 def download_drive_file(session: AuthorizedSession, file_id: str, max_bytes: int) -> bytes:
@@ -150,7 +201,7 @@ def github_headers(token: str) -> dict[str, str]:
         "Accept": "application/vnd.github+json",
         "Authorization": f"Bearer {token}",
         "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "minifugg-drive-asset-sync/2.0",
+        "User-Agent": "minifugg-drive-asset-sync/3.0",
     }
 
 
@@ -171,7 +222,7 @@ def git_blob_sha(data: bytes) -> str:
     return hashlib.sha1(header + data).hexdigest()
 
 
-def github_put_image(owner_repo: str, path: str, branch: str, token: str, data: bytes, source_name: str) -> bool:
+def github_put_image(owner_repo: str, path: str, branch: str, token: str, data: bytes, source_path: str) -> bool:
     url = f"https://api.github.com/repos/{owner_repo}/contents/{path}"
     current_sha = github_existing_sha(owner_repo, path, branch, token)
     expected_sha = git_blob_sha(data)
@@ -180,7 +231,7 @@ def github_put_image(owner_repo: str, path: str, branch: str, token: str, data: 
         return False
 
     payload: dict[str, Any] = {
-        "message": f"assets: sync {source_name} from Drive",
+        "message": f"assets: sync {source_path} from Drive",
         "content": base64.b64encode(data).decode("ascii"),
         "branch": branch,
     }
@@ -191,13 +242,15 @@ def github_put_image(owner_repo: str, path: str, branch: str, token: str, data: 
     return True
 
 
-def fingerprint(file_info: dict[str, Any], data: bytes | None = None) -> str:
+def fingerprint(file_info: dict[str, Any], relative_path: str, data: bytes | None = None) -> str:
     checksum = file_info.get("md5Checksum")
     if checksum:
-        return f"md5:{checksum}"
-    if data is not None:
-        return "sha256:" + hashlib.sha256(data).hexdigest()
-    return f"modified:{file_info.get('modifiedTime', '')}:size:{file_info.get('size', '')}"
+        identity = f"md5:{checksum}"
+    elif data is not None:
+        identity = "sha256:" + hashlib.sha256(data).hexdigest()
+    else:
+        identity = f"modified:{file_info.get('modifiedTime', '')}:size:{file_info.get('size', '')}"
+    return f"path:{relative_path}|{identity}"
 
 
 def main() -> int:
@@ -211,7 +264,6 @@ def main() -> int:
     max_bytes = positive_int("MAX_FILE_BYTES", 10 * 1024 * 1024)
     max_pixels = positive_int("MAX_IMAGE_PIXELS", 40_000_000)
 
-    # Deliberately hard-coded safety boundaries: environment variables cannot redirect the sync.
     if folder_id != EXPECTED_DRIVE_FOLDER_ID:
         raise RuntimeError("DRIVE_FOLDER_ID is intentionally locked to the MiniFugg Fugg folder")
     if github_repository != EXPECTED_GITHUB_REPOSITORY:
@@ -234,44 +286,51 @@ def main() -> int:
         changed = False
         seen_targets: dict[str, str] = {}
 
-        for item in list_drive_images(session, folder_id):
+        for item in walk_drive_files(session, folder_id):
             file_id = str(item.get("id", ""))
             name = str(item.get("name", ""))
             mime = str(item.get("mimeType", ""))
+            relative_dir = str(item.get("_relative_dir", "")).strip("/")
             size_raw = item.get("size")
 
             if not file_id or not name:
                 continue
+            source_path = f"{relative_dir}/{name}" if relative_dir else name
             if mime not in ALLOWED_MIME_TO_FORMAT:
-                log.warning("Skipping %s: MIME %s is not allowed", name, mime)
+                log.warning("Skipping %s: MIME %s is not allowed", source_path, mime)
                 continue
             if size_raw is not None and int(size_raw) > max_bytes:
-                log.warning("Skipping %s: %s bytes exceeds limit", name, size_raw)
-                continue
-
-            quick_fp = fingerprint(item)
-            if state.get(file_id) == quick_fp and item.get("md5Checksum"):
+                log.warning("Skipping %s: %s bytes exceeds limit", source_path, size_raw)
                 continue
 
             try:
+                _, canonical_ext = ALLOWED_MIME_TO_FORMAT[mime]
+                safe_name = sanitize_filename(name, canonical_ext)
+                relative_path = f"{relative_dir}/{safe_name}" if relative_dir else safe_name
+
+                previous_id = seen_targets.get(relative_path)
+                if previous_id and previous_id != file_id:
+                    raise ValueError(f"File collision after path normalization: {relative_path}")
+                seen_targets[relative_path] = file_id
+
+                quick_fp = fingerprint(item, relative_path)
+                if state.get(file_id) == quick_fp and item.get("md5Checksum"):
+                    continue
+
                 data = download_drive_file(session, file_id, max_bytes)
                 _, canonical_ext, width, height = verify_image(data, mime, max_pixels)
-                final_fp = fingerprint(item, data)
-
                 safe_name = sanitize_filename(name, canonical_ext)
-                previous_id = seen_targets.get(safe_name)
-                if previous_id and previous_id != file_id:
-                    raise ValueError(f"Filename collision after sanitization: {safe_name}")
-                seen_targets[safe_name] = file_id
+                relative_path = f"{relative_dir}/{safe_name}" if relative_dir else safe_name
+                final_fp = fingerprint(item, relative_path, data)
 
-                github_path = f"{github_prefix}/{safe_name}"
-                uploaded = github_put_image(github_repository, github_path, github_branch, github_token, data, safe_name)
+                github_path = f"{github_prefix}/{relative_path}"
+                uploaded = github_put_image(github_repository, github_path, github_branch, github_token, data, source_path)
                 state[file_id] = final_fp
                 changed = changed or uploaded
                 if uploaded:
-                    log.info("Synced %s (%dx%d, %d bytes) -> %s", name, width, height, len(data), github_path)
+                    log.info("Synced %s (%dx%d, %d bytes) -> %s", source_path, width, height, len(data), github_path)
             except Exception as exc:
-                log.exception("Failed to sync %s: %s", name, exc)
+                log.exception("Failed to sync %s: %s", source_path, exc)
 
         save_state(state_path, state)
         if not changed:

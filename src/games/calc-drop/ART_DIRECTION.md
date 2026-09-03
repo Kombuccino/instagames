@@ -83,3 +83,20 @@ The pilot currently stores best-score unlock state locally. A future platform/pr
 Follow `docs/ASSET_PIPELINE.md` exactly. Masters are uploaded untouched to the private Drive `Fugg` folder and referenced only after the synced file exists under `public/assets/imported/`.
 
 For each new cover, complete the flat poster **and** the parallax layer bundle before calling the animated welcome version finished.
+
+## Music direction
+
+TetraMindFck music is reactive chiptune, not a flattened background track. Preserve a late handheld-console / 8-bit DNA, but allow modern arrangement and layering.
+
+The composition should make the game's arithmetic theme perceptible in the musical structure:
+
+- powers-of-two density increases as the game accelerates;
+- prime-number accents such as 2/3/5/7;
+- Fibonacci-derived melodic phrases where they remain musical;
+- multiplication/division expressed by doubling or halving durations / intervals;
+- modulo or small-polyrhythm patterns for mounting cognitive pressure;
+- layers enter progressively on musical boundaries;
+- tempo rises with game speed;
+- the maximum-speed state becomes deliberately computational and frantic without losing the core motif.
+
+All proposals stay in the shared Music Lab according to `docs/MUSIC_LAB.md`. The final production candidate has not yet been selected.

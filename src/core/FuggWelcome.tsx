@@ -1,12 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import type { CSSProperties, PointerEvent as ReactPointerEvent } from 'react'
 import type { GameWelcomeVariant } from './types'
+import { ParallaxLab, readParallaxLabDraft, writeParallaxLabDraft } from './ParallaxLab'
+import { resolveWelcomeLayer, welcomeMotionDuration } from './welcomeTuning'
 import './fuggWelcome.css'
 
 const BEST_SCORE_PREFIX = 'minifugg:welcome-best:v1:'
 const SWIPE_THRESHOLD = 44
 const EXIT_DURATION_MS = 300
 const RESIDUAL_WHEEL_GUARD_MS = 750
+const LAB_MIN_WIDTH = 980
 
 type FuggWelcomeProps = {
   gameId: string
@@ -25,6 +29,16 @@ function safeLocalStorage() {
   } catch {
     return null
   }
+}
+
+function cloneVariants(variants: GameWelcomeVariant[]) {
+  return JSON.parse(JSON.stringify(variants)) as GameWelcomeVariant[]
+}
+
+function labRequestedFor(gameId: string) {
+  if (typeof window === 'undefined') return false
+  const query = new URLSearchParams(window.location.search)
+  return query.get('usr') === 'moigod' && query.get('game') === gameId
 }
 
 export function readWelcomeBestScore(gameId: string) {
@@ -63,16 +77,14 @@ function pickVariant(variants: GameWelcomeVariant[], bestScore: number, seed: nu
 
 function resetParallaxVars(root: HTMLElement | null) {
   if (!root) return
-  root.style.setProperty('--mf-welcome-bg-x', '0px')
-  root.style.setProperty('--mf-welcome-bg-y', '0px')
   root.style.setProperty('--mf-welcome-mid-x', '0px')
   root.style.setProperty('--mf-welcome-mid-y', '0px')
-  root.style.setProperty('--mf-welcome-fg-x', '0px')
-  root.style.setProperty('--mf-welcome-fg-y', '0px')
-  root.style.setProperty('--mf-welcome-overlay-x', '0px')
-  root.style.setProperty('--mf-welcome-overlay-y', '0px')
   root.style.setProperty('--mf-welcome-light-x', '50%')
   root.style.setProperty('--mf-welcome-light-y', '42%')
+  root.querySelectorAll<HTMLElement>('[data-mf-welcome-layer]').forEach((layer) => {
+    layer.style.setProperty('--mf-layer-parallax-x', '0px')
+    layer.style.setProperty('--mf-layer-parallax-y', '0px')
+  })
 }
 
 function resetMotionVars(root: HTMLElement | null) {
@@ -100,8 +112,47 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
   const swipeRef = useRef<{ pointerId: number, startY: number } | null>(null)
   const exitTimerRef = useRef<number | null>(null)
   const [exiting, setExiting] = useState(false)
-  const variant = useMemo(() => pickVariant(variants, bestScore, seed), [bestScore, seed, variants])
-  const unlockedCount = useMemo(() => availableVariants(variants, bestScore).length, [bestScore, variants])
+  const [labEnabled, setLabEnabled] = useState(false)
+  const [draftVariants, setDraftVariants] = useState<GameWelcomeVariant[]>(() => cloneVariants(variants))
+  const [selectedVariantId, setSelectedVariantId] = useState('')
+  const [simulatedScore, setSimulatedScore] = useState(bestScore)
+  const [showGuides, setShowGuides] = useState(false)
+
+  useEffect(() => {
+    if (!labRequestedFor(gameId)) {
+      setLabEnabled(false)
+      return
+    }
+
+    const media = window.matchMedia(`(min-width: ${LAB_MIN_WIDTH}px)`)
+    const sync = () => setLabEnabled(media.matches)
+    sync()
+    media.addEventListener('change', sync)
+    return () => media.removeEventListener('change', sync)
+  }, [gameId])
+
+  useEffect(() => {
+    if (!labEnabled) {
+      setDraftVariants(cloneVariants(variants))
+      return
+    }
+    const draft = readParallaxLabDraft(gameId, cloneVariants(variants))
+    setDraftVariants(draft)
+    setSimulatedScore(bestScore)
+    setSelectedVariantId((current) => current && draft.some((variant) => variant.id === current) ? current : (pickVariant(draft, bestScore, seed)?.id ?? draft[0]?.id ?? ''))
+  }, [bestScore, gameId, labEnabled, seed, variants])
+
+  useEffect(() => {
+    if (labEnabled) writeParallaxLabDraft(gameId, draftVariants)
+  }, [draftVariants, gameId, labEnabled])
+
+  const effectiveVariants = labEnabled ? draftVariants : variants
+  const previewScore = labEnabled ? simulatedScore : bestScore
+  const seededVariant = useMemo(() => pickVariant(effectiveVariants, previewScore, seed), [effectiveVariants, previewScore, seed])
+  const variant = labEnabled && selectedVariantId
+    ? effectiveVariants.find((candidate) => candidate.id === selectedVariantId) ?? seededVariant
+    : seededVariant
+  const unlockedCount = useMemo(() => availableVariants(effectiveVariants, previewScore).length, [effectiveVariants, previewScore])
 
   const triggerPlay = useCallback(() => {
     if (exiting) return
@@ -130,8 +181,6 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
     if (!root || !active) return
 
     const onWheel = (event: WheelEvent) => {
-      // The first forward wheel gesture belongs to the cover: reveal this game,
-      // never scroll straight to the following feed slot.
       if (event.deltaY <= 6) return
       event.preventDefault()
       event.stopPropagation()
@@ -146,6 +195,7 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
     if (!active) return
 
     const onWindowKeyDown = (event: KeyboardEvent) => {
+      if (event.target instanceof Element && event.target.closest('[data-mf-parallax-lab]')) return
       if (event.key !== 'ArrowDown' && event.key !== 'Enter' && event.key !== ' ') return
       event.preventDefault()
       event.stopPropagation()
@@ -166,16 +216,17 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
     const root = rootRef.current
     if (!root) return
 
-    root.style.setProperty('--mf-welcome-bg-x', `${x * -2.2}px`)
-    root.style.setProperty('--mf-welcome-bg-y', `${y * -1.6}px`)
     root.style.setProperty('--mf-welcome-mid-x', `${x * -5.5}px`)
     root.style.setProperty('--mf-welcome-mid-y', `${y * -4}px`)
-    root.style.setProperty('--mf-welcome-fg-x', `${x * -9.5}px`)
-    root.style.setProperty('--mf-welcome-fg-y', `${y * -7}px`)
-    root.style.setProperty('--mf-welcome-overlay-x', `${x * -1.5}px`)
-    root.style.setProperty('--mf-welcome-overlay-y', `${y * -1}px`)
     root.style.setProperty('--mf-welcome-light-x', `${50 + x * 18}%`)
     root.style.setProperty('--mf-welcome-light-y', `${42 + y * 13}%`)
+
+    root.querySelectorAll<HTMLElement>('[data-mf-welcome-layer]').forEach((layer) => {
+      const parallaxX = Number(layer.dataset.parallaxX) || 0
+      const parallaxY = Number(layer.dataset.parallaxY) || 0
+      layer.style.setProperty('--mf-layer-parallax-x', `${x * -parallaxX}px`)
+      layer.style.setProperty('--mf-layer-parallax-y', `${y * -parallaxY}px`)
+    })
   }
 
   const resetParallax = () => resetParallaxVars(rootRef.current)
@@ -226,73 +277,118 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
   const hasRasterLayers = Boolean(variant.layers?.length)
 
   return (
-    <section
-      ref={rootRef}
-      className="mf-fugg-welcome"
-      data-active={active ? 'true' : 'false'}
-      data-exiting={exiting ? 'true' : 'false'}
-      data-layered={hasRasterLayers ? 'true' : 'false'}
-      aria-label={`${title} — écran d'accueil`}
-      style={imageStyle}
-      onPointerMove={setParallax}
-      onPointerLeave={resetParallax}
-      onKeyDown={(event) => {
-        if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault()
-          event.stopPropagation()
-          triggerPlay()
-        }
-      }}
-      tabIndex={0}
-    >
-      <div className="mf-fugg-welcome-scene" aria-hidden="true">
-        {hasRasterLayers ? (
-          <div className="mf-fugg-welcome-layer-stack">
-            {variant.layers!.map((layer, index) => (
-              <img
-                className={`mf-fugg-welcome-layer mf-fugg-welcome-layer-${layer.role}`}
-                src={layer.image}
-                alt=""
-                draggable={false}
-                style={{ objectPosition: layer.objectPosition ?? variant.objectPosition ?? '50% 50%' }}
-                key={`${layer.role}-${index}-${layer.image}`}
-              />
-            ))}
-          </div>
-        ) : (
-          <>
-            <div className="mf-fugg-welcome-backdrop" />
-            <div className="mf-fugg-welcome-camera">
-              <img className="mf-fugg-welcome-poster" src={variant.image} alt="" draggable={false} />
-            </div>
-          </>
-        )}
-        <div className="mf-fugg-welcome-light" />
-        <div className="mf-fugg-welcome-grain" />
+    <>
+      <section
+        ref={rootRef}
+        className="mf-fugg-welcome"
+        data-active={active ? 'true' : 'false'}
+        data-exiting={exiting ? 'true' : 'false'}
+        data-layered={hasRasterLayers ? 'true' : 'false'}
+        data-lab={labEnabled ? 'true' : 'false'}
+        data-guides={showGuides ? 'true' : 'false'}
+        aria-label={`${title} — écran d'accueil`}
+        style={imageStyle}
+        onPointerMove={setParallax}
+        onPointerLeave={resetParallax}
+        tabIndex={0}
+      >
+        <div className="mf-fugg-welcome-scene" aria-hidden="true">
+          {hasRasterLayers ? (
+            <div className="mf-fugg-welcome-layer-stack">
+              {variant.layers!.map((layer, index) => {
+                const tuning = resolveWelcomeLayer(layer)
+                const radians = tuning.motion.direction * Math.PI / 180
+                const motionX = Math.cos(radians) * tuning.motion.intensity
+                const motionY = Math.sin(radians) * tuning.motion.intensity
+                const layerStyle = {
+                  '--mf-layer-x': `${tuning.x}%`,
+                  '--mf-layer-y': `${tuning.y}%`,
+                  '--mf-layer-scale': String(tuning.scale / 100),
+                  '--mf-layer-rotation': `${tuning.rotation}deg`,
+                  '--mf-layer-opacity': String(tuning.opacity / 100),
+                  '--mf-layer-motion-duration': welcomeMotionDuration(tuning.motion.type, tuning.motion.speed),
+                  '--mf-layer-motion-intensity': `${tuning.motion.intensity}px`,
+                  '--mf-layer-motion-x': `${motionX}px`,
+                  '--mf-layer-motion-y': `${motionY}px`,
+                  '--mf-layer-motion-irregularity': String(tuning.motion.irregularity),
+                  '--mf-layer-blur': `${tuning.fx.blur}px`,
+                  '--mf-layer-glow': `${tuning.fx.glow}px`,
+                  objectPosition: layer.objectPosition ?? variant.objectPosition ?? '50% 50%',
+                } as CSSProperties
 
-        <div className="mf-fugg-welcome-meta">
-          <span>{unlockedCount}/{variants.length}</span>
-          <span>{variant.label}</span>
+                return (
+                  <div
+                    className={`mf-fugg-welcome-layer-frame mf-fugg-welcome-layer-${layer.role}`}
+                    data-mf-welcome-layer
+                    data-parallax-x={tuning.parallaxX}
+                    data-parallax-y={tuning.parallaxY}
+                    style={layerStyle}
+                    key={`${layer.role}-${index}-${layer.image}`}
+                  >
+                    <img
+                      className="mf-fugg-welcome-layer-art"
+                      data-motion={tuning.motion.type}
+                      src={layer.image}
+                      alt=""
+                      draggable={false}
+                    />
+                    {labEnabled && showGuides && <span className="mf-fugg-welcome-layer-label">{index + 1} · {layer.role}</span>}
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <>
+              <div className="mf-fugg-welcome-backdrop" />
+              <div className="mf-fugg-welcome-camera">
+                <img className="mf-fugg-welcome-poster" src={variant.image} alt="" draggable={false} />
+              </div>
+            </>
+          )}
+          <div className="mf-fugg-welcome-light" />
+          <div className="mf-fugg-welcome-grain" />
+
+          <div className="mf-fugg-welcome-meta">
+            <span>{unlockedCount}/{effectiveVariants.length}</span>
+            <span>{variant.label}</span>
+          </div>
+
+          <button
+            type="button"
+            className={`mf-fugg-welcome-play${hasRasterLayers ? ' is-integrated' : ''}`}
+            onClick={triggerPlay}
+            aria-label="Swipe to play"
+          >
+            <span>↑</span>
+          </button>
         </div>
 
-        <button
-          type="button"
-          className={`mf-fugg-welcome-play${hasRasterLayers ? ' is-integrated' : ''}`}
-          onClick={triggerPlay}
-          aria-label="Swipe to play"
-        >
-          <span>↑</span>
-        </button>
-      </div>
+        <div
+          className="mf-fugg-welcome-interaction"
+          onPointerDown={beginSwipe}
+          onPointerMove={moveSwipe}
+          onPointerUp={endSwipe}
+          onPointerCancel={cancelSwipe}
+          aria-hidden="true"
+        />
+      </section>
 
-      <div
-        className="mf-fugg-welcome-interaction"
-        onPointerDown={beginSwipe}
-        onPointerMove={moveSwipe}
-        onPointerUp={endSwipe}
-        onPointerCancel={cancelSwipe}
-        aria-hidden="true"
-      />
-    </section>
+      {labEnabled && createPortal(
+        <ParallaxLab
+          gameId={gameId}
+          title={title}
+          variants={draftVariants}
+          productionVariants={variants}
+          setVariants={setDraftVariants}
+          selectedVariantId={selectedVariantId || variant.id}
+          onSelectedVariantId={setSelectedVariantId}
+          simulatedScore={simulatedScore}
+          onSimulatedScore={setSimulatedScore}
+          showGuides={showGuides}
+          onShowGuides={setShowGuides}
+        />,
+        document.body,
+      )}
+    </>
   )
 }

@@ -110,26 +110,47 @@ Welcome illustrations are primarily static art with restrained motion.
 
 Default motion tier:
 
-- subtle parallax between 2–3 planes;
-- `SWIPE TO PLAY` arrow gently rises / pulses;
-- one or two local animated motifs: smoke, light flicker, floating object, glow, reflection, particles;
+- real multi-plane parallax;
+- `SWIPE TO PLAY` rises with the cover when entering the game;
+- one or two local animated motifs from the actual artwork;
 - optional very slow breathing light / vignette.
 
 Avoid full-screen perpetual motion and expensive video when a few transforms can create life.
 
-### Preferred implementation
+### 6.1 Mandatory parallax production bundle
 
-Use lightweight runtime effects first:
+For a Fugg cover with motion, **the visible moving elements must be generated/exported as real raster assets**. Do not fake important graphical elements with CSS shapes or generic JS particles.
 
-- CSS `transform` / `opacity`;
-- pointer/device tilt parallax only when it remains comfortable and optional;
-- lightweight JS / requestAnimationFrame only for effects that need it;
+Every finished parallax cover should normally include:
+
+1. **flat master poster** — the approved full illustration, kept untouched for archive/reference;
+2. **background layer** — scenery / painted environment without the main subject;
+3. **midground layer** — explosion, props, smoke, tetrominos or other art that can move independently;
+4. **foreground/subject layer** — character or dominant object, ideally transparent;
+5. **overlay layer** — title, logo and `SWIPE TO PLAY ↑`, ideally transparent and moving very little.
+
+The exact number may vary if the composition needs more/fewer layers, but there must be enough actual artwork to make depth visible. All layers should be generated at the same canvas size and alignment whenever possible so they stack without manual reconstruction.
+
+### 6.2 Runtime implementation
+
+Use the generated layers with lightweight transforms:
+
+- background: smallest displacement;
+- midground: medium displacement;
+- foreground: strongest displacement;
+- title/CTA: almost fixed;
+- subtle raster-layer drift is allowed on mobile where there is no pointer hover;
+- optional light/vignette may remain CSS because it is an effect, not replacement artwork;
 - pause effects when the game slot is not active;
 - respect `prefers-reduced-motion`.
 
-Do not block the MiniFugg vertical feed gesture. The welcome surface must preserve the Core swipe escape contract.
+The Core bottom swipe gutter remains an escape route. Outside that protected gutter, the welcome cover owns the **first forward navigation gesture**:
 
-For flattened artwork, the first implementation may use a subtle camera shift + moving light + independent foreground motifs. True multi-plane parallax should only be used when the art has been exported as separated layers.
+- finger swipe up → cover moves up and reveals the current game;
+- mouse wheel down → cover moves up and reveals the current game;
+- `ArrowDown` → cover moves up and reveals the current game.
+
+That first gesture must never jump directly to the following game in the feed.
 
 ## 7. Asset strategy
 
@@ -139,24 +160,28 @@ Keep the original generated/final art untouched and lossless. Never silently res
 
 Accepted importer formats are PNG, JPEG and WebP. The canonical pipeline is documented in `docs/ASSET_PIPELINE.md`.
 
+For parallax bundles, preserve transparent PNG masters for layers that need alpha.
+
 ### Runtime
 
-The importer currently preserves the source file; optimization can be added as a separate explicit pipeline step later.
-
-For final web optimization, preferred targets are WebP or AVIF where the deployment pipeline supports them. Until the asset pipeline explicitly supports AVIF input, upload a supported master (normally PNG/WebP) and do not bypass the pipeline.
+Runtime derivatives may be WebP when quality/weight is acceptable. The original masters must still be preserved.
 
 Typical portrait artwork target: around 9:16, with important title/CTA content kept away from crop-sensitive edges.
 
+Current TetraMindFck tests show that same-resolution WebP derivatives can reduce multi-megabyte PNG masters to a few hundred kilobytes per layer/cover while preserving the intended visual quality.
+
 ## 8. Canonical asset pipeline
 
-For every MiniFugg production image:
+For every MiniFugg production image or parallax layer:
 
 1. create/finalize the art;
 2. give it a unique ASCII production filename;
 3. upload the original to the private Google Drive `Fugg` inbox;
-4. wait for / verify GitHub Actions import;
-5. verify the file exists in `public/assets/imported/`;
-6. reference it only as `/assets/imported/<filename>` in the app.
+4. optionally create a runtime WebP derivative while keeping the master untouched;
+5. upload the runtime derivative through the same Drive inbox;
+6. wait for / verify GitHub Actions import;
+7. verify every referenced file exists in `public/assets/imported/`;
+8. reference it only as `/assets/imported/<filename>` in the app.
 
 Never use a public Drive link, FTP, manual binary GitHub upload, or base64 chunking while this pipeline is available.
 
@@ -184,6 +209,17 @@ Foreign-edition style candidates already explored in concept boards:
 
 Do **not** crop those concept boards into production art. A cultural edition must be regenerated/finalized as its own standalone full-resolution master before entering the Drive pipeline.
 
+### TetraMindFck variant 1 parallax bundle
+
+The first pulp cover is the reference implementation for future covers. Its production layers are:
+
+- `tetramindfck-welcome-v1-parallax-bg.*`
+- `tetramindfck-welcome-v1-parallax-burst.*`
+- `tetramindfck-welcome-v1-parallax-subject.*`
+- `tetramindfck-welcome-v1-parallax-title.*`
+
+PNG masters are preserved; WebP counterparts are used at runtime after repository verification.
+
 ### Initial unlock thresholds
 
 The pilot currently uses best-run score milestones:
@@ -208,41 +244,39 @@ Plan for several rotating home interpretations, for example:
 
 These are platform-level visuals, not tied to one game's unlock score.
 
-## 11. Production order
+## 11. Production checklist for every new Fugg cover
 
-1. Finish TetraMindFck art candidates.
-2. Import approved masters through Drive -> GitHub.
-3. Add a reusable Fugg welcome-screen component.
-4. Add simple Fugg unlock persistence based on best score.
-5. Add subtle parallax / micro-motion.
-6. Add generic Bêta and Caca status intros.
-7. Apply the system to the next Fugg games.
-8. Rework the global MiniFugg home using the same authored approach.
+Before calling a cover finished:
+
+- standalone flat master approved;
+- parallax decomposition planned before integration;
+- real raster background generated;
+- real raster midground/FX generated where useful;
+- real raster subject/foreground generated where useful;
+- real raster title/CTA overlay generated where useful;
+- all layers share compatible dimensions/alignment;
+- PNG masters kept untouched;
+- runtime WebP derivatives produced if useful;
+- every file uploaded through private Drive `Fugg`;
+- every runtime path verified in `public/assets/imported/`;
+- first swipe/wheel/ArrowDown opens the current game instead of scrolling to the next feed item;
+- bottom Core swipe gutter remains free;
+- reduced-motion behavior tested.
 
 ## 12. Current implementation state
 
 Implemented on `main`:
 
 - reusable `src/core/FuggWelcome.tsx` welcome layer;
-- lightweight camera/parallax response, moving light, floating tetromino motifs and animated upward arrow;
-- animations pause when the slot is inactive and respect reduced-motion preferences;
-- local central swipe surface leaves the Core bottom swipe gutter free;
-- TetraMindFck wrapper pauses gameplay until the welcome is dismissed;
+- support for real raster `background / midground / foreground / overlay` assets;
+- layered pointer parallax and subtle raster drift;
+- cover exit animation that physically moves the cover upward before revealing gameplay;
+- first wheel-down gesture is intercepted by the cover and opens the current game;
+- `ArrowDown`, Enter and Space can enter from the cover;
+- local touch swipe surface keeps the Core bottom swipe gutter free;
+- TetraMindFck pauses gameplay until the welcome is dismissed;
 - unlocked TetraMindFck covers rotate deterministically from the feed seed;
 - best-run score persists locally for unlocks;
-- generic BÊTA and CACA intro gates are wired to the games carrying those curation statuses;
-- the BÊTA copy explicitly asks for player feedback/comments;
-- the CACA copy explicitly warns that the game may never leave the box.
+- generic BÊTA and CACA intro gates are wired to the games carrying those curation statuses.
 
-Verified production assets now present in the repository:
-
-- `/assets/imported/tetramindfck-welcome-v1-pulp-euro.png`
-- `/assets/imported/tetramindfck-welcome-v2-micro-euro.png`
-- `/assets/imported/tetramindfck-welcome-v3-graphic-poster.png`
-
-Pending before the first four-cover TetraMindFck set is complete:
-
-- choose the cultural direction (Japanese vs Chinese, or another candidate);
-- generate it as one standalone portrait master;
-- import it through Drive;
-- add it as the 30,000-point fourth variant.
+The TetraMindFck pulp cover is the reference implementation for real parallax bundles. Variants 2 and 3 still use their flat posters until their own layer bundles are produced.

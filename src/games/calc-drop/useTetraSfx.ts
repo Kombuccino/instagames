@@ -29,6 +29,7 @@ export function useTetraMindFckSfx({ rootRef, armed, playing, runFinished, resta
   const settledRef = useRef(0)
   const levelRef = useRef(1)
   const initializedRef = useRef(false)
+  const failPlayedRef = useRef(false)
   const armedRef = useRef(armed)
   const playingRef = useRef(playing)
 
@@ -39,6 +40,7 @@ export function useTetraMindFckSfx({ rootRef, armed, playing, runFinished, resta
     initializedRef.current = false
     settledRef.current = 0
     levelRef.current = 1
+    failPlayedRef.current = false
   }, [restartToken])
 
   useEffect(() => {
@@ -90,7 +92,7 @@ export function useTetraMindFckSfx({ rootRef, armed, playing, runFinished, resta
 
     const observer = new MutationObserver((mutations) => {
       let newClearRows = 0
-      let hasBonus = false
+      let hasBonusTile = false
       let hasBigImpact = false
 
       mutations.forEach((mutation) => {
@@ -99,7 +101,7 @@ export function useTetraMindFckSfx({ rootRef, armed, playing, runFinished, resta
           elements.forEach((element) => {
             if (element.classList.contains('calc-drop-clear-row')) {
               newClearRows += 1
-              if (element.querySelector('.calc-drop-clear-cell.is-bonus')) hasBonus = true
+              if (element.querySelector('.calc-drop-clear-cell.is-bonus')) hasBonusTile = true
             }
             if (element.classList.contains('calc-drop-impact')) hasBigImpact = true
           })
@@ -108,7 +110,9 @@ export function useTetraMindFckSfx({ rootRef, armed, playing, runFinished, resta
 
       if (newClearRows > 0) {
         void playGameSfx(GAME_ID, 'calculate', { intensity: Math.min(1.25, .82 + newClearRows * .12) })
-        if (hasBonus) window.setTimeout(() => { if (playingRef.current) void playGameSfx(GAME_ID, 'bonus') }, 135)
+        if (newClearRows >= 2 || hasBonusTile) {
+          window.setTimeout(() => { if (playingRef.current) void playGameSfx(GAME_ID, 'bonus') }, 135)
+        }
       }
       if (hasBigImpact) void playGameSfx(GAME_ID, 'bigImpact', { intensity: 1.05 })
 
@@ -155,6 +159,8 @@ export function useTetraMindFckSfx({ rootRef, armed, playing, runFinished, resta
   }, [playing, rootRef])
 
   useEffect(() => {
-    if (runFinished && armed) void playGameSfx(GAME_ID, 'fail', { intensity: .95 })
+    if (!runFinished || !armed || failPlayedRef.current) return
+    failPlayedRef.current = true
+    void playGameSfx(GAME_ID, 'fail', { intensity: .95 })
   }, [armed, runFinished])
 }

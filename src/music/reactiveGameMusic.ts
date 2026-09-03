@@ -176,7 +176,9 @@ export function useTetraMindFckMusic({ rootRef, armed, playing, seed, restartTok
       outputRef.current = output
       noiseRef.current = noiseBuffer(context)
     }
-    if (contextRef.current.state === 'suspended') await contextRef.current.resume()
+    if (contextRef.current.state === 'suspended') {
+      try { await contextRef.current.resume() } catch { /* browser still waiting for a gesture */ }
+    }
     return contextRef.current
   }, [])
 
@@ -185,7 +187,7 @@ export function useTetraMindFckMusic({ rootRef, armed, playing, seed, restartTok
     const context = contextRef.current
     const output = outputRef.current
     const noise = noiseRef.current
-    if (!context || !output || !noise || !composition || !playingRef.current) return
+    if (!context || !output || !noise || !composition || !playingRef.current || context.state !== 'running') return
 
     const stageIndex = clamp(levelRef.current - 1, 0, composition.stages.length - 1)
     const stage = composition.stages[stageIndex]
@@ -217,6 +219,7 @@ export function useTetraMindFckMusic({ rootRef, armed, playing, seed, restartTok
   const startPlayback = useCallback(async () => {
     if (!composition || !playingRef.current) return
     const context = await ensureAudio()
+    if (context.state !== 'running') return
     stopSources()
     nextStartRef.current = context.currentTime + .05
     scheduleBarRef.current()
@@ -240,10 +243,14 @@ export function useTetraMindFckMusic({ rootRef, armed, playing, seed, restartTok
       })
     }
     window.addEventListener('pointerdown', unlock, true)
+    window.addEventListener('pointerup', unlock, true)
     window.addEventListener('keydown', unlock, true)
+    window.addEventListener('wheel', unlock, { capture: true, passive: true })
     return () => {
       window.removeEventListener('pointerdown', unlock, true)
+      window.removeEventListener('pointerup', unlock, true)
       window.removeEventListener('keydown', unlock, true)
+      window.removeEventListener('wheel', unlock, true)
     }
   }, [ensureAudio, startPlayback])
 
@@ -255,7 +262,7 @@ export function useTetraMindFckMusic({ rootRef, armed, playing, seed, restartTok
       if (contextRef.current?.state === 'running') void contextRef.current.suspend()
       return
     }
-    if (contextRef.current) void startPlayback()
+    void startPlayback()
   }, [composition, playing, restartToken, startPlayback, stopSources])
 
   useEffect(() => () => {

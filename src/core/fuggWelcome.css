@@ -1,6 +1,13 @@
 .mf-fugg-welcome {
-  --mf-welcome-x: 0px;
-  --mf-welcome-y: 0px;
+  --mf-welcome-bg-x: 0px;
+  --mf-welcome-bg-y: 0px;
+  --mf-welcome-mid-x: 0px;
+  --mf-welcome-mid-y: 0px;
+  --mf-welcome-fg-x: 0px;
+  --mf-welcome-fg-y: 0px;
+  --mf-welcome-overlay-x: 0px;
+  --mf-welcome-overlay-y: 0px;
+  --mf-welcome-drag-y: 0px;
   --mf-welcome-light-x: 50%;
   --mf-welcome-light-y: 42%;
   --mf-welcome-object-position: 50% 50%;
@@ -13,12 +20,30 @@
   isolation: isolate;
 }
 
+.mf-fugg-welcome-scene,
 .mf-fugg-welcome-backdrop,
 .mf-fugg-welcome-camera,
+.mf-fugg-welcome-layer-stack,
 .mf-fugg-welcome-light,
 .mf-fugg-welcome-grain,
 .mf-fugg-welcome-interaction {
   position: absolute;
+}
+
+.mf-fugg-welcome-scene {
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  transform: translate3d(0, var(--mf-welcome-drag-y), 0);
+  transition: transform 220ms cubic-bezier(.2,.7,.2,1), opacity 220ms ease;
+  will-change: transform;
+}
+
+.mf-fugg-welcome[data-exiting='true'] .mf-fugg-welcome-scene {
+  transform: translate3d(0, -104%, 0);
+  opacity: .92;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(.18,.82,.23,1);
 }
 
 .mf-fugg-welcome-backdrop {
@@ -36,7 +61,7 @@
   z-index: -2;
   display: grid;
   place-items: center;
-  transform: translate3d(var(--mf-welcome-x), var(--mf-welcome-y), 0) scale(1.018);
+  transform: translate3d(var(--mf-welcome-mid-x), var(--mf-welcome-mid-y), 0) scale(1.018);
   transition: transform 180ms ease-out;
   will-change: transform;
 }
@@ -52,36 +77,83 @@
   animation: mf-welcome-breathe 9s ease-in-out infinite alternate;
 }
 
+.mf-fugg-welcome-layer-stack {
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  background: #090908;
+}
+
+.mf-fugg-welcome-layer {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  will-change: transform, translate;
+  transition: transform 170ms ease-out;
+}
+
+.mf-fugg-welcome-layer-background {
+  z-index: 0;
+  transform: translate3d(var(--mf-welcome-bg-x), var(--mf-welcome-bg-y), 0) scale(1.025);
+}
+
+.mf-fugg-welcome-layer-midground {
+  z-index: 1;
+  transform: translate3d(var(--mf-welcome-mid-x), var(--mf-welcome-mid-y), 0) scale(1.018);
+  animation: mf-welcome-raster-mid 7.5s ease-in-out infinite alternate;
+}
+
+.mf-fugg-welcome-layer-foreground {
+  z-index: 2;
+  transform: translate3d(var(--mf-welcome-fg-x), var(--mf-welcome-fg-y), 0) scale(1.012);
+  animation: mf-welcome-raster-fg 6.2s ease-in-out infinite alternate;
+}
+
+.mf-fugg-welcome-layer-overlay {
+  z-index: 3;
+  transform: translate3d(var(--mf-welcome-overlay-x), var(--mf-welcome-overlay-y), 0);
+}
+
 .mf-fugg-welcome-light {
   inset: 0;
-  z-index: -1;
+  z-index: 1;
   pointer-events: none;
   background:
-    radial-gradient(circle at var(--mf-welcome-light-x) var(--mf-welcome-light-y), rgba(255,244,190,.13), transparent 33%),
-    linear-gradient(118deg, transparent 25%, rgba(255,255,255,.045) 45%, transparent 64%);
+    radial-gradient(circle at var(--mf-welcome-light-x) var(--mf-welcome-light-y), rgba(255,244,190,.11), transparent 34%),
+    linear-gradient(118deg, transparent 25%, rgba(255,255,255,.035) 45%, transparent 64%);
   mix-blend-mode: screen;
-  opacity: .85;
+  opacity: .72;
   animation: mf-welcome-light 8s ease-in-out infinite alternate;
 }
 
 .mf-fugg-welcome-grain {
   inset: 0;
-  z-index: 0;
+  z-index: 2;
   pointer-events: none;
-  opacity: .17;
+  opacity: .11;
   background-image:
-    radial-gradient(circle at 15% 20%, rgba(255,255,255,.25) 0 0.5px, transparent .7px),
-    radial-gradient(circle at 75% 62%, rgba(255,255,255,.18) 0 0.5px, transparent .8px),
-    radial-gradient(circle at 42% 80%, rgba(0,0,0,.42) 0 .6px, transparent .9px);
+    radial-gradient(circle at 15% 20%, rgba(255,255,255,.21) 0 0.5px, transparent .7px),
+    radial-gradient(circle at 75% 62%, rgba(255,255,255,.15) 0 0.5px, transparent .8px),
+    radial-gradient(circle at 42% 80%, rgba(0,0,0,.35) 0 .6px, transparent .9px);
   background-size: 7px 7px, 11px 11px, 13px 13px;
   mix-blend-mode: soft-light;
 }
 
 .mf-fugg-welcome-interaction {
   inset: 0 0 var(--minifugg-swipe-gutter, 30px);
-  z-index: 4;
+  z-index: 8;
   touch-action: none;
   cursor: grab;
+}
+
+.mf-fugg-welcome[data-exiting='true'] .mf-fugg-welcome-interaction {
+  pointer-events: none;
 }
 
 .mf-fugg-welcome-interaction:active { cursor: grabbing; }
@@ -120,6 +192,10 @@
   white-space: nowrap;
 }
 
+.mf-fugg-welcome[data-layered='true'] .mf-fugg-welcome-meta {
+  opacity: .76;
+}
+
 .mf-fugg-welcome-play {
   position: absolute;
   right: max(16px, env(safe-area-inset-right));
@@ -140,6 +216,20 @@
   touch-action: manipulation;
 }
 
+.mf-fugg-welcome-play.is-integrated {
+  right: 50%;
+  bottom: calc(var(--minifugg-swipe-gutter, 30px) + 5.2%);
+  width: min(48vw, 240px);
+  height: 72px;
+  transform: translateX(50%);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  backdrop-filter: none;
+  box-shadow: none;
+  color: transparent;
+}
+
 .mf-fugg-welcome-play span {
   display: block;
   font-size: 25px;
@@ -148,51 +238,33 @@
   animation: mf-welcome-arrow 1.45s ease-in-out infinite;
 }
 
-.mf-fugg-welcome-tetro {
-  position: absolute;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: repeat(3, 7px);
-  grid-template-rows: repeat(2, 7px);
-  width: 21px;
-  height: 14px;
-  opacity: .2;
-  filter: blur(.1px) drop-shadow(0 3px 7px rgba(0,0,0,.5));
-  pointer-events: none;
-}
-
-.mf-fugg-welcome-tetro i {
-  display: block;
-  width: 7px;
-  height: 7px;
-  border: 1px solid rgba(255,255,255,.28);
-  background: rgba(255,255,255,.72);
-}
-
-.mf-fugg-welcome-tetro i:nth-child(1) { grid-column: 1; grid-row: 2; }
-.mf-fugg-welcome-tetro i:nth-child(2) { grid-column: 2; grid-row: 2; }
-.mf-fugg-welcome-tetro i:nth-child(3) { grid-column: 2; grid-row: 1; }
-.mf-fugg-welcome-tetro i:nth-child(4) { grid-column: 3; grid-row: 1; }
-
-.mf-fugg-welcome-tetro-a { left: 8%; top: 22%; transform: rotate(-18deg) scale(1.15); animation: mf-welcome-float-a 7.4s ease-in-out infinite; }
-.mf-fugg-welcome-tetro-b { right: 7%; top: 34%; transform: rotate(21deg) scale(.9); animation: mf-welcome-float-b 9.1s ease-in-out infinite; }
-.mf-fugg-welcome-tetro-c { left: 13%; bottom: 20%; transform: rotate(42deg) scale(.72); animation: mf-welcome-float-c 8.3s ease-in-out infinite; }
+.mf-fugg-welcome-play.is-integrated span { opacity: 0; }
 
 .mf-fugg-welcome[data-active='false'] .mf-fugg-welcome-poster,
+.mf-fugg-welcome[data-active='false'] .mf-fugg-welcome-layer,
 .mf-fugg-welcome[data-active='false'] .mf-fugg-welcome-light,
-.mf-fugg-welcome[data-active='false'] .mf-fugg-welcome-play span,
-.mf-fugg-welcome[data-active='false'] .mf-fugg-welcome-tetro {
+.mf-fugg-welcome[data-active='false'] .mf-fugg-welcome-play span {
   animation-play-state: paused;
 }
 
 @keyframes mf-welcome-breathe {
-  from { transform: scale(1.002); }
-  to { transform: scale(1.014); }
+  from { scale: 1.002; }
+  to { scale: 1.014; }
+}
+
+@keyframes mf-welcome-raster-mid {
+  from { translate: 0 2px; }
+  to { translate: 0 -5px; }
+}
+
+@keyframes mf-welcome-raster-fg {
+  from { translate: 0 1px; }
+  to { translate: 0 -3px; }
 }
 
 @keyframes mf-welcome-light {
-  from { opacity: .48; transform: translate3d(-1%, -1%, 0); }
-  to { opacity: .9; transform: translate3d(1.4%, 1.2%, 0); }
+  from { opacity: .45; translate: -1% -1%; }
+  to { opacity: .78; translate: 1.2% 1%; }
 }
 
 @keyframes mf-welcome-arrow {
@@ -200,35 +272,28 @@
   50% { transform: translateY(-4px); opacity: 1; }
 }
 
-@keyframes mf-welcome-float-a {
-  0%, 100% { translate: 0 0; rotate: 0deg; }
-  50% { translate: 5px -13px; rotate: 8deg; }
-}
-
-@keyframes mf-welcome-float-b {
-  0%, 100% { translate: 0 0; rotate: 0deg; }
-  50% { translate: -7px 11px; rotate: -7deg; }
-}
-
-@keyframes mf-welcome-float-c {
-  0%, 100% { translate: 0 0; rotate: 0deg; }
-  50% { translate: 6px -9px; rotate: 11deg; }
-}
-
 @media (hover: none) {
-  .mf-fugg-welcome-camera { transition: none; }
+  .mf-fugg-welcome-camera,
+  .mf-fugg-welcome-layer {
+    transition: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .mf-fugg-welcome-poster,
+  .mf-fugg-welcome-layer,
   .mf-fugg-welcome-light,
-  .mf-fugg-welcome-play span,
-  .mf-fugg-welcome-tetro {
+  .mf-fugg-welcome-play span {
     animation: none !important;
   }
 
-  .mf-fugg-welcome-camera {
+  .mf-fugg-welcome-camera,
+  .mf-fugg-welcome-layer {
     transform: none;
     transition: none;
+  }
+
+  .mf-fugg-welcome-scene {
+    transition-duration: 1ms;
   }
 }

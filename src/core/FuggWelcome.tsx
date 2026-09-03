@@ -6,6 +6,7 @@ import './fuggWelcome.css'
 const BEST_SCORE_PREFIX = 'minifugg:welcome-best:v1:'
 const SWIPE_THRESHOLD = 44
 const EXIT_DURATION_MS = 300
+const RESIDUAL_WHEEL_GUARD_MS = 750
 
 type FuggWelcomeProps = {
   gameId: string
@@ -60,7 +61,7 @@ function pickVariant(variants: GameWelcomeVariant[], bestScore: number, seed: nu
   return unlocked[index]
 }
 
-function resetMotionVars(root: HTMLElement | null) {
+function resetParallaxVars(root: HTMLElement | null) {
   if (!root) return
   root.style.setProperty('--mf-welcome-bg-x', '0px')
   root.style.setProperty('--mf-welcome-bg-y', '0px')
@@ -72,7 +73,26 @@ function resetMotionVars(root: HTMLElement | null) {
   root.style.setProperty('--mf-welcome-overlay-y', '0px')
   root.style.setProperty('--mf-welcome-light-x', '50%')
   root.style.setProperty('--mf-welcome-light-y', '42%')
-  root.style.setProperty('--mf-welcome-drag-y', '0px')
+}
+
+function resetMotionVars(root: HTMLElement | null) {
+  resetParallaxVars(root)
+  root?.style.setProperty('--mf-welcome-drag-y', '0px')
+}
+
+function guardResidualForwardWheel() {
+  const started = performance.now()
+  const blockForwardWheel = (event: WheelEvent) => {
+    if (performance.now() - started >= RESIDUAL_WHEEL_GUARD_MS) return
+    if (event.deltaY <= 0) return
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
+  window.addEventListener('wheel', blockForwardWheel, { capture: true, passive: false })
+  window.setTimeout(() => {
+    window.removeEventListener('wheel', blockForwardWheel, true)
+  }, RESIDUAL_WHEEL_GUARD_MS)
 }
 
 export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, onPlay }: FuggWelcomeProps) {
@@ -86,6 +106,7 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
   const triggerPlay = useCallback(() => {
     if (exiting) return
     setExiting(true)
+    guardResidualForwardWheel()
     if (exitTimerRef.current !== null) window.clearTimeout(exitTimerRef.current)
     exitTimerRef.current = window.setTimeout(() => {
       exitTimerRef.current = null
@@ -157,7 +178,7 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
     root.style.setProperty('--mf-welcome-light-y', `${42 + y * 13}%`)
   }
 
-  const resetParallax = () => resetMotionVars(rootRef.current)
+  const resetParallax = () => resetParallaxVars(rootRef.current)
 
   const beginSwipe = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (!event.isPrimary || exiting) return

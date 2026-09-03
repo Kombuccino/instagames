@@ -7,15 +7,14 @@ import json
 import logging
 import os
 import re
-import sys
 import unicodedata
 import warnings
 from pathlib import Path
 from typing import Any
 
+import google.auth
 import requests
 from google.auth.transport.requests import AuthorizedSession
-from google.oauth2 import service_account
 from PIL import Image
 
 DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.readonly"
@@ -79,11 +78,10 @@ def save_state(path: Path, state: dict[str, str]) -> None:
     os.replace(tmp, path)
 
 
-def drive_session(credentials_path: str) -> AuthorizedSession:
-    credentials = service_account.Credentials.from_service_account_file(
-        credentials_path,
-        scopes=[DRIVE_SCOPE],
-    )
+def drive_session() -> AuthorizedSession:
+    # Application Default Credentials supports keyless Workload Identity Federation
+    # in GitHub Actions, while still allowing local credentials for diagnostics.
+    credentials, _ = google.auth.default(scopes=[DRIVE_SCOPE])
     return AuthorizedSession(credentials)
 
 
@@ -152,7 +150,7 @@ def github_headers(token: str) -> dict[str, str]:
         "Accept": "application/vnd.github+json",
         "Authorization": f"Bearer {token}",
         "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "minifugg-drive-asset-sync/1.0",
+        "User-Agent": "minifugg-drive-asset-sync/2.0",
     }
 
 
@@ -168,9 +166,19 @@ def github_existing_sha(owner_repo: str, path: str, branch: str, token: str) -> 
     return payload.get("sha")
 
 
-def github_put_image(owner_repo: str, path: str, branch: str, token: str, data: bytes, source_name: str) -> None:
+def git_blob_sha(data: bytes) -> str:
+    header = f"blob {len(data)}\0".encode("ascii")
+    return hashlib.sha1(header + data).hexdigest()
+
+
+def github_put_image(owner_repo: str, path: str, branch: str, token: str, data: bytes, source_name: str) -> bool:
     url = f"https://api.github.com/repos/{owner_repo}/contents/{path}"
     current_sha = github_existing_sha(owner_repo, path, branch, token)
+    expected_sha = git_blob_sha(data)
+    if current_sha == expected_sha:
+        log.info("Already identical in GitHub: %s", path)
+        return False
+
     payload: dict[str, Any] = {
         "message": f"assets: sync {source_name} from Drive",
         "content": base64.b64encode(data).decode("ascii"),
@@ -180,6 +188,7 @@ def github_put_image(owner_repo: str, path: str, branch: str, token: str, data: 
         payload["sha"] = current_sha
     response = requests.put(url, headers=github_headers(token), json=payload, timeout=90)
     response.raise_for_status()
+    return True
 
 
 def fingerprint(file_info: dict[str, Any], data: bytes | None = None) -> str:
@@ -192,14 +201,13 @@ def fingerprint(file_info: dict[str, Any], data: bytes | None = None) -> str:
 
 
 def main() -> int:
-    folder_id = env("DRIVE_FOLDER_ID")
-    credentials_path = env("GOOGLE_SERVICE_ACCOUNT_JSON", "/etc/minifugg-drive-sync/service-account.json")
+    folder_id = env("DRIVE_FOLDER_ID", EXPECTED_DRIVE_FOLDER_ID)
     github_token = env("GITHUB_TOKEN")
     github_repository = env("GITHUB_REPOSITORY", EXPECTED_GITHUB_REPOSITORY)
     github_branch = env("GITHUB_BRANCH", EXPECTED_GITHUB_BRANCH)
     github_prefix = env("GITHUB_ASSET_PREFIX", EXPECTED_GITHUB_ASSET_PREFIX).strip("/")
-    state_path = Path(env("STATE_FILE", "/var/lib/minifugg-drive-sync/state.json"))
-    lock_path = Path(env("LOCK_FILE", "/var/lib/minifugg-drive-sync/sync.lock"))
+    state_path = Path(env("STATE_FILE", "/tmp/minifugg-drive-sync-state.json"))
+    lock_path = Path(env("LOCK_FILE", "/tmp/minifugg-drive-sync.lock"))
     max_bytes = positive_int("MAX_FILE_BYTES", 10 * 1024 * 1024)
     max_pixels = positive_int("MAX_IMAGE_PIXELS", 40_000_000)
 
@@ -221,7 +229,7 @@ def main() -> int:
             log.info("Another sync is already running; exiting")
             return 0
 
-        session = drive_session(credentials_path)
+        session = drive_session()
         state = load_state(state_path)
         changed = False
         seen_targets: dict[str, str] = {}
@@ -249,24 +257,25 @@ def main() -> int:
                 data = download_drive_file(session, file_id, max_bytes)
                 _, canonical_ext, width, height = verify_image(data, mime, max_pixels)
                 final_fp = fingerprint(item, data)
-                if state.get(file_id) == final_fp:
-                    continue
 
                 safe_name = sanitize_filename(name, canonical_ext)
                 previous_id = seen_targets.get(safe_name)
                 if previous_id and previous_id != file_id:
                     raise ValueError(f"Filename collision after sanitization: {safe_name}")
                 seen_targets[safe_name] = file_id
+
                 github_path = f"{github_prefix}/{safe_name}"
-                github_put_image(github_repository, github_path, github_branch, github_token, data, safe_name)
+                uploaded = github_put_image(github_repository, github_path, github_branch, github_token, data, safe_name)
                 state[file_id] = final_fp
-                changed = True
-                log.info("Synced %s (%dx%d, %d bytes) -> %s", name, width, height, len(data), github_path)
+                changed = changed or uploaded
+                if uploaded:
+                    log.info("Synced %s (%dx%d, %d bytes) -> %s", name, width, height, len(data), github_path)
             except Exception as exc:
                 log.exception("Failed to sync %s: %s", name, exc)
 
-        if changed:
-            save_state(state_path, state)
+        save_state(state_path, state)
+        if not changed:
+            log.info("No GitHub asset changes needed")
         return 0
 
 

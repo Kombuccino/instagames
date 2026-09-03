@@ -143,8 +143,8 @@ export function FuggWelcome({ gameId, title, seed, active, bestScore, variants, 
   }, [bestScore, gameId, labEnabled, seed, variants])
 
   useEffect(() => {
-    if (labEnabled) writeParallaxLabDraft(gameId, draftVariants)
-  }, [draftVariants, gameId, labEnabled])
+    if (labEnabled) writeParallaxLabDraft(gameId, draftVariants, variants)
+  }, [draftVariants, gameId, labEnabled, variants])
 
   const effectiveVariants = labEnabled ? draftVariants : variants
   const previewScore = labEnabled ? simulatedScore : bestScore

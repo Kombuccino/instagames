@@ -29,14 +29,27 @@ Foreign-edition candidates being explored:
 
 Only promote a cultural edition into the production variant list once a proper standalone full-resolution master has been created and imported through the Drive asset pipeline. Do not use cropped concept boards as production artwork.
 
-## Motion
+## Motion / parallax
 
-The welcome wrapper may add only subtle runtime motion:
+Every TetraMindFck cover intended to use parallax must have **real generated raster layers**. Do not invent important visible parallax objects with CSS geometry or generic JS particles.
 
-- tiny camera/parallax drift;
-- moving light / reflection;
-- sparse floating tetromino motifs;
-- animated upward play arrow.
+Reference decomposition for `pulp-euro`:
+
+- background/environment;
+- burst + tetromino objects;
+- foreground character;
+- title/logo/`SWIPE TO PLAY ↑` overlay.
+
+All layers should share the same canvas size/alignment. PNG masters stay untouched; verified WebP derivatives may be used at runtime.
+
+Runtime motion stays restrained:
+
+- background moves least;
+- midground objects move moderately;
+- foreground subject moves most;
+- title/CTA stays nearly fixed;
+- very subtle layer drift may run on touch devices;
+- optional light/vignette may be CSS because it is an effect, not substitute artwork.
 
 Motion must pause when the feed slot is inactive and must respect `prefers-reduced-motion`.
 
@@ -44,7 +57,15 @@ Motion must pause when the feed slot is inactive and must respect `prefers-reduc
 
 Primary CTA: `SWIPE TO PLAY ↑`.
 
-The local welcome swipe surface may capture the central artwork area, but the Core bottom swipe gutter must remain available so the player can still escape the feed slot.
+The welcome screen owns the first forward gesture outside the protected Core gutter:
+
+- swipe up with a finger;
+- wheel/trackpad down;
+- `ArrowDown`.
+
+That first gesture moves the cover upward and reveals **TetraMindFck itself**. It must not send the player directly to the next feed slot.
+
+The Core bottom swipe gutter remains available as the explicit feed escape path.
 
 ## Unlocks
 
@@ -60,3 +81,5 @@ The pilot currently stores best-score unlock state locally. A future platform/pr
 ## Asset rules
 
 Follow `docs/ASSET_PIPELINE.md` exactly. Masters are uploaded untouched to the private Drive `Fugg` folder and referenced only after the synced file exists under `public/assets/imported/`.
+
+For each new cover, complete the flat poster **and** the parallax layer bundle before calling the animated welcome version finished.

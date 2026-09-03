@@ -11,11 +11,16 @@ type GameFeedProps = {
 const INITIAL_BATCHES = 4
 const GAME_QUERY_KEY = 'game'
 const FEED_PREFERENCE_KEY = 'minifugg:feed-preference:v1'
+const GAME_ID_ALIASES: Record<string, string> = {
+  'calc-drop': 'tetramindfck',
+}
 export const BETA_PUBLIC_LOVE_THRESHOLD = 50
 
 function requestedGameId() {
   if (typeof window === 'undefined') return null
-  return new URL(window.location.href).searchParams.get(GAME_QUERY_KEY)?.trim() || null
+  const requested = new URL(window.location.href).searchParams.get(GAME_QUERY_KEY)?.trim() || null
+  if (!requested) return null
+  return GAME_ID_ALIASES[requested] ?? requested
 }
 
 function readFeedPreference(): FeedPreference {

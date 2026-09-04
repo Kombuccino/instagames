@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { musicCatalog as source } from '../music/catalog'
+import { MusicScorePanel } from './MusicScorePanel'
 import { SoundDesignLab } from './SoundDesignLab'
 import './musicLab.css'
 
@@ -26,7 +27,7 @@ type Composition = {
 }
 type Catalog = { version: number, rule: string, compositions: Composition[] }
 type Filter = Status | 'all'
-type Playback = { compositionId: string, stageIndex: number, escalation: boolean }
+type Playback = { compositionId: string, stageIndex: number }
 type SourceNode = OscillatorNode | AudioBufferSourceNode
 
 const musicCatalog = source as unknown as Catalog
@@ -35,6 +36,14 @@ const STATUS_LABEL: Record<Status, string> = { candidate: 'À ÉCOUTER', selecte
 
 function hz(note: number) { return 440 * Math.pow(2, (note - 69) / 12) }
 function clamp(value: number, min: number, max: number) { return Math.max(min, Math.min(max, value)) }
+
+function rememberSource(sources: SourceNode[], node: SourceNode) {
+  sources.push(node)
+  node.addEventListener('ended', () => {
+    const index = sources.indexOf(node)
+    if (index >= 0) sources.splice(index, 1)
+  }, { once: true })
+}
 
 function noiseBuffer(context: AudioContext) {
   const buffer = context.createBuffer(1, Math.floor(context.sampleRate * .5), context.sampleRate)
@@ -64,26 +73,26 @@ function scheduleTone(context: AudioContext, output: AudioNode, track: Track, no
   osc.connect(gain).connect(output)
   osc.start(start)
   osc.stop(end + .02)
-  sources.push(osc)
+  rememberSource(sources, osc)
 }
 
 function scheduleNoise(context: AudioContext, output: AudioNode, buffer: AudioBuffer, track: Track, note: Note, origin: number, beatSeconds: number, sources: SourceNode[]) {
   const [beat, durationBeats, midi, velocity] = note
   const start = origin + beat * beatSeconds
   const duration = Math.max(.025, Math.min(.15, durationBeats * beatSeconds))
-  const source = context.createBufferSource()
+  const sourceNode = context.createBufferSource()
   const filter = context.createBiquadFilter()
   const gain = context.createGain()
-  source.buffer = buffer
+  sourceNode.buffer = buffer
   if (midi <= 37) { filter.type = 'lowpass'; filter.frequency.value = 260 }
   else if (midi <= 40) { filter.type = 'bandpass'; filter.frequency.value = 1200 }
   else { filter.type = 'highpass'; filter.frequency.value = midi >= 46 ? 6000 : 3600 }
   gain.gain.setValueAtTime(clamp(velocity / 127 * track.gain * 1.4, .004, .22), start)
   gain.gain.exponentialRampToValueAtTime(.0001, start + duration)
-  source.connect(filter).connect(gain).connect(output)
-  source.start(start)
-  source.stop(start + duration + .02)
-  sources.push(source)
+  sourceNode.connect(filter).connect(gain).connect(output)
+  sourceNode.start(start)
+  sourceNode.stop(start + duration + .02)
+  rememberSource(sources, sourceNode)
 }
 
 export function MusicLab() {
@@ -91,6 +100,9 @@ export function MusicLab() {
   const [game, setGame] = useState('all')
   const [stages, setStages] = useState<Record<string, number>>({})
   const [playback, setPlayback] = useState<Playback | null>(null)
+  const [paused, setPaused] = useState(false)
+  const [playheadBeat, setPlayheadBeat] = useState(0)
+  const [mutedTracks, setMutedTracks] = useState<Record<string, string[]>>({})
   const contextRef = useRef<AudioContext | null>(null)
   const outputRef = useRef<GainNode | null>(null)
   const noiseRef = useRef<AudioBuffer | null>(null)
@@ -98,6 +110,9 @@ export function MusicLab() {
   const timerRef = useRef<number | null>(null)
   const stateRef = useRef<Playback | null>(null)
   const nextStartRef = useRef(0)
+  const playbackOriginRef = useRef(0)
+  const mutedRef = useRef<Record<string, string[]>>({})
+  const trackBusesRef = useRef(new Map<string, GainNode>())
 
   const games = useMemo(() => [...new Map(musicCatalog.compositions.map((item) => [item.gameId, item.gameTitle])).entries()], [])
   const shown = useMemo(() => musicCatalog.compositions
@@ -108,10 +123,14 @@ export function MusicLab() {
   const stop = useCallback(() => {
     if (timerRef.current !== null) window.clearTimeout(timerRef.current)
     timerRef.current = null
-    sourcesRef.current.forEach((node) => { try { node.stop() } catch { /* already ended */ } })
+    sourcesRef.current.slice().forEach((node) => { try { node.stop() } catch { /* already ended */ } })
     sourcesRef.current = []
     stateRef.current = null
+    nextStartRef.current = 0
+    playbackOriginRef.current = 0
     setPlayback(null)
+    setPaused(false)
+    setPlayheadBeat(0)
   }, [])
 
   const ensureAudio = useCallback(async () => {
@@ -132,6 +151,17 @@ export function MusicLab() {
     return contextRef.current
   }, [])
 
+  const getTrackBus = useCallback((context: AudioContext, output: AudioNode, compositionId: string, trackId: string) => {
+    const key = `${compositionId}:${trackId}`
+    const existing = trackBusesRef.current.get(key)
+    if (existing) return existing
+    const bus = context.createGain()
+    bus.gain.value = mutedRef.current[compositionId]?.includes(trackId) ? 0 : 1
+    bus.connect(output)
+    trackBusesRef.current.set(key, bus)
+    return bus
+  }, [])
+
   const scheduleLoop: (composition: Composition, state: Playback, origin: number) => void = useCallback((composition, state, origin) => {
     const context = contextRef.current
     const output = outputRef.current
@@ -143,41 +173,113 @@ export function MusicLab() {
     const beatSeconds = 60 / stage.bpm
     const loopSeconds = composition.loopBeats * beatSeconds
 
-    tracks.filter((track) => enabled.has(track.id)).forEach((track) => track.notes.forEach((note) => {
-      if (track.wave === 'noise') scheduleNoise(context, output, noise, track, note, origin, beatSeconds, sourcesRef.current)
-      else scheduleTone(context, output, track, note, origin, beatSeconds, sourcesRef.current)
-    }))
+    tracks.filter((track) => enabled.has(track.id)).forEach((track) => {
+      const trackOutput = getTrackBus(context, output, composition.id, track.id)
+      track.notes.forEach((note) => {
+        if (track.wave === 'noise') scheduleNoise(context, trackOutput, noise, track, note, origin, beatSeconds, sourcesRef.current)
+        else scheduleTone(context, trackOutput, track, note, origin, beatSeconds, sourcesRef.current)
+      })
+    })
 
     nextStartRef.current = origin + loopSeconds
     timerRef.current = window.setTimeout(() => {
       const current = stateRef.current
-      if (!current || current.compositionId !== composition.id) return
-      let next = current
-      if (current.escalation && current.stageIndex < composition.stages.length - 1) {
-        next = { ...current, stageIndex: current.stageIndex + 1 }
-        stateRef.current = next
-        setPlayback(next)
-        setStages((old) => ({ ...old, [composition.id]: next.stageIndex }))
-      }
-      scheduleLoop(composition, next, nextStartRef.current)
+      if (!current || current.compositionId !== composition.id || context.state === 'suspended') return
+      scheduleLoop(composition, current, nextStartRef.current)
     }, Math.max(80, (loopSeconds - .15) * 1000))
-  }, [])
+  }, [getTrackBus])
 
-  const play = useCallback(async (composition: Composition, escalation = false, requestedStage?: number) => {
+  const play = useCallback(async (composition: Composition, requestedStage?: number) => {
     stop()
     const context = await ensureAudio()
-    const stageIndex = escalation ? 0 : clamp(requestedStage ?? stages[composition.id] ?? 0, 0, composition.stages.length - 1)
-    const state = { compositionId: composition.id, stageIndex, escalation }
+    const stageIndex = clamp(requestedStage ?? stages[composition.id] ?? 0, 0, composition.stages.length - 1)
+    const state = { compositionId: composition.id, stageIndex }
+    const origin = context.currentTime + .06
     stateRef.current = state
+    playbackOriginRef.current = origin
     setPlayback(state)
-    if (escalation) setStages((old) => ({ ...old, [composition.id]: 0 }))
-    scheduleLoop(composition, state, context.currentTime + .06)
+    setPaused(false)
+    scheduleLoop(composition, state, origin)
   }, [ensureAudio, scheduleLoop, stages, stop])
 
   const chooseStage = useCallback((composition: Composition, index: number) => {
     setStages((old) => ({ ...old, [composition.id]: index }))
-    if (stateRef.current?.compositionId === composition.id) void play(composition, false, index)
+    if (stateRef.current?.compositionId === composition.id) void play(composition, index)
   }, [play])
+
+  const togglePause = useCallback(async () => {
+    const context = contextRef.current
+    const current = stateRef.current
+    if (!context || !current) return
+    const composition = musicCatalog.compositions.find((item) => item.id === current.compositionId)
+    if (!composition) return
+
+    if (context.state === 'running') {
+      if (timerRef.current !== null) window.clearTimeout(timerRef.current)
+      timerRef.current = null
+      await context.suspend()
+      setPaused(true)
+      return
+    }
+
+    if (context.state === 'suspended') {
+      await context.resume()
+      setPaused(false)
+      const delay = Math.max(80, (nextStartRef.current - context.currentTime - .15) * 1000)
+      timerRef.current = window.setTimeout(() => {
+        const liveState = stateRef.current
+        if (!liveState || liveState.compositionId !== composition.id) return
+        scheduleLoop(composition, liveState, nextStartRef.current)
+      }, delay)
+    }
+  }, [scheduleLoop])
+
+  const toggleMute = useCallback((compositionId: string, trackId: string) => {
+    setMutedTracks((current) => {
+      const existing = current[compositionId] ?? []
+      const willMute = !existing.includes(trackId)
+      const nextList = willMute ? [...existing, trackId] : existing.filter((id) => id !== trackId)
+      const next = { ...current, [compositionId]: nextList }
+      mutedRef.current = next
+      const context = contextRef.current
+      const bus = trackBusesRef.current.get(`${compositionId}:${trackId}`)
+      if (context && bus) bus.gain.setTargetAtTime(willMute ? 0 : 1, context.currentTime, .012)
+      return next
+    })
+  }, [])
+
+  useEffect(() => {
+    if (!playback) {
+      setPlayheadBeat(0)
+      return undefined
+    }
+    const context = contextRef.current
+    const composition = musicCatalog.compositions.find((item) => item.id === playback.compositionId)
+    if (!context || !composition) return undefined
+    const stage = composition.stages[playback.stageIndex]
+    const beatSeconds = 60 / stage.bpm
+    let frame = 0
+
+    const update = () => {
+      const elapsed = Math.max(0, context.currentTime - playbackOriginRef.current)
+      setPlayheadBeat((elapsed / beatSeconds) % composition.loopBeats)
+      if (!paused) frame = window.requestAnimationFrame(update)
+    }
+    update()
+    return () => window.cancelAnimationFrame(frame)
+  }, [paused, playback])
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.code !== 'Space' || !stateRef.current) return
+      const target = event.target
+      if (target instanceof HTMLElement && (target.matches('input, textarea, select, button') || target.isContentEditable)) return
+      event.preventDefault()
+      void togglePause()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [togglePause])
 
   useEffect(() => {
     const oldTitle = document.title
@@ -187,13 +289,15 @@ export function MusicLab() {
 
   useEffect(() => () => {
     stop()
+    trackBusesRef.current.forEach((bus) => bus.disconnect())
+    trackBusesRef.current.clear()
     if (contextRef.current) void contextRef.current.close()
   }, [stop])
 
   return (
     <main className="mf-music-lab">
       <header className="mf-music-lab__head">
-        <div><small>MINIFUGG / USR: MOIGOD</small><h1>AUDIO LAB</h1><p>Musiques réactives et sound design procédural, écoutables directement dans le navigateur.</p></div>
+        <div><small>MINIFUGG / USR: MOIGOD</small><h1>AUDIO LAB</h1><p>Musiques réactives et sound design procédural, avec partition inspectable et extraits copiables.</p></div>
         <div className="mf-music-lab__counter"><b>{musicCatalog.compositions.length}</b><span>CRÉATIONS MUSICALES</span></div>
       </header>
 
@@ -208,6 +312,8 @@ export function MusicLab() {
           const isPlaying = playback?.compositionId === composition.id
           const liveIndex = isPlaying ? playback.stageIndex : chosen
           const live = composition.stages[liveIndex]
+          const liveTracks = (composition.variants[live.variant] ?? []).filter((track) => live.activeTracks.includes(track.id))
+          const muted = new Set(mutedTracks[composition.id] ?? [])
           return (
             <article className="mf-music-card" data-status={composition.status} data-playing={isPlaying ? 'true' : 'false'} key={composition.id}>
               <div className="mf-music-card__number"><span>{composition.id}</span><b>{STATUS_LABEL[composition.status]}</b></div>
@@ -218,7 +324,20 @@ export function MusicLab() {
                 <div className="mf-music-card__stage-head"><strong>INTENSITÉ</strong><span>{live.label} · {live.bpm} BPM</span></div>
                 <div className="mf-music-card__stage-buttons">{composition.stages.map((stage, index) => <button type="button" data-active={liveIndex === index} onClick={() => chooseStage(composition, index)} key={stage.label}><b>{stage.label}</b><small>{stage.bpm}</small></button>)}</div>
               </div>
-              <div className="mf-music-card__transport"><button type="button" className="primary" onClick={() => isPlaying ? stop() : void play(composition)}>{isPlaying ? '■ STOP' : '▶ ÉCOUTER'}</button><button type="button" onClick={() => void play(composition, true)}>↗ 1 → MAX</button></div>
+              <div className="mf-music-card__transport">
+                <button type="button" className="primary" onClick={() => isPlaying ? stop() : void play(composition)}>{isPlaying ? '■ STOP' : '▶ ÉCOUTER'}</button>
+                {isPlaying ? <button type="button" onClick={() => void togglePause()}>{paused ? '▶ REPRENDRE' : 'Ⅱ PAUSE'} <small>ESPACE</small></button> : null}
+              </div>
+              <MusicScorePanel
+                composition={composition}
+                stage={live}
+                tracks={liveTracks}
+                mutedTrackIds={muted}
+                onToggleMute={(trackId) => toggleMute(composition.id, trackId)}
+                playheadBeat={isPlaying ? playheadBeat : 0}
+                isPlaying={isPlaying}
+                paused={isPlaying && paused}
+              />
               <footer><span>Créée le {composition.createdAt}</span><span>La source MIDI symbolique reste archivée après décision.</span></footer>
             </article>
           )

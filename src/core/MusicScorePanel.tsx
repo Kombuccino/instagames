@@ -9,6 +9,7 @@ import {
   type CompositionTrackTuning,
   type TrackTuning,
 } from './audioLabTuning'
+import { TrackMixerModal } from './TrackMixerModal'
 import './musicScorePanel.css'
 
 type Wave = 'square' | 'triangle' | 'sawtooth' | 'noise'
@@ -100,19 +101,20 @@ export function MusicScorePanel({
   paused,
 }: Props) {
   const [open, setOpen] = useState(false)
-  const [openTrackId, setOpenTrackId] = useState<string | null>(null)
+  const [mixerTrackId, setMixerTrackId] = useState<string | null>(null)
   const [selectedTrackIds, setSelectedTrackIds] = useState<Set<string>>(() => new Set(tracks.map((track) => track.id)))
   const [rangeStart, setRangeStart] = useState(0)
   const [rangeEnd, setRangeEnd] = useState(Math.min(4, composition.loopBeats))
   const [copied, setCopied] = useState<'sequence' | 'config' | null>(null)
   const trackKey = tracks.map((track) => track.id).join('|')
   const modifiedCount = changedTrackCount(trackTunings)
+  const mixerTrack = tracks.find((track) => track.id === mixerTrackId) ?? null
 
   useEffect(() => {
     setSelectedTrackIds(new Set(tracks.map((track) => track.id)))
     setRangeStart(0)
     setRangeEnd(Math.min(4, composition.loopBeats))
-    setOpenTrackId(null)
+    setMixerTrackId(null)
   }, [composition.id, composition.loopBeats, stage.label, stage.variant, trackKey])
 
   const pitchBounds = useMemo(() => {
@@ -208,52 +210,12 @@ export function MusicScorePanel({
       {open ? (
         <div className="mf-score-panel__body">
           <div className="mf-score-panel__help">
-            <b>M</b> = mute temporaire. <b>⚙</b> = réglage exportable. Les modifications sont sauvegardées uniquement dans ce navigateur jusqu’à <b>COPIER LA CONFIG</b>.
+            Chaque piste porte maintenant directement son <b>MUTE</b> et sa <b>TABLE DE MIX</b>. La case à gauche sert seulement à choisir les pistes incluses dans le copier-coller de séquence.
           </div>
 
-          <div className="mf-score-track-list">
-            {tracks.map((track) => {
-              const label = musicTrackLabel(track.id, track.name)
-              const tuning = normalizeTrackTuning(trackTunings[track.id])
-              const modified = !isDefaultTrackTuning(tuning)
-              const settingsOpen = openTrackId === track.id
-              return (
-                <div className="mf-score-track-card" data-disabled={tuning.enabled ? 'false' : 'true'} key={track.id}>
-                  <div className="mf-score-track-control" data-muted={mutedTrackIds.has(track.id) ? 'true' : 'false'} data-modified={modified ? 'true' : 'false'}>
-                    <label>
-                      <input type="checkbox" checked={selectedTrackIds.has(track.id)} onChange={() => toggleSelected(track.id)} />
-                      <span><b>{label}</b><small>{track.id}{modified ? ' · MODIFIÉE' : ''}</small></span>
-                    </label>
-                    <button type="button" data-active={mutedTrackIds.has(track.id)} onClick={() => onToggleMute(track.id)} aria-label={`Mute ${label}`}>M</button>
-                    <button type="button" className="is-settings" data-active={settingsOpen || modified} onClick={() => setOpenTrackId(settingsOpen ? null : track.id)} aria-label={`Réglages ${label}`}>⚙</button>
-                  </div>
-
-                  {settingsOpen ? (
-                    <div className="mf-score-track-settings">
-                      <div className="mf-score-track-settings__head">
-                        <button type="button" className="is-enable" data-active={tuning.enabled} onClick={() => onChangeTuning(track.id, { enabled: !tuning.enabled })}>{tuning.enabled ? '● PISTE INCLUSE' : '○ PISTE RETIRÉE'}</button>
-                        <button type="button" disabled={!modified} onClick={() => { onResetTrack(track.id); onCommitPitchOrLength() }}>RESET PISTE</button>
-                      </div>
-
-                      <label><span>VOLUME <b>{tuning.volumePercent}%</b></span><input type="range" min={0} max={150} step={1} value={tuning.volumePercent} onChange={(event) => onChangeTuning(track.id, { volumePercent: Number(event.target.value) })} /></label>
-
-                      {track.wave === 'noise' ? (
-                        <div className="mf-score-track-settings__na"><span>TRANSPOSITION</span><b>— percussion —</b></div>
-                      ) : (
-                        <label><span>TRANSPOSITION <b>{tuning.transposeSemitones > 0 ? '+' : ''}{tuning.transposeSemitones}</b> demi-tons</span><input type="range" min={-12} max={12} step={1} value={tuning.transposeSemitones} onChange={(event) => onChangeTuning(track.id, { transposeSemitones: Number(event.target.value) })} onPointerUp={onCommitPitchOrLength} onKeyUp={onCommitPitchOrLength} /></label>
-                      )}
-
-                      <label><span>BRILLANCE / FILTRE <b>{tuning.brightness > 0 ? '+' : ''}{tuning.brightness}</b></span><input type="range" min={-100} max={100} step={1} value={tuning.brightness} onChange={(event) => onChangeTuning(track.id, { brightness: Number(event.target.value) })} /></label>
-
-                      <label><span>LONGUEUR DES NOTES <b>{tuning.noteLengthPercent}%</b></span><input type="range" min={25} max={200} step={5} value={tuning.noteLengthPercent} onChange={(event) => onChangeTuning(track.id, { noteLengthPercent: Number(event.target.value) })} onPointerUp={onCommitPitchOrLength} onKeyUp={onCommitPitchOrLength} /></label>
-
-                      <small className="mf-score-track-settings__summary">{tuningSummary(tuning)}</small>
-                    </div>
-                  ) : null}
-                </div>
-              )
-            })}
-            <div className="mf-score-track-list__bulk">
+          <div className="mf-score-selection-toolbar">
+            <span>SÉLECTION POUR LE RETOUR · {selectedTrackIds.size}/{tracks.length} pistes</span>
+            <div className="mf-score-selection-toolbar__actions">
               <button type="button" onClick={() => setSelectedTrackIds(new Set(tracks.map((track) => track.id)))}>TOUTES</button>
               <button type="button" onClick={() => setSelectedTrackIds(new Set())}>AUCUNE</button>
             </div>
@@ -268,9 +230,21 @@ export function MusicScorePanel({
             {tracks.map((track) => {
               const label = musicTrackLabel(track.id, track.name)
               const tuning = normalizeTrackTuning(trackTunings[track.id])
+              const modified = !isDefaultTrackTuning(tuning)
+              const muted = mutedTrackIds.has(track.id)
               return (
-                <div className="mf-score-row" data-muted={mutedTrackIds.has(track.id) ? 'true' : 'false'} data-disabled={tuning.enabled ? 'false' : 'true'} data-selected={selectedTrackIds.has(track.id) ? 'true' : 'false'} key={track.id}>
-                  <div className="mf-score-row__name"><b>{label}</b><small>{track.wave}{!tuning.enabled ? ' · RETIRÉE' : ''}</small></div>
+                <div className="mf-score-row" data-muted={muted ? 'true' : 'false'} data-disabled={tuning.enabled ? 'false' : 'true'} data-selected={selectedTrackIds.has(track.id) ? 'true' : 'false'} key={track.id}>
+                  <div className="mf-score-row__strip">
+                    <label title="Inclure cette piste dans le copier-coller de séquence">
+                      <input type="checkbox" checked={selectedTrackIds.has(track.id)} onChange={() => toggleSelected(track.id)} aria-label={`Sélectionner ${label}`} />
+                    </label>
+                    <div className="mf-score-row__identity">
+                      <b>{label}</b>
+                      <small data-modified={modified ? 'true' : 'false'}>{track.wave} · {track.id}{!tuning.enabled ? ' · RETIRÉE' : modified ? ' · MOD' : ''}</small>
+                    </div>
+                    <button type="button" data-active={muted} onClick={() => onToggleMute(track.id)} aria-label={`Mute ${label}`} title="Mute temporaire">M</button>
+                    <button type="button" className="is-settings" data-active={modified || mixerTrackId === track.id} onClick={() => setMixerTrackId(track.id)} aria-label={`Table de mixage ${label}`} title="Ouvrir la table de mixage">⚙</button>
+                  </div>
                   <div className="mf-score-lane">
                     <i className="mf-score-selection" style={{ left: `${(rangeStart / composition.loopBeats) * 100}%`, width: `${((rangeEnd - rangeStart) / composition.loopBeats) * 100}%` }} />
                     {track.notes.map(([beat, duration, midi, velocity], index) => {
@@ -317,6 +291,20 @@ export function MusicScorePanel({
             </div>
           </div>
         </div>
+      ) : null}
+
+      {mixerTrack ? (
+        <TrackMixerModal
+          label={musicTrackLabel(mixerTrack.id, mixerTrack.name)}
+          trackId={mixerTrack.id}
+          wave={mixerTrack.wave}
+          tuning={normalizeTrackTuning(trackTunings[mixerTrack.id])}
+          modified={!isDefaultTrackTuning(trackTunings[mixerTrack.id])}
+          onChange={(patch) => onChangeTuning(mixerTrack.id, patch)}
+          onReset={() => onResetTrack(mixerTrack.id)}
+          onCommitScheduledTuning={onCommitPitchOrLength}
+          onClose={() => setMixerTrackId(null)}
+        />
       ) : null}
     </section>
   )

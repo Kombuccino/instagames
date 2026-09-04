@@ -127,10 +127,12 @@
   position: relative;
   height: 58px;
   overflow: hidden;
+  cursor: crosshair;
   background:
     repeating-linear-gradient(90deg, rgba(237,238,226,.12) 0 1px, transparent 1px calc(100% / var(--score-bars))),
     repeating-linear-gradient(90deg, rgba(237,238,226,.045) 0 1px, transparent 1px calc(100% / var(--score-beats)));
 }
+.mf-score-lane:hover { background-color: rgba(237,238,226,.025); }
 .mf-score-selection {
   position: absolute;
   z-index: 1;
@@ -168,7 +170,15 @@
 .mf-score-range label b { color: var(--music-paper); }
 .mf-score-range input { width: 100%; accent-color: var(--music-acid); }
 
+.mf-score-audition,
 .mf-score-copy { display: flex; align-items: center; gap: 10px; }
+.mf-score-audition {
+  padding: 9px;
+  border: 1px dashed rgba(237,238,226,.18);
+  background: rgba(237,238,226,.02);
+}
+.mf-score-audition[data-looping="true"] { border-color: rgba(217,255,63,.6); background: rgba(217,255,63,.04); }
+.mf-score-audition button,
 .mf-score-copy button,
 .mf-score-config-export button {
   min-height: 40px;
@@ -179,10 +189,13 @@
   font-size: 9px;
   font-weight: 900;
 }
+.mf-score-audition button.primary,
 .mf-score-copy button.primary,
 .mf-score-config-export button.primary { border-color: var(--music-acid); background: var(--music-acid); color: var(--music-ink); }
+.mf-score-audition[data-looping="true"] button.primary { border-color: var(--music-warn); background: var(--music-warn); }
 .mf-score-copy button:disabled,
 .mf-score-config-export button:disabled { opacity: .35; }
+.mf-score-audition small,
 .mf-score-copy small { color: var(--music-muted); font-size: 8px; }
 
 .mf-score-config-export {
@@ -209,7 +222,9 @@
   .mf-music-card footer { grid-column: 1; }
   .mf-score-track-list { grid-template-columns: 1fr; }
   .mf-score-range { grid-template-columns: 1fr; }
+  .mf-score-audition,
   .mf-score-copy { align-items: stretch; flex-direction: column; }
+  .mf-score-audition button,
   .mf-score-copy button { width: 100%; }
   .mf-score-config-export { grid-template-columns: 1fr; }
   .mf-score-config-export__actions { display: grid; grid-template-columns: 1fr; }

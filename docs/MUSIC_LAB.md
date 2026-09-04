@@ -92,6 +92,43 @@ Transport rules:
 - changing the intensity manually may restart that audition at the beginning of its loop;
 - there is no automatic `1 → MAX` transport button: intensity stages are auditioned explicitly so feedback remains unambiguous.
 
+## Local mix / track-tuning workflow
+
+Like the Parallax Lab, the Audio Lab is a **preview-only workshop**. Track tuning may be saved in browser `localStorage`, but it must never write directly to the repository or silently become production configuration.
+
+Per-track draft controls may include:
+
+- included / removed from the composition;
+- volume multiplier;
+- pitch transposition in semitones for pitched tracks;
+- brightness / low-pass filtering;
+- note-length multiplier;
+- temporary mute, which is audition-only and is **not** a production edit.
+
+Neutral/default tuning must preserve the repository sound. Volume/filter/removal should update live when practical. Parameters that change already-scheduled note events may restart the current audition when committed.
+
+The Lab must provide:
+
+- `RESET PISTE` — restore one track to repository defaults;
+- `RESET MORCEAU` — clear the local draft for that composition;
+- a visible count/marker for tracks that differ from the repository;
+- `COPIER LA CONFIG` — export only real draft differences, excluding temporary mute/selection state.
+
+Copied mix blocks start with:
+
+`MINIFUGG_AUDIO_CONFIG v1 — music=MF-MUS-####`
+
+followed by formatted JSON containing the stable music id and per-track ids/names plus fields such as `enabled`, `volumePercent`, `transposeSemitones`, `brightness` and `noteLengthPercent`.
+
+Handoff workflow:
+
+1. Tune tracks live in the Audio Lab.
+2. Draft values persist locally across refreshes.
+3. Press `COPIER LA CONFIG`.
+4. Paste the complete `MINIFUGG_AUDIO_CONFIG` block into the MiniFugg development conversation.
+5. ChatGPT treats the pasted block as an explicit request to apply those reviewed values to the canonical symbolic composition, unless the user says it is only for discussion.
+6. ChatGPT updates the repository through the normal workflow; the repository remains authoritative.
+
 ## Reactive game music
 
 Prefer modular music over one flattened loop when gameplay intensity changes.
@@ -189,6 +226,7 @@ The Lab must remain practical on a phone:
 - collapsible timeline/score review;
 - pause/resume with Space and an explicit pause button;
 - per-track mute;
+- per-track local mix/tuning with reset + copy handoff;
 - multi-track + time-range copy for chat feedback;
 - direct preview of common and game-accented SFX;
 - stop works immediately for music;

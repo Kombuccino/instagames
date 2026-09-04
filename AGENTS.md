@@ -6,7 +6,7 @@ Before creating, importing or integrating image assets, also read `docs/ASSET_PI
 
 Before creating or modifying MiniFugg music, MIDI compositions, reactive game audio, sound design or SFX, also read `docs/MUSIC_LAB.md`. Every AI-created music proposal and authored SFX identity must be registered in the Audio Lab catalogs and preserved instead of being deleted.
 
-Before creating or modifying Fugg welcome covers / splash art, also read `docs/WELCOME_ILLUSTRATIONS.md`. It defines the collectible-cover system, Fugg/Bêta/Caca behavior, parallax asset bundles, unlocks and the `SWIPE TO PLAY ↑` interaction contract. Before tuning layer position, scale, parallax, motion, FX or unlock scores, also read `docs/PARALLAX_LAB.md`.
+Before creating or modifying Fugg welcome covers / splash art, also read `docs/WELCOME_ILLUSTRATIONS.md` **and** `docs/WELCOME_ART_STYLES.md`. The first defines the collectible-cover system, Fugg/Bêta/Caca behavior, parallax asset bundles, unlocks and the `SWIPE TO PLAY ↑` interaction contract; the second is the reusable visual-style catalog (European pulp, micro-computer cover, graphic/editorial poster and regional editions such as Japanese/Chinese). Before tuning layer position, scale, parallax, motion, FX or unlock scores, also read `docs/PARALLAX_LAB.md`.
 
 ## Mandatory rules
 

@@ -51,27 +51,29 @@ function reactiveA(): Track[] {
     const start = bar * 4
     const chord = CHORDS[bar]
 
+    // The low pulse is intentionally physical: it should help the player's click cadence.
     const bassPattern = [root, root, root + 7, root, root + 12, root + 7, root, root + 7]
-    bassPattern.forEach((note, index) => add(bass, start + index * .5, .43, note, index === 0 || index === 4 ? 82 : 66))
+    bassPattern.forEach((note, index) => add(bass, start + index * .5, .46, note, index === 0 || index === 4 ? 96 : 76))
 
     const arpPattern = [0, 1, 2, 1, 0, 1, 3, 2, 0, 1, 2, 1, 3, 2, 1, 2]
     arpPattern.forEach((slot, index) => add(arp, start + index * .25, .18, chord[slot], index % 4 === 0 ? 50 : 39))
 
-    ;[0, 2].forEach((beat) => add(drums, start + beat, .11, 36, 88))
-    ;[1, 3].forEach((beat) => add(drums, start + beat, .11, 38, 82))
+    // Main kick/snare is not background decoration: it is the tactile clock of the game.
+    ;[0, 2].forEach((beat) => add(drums, start + beat, .14, 36, 112))
+    ;[1, 3].forEach((beat) => add(drums, start + beat, .14, 38, 104))
 
     for (let index = 0; index < 8; index += 1) {
-      add(hats, start + index * .5, .055, 42, index % 2 === 0 ? 38 : 28)
+      add(hats, start + index * .5, .075, 42, index % 2 === 0 ? 64 : 48)
     }
 
-    // Rhythmic escalation first: quiet ghost hits, not a new melody.
+    // Ghost hits stay secondary, but must still be identifiable when the layer enters.
     ;[.75, 1.75, 2.75, 3.75].forEach((offset, index) => {
-      if ((bar + index) % 2 === 0) add(ghostDrums, start + offset, .045, 38, 27)
+      if ((bar + index) % 2 === 0) add(ghostDrums, start + offset, .07, 38, 58)
     })
 
-    // A low-register syncopated answer that reinforces the bass instead of competing with it.
+    // Low syncopation reinforces the click pulse instead of becoming another melody.
     ;[1.5, 3.5].forEach((offset, index) => {
-      add(bassSync, start + offset, .24, index === 0 ? root + 7 : root + 12, 46)
+      add(bassSync, start + offset, .3, index === 0 ? root + 7 : root + 12, 78)
     })
 
     // One sparse hook only every other bar, deliberately kept in the middle register.
@@ -80,21 +82,21 @@ function reactiveA(): Track[] {
       ;[0, 1, 2.5, 3].forEach((offset, index) => add(hook, start + offset, .3, phrase[index], index === 0 ? 60 : 48))
     }
 
-    // Final pressure comes from kick/snare subdivision, not another pitched line.
+    // Final pressure adds short physical kick/snare subdivisions.
     ;[.5, 1.5, 2.5, 3.5].forEach((offset, index) => {
-      add(driveDrums, start + offset, .05, index % 2 === 0 ? 36 : 38, index % 2 === 0 ? 44 : 34)
+      add(driveDrums, start + offset, .075, index % 2 === 0 ? 36 : 38, index % 2 === 0 ? 72 : 60)
     })
   })
 
   return [
-    track('L1_BASS_CORE', 'triangle', .16, bass),
-    track('L1_ARP_PULSE', 'square', .064, arp),
-    track('L1_DRUM_CORE', 'noise', .095, drums),
-    track('L2_HATS_CLOCK', 'noise', .055, hats),
-    track('L3_GHOST_DRUMS', 'noise', .042, ghostDrums),
-    track('L4_BASS_SYNC', 'triangle', .055, bassSync),
+    track('L1_BASS_CORE', 'triangle', .185, bass),
+    track('L1_ARP_PULSE', 'square', .06, arp),
+    track('L1_DRUM_CORE', 'noise', .155, drums),
+    track('L2_HATS_CLOCK', 'noise', .09, hats),
+    track('L3_GHOST_DRUMS', 'noise', .08, ghostDrums),
+    track('L4_BASS_SYNC', 'triangle', .095, bassSync),
     track('L5_SPARSE_HOOK', 'square', .042, hook),
-    track('L6_DRIVE_DRUMS', 'noise', .048, driveDrums),
+    track('L6_DRIVE_DRUMS', 'noise', .085, driveDrums),
   ]
 }
 
@@ -112,11 +114,11 @@ function reactiveB(): Track[] {
     const start = bar * 4
     for (let index = 0; index < 16; index += 1) {
       const note = index % 4 === 0 ? root : index % 4 === 2 ? root + 7 : root + 12
-      add(bass.notes, start + index * .25, .17, note, index % 4 === 0 ? 76 : 52)
-      add(hats.notes, start + index * .25, .04, 42, index % 4 === 0 ? 34 : 22)
+      add(bass.notes, start + index * .25, .2, note, index % 4 === 0 ? 90 : 68)
+      add(hats.notes, start + index * .25, .055, 42, index % 4 === 0 ? 58 : 42)
     }
-    ;[0, 1, 2, 3].forEach((beat) => add(drums.notes, start + beat, .07, beat % 2 ? 38 : 36, beat % 2 ? 72 : 82))
-    ;[.5, 1.5, 2.5, 3.5].forEach((offset) => add(drums.notes, start + offset, .04, 36, 34))
+    ;[0, 1, 2, 3].forEach((beat) => add(drums.notes, start + beat, .09, beat % 2 ? 38 : 36, beat % 2 ? 104 : 112))
+    ;[.5, 1.5, 2.5, 3.5].forEach((offset) => add(drums.notes, start + offset, .055, 36, 56))
   })
 
   return tracks

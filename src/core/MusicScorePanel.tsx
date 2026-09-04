@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
+import { musicTrackLabel } from '../music/trackLabels'
 import './musicScorePanel.css'
 
 type Wave = 'square' | 'triangle' | 'sawtooth' | 'noise'
@@ -100,14 +101,15 @@ export function MusicScorePanel({ composition, stage, tracks, mutedTrackIds, onT
       `game: ${composition.gameTitle}`,
       `stage: ${stage.label} — ${stage.bpm} BPM — variant ${stage.variant}`,
       `range: ${formatTime(startTime)} → ${formatTime(endTime)} | beats ${rangeStart.toFixed(2)} → ${rangeEnd.toFixed(2)}`,
-      `tracks: ${selected.length ? selected.map((track) => `${track.name} [${track.id}]${mutedTrackIds.has(track.id) ? ' (MUTE)' : ''}`).join(' ; ') : 'aucune'}`,
+      `tracks: ${selected.length ? selected.map((track) => `${musicTrackLabel(track.id, track.name)} [${track.id}]${mutedTrackIds.has(track.id) ? ' (MUTE)' : ''}`).join(' ; ') : 'aucune'}`,
       '',
       'events:',
     ]
 
     selected.forEach((track) => {
+      const label = musicTrackLabel(track.id, track.name)
       const notes = track.notes.filter(([beat, duration]) => beat < rangeEnd && beat + duration > rangeStart)
-      lines.push(`\n[${track.name} | ${track.id}${mutedTrackIds.has(track.id) ? ' | MUTE' : ''}]`)
+      lines.push(`\n[${label} | ${track.id}${mutedTrackIds.has(track.id) ? ' | MUTE' : ''}]`)
       if (notes.length === 0) {
         lines.push('(aucun événement dans cette plage)')
         return
@@ -142,15 +144,18 @@ export function MusicScorePanel({ composition, stage, tracks, mutedTrackIds, onT
           <div className="mf-score-panel__help">Coche les pistes à inclure dans ton retour. <b>M</b> coupe seulement l’écoute. La zone acidulée est l’extrait copié.</div>
 
           <div className="mf-score-track-list">
-            {tracks.map((track) => (
-              <div className="mf-score-track-control" data-muted={mutedTrackIds.has(track.id) ? 'true' : 'false'} key={track.id}>
-                <label>
-                  <input type="checkbox" checked={selectedTrackIds.has(track.id)} onChange={() => toggleSelected(track.id)} />
-                  <span><b>{track.name}</b><small>{track.id}</small></span>
-                </label>
-                <button type="button" data-active={mutedTrackIds.has(track.id)} onClick={() => onToggleMute(track.id)} aria-label={`Mute ${track.name}`}>M</button>
-              </div>
-            ))}
+            {tracks.map((track) => {
+              const label = musicTrackLabel(track.id, track.name)
+              return (
+                <div className="mf-score-track-control" data-muted={mutedTrackIds.has(track.id) ? 'true' : 'false'} key={track.id}>
+                  <label>
+                    <input type="checkbox" checked={selectedTrackIds.has(track.id)} onChange={() => toggleSelected(track.id)} />
+                    <span><b>{label}</b><small>{track.id}</small></span>
+                  </label>
+                  <button type="button" data-active={mutedTrackIds.has(track.id)} onClick={() => onToggleMute(track.id)} aria-label={`Mute ${label}`}>M</button>
+                </div>
+              )
+            })}
             <div className="mf-score-track-list__bulk">
               <button type="button" onClick={() => setSelectedTrackIds(new Set(tracks.map((track) => track.id)))}>TOUTES</button>
               <button type="button" onClick={() => setSelectedTrackIds(new Set())}>AUCUNE</button>
@@ -163,32 +168,35 @@ export function MusicScorePanel({ composition, stage, tracks, mutedTrackIds, onT
                 <span style={{ left: `${(index * 4 / composition.loopBeats) * 100}%` }} key={index}>{index + 1}</span>
               ))}
             </div>
-            {tracks.map((track) => (
-              <div className="mf-score-row" data-muted={mutedTrackIds.has(track.id) ? 'true' : 'false'} data-selected={selectedTrackIds.has(track.id) ? 'true' : 'false'} key={track.id}>
-                <div className="mf-score-row__name"><b>{track.name}</b><small>{track.wave}</small></div>
-                <div className="mf-score-lane">
-                  <i className="mf-score-selection" style={{ left: `${(rangeStart / composition.loopBeats) * 100}%`, width: `${((rangeEnd - rangeStart) / composition.loopBeats) * 100}%` }} />
-                  {track.notes.map(([beat, duration, midi, velocity], index) => {
-                    const pitchRange = Math.max(1, pitchBounds.max - pitchBounds.min)
-                    const normalizedPitch = track.wave === 'noise' ? .5 : 1 - clamp((midi - pitchBounds.min) / pitchRange, 0, 1)
-                    return (
-                      <span
-                        className="mf-score-note"
-                        title={`${track.name} · beat ${beat.toFixed(2)} · ${track.wave === 'noise' ? `perc ${midi}` : noteName(midi)} · vél ${velocity}`}
-                        style={{
-                          left: `${(beat / composition.loopBeats) * 100}%`,
-                          width: `${Math.max(.25, duration / composition.loopBeats * 100)}%`,
-                          top: `${8 + normalizedPitch * 38}px`,
-                          opacity: .35 + velocity / 127 * .65,
-                        }}
-                        key={`${beat}-${midi}-${index}`}
-                      />
-                    )
-                  })}
-                  {isPlaying ? <i className="mf-score-playhead" style={{ left: `${(playheadBeat / composition.loopBeats) * 100}%` }} /> : null}
+            {tracks.map((track) => {
+              const label = musicTrackLabel(track.id, track.name)
+              return (
+                <div className="mf-score-row" data-muted={mutedTrackIds.has(track.id) ? 'true' : 'false'} data-selected={selectedTrackIds.has(track.id) ? 'true' : 'false'} key={track.id}>
+                  <div className="mf-score-row__name"><b>{label}</b><small>{track.wave}</small></div>
+                  <div className="mf-score-lane">
+                    <i className="mf-score-selection" style={{ left: `${(rangeStart / composition.loopBeats) * 100}%`, width: `${((rangeEnd - rangeStart) / composition.loopBeats) * 100}%` }} />
+                    {track.notes.map(([beat, duration, midi, velocity], index) => {
+                      const pitchRange = Math.max(1, pitchBounds.max - pitchBounds.min)
+                      const normalizedPitch = track.wave === 'noise' ? .5 : 1 - clamp((midi - pitchBounds.min) / pitchRange, 0, 1)
+                      return (
+                        <span
+                          className="mf-score-note"
+                          title={`${label} · beat ${beat.toFixed(2)} · ${track.wave === 'noise' ? `perc ${midi}` : noteName(midi)} · vél ${velocity}`}
+                          style={{
+                            left: `${(beat / composition.loopBeats) * 100}%`,
+                            width: `${Math.max(.25, duration / composition.loopBeats * 100)}%`,
+                            top: `${8 + normalizedPitch * 38}px`,
+                            opacity: .35 + velocity / 127 * .65,
+                          }}
+                          key={`${beat}-${midi}-${index}`}
+                        />
+                      )
+                    })}
+                    {isPlaying ? <i className="mf-score-playhead" style={{ left: `${(playheadBeat / composition.loopBeats) * 100}%` }} /> : null}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
 
           <div className="mf-score-range">

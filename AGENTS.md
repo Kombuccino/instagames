@@ -1,6 +1,6 @@
 # AI development instructions
 
-Before creating or modifying any MiniFugg game, read `GAME_DEV_SPEC.md`, `docs/STYLE_SYSTEM.md`, `docs/INPUT_GESTURES.md`, `docs/ORIENTATION_LAYOUT.md` and `docs/GAME_LAYOUT_SYSTEM.md` completely. They are the normative game-development, visual-direction, input, orientation and layout contracts for this repository.
+Before creating or modifying any MiniFugg game, read `GAME_DEV_SPEC.md`, `docs/STYLE_SYSTEM.md`, `docs/INPUT_GESTURES.md`, `docs/ORIENTATION_LAYOUT.md`, `docs/GAME_LAYOUT_SYSTEM.md` and `docs/PLATFORM_EXPORTS.md` completely. They are the normative game-development, visual-direction, input, orientation, layout and distribution-portability contracts for this repository.
 
 Before creating, importing or integrating image assets, also read `docs/ASSET_PIPELINE.md`. It is the normative Drive -> GitHub image pipeline. Use that pipeline instead of manual binary GitHub uploads, base64 chunking, public Drive links or FTP.
 
@@ -35,3 +35,4 @@ Before creating or modifying Fugg welcome covers / splash art, also read `docs/W
 23. Use the desktop Parallax Lab (`/?game=<game-id>&usr=moigod`) to tune Fugg cover layers when practical. The Lab is preview-only: it may save drafts locally and copy a `MINIFUGG_PARALLAX_CONFIG` text block, but it must not write directly to GitHub or production. Apply validated copied configs through the normal repository workflow.
 24. Every AI-created MiniFugg music proposal gets a permanent `MF-MUS-####` id, appears in `/?usr=moigod&lab=music`, keeps its symbolic MIDI source and stable MIDI export identity, and is never deleted. User decisions change catalog status to `selected` or `archived` according to `docs/MUSIC_LAB.md`.
 25. Every authored MiniFugg SFX identity gets a permanent `MF-SFX-####` id and appears in the Audio Lab. Prefer the shared semantic vocabulary (`move`, `rotate`, `softDrop`, `land`, `levelUp`, `success`, `fail`) plus a per-game accent before inventing game-specific sounds. Repeated gameplay sounds must be short/throttled and must not overpower the music. Never delete old SFX identities; archive or supersede them according to `docs/MUSIC_LAB.md`.
+26. A game must remain distribution-agnostic. Never import Steam-, Google Play-, Android-, iOS-, itch.io- or host-specific SDKs directly inside a game. Platform capabilities belong behind MiniFugg Core adapters/export shells so the same game source can ship as web, static ZIP, standalone, desktop/Steam or mobile-store builds without per-game rewrites.

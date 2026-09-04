@@ -25,7 +25,7 @@ function clamp(value: number, min: number, max: number) {
 export function normalizeTrackTuning(value?: Partial<TrackTuning> | null): TrackTuning {
   return {
     enabled: value?.enabled !== false,
-    volumePercent: Math.round(clamp(Number(value?.volumePercent ?? 100), 0, 150)),
+    volumePercent: Math.round(clamp(Number(value?.volumePercent ?? 100), 0, 180)),
     transposeSemitones: Math.round(clamp(Number(value?.transposeSemitones ?? 0), -12, 12)),
     brightness: Math.round(clamp(Number(value?.brightness ?? 0), -100, 100)),
     noteLengthPercent: Math.round(clamp(Number(value?.noteLengthPercent ?? 100), 25, 200)),

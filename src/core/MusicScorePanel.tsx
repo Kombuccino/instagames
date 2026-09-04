@@ -63,18 +63,19 @@ export function MusicScorePanel({ composition, stage, tracks, mutedTrackIds, onT
   const [rangeStart, setRangeStart] = useState(0)
   const [rangeEnd, setRangeEnd] = useState(Math.min(4, composition.loopBeats))
   const [copied, setCopied] = useState(false)
+  const trackKey = tracks.map((track) => track.id).join('|')
 
   useEffect(() => {
     setSelectedTrackIds(new Set(tracks.map((track) => track.id)))
     setRangeStart(0)
     setRangeEnd(Math.min(4, composition.loopBeats))
-  }, [composition.id, composition.loopBeats, stage.label, stage.variant, tracks])
+  }, [composition.id, composition.loopBeats, stage.label, stage.variant, trackKey])
 
   const pitchBounds = useMemo(() => {
     const pitched = tracks.filter((track) => track.wave !== 'noise').flatMap((track) => track.notes.map((note) => note[2]))
     if (pitched.length === 0) return { min: 48, max: 72 }
     return { min: Math.min(...pitched), max: Math.max(...pitched) }
-  }, [tracks])
+  }, [trackKey, tracks])
 
   const beatSeconds = 60 / stage.bpm
   const startTime = rangeStart * beatSeconds

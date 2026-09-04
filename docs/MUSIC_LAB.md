@@ -129,6 +129,34 @@ Handoff workflow:
 5. ChatGPT treats the pasted block as an explicit request to apply those reviewed values to the canonical symbolic composition, unless the user says it is only for discussion.
 6. ChatGPT updates the repository through the normal workflow; the repository remains authoritative.
 
+## Vocal idea workflow
+
+The Audio Lab also supports **IDÉE VOCALE** for users who can hear a melody or rhythm but cannot describe or notate it.
+
+Principle:
+
+- the MiniFugg composition continues through headphones;
+- `getUserMedia` records the microphone only, never the Audio Lab output mix;
+- headphones are strongly recommended so the microphone capture remains isolated from the backing music;
+- the Lab starts or resumes the chosen composition automatically when recording begins;
+- one bar / four beats of count-in is provided before microphone recording starts;
+- the take stores the music id, stage, BPM, variant, start beat/timecode, duration and recording timestamp;
+- a live microphone-level waveform helps confirm that the take is being captured;
+- the take can be auditioned alone in the browser and exported as its original recorded audio format.
+
+The first implementation keeps a take local to the current browser page until it is exported. Do not treat an unexported browser Blob as durable project storage.
+
+The handoff consists of two parts:
+
+1. Export the microphone file from the Lab and attach that audio file to the development conversation.
+2. Press `COPIER LES INFOS` and paste the accompanying block beginning with:
+
+`MINIFUGG_VOCAL_IDEA v1 — music=MF-MUS-####`
+
+The metadata identifies exactly where the user sang/hummed relative to the canonical loop. When the audio file and this block are supplied together, interpret the voice as a musical-direction reference, not as a performance that must be copied mechanically. Extract the useful contour, rhythm, accents or motif and translate it into a clean symbolic MiniFugg track that fits the existing composition and art direction.
+
+A non-musician may use syllables, humming, beatboxing or spoken rhythmic sounds. Precision of singing is less important than preserving the intended contour and timing.
+
 ## Reactive game music
 
 Prefer modular music over one flattened loop when gameplay intensity changes.
@@ -217,7 +245,7 @@ The automatic falling tick is intentionally silent. Manual movement and meaningf
 
 ## Browser playback
 
-`src/core/MusicLab.tsx`, `src/core/MusicScorePanel.tsx` and `src/core/SoundDesignLab.tsx` intentionally use native WebAudio and symbolic catalogs. Do not add a MIDI or SFX playback dependency merely for the Lab unless the custom playback layer becomes insufficient.
+`src/core/MusicLab.tsx`, `src/core/MusicScorePanel.tsx`, `src/core/VoiceIdeaRecorder.tsx` and `src/core/SoundDesignLab.tsx` intentionally use native browser audio APIs and symbolic catalogs. Do not add a MIDI, recording or SFX playback dependency merely for the Lab unless the custom playback layer becomes insufficient.
 
 The Lab must remain practical on a phone:
 
@@ -228,6 +256,7 @@ The Lab must remain practical on a phone:
 - per-track mute;
 - per-track local mix/tuning with reset + copy handoff;
 - multi-track + time-range copy for chat feedback;
+- microphone-only vocal-idea recording with one-bar count-in and exportable metadata;
 - direct preview of common and game-accented SFX;
 - stop works immediately for music;
 - playback cleans up continuous music scheduling when the Lab unmounts;

@@ -33,16 +33,17 @@
 .mf-score-panel__help { color: var(--music-muted); font-size: 9px; line-height: 1.35; }
 .mf-score-panel__help b { color: var(--music-paper); }
 
-.mf-score-track-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+.mf-score-track-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; align-items: start; }
+.mf-score-track-card { min-width: 0; border: 1px solid rgba(237,238,226,.15); background: #11120f; }
+.mf-score-track-card[data-disabled="true"] { border-style: dashed; }
 .mf-score-track-control {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 34px;
-  gap: 5px;
+  grid-template-columns: minmax(0, 1fr) 34px 34px;
   min-height: 42px;
-  border: 1px solid rgba(237,238,226,.15);
   background: #11120f;
 }
-.mf-score-track-control[data-muted="true"] { opacity: .55; }
+.mf-score-track-control[data-muted="true"] label { opacity: .55; }
+.mf-score-track-control[data-modified="true"] label small { color: var(--music-acid); }
 .mf-score-track-control label { min-width: 0; display: flex; gap: 7px; align-items: center; padding: 6px 8px; cursor: pointer; }
 .mf-score-track-control input { accent-color: var(--music-acid); }
 .mf-score-track-control label span { min-width: 0; display: grid; gap: 2px; }
@@ -57,6 +58,35 @@
   font-weight: 900;
 }
 .mf-score-track-control > button[data-active="true"] { background: var(--music-warn); color: var(--music-ink); }
+.mf-score-track-control > button.is-settings[data-active="true"] { background: var(--music-acid); color: var(--music-ink); }
+
+.mf-score-track-settings {
+  display: grid;
+  gap: 8px;
+  padding: 9px;
+  border-top: 1px solid rgba(237,238,226,.13);
+  background: #090a08;
+}
+.mf-score-track-settings__head { display: flex; justify-content: space-between; gap: 6px; }
+.mf-score-track-settings__head button {
+  min-height: 30px;
+  padding: 5px 7px;
+  border: 1px solid rgba(237,238,226,.22);
+  background: transparent;
+  color: var(--music-muted);
+  font-size: 7.5px;
+  font-weight: 900;
+}
+.mf-score-track-settings__head button.is-enable[data-active="true"] { border-color: rgba(86,227,159,.65); color: #56e39f; }
+.mf-score-track-settings__head button.is-enable[data-active="false"] { border-color: var(--music-warn); color: var(--music-warn); }
+.mf-score-track-settings__head button:disabled { opacity: .3; }
+.mf-score-track-settings label { display: grid; gap: 3px; color: var(--music-muted); font-size: 7.5px; }
+.mf-score-track-settings label span { display: flex; justify-content: space-between; gap: 8px; }
+.mf-score-track-settings label b { color: var(--music-paper); }
+.mf-score-track-settings input[type="range"] { width: 100%; accent-color: var(--music-acid); }
+.mf-score-track-settings__na { display: flex; justify-content: space-between; gap: 8px; color: #55584f; font-size: 7.5px; }
+.mf-score-track-settings__summary { color: var(--music-acid); font-size: 7px; line-height: 1.3; }
+
 .mf-score-track-list__bulk { display: flex; gap: 5px; grid-column: 1 / -1; }
 .mf-score-track-list__bulk button { min-height: 30px; padding: 5px 8px; border: 1px solid rgba(237,238,226,.18); background: transparent; color: var(--music-muted); font-size: 8px; font-weight: 900; }
 
@@ -83,8 +113,10 @@
   border-bottom: 1px solid rgba(237,238,226,.09);
 }
 .mf-score-row:last-child { border-bottom: 0; }
-.mf-score-row[data-muted="true"] { opacity: .42; }
+.mf-score-row[data-muted="true"],
+.mf-score-row[data-disabled="true"] { opacity: .42; }
 .mf-score-row[data-selected="false"] .mf-score-note { opacity: .2 !important; }
+.mf-score-row[data-disabled="true"] .mf-score-note { background: #5d6057 !important; }
 .mf-score-row__name { display: grid; align-content: center; gap: 2px; padding: 6px 8px; border-right: 1px solid rgba(237,238,226,.12); }
 .mf-score-row__name b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 8px; }
 .mf-score-row__name small { color: var(--music-muted); font-size: 7px; text-transform: uppercase; }
@@ -134,17 +166,36 @@
 .mf-score-range input { width: 100%; accent-color: var(--music-acid); }
 
 .mf-score-copy { display: flex; align-items: center; gap: 10px; }
-.mf-score-copy button {
+.mf-score-copy button,
+.mf-score-config-export button {
   min-height: 40px;
   padding: 8px 11px;
-  border: 1px solid var(--music-acid);
-  background: var(--music-acid);
-  color: var(--music-ink);
+  border: 1px solid rgba(237,238,226,.28);
+  background: transparent;
+  color: var(--music-paper);
   font-size: 9px;
   font-weight: 900;
 }
-.mf-score-copy button:disabled { opacity: .35; }
+.mf-score-copy button.primary,
+.mf-score-config-export button.primary { border-color: var(--music-acid); background: var(--music-acid); color: var(--music-ink); }
+.mf-score-copy button:disabled,
+.mf-score-config-export button:disabled { opacity: .35; }
 .mf-score-copy small { color: var(--music-muted); font-size: 8px; }
+
+.mf-score-config-export {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px dashed rgba(237,238,226,.2);
+  background: rgba(237,238,226,.025);
+}
+.mf-score-config-export[data-dirty="true"] { border-color: rgba(217,255,63,.55); background: rgba(217,255,63,.035); }
+.mf-score-config-export > div:first-child { display: grid; gap: 3px; }
+.mf-score-config-export strong { color: var(--music-acid); font-size: 8px; letter-spacing: .08em; }
+.mf-score-config-export span { color: var(--music-muted); font-size: 8px; }
+.mf-score-config-export__actions { display: flex; gap: 6px; }
 
 .mf-music-card footer { grid-column: 2; }
 .mf-music-card__number { grid-row: 1 / span 9; }
@@ -157,6 +208,8 @@
   .mf-score-range { grid-template-columns: 1fr; }
   .mf-score-copy { align-items: stretch; flex-direction: column; }
   .mf-score-copy button { width: 100%; }
+  .mf-score-config-export { grid-template-columns: 1fr; }
+  .mf-score-config-export__actions { display: grid; grid-template-columns: 1fr; }
   .mf-score-ruler { min-width: 520px; margin-left: 112px; }
   .mf-score-row { min-width: 632px; grid-template-columns: 112px minmax(520px, 1fr); }
   .mf-score-row__name b { font-size: 7.5px; }

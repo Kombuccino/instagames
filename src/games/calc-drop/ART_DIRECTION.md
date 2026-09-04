@@ -100,6 +100,28 @@ The composition should make the game's arithmetic theme perceptible in the music
 - escalation is rhythm-first rather than an accumulation of competing melodies;
 - the maximum-speed state becomes computational and frantic without losing the core groove.
 
+### Tempo-aware arrangement rule
+
+Increasing the game level is **not** permission to play the exact same parts faster. Every important tempo band may use a different arrangement of the same composition.
+
+- As BPM rises, melodic event density should normally decrease: longer notes, fewer attacks and clearer phrases.
+- A part that becomes muddy at the new tempo should be simplified, disabled or replaced by a different layer with the same musical function.
+- High-speed arrangements may remove earlier arpeggios / ornamentation entirely and replace them with a slower hook, syncopated bass or more readable rhythmic voice.
+- Bass and main percussion remain the physical timing anchor for the player's clicks; they should feel strong and legible rather than merely decorative.
+- Extra percussion must create pulse and pressure without turning into broadband noise.
+- Level transitions should preserve musical identity while allowing the orchestration to change substantially.
+
+The selected Tetra compositions use a **48-bar long-form cycle** so the music has enough time to breathe even at maximum tempo. The target form is:
+
+1. 8 bars — introduction / establishment;
+2. 8 bars — rise;
+3. 8 bars — recognizable refrain;
+4. 8 bars — descent / breakdown;
+5. 8 bars — rebuild;
+6. 8 bars — final refrain / lift.
+
+At 170 BPM this is still about 68 seconds; at level-1 tempo it is about 2 minutes 38 seconds. The musical sections must be audible through changes in density, groove and motif, not only by adding more simultaneous tracks.
+
 Both `MF-MUS-0001 Reactive Arithmetic v1` and `MF-MUS-0002 Prime Cascade` are currently selected production arrangements. Runs alternate between them deterministically.
 
 Music begins at level-1 intensity while the welcome cover is visible whenever browser autoplay policy allows it. Sliding the cover away must not restart or interrupt the loop; gameplay continues from the same musical state and then follows the live level.

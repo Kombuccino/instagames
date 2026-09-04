@@ -43,6 +43,7 @@ type TrackBus = { gain: GainNode, filter: BiquadFilterNode }
 const musicCatalog = source as unknown as Catalog
 const FILTERS: Array<[Filter, string]> = [['candidate', 'À ÉCOUTER'], ['selected', 'RETENUES'], ['archived', 'ARCHIVES'], ['all', 'TOUT']]
 const STATUS_LABEL: Record<Status, string> = { candidate: 'À ÉCOUTER', selected: 'RETENUE', archived: 'ARCHIVE' }
+const CHUNK_BEATS = 4
 
 function hz(note: number) { return 440 * Math.pow(2, (note - 69) / 12) }
 function clamp(value: number, min: number, max: number) { return Math.max(min, Math.min(max, value)) }
@@ -142,6 +143,7 @@ export function MusicLab() {
   const timerRef = useRef<number | null>(null)
   const stateRef = useRef<Playback | null>(null)
   const nextStartRef = useRef(0)
+  const nextBeatRef = useRef(0)
   const playbackOriginRef = useRef(0)
   const mutedRef = useRef<Record<string, string[]>>({})
   const tuningsRef = useRef<Record<string, CompositionTrackTuning>>(trackTunings)
@@ -160,6 +162,7 @@ export function MusicLab() {
     sourcesRef.current = []
     stateRef.current = null
     nextStartRef.current = 0
+    nextBeatRef.current = 0
     playbackOriginRef.current = 0
     setPlayback(null)
     setPaused(false)
@@ -218,7 +221,7 @@ export function MusicLab() {
     bus.filter.frequency.setTargetAtTime(brightnessCutoff(tuning.brightness), context.currentTime, .018)
   }, [])
 
-  const scheduleLoop: (composition: Composition, state: Playback, origin: number) => void = useCallback((composition, state, origin) => {
+  const scheduleChunk: (composition: Composition, state: Playback, origin: number) => void = useCallback((composition, state, origin) => {
     const context = contextRef.current
     const output = outputRef.current
     const noise = noiseRef.current
@@ -227,24 +230,30 @@ export function MusicLab() {
     const tracks = composition.variants[stage.variant] ?? []
     const enabled = new Set(stage.activeTracks)
     const beatSeconds = 60 / stage.bpm
-    const loopSeconds = composition.loopBeats * beatSeconds
+    const chunkStart = nextBeatRef.current
+    const chunkEnd = Math.min(composition.loopBeats, chunkStart + CHUNK_BEATS)
+    const chunkBeats = Math.max(.25, chunkEnd - chunkStart)
+    const chunkSeconds = chunkBeats * beatSeconds
 
     tracks.filter((track) => enabled.has(track.id)).forEach((track) => {
       const tuning = tuningFor(composition.id, track.id)
       if (!tuning.enabled) return
       const trackOutput = getTrackBus(context, output, composition.id, track.id).gain
       track.notes.forEach((note) => {
-        if (track.wave === 'noise') scheduleNoise(context, trackOutput, noise, track, note, tuning, origin, beatSeconds, sourcesRef.current)
-        else scheduleTone(context, trackOutput, track, note, tuning, origin, beatSeconds, sourcesRef.current)
+        if (note[0] < chunkStart || note[0] >= chunkEnd) return
+        const localNote: Note = [note[0] - chunkStart, note[1], note[2], note[3]]
+        if (track.wave === 'noise') scheduleNoise(context, trackOutput, noise, track, localNote, tuning, origin, beatSeconds, sourcesRef.current)
+        else scheduleTone(context, trackOutput, track, localNote, tuning, origin, beatSeconds, sourcesRef.current)
       })
     })
 
-    nextStartRef.current = origin + loopSeconds
+    nextStartRef.current = origin + chunkSeconds
+    nextBeatRef.current = chunkEnd >= composition.loopBeats ? 0 : chunkEnd
     timerRef.current = window.setTimeout(() => {
       const current = stateRef.current
       if (!current || current.compositionId !== composition.id || context.state === 'suspended') return
-      scheduleLoop(composition, current, nextStartRef.current)
-    }, Math.max(80, (loopSeconds - .15) * 1000))
+      scheduleChunk(composition, current, nextStartRef.current)
+    }, Math.max(80, (chunkSeconds - .15) * 1000))
   }, [getTrackBus, tuningFor])
 
   const play = useCallback(async (composition: Composition, requestedStage?: number) => {
@@ -254,11 +263,12 @@ export function MusicLab() {
     const state = { compositionId: composition.id, stageIndex }
     const origin = context.currentTime + .06
     stateRef.current = state
+    nextBeatRef.current = 0
     playbackOriginRef.current = origin
     setPlayback(state)
     setPaused(false)
-    scheduleLoop(composition, state, origin)
-  }, [ensureAudio, scheduleLoop, stages, stop])
+    scheduleChunk(composition, state, origin)
+  }, [ensureAudio, scheduleChunk, stages, stop])
 
   const chooseStage = useCallback((composition: Composition, index: number) => {
     setStages((old) => ({ ...old, [composition.id]: index }))
@@ -287,10 +297,10 @@ export function MusicLab() {
       timerRef.current = window.setTimeout(() => {
         const liveState = stateRef.current
         if (!liveState || liveState.compositionId !== composition.id) return
-        scheduleLoop(composition, liveState, nextStartRef.current)
+        scheduleChunk(composition, liveState, nextStartRef.current)
       }, delay)
     }
-  }, [scheduleLoop])
+  }, [scheduleChunk])
 
   const toggleMute = useCallback((compositionId: string, trackId: string) => {
     const existing = mutedRef.current[compositionId] ?? []

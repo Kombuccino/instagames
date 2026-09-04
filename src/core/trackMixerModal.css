@@ -90,6 +90,8 @@
 .mf-score-row__strip > button[data-active="true"] { background: var(--music-warn); color: var(--music-ink); }
 .mf-score-row__strip > button.is-settings[data-active="true"] { background: var(--music-acid); color: var(--music-ink); }
 
+.mf-score-row[data-muted="true"],
+.mf-score-row[data-disabled="true"] { opacity: 1; }
 .mf-score-row[data-muted="true"] .mf-score-lane { opacity: .28; }
 .mf-score-row[data-muted="true"] .mf-score-row__identity { opacity: .55; }
 .mf-score-row[data-disabled="true"] .mf-score-lane { opacity: .2; }

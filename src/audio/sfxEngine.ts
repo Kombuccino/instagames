@@ -3,6 +3,7 @@ import { gameSfxPalettes, sfxCatalog, type SfxDefinition, type SfxEvent, type Sf
 type PlayOptions = {
   intensity?: number
   transform?: SfxTransform
+  brightness?: number
   ignoreCooldown?: boolean
 }
 
@@ -33,7 +34,7 @@ async function ensureAudio() {
     const lowpass = context.createBiquadFilter()
     const compressor = context.createDynamicsCompressor()
 
-    output.gain.value = .46
+    output.gain.value = .58
     lowpass.type = 'lowpass'
     lowpass.frequency.value = 9000
     lowpass.Q.value = .18
@@ -79,6 +80,10 @@ function shouldPlay(definition: SfxDefinition, ignoreCooldown: boolean) {
   return true
 }
 
+function brightnessFactor(brightness: number) {
+  return Math.pow(2, clamp(brightness, -100, 100) / 70)
+}
+
 function scheduleTone(
   audio: AudioContext,
   destination: AudioNode,
@@ -87,27 +92,33 @@ function scheduleTone(
   origin: number,
   intensity: number,
   transform: Required<SfxTransform>,
+  brightness: number,
 ) {
   const oscillator = audio.createOscillator()
   const gain = audio.createGain()
+  const filter = audio.createBiquadFilter()
   const transposition = Math.pow(2, transform.transposeSemitones / 12)
   const start = origin + step.at
   const duration = Math.max(.018, step.duration * transform.duration)
   const end = start + duration
   const startHz = Math.max(35, step.fromHz * transposition)
   const endHz = Math.max(35, (step.toHz ?? step.fromHz) * transposition)
-  const level = clamp(.055 * step.gain * transform.gain * intensity, .001, .085)
+  const level = clamp(.075 * step.gain * transform.gain * intensity, .001, .12)
 
   oscillator.type = step.wave
   oscillator.frequency.setValueAtTime(startHz, start)
   if (Math.abs(endHz - startHz) > 1) oscillator.frequency.exponentialRampToValueAtTime(endHz, end)
+
+  filter.type = 'lowpass'
+  filter.frequency.value = clamp(8500 * brightnessFactor(brightness), 900, 18000)
+  filter.Q.value = .2
 
   gain.gain.setValueAtTime(.0001, start)
   gain.gain.exponentialRampToValueAtTime(level, start + Math.min(.007, duration * .2))
   gain.gain.setValueAtTime(level, Math.max(start + .008, end - .018))
   gain.gain.exponentialRampToValueAtTime(.0001, end)
 
-  oscillator.connect(gain).connect(destination)
+  oscillator.connect(gain).connect(filter).connect(destination)
   oscillator.start(start)
   oscillator.stop(end + .02)
 
@@ -122,6 +133,7 @@ function scheduleNoise(
   origin: number,
   intensity: number,
   transform: Required<SfxTransform>,
+  brightness: number,
 ) {
   const source = audio.createBufferSource()
   const filter = audio.createBiquadFilter()
@@ -129,11 +141,11 @@ function scheduleNoise(
   const start = origin + step.at
   const duration = Math.max(.018, step.duration * transform.duration)
   const transposition = Math.pow(2, transform.transposeSemitones / 12)
-  const level = clamp(.06 * step.gain * transform.gain * intensity, .001, .09)
+  const level = clamp(.085 * step.gain * transform.gain * intensity, .001, .13)
 
   source.buffer = buffer
   filter.type = step.filter
-  filter.frequency.value = clamp(step.frequency * transposition, 80, 11000)
+  filter.frequency.value = clamp(step.frequency * transposition * brightnessFactor(brightness), 80, 15000)
   filter.Q.value = step.filter === 'bandpass' ? .8 : .25
 
   gain.gain.setValueAtTime(level, start)
@@ -151,11 +163,12 @@ async function playDefinition(definition: SfxDefinition, options: PlayOptions = 
 
   const intensity = clamp(options.intensity ?? 1, .45, 1.35)
   const transform = mergeTransform(undefined, options.transform)
+  const brightness = clamp(options.brightness ?? 0, -100, 100)
   const origin = audio.currentTime + .004
 
   definition.steps.forEach((step) => {
-    if (step.type === 'tone') scheduleTone(audio, output!, definition, step, origin, intensity, transform)
-    else scheduleNoise(audio, output!, noise!, step, origin, intensity, transform)
+    if (step.type === 'tone') scheduleTone(audio, output!, definition, step, origin, intensity, transform, brightness)
+    else scheduleNoise(audio, output!, noise!, step, origin, intensity, transform, brightness)
   })
 
   return true

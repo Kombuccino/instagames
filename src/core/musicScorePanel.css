@@ -180,7 +180,8 @@
 .mf-score-audition[data-looping="true"] { border-color: rgba(217,255,63,.6); background: rgba(217,255,63,.04); }
 .mf-score-audition button,
 .mf-score-copy button,
-.mf-score-config-export button {
+.mf-score-config-export button,
+.mf-score-audio-export button {
   min-height: 40px;
   padding: 8px 11px;
   border: 1px solid rgba(237,238,226,.28);
@@ -191,12 +192,30 @@
 }
 .mf-score-audition button.primary,
 .mf-score-copy button.primary,
-.mf-score-config-export button.primary { border-color: var(--music-acid); background: var(--music-acid); color: var(--music-ink); }
+.mf-score-config-export button.primary,
+.mf-score-audio-export button.primary { border-color: var(--music-acid); background: var(--music-acid); color: var(--music-ink); }
 .mf-score-audition[data-looping="true"] button.primary { border-color: var(--music-warn); background: var(--music-warn); }
 .mf-score-copy button:disabled,
-.mf-score-config-export button:disabled { opacity: .35; }
+.mf-score-config-export button:disabled,
+.mf-score-audio-export button:disabled { opacity: .35; }
 .mf-score-audition small,
 .mf-score-copy small { color: var(--music-muted); font-size: 8px; }
+
+.mf-score-audio-export {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px dashed rgba(86,227,159,.35);
+  background: rgba(86,227,159,.025);
+}
+.mf-score-audio-export[data-busy="true"] { border-color: rgba(217,255,63,.6); background: rgba(217,255,63,.035); }
+.mf-score-audio-export > div:first-child { min-width: 0; display: grid; gap: 3px; }
+.mf-score-audio-export strong { color: #56e39f; font-size: 8px; letter-spacing: .08em; }
+.mf-score-audio-export span { color: var(--music-muted); font-size: 8px; line-height: 1.35; }
+.mf-score-audio-export em { color: var(--music-warn); font-size: 8px; font-style: normal; }
+.mf-score-audio-export__actions { display: flex; gap: 6px; }
 
 .mf-score-config-export {
   display: grid;
@@ -226,8 +245,11 @@
   .mf-score-copy { align-items: stretch; flex-direction: column; }
   .mf-score-audition button,
   .mf-score-copy button { width: 100%; }
+  .mf-score-audio-export,
   .mf-score-config-export { grid-template-columns: 1fr; }
+  .mf-score-audio-export__actions,
   .mf-score-config-export__actions { display: grid; grid-template-columns: 1fr; }
+  .mf-score-audio-export button { width: 100%; }
   .mf-score-timeline { overflow-x: auto; }
   .mf-score-ruler { width: auto; min-width: 540px; margin-left: 166px; }
   .mf-score-row { width: auto; min-width: 706px; grid-template-columns: 166px minmax(540px, 1fr); }

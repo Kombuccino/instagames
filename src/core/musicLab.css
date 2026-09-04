@@ -43,7 +43,8 @@ body:has(.mf-music-lab) {
   grid-template-columns: 1fr auto;
   gap: 20px;
   align-items: end;
-  max-width: 1060px;
+  width: 100%;
+  max-width: none;
   margin: 0 auto 18px;
   border-bottom: 3px solid var(--music-paper);
   padding-bottom: 16px;
@@ -51,7 +52,7 @@ body:has(.mf-music-lab) {
 
 .mf-music-lab__head small { color: var(--music-acid); letter-spacing: .12em; font-weight: 900; }
 .mf-music-lab__head h1 { margin: 5px 0 4px; font-size: clamp(34px, 8vw, 78px); line-height: .9; letter-spacing: -.07em; }
-.mf-music-lab__head p { margin: 0; max-width: 680px; color: var(--music-muted); font-size: 12px; }
+.mf-music-lab__head p { margin: 0; max-width: 900px; color: var(--music-muted); font-size: 12px; }
 
 .mf-music-lab__counter {
   display: grid;
@@ -63,7 +64,8 @@ body:has(.mf-music-lab) {
 .mf-music-lab__counter span { max-width: 100px; text-align: right; font-size: 9px; line-height: 1.15; color: var(--music-muted); }
 
 .mf-music-lab__toolbar {
-  max-width: 1060px;
+  width: 100%;
+  max-width: none;
   margin: 0 auto 14px;
   display: flex;
   gap: 10px;
@@ -85,7 +87,7 @@ body:has(.mf-music-lab) {
 .mf-music-lab__tabs button[data-active="true"] { background: var(--music-paper); color: var(--music-ink); border-color: var(--music-paper); }
 .mf-music-lab__toolbar label { display: flex; align-items: center; gap: 8px; font-size: 9px; color: var(--music-muted); }
 
-.mf-music-lab__list { max-width: 1060px; margin: 0 auto; display: grid; gap: 12px; }
+.mf-music-lab__list { width: 100%; max-width: none; margin: 0 auto; display: grid; gap: 12px; }
 
 .mf-music-card {
   position: relative;
@@ -109,7 +111,7 @@ body:has(.mf-music-lab) {
 
 .mf-music-card__title small { color: var(--music-muted); font-size: 10px; text-transform: uppercase; }
 .mf-music-card__title h2 { margin: 2px 0 5px; font-size: clamp(20px, 4vw, 34px); letter-spacing: -.045em; }
-.mf-music-card__title p { margin: 0; max-width: 760px; color: #c0c2b6; line-height: 1.35; font-size: 11px; }
+.mf-music-card__title p { margin: 0; max-width: none; color: #c0c2b6; line-height: 1.35; font-size: 11px; }
 
 .mf-music-card__tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 11px; }
 .mf-music-card__tags span { border: 1px solid rgba(237,238,226,.2); padding: 4px 6px; font-size: 8px; text-transform: uppercase; color: #b8baaf; }
@@ -143,8 +145,11 @@ body:has(.mf-music-lab) {
 .mf-music-card footer { display: flex; justify-content: space-between; gap: 12px; margin-top: 12px; color: #74776d; font-size: 8px; }
 
 .mf-music-lab__empty { border: 1px dashed rgba(237,238,226,.3); padding: 36px 16px; text-align: center; color: var(--music-muted); font-size: 11px; }
-.mf-music-lab__rule { max-width: 1060px; margin: 18px auto 0; display: grid; gap: 4px; border-top: 1px solid rgba(237,238,226,.25); padding-top: 12px; color: var(--music-muted); font-size: 9px; }
+.mf-music-lab__rule { width: 100%; max-width: none; margin: 18px auto 0; display: grid; gap: 4px; border-top: 1px solid rgba(237,238,226,.25); padding-top: 12px; color: var(--music-muted); font-size: 9px; }
 .mf-music-lab__rule strong { color: var(--music-acid); letter-spacing: .08em; }
+
+/* Audio Lab is an internal workstation: use the viewport instead of an editorial 1060px column. */
+.mf-sfx-lab { width: 100%; max-width: none; }
 
 @media (max-width: 720px) {
   .mf-music-lab { padding-left: 10px; padding-right: 10px; }

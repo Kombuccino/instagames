@@ -161,24 +161,24 @@ function primeCascade(maxMode = false): Track[] {
       add(operators, start + index * .5, duration, note, index % 2 ? 40 : 48)
     }
 
-    // Prime numbers are expressed mostly as percussion positions.
+    // Prime positions should be clearly identifiable as a crisp, syncopated hi-hat language.
     for (let step = 0; step < 16; step += 1) {
-      if (PRIME_STEPS.has(step)) add(primeHats, start + step * .25, .04, 42, step === 2 || step === 7 ? 38 : 28)
+      if (PRIME_STEPS.has(step)) add(primeHats, start + step * .25, .065, 42, step === 2 || step === 7 ? 72 : 54)
     }
 
-    // Fibonacci becomes a rhythm first: same low tick, Fibonacci-derived placements.
+    // Fibonacci remains rhythmic, but the accents need enough body to be heard inside the mix.
     const fibSlots = [0, 1, 2, 4, 7, 12]
     fibSlots.forEach((slot, index) => {
       if (!maxMode && index > 3) return
-      add(fibPerc, start + (slot % 16) * .25, .045, index % 2 ? 38 : 42, 24 + index * 2)
+      add(fibPerc, start + (slot % 16) * .25, .07, index % 2 ? 38 : 42, 48 + index * 5)
     })
 
-    // Modulo 3 is a low bass punctuation, not a chord stack.
+    // Modulo 3 is a real low-register punctuation, not a barely audible ghost note.
     const moduloSteps = maxMode ? 16 : 8
     for (let step = 0; step < moduloSteps; step += 1) {
       if (step % 3 !== bar % 3) continue
       const spacing = 4 / moduloSteps
-      add(moduloBass, start + step * spacing, .13, root + 7, 40)
+      add(moduloBass, start + step * spacing, .19, root + 7, 64)
     }
 
     // Only one additional melodic voice: a sparse Fibonacci hook every two bars.
@@ -191,10 +191,10 @@ function primeCascade(maxMode = false): Track[] {
       })
     }
 
-    // Max pressure is another prime-indexed rhythm, deliberately non-pitched.
+    // Prime-indexed pressure gets a short but physical kick/snare identity.
     for (let step = 0; step < 16; step += 1) {
       if (!PRIME_STEPS.has(step)) continue
-      add(panicRhythm, start + step * .25, .035, step % 2 ? 36 : 38, maxMode ? 32 : 22)
+      add(panicRhythm, start + step * .25, .055, step % 2 ? 36 : 38, maxMode ? 60 : 46)
     }
   })
 
@@ -202,11 +202,11 @@ function primeCascade(maxMode = false): Track[] {
     track('L1_BINARY_BASS', 'triangle', .165, bass),
     track('L1_EUCLID_DRUM', 'noise', .1, drums),
     track('L1_OPERATOR_PULSE', 'square', .052, operators),
-    track('L2_PRIME_HATS', 'noise', .042, primeHats),
-    track('L3_FIB_RHYTHM', 'noise', .034, fibPerc),
-    track('L4_MODULO_BASS', 'triangle', .045, moduloBass),
+    track('L2_PRIME_HATS', 'noise', .095, primeHats),
+    track('L3_FIB_RHYTHM', 'noise', .088, fibPerc),
+    track('L4_MODULO_BASS', 'triangle', .092, moduloBass),
     track('L5_FIB_HOOK', 'square', .038, fibHook),
-    track('L6_PRIME_DRIVE', 'noise', .038, panicRhythm),
+    track('L6_PRIME_DRIVE', 'noise', .09, panicRhythm),
   ]
 }
 

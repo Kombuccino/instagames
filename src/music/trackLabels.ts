@@ -5,7 +5,7 @@ const TRACK_LABELS: Record<string, string> = {
   L2_HATS_CLOCK: 'Charleston métronomique',
   L3_GHOST_DRUMS: 'Percussions fantômes',
   L4_BASS_SYNC: 'Syncope de basse',
-  L5_SPARSE_HOOK: 'Hook mélodique discret',
+  L5_SPARSE_HOOK: 'Refrain / hook mélodique',
   L6_DRIVE_DRUMS: 'Batterie de pression',
   L1_BINARY_BASS: 'Basse binaire',
   L1_EUCLID_DRUM: 'Batterie euclidienne',
@@ -13,7 +13,7 @@ const TRACK_LABELS: Record<string, string> = {
   L2_PRIME_HATS: 'Charleston nombres premiers',
   L3_FIB_RHYTHM: 'Percussions Fibonacci',
   L4_MODULO_BASS: 'Basse modulo 3',
-  L5_FIB_HOOK: 'Hook Fibonacci',
+  L5_FIB_HOOK: 'Refrain Fibonacci',
   L6_PRIME_DRIVE: 'Pression nombres premiers',
 }
 

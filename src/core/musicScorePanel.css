@@ -93,13 +93,14 @@
 
 .mf-score-timeline {
   min-width: 0;
-  overflow-x: auto;
+  overflow-x: hidden;
   border: 1px solid rgba(237,238,226,.16);
   background: #080906;
 }
 .mf-score-ruler {
   position: relative;
-  min-width: 760px;
+  width: calc(100% - 224px);
+  min-width: 0;
   height: 22px;
   margin-left: 224px;
   border-bottom: 1px solid rgba(237,238,226,.12);
@@ -107,9 +108,10 @@
 .mf-score-ruler span { position: absolute; top: 5px; transform: translateX(-1px); color: var(--music-muted); font-size: 7px; }
 
 .mf-score-row {
-  min-width: 984px;
+  width: 100%;
+  min-width: 0;
   display: grid;
-  grid-template-columns: 224px minmax(760px, 1fr);
+  grid-template-columns: 224px minmax(0, 1fr);
   min-height: 58px;
   border-bottom: 1px solid rgba(237,238,226,.09);
 }
@@ -211,7 +213,8 @@
   .mf-score-copy button { width: 100%; }
   .mf-score-config-export { grid-template-columns: 1fr; }
   .mf-score-config-export__actions { display: grid; grid-template-columns: 1fr; }
-  .mf-score-ruler { min-width: 540px; margin-left: 166px; }
-  .mf-score-row { min-width: 706px; grid-template-columns: 166px minmax(540px, 1fr); }
+  .mf-score-timeline { overflow-x: auto; }
+  .mf-score-ruler { width: auto; min-width: 540px; margin-left: 166px; }
+  .mf-score-row { width: auto; min-width: 706px; grid-template-columns: 166px minmax(540px, 1fr); }
   .mf-score-row__name b { font-size: 7.5px; }
 }

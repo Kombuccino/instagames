@@ -102,16 +102,30 @@ Chaque traversée doit idéalement durer peu de temps : tension immédiate, réu
 - Priorité absolue à la lisibilité des obstacles sur petit écran.
 
 ### Musique
-- Bande-son nerveuse et répétitive, pensée comme une horloge de gameplay.
-- Beat extrêmement clair.
+La musique fait partie du gameplay et doit avoir une **identité japonaise rétro très marquée**, principalement inspirée des années 1980.
+
+Pistes de référence stylistique :
+- **City Pop japonais** : basses rondes, accords jazzy/funk, synthés brillants, sensation de ville nocturne et d'optimisme urbain ;
+- **synthpop / technopop japonaise 80s** : plus mécanique, nerveuse et électronique, particulièrement adaptée à la montée en tension ;
+- **arcade / chiptune japonais 8-bit et 16-bit** : petites mélodies immédiatement lisibles, arpèges et motifs courts pouvant renforcer le côté jeu vidéo ;
+- éventuellement un mélange de ces familles plutôt qu'un seul genre strict.
+
+Le résultat ne doit pas sonner comme une simple musique nostalgique ou lounge : **il faut une musique urbaine, énergique, presque pressée**, qui donne la sensation d'être emporté par le flux de Tokyo.
+
+Principes :
+- Beat extrêmement clair : la musique est l'horloge de déplacement du joueur.
+- Mélodies courtes et mémorisables, compatibles avec des boucles de jeu répétées.
 - Accélération progressive sans casser la lisibilité rythmique.
-- Chaque niveau peut enrichir l'arrangement plutôt que simplement augmenter le BPM.
+- Chaque niveau peut enrichir l'arrangement plutôt que simplement augmenter le BPM : nouvelle basse, nouvelle percussion, arpège supplémentaire, ligne de synthé, couche arcade, etc.
+- La montée vers Shibuya/Shinjuku peut devenir de plus en plus dense et électronique, jusqu'à une sorte de collision contrôlée entre City Pop, technopop et arcade.
+- Éviter qu'un nouvel instrument aigu ou agressif prenne soudainement le dessus sur le mix : chaque ajout doit renforcer la dynamique sans écraser les couches précédentes.
 
 ### SFX
 - Petit son satisfaisant à chaque saut correctement calé.
 - Son distinct pour perfect / late / early si ce système est retenu.
 - Impacts et réactions de foule très courts.
 - Sonnette / freinage du vélo, exclamations de piétons, signal sonore de passage piéton japonais comme éléments d'ambiance.
+- Les SFX doivent rester rythmiques et courts pour ne pas brouiller le beat principal.
 
 ## 7. Assets principaux
 

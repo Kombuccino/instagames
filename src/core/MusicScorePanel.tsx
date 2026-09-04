@@ -9,6 +9,7 @@ import {
   type CompositionTrackTuning,
   type TrackTuning,
 } from './audioLabTuning'
+import { exportAudioLabWav } from './audioLabWavExport'
 import { TrackMixerModal } from './TrackMixerModal'
 import './musicScorePanel.css'
 
@@ -114,6 +115,8 @@ export function MusicScorePanel({
   const [rangeStart, setRangeStart] = useState(0)
   const [rangeEnd, setRangeEnd] = useState(Math.min(4, composition.loopBeats))
   const [copied, setCopied] = useState<'sequence' | 'config' | null>(null)
+  const [exporting, setExporting] = useState<'piece' | 'excerpt' | null>(null)
+  const [exportError, setExportError] = useState<string | null>(null)
   const trackKey = tracks.map((track) => track.id).join('|')
   const modifiedCount = changedTrackCount(trackTunings)
   const mixerTrack = tracks.find((track) => track.id === mixerTrackId) ?? null
@@ -126,6 +129,7 @@ export function MusicScorePanel({
     setRangeStart(0)
     setRangeEnd(Math.min(4, composition.loopBeats))
     setMixerTrackId(null)
+    setExportError(null)
   }, [composition.id, composition.loopBeats, stage.label, stage.variant, trackKey])
 
   const pitchBounds = useMemo(() => {
@@ -215,6 +219,30 @@ export function MusicScorePanel({
     window.setTimeout(() => setCopied(null), 1400)
   }
 
+  const exportWav = async (scope: 'piece' | 'excerpt') => {
+    if (exporting) return
+    setExporting(scope)
+    setExportError(null)
+    try {
+      await exportAudioLabWav({
+        compositionId: composition.id,
+        compositionName: composition.name,
+        stage,
+        tracks,
+        trackTunings,
+        mutedTrackIds,
+        startBeat: scope === 'piece' ? 0 : rangeStart,
+        endBeat: scope === 'piece' ? composition.loopBeats : rangeEnd,
+        scope,
+      })
+    } catch (error) {
+      console.error('Audio Lab WAV export failed', error)
+      setExportError('Export WAV impossible sur ce navigateur ou cet appareil.')
+    } finally {
+      setExporting(null)
+    }
+  }
+
   const resetComposition = () => {
     onResetComposition()
     onCommitPitchOrLength()
@@ -301,6 +329,18 @@ export function MusicScorePanel({
           <div className="mf-score-audition" data-looping={loopingSelection ? 'true' : 'false'}>
             <button type="button" className="primary" onClick={() => loopingSelection ? onClearLoop() : onLoopRange(rangeStart, rangeEnd)}>{loopingSelection ? '■ QUITTER LA BOUCLE' : '↻ BOUCLE EXTRAIT'}</button>
             <small>{formatTime(startTime)} → {formatTime(endTime)} · {(rangeEnd - rangeStart).toFixed(2)} beats{loopRange && !loopingSelection ? ' · une autre boucle est actuellement active' : ''}</small>
+          </div>
+
+          <div className="mf-score-audio-export" data-busy={exporting ? 'true' : 'false'}>
+            <div>
+              <strong>EXPORT AUDIO WAV</strong>
+              <span>Rendu hors-ligne 44,1 kHz / 16-bit mono · niveau {stage.label} / {stage.bpm} BPM · mix, réglages et MUTES actuels inclus.</span>
+              {exportError ? <em>{exportError}</em> : null}
+            </div>
+            <div className="mf-score-audio-export__actions">
+              <button type="button" className="primary" disabled={Boolean(exporting)} onClick={() => void exportWav('piece')}>{exporting === 'piece' ? 'RENDU WAV…' : '↓ EXPORT WAV MORCEAU'}</button>
+              <button type="button" disabled={Boolean(exporting)} onClick={() => void exportWav('excerpt')}>{exporting === 'excerpt' ? 'RENDU WAV…' : '↓ EXPORT WAV EXTRAIT'}</button>
+            </div>
           </div>
 
           <div className="mf-score-copy">

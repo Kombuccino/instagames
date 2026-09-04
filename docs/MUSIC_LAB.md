@@ -172,9 +172,25 @@ A reactive composition should expose:
 
 **Escalation should be rhythm-first, not melody-stack-first.** When intensity rises, prefer tempo, subdivisions, ghost notes, percussion density, syncopated bass, accents and rhythmic transformations before adding another pitched voice. New layers must preserve the hierarchy of the existing groove instead of taking over it. As a default, keep at most one clearly foreground melodic voice active at a time.
 
-If the game's mechanical cadence becomes too fast to map literally to musical BPM, group several game ticks into one beat and increase rhythmic subdivision instead of driving the whole composition into unusable tempos.
+### Tempo-aware orchestration
+
+A higher intensity stage must not simply replay the exact same note density at a higher BPM.
+
+- Treat tempo bands as legitimate arrangement variants of the same composition.
+- As BPM increases, actively reduce melodic attack density: use longer notes, fewer events and clearer phrases.
+- If an earlier part becomes muddy, disable it or replace it with another part that preserves its musical role at the new speed.
+- High-speed states should often trade fast arpeggios / ornamentation for slower hooks, syncopated bass, half-time material or clearer rhythmic anchors.
+- Bass and main drums may stay physically strong while ornamental percussion becomes sparser.
+- A layer transition may remove tracks as well as add them; progression is orchestration, not accumulation.
+- Preserve recognizable motifs/harmony across variants so the listener hears one composition evolving rather than unrelated songs.
+
+Longer reactive pieces should also have a musical form rather than one short flat loop. When appropriate, use named sections such as introduction, rise, refrain, breakdown/descent, rebuild and final refrain. The exact length is game-specific; do not impose one universal duration, but avoid excessive repetition when a run is expected to last longer than the loop.
+
+If the game's mechanical cadence becomes too fast to map literally to musical BPM, group several game ticks into one beat and increase rhythmic subdivision only where it remains readable instead of driving the whole composition into unusable tempos.
 
 The game engine should own live tempo and layer activation. Do not render the only production source to a fixed WAV when the music is meant to react to gameplay.
+
+For long-form symbolic arrangements, the Audio Lab should schedule playback in short chunks/bars rather than pre-scheduling an entire multi-minute loop at once. This keeps auditioning practical on phones and lets local mix changes affect upcoming material quickly.
 
 ## Sound-design catalog
 

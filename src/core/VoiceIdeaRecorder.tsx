@@ -15,8 +15,8 @@ type Props = {
   isPlaying: boolean
   paused: boolean
   playheadBeat: number
-  onStartMusic(): void
-  onResumeMusic(): void
+  onStartMusic(): Promise<void> | void
+  onResumeMusic(): Promise<void> | void
 }
 
 type Take = {
@@ -119,8 +119,7 @@ export function VoiceIdeaRecorder({ composition, stage, isPlaying, paused, playh
   useEffect(() => () => {
     clearTimers()
     stopStream()
-    if (take?.url) URL.revokeObjectURL(take.url)
-  }, [take?.url])
+  }, [])
 
   useEffect(() => {
     if (!take) return
@@ -208,10 +207,10 @@ export function VoiceIdeaRecorder({ composition, stage, isPlaying, paused, playh
 
       let baseBeat = playheadBeat
       if (!isPlaying) {
-        onStartMusic()
+        await onStartMusic()
         baseBeat = 0
       } else if (paused) {
-        onResumeMusic()
+        await onResumeMusic()
       }
 
       const countBeats = BARS_COUNT_IN * BEATS_PER_BAR

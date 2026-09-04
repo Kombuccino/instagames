@@ -37,6 +37,7 @@ type Composition = {
 type Catalog = { version: number, rule: string, compositions: Composition[] }
 type Filter = Status | 'all'
 type Playback = { compositionId: string, stageIndex: number }
+type LoopPlayback = { compositionId: string, startBeat: number, endBeat: number }
 type SourceNode = OscillatorNode | AudioBufferSourceNode
 type TrackBus = { gain: GainNode, filter: BiquadFilterNode }
 
@@ -44,6 +45,7 @@ const musicCatalog = source as unknown as Catalog
 const FILTERS: Array<[Filter, string]> = [['candidate', 'À ÉCOUTER'], ['selected', 'RETENUES'], ['archived', 'ARCHIVES'], ['all', 'TOUT']]
 const STATUS_LABEL: Record<Status, string> = { candidate: 'À ÉCOUTER', selected: 'RETENUE', archived: 'ARCHIVE' }
 const CHUNK_BEATS = 4
+const SEEK_STEP = .25
 
 function hz(note: number) { return 440 * Math.pow(2, (note - 69) / 12) }
 function clamp(value: number, min: number, max: number) { return Math.max(min, Math.min(max, value)) }
@@ -130,6 +132,7 @@ export function MusicLab() {
   const [game, setGame] = useState('all')
   const [stages, setStages] = useState<Record<string, number>>({})
   const [playback, setPlayback] = useState<Playback | null>(null)
+  const [loopPlayback, setLoopPlayback] = useState<LoopPlayback | null>(null)
   const [paused, setPaused] = useState(false)
   const [playheadBeat, setPlayheadBeat] = useState(0)
   const [mutedTracks, setMutedTracks] = useState<Record<string, string[]>>({})
@@ -145,6 +148,9 @@ export function MusicLab() {
   const nextStartRef = useRef(0)
   const nextBeatRef = useRef(0)
   const playbackOriginRef = useRef(0)
+  const playbackStartBeatRef = useRef(0)
+  const playheadBeatRef = useRef(0)
+  const loopPlaybackRef = useRef<LoopPlayback | null>(null)
   const mutedRef = useRef<Record<string, string[]>>({})
   const tuningsRef = useRef<Record<string, CompositionTrackTuning>>(trackTunings)
   const trackBusesRef = useRef(new Map<string, TrackBus>())
@@ -164,7 +170,11 @@ export function MusicLab() {
     nextStartRef.current = 0
     nextBeatRef.current = 0
     playbackOriginRef.current = 0
+    playbackStartBeatRef.current = 0
+    playheadBeatRef.current = 0
+    loopPlaybackRef.current = null
     setPlayback(null)
+    setLoopPlayback(null)
     setPaused(false)
     setPlayheadBeat(0)
   }, [])
@@ -230,9 +240,13 @@ export function MusicLab() {
     const tracks = composition.variants[stage.variant] ?? []
     const enabled = new Set(stage.activeTracks)
     const beatSeconds = 60 / stage.bpm
-    const chunkStart = nextBeatRef.current
-    const chunkEnd = Math.min(composition.loopBeats, chunkStart + CHUNK_BEATS)
-    const chunkBeats = Math.max(.25, chunkEnd - chunkStart)
+    const activeLoop = loopPlaybackRef.current?.compositionId === composition.id ? loopPlaybackRef.current : null
+    const playbackMin = activeLoop?.startBeat ?? 0
+    const playbackMax = activeLoop?.endBeat ?? composition.loopBeats
+    let chunkStart = nextBeatRef.current
+    if (chunkStart < playbackMin || chunkStart >= playbackMax) chunkStart = playbackMin
+    const chunkEnd = Math.min(playbackMax, chunkStart + CHUNK_BEATS)
+    const chunkBeats = Math.max(SEEK_STEP, chunkEnd - chunkStart)
     const chunkSeconds = chunkBeats * beatSeconds
 
     tracks.filter((track) => enabled.has(track.id)).forEach((track) => {
@@ -248,7 +262,7 @@ export function MusicLab() {
     })
 
     nextStartRef.current = origin + chunkSeconds
-    nextBeatRef.current = chunkEnd >= composition.loopBeats ? 0 : chunkEnd
+    nextBeatRef.current = chunkEnd >= playbackMax - .0001 ? playbackMin : chunkEnd
     timerRef.current = window.setTimeout(() => {
       const current = stateRef.current
       if (!current || current.compositionId !== composition.id || context.state === 'suspended') return
@@ -256,23 +270,42 @@ export function MusicLab() {
     }, Math.max(80, (chunkSeconds - .15) * 1000))
   }, [getTrackBus, tuningFor])
 
-  const play = useCallback(async (composition: Composition, requestedStage?: number) => {
+  const play = useCallback(async (
+    composition: Composition,
+    requestedStage?: number,
+    requestedStartBeat = 0,
+    requestedLoop?: { startBeat: number, endBeat: number } | null,
+  ) => {
     stop()
     const context = await ensureAudio()
     const stageIndex = clamp(requestedStage ?? stages[composition.id] ?? 0, 0, composition.stages.length - 1)
+    const maxStart = Math.max(0, composition.loopBeats - SEEK_STEP)
+    const startBeat = clamp(Math.round(requestedStartBeat / SEEK_STEP) * SEEK_STEP, 0, maxStart)
+    const loopStart = requestedLoop ? clamp(Math.round(requestedLoop.startBeat / SEEK_STEP) * SEEK_STEP, 0, maxStart) : 0
+    const loopEnd = requestedLoop ? clamp(Math.round(requestedLoop.endBeat / SEEK_STEP) * SEEK_STEP, loopStart + SEEK_STEP, composition.loopBeats) : composition.loopBeats
+    const activeLoop: LoopPlayback | null = requestedLoop ? { compositionId: composition.id, startBeat: loopStart, endBeat: loopEnd } : null
+    const actualStart = activeLoop ? clamp(startBeat, activeLoop.startBeat, activeLoop.endBeat - SEEK_STEP) : startBeat
     const state = { compositionId: composition.id, stageIndex }
     const origin = context.currentTime + .06
     stateRef.current = state
-    nextBeatRef.current = 0
+    loopPlaybackRef.current = activeLoop
+    nextBeatRef.current = actualStart
+    playbackStartBeatRef.current = actualStart
+    playheadBeatRef.current = actualStart
     playbackOriginRef.current = origin
     setPlayback(state)
+    setLoopPlayback(activeLoop)
+    setPlayheadBeat(actualStart)
     setPaused(false)
     scheduleChunk(composition, state, origin)
   }, [ensureAudio, scheduleChunk, stages, stop])
 
   const chooseStage = useCallback((composition: Composition, index: number) => {
     setStages((old) => ({ ...old, [composition.id]: index }))
-    if (stateRef.current?.compositionId === composition.id) void play(composition, index)
+    if (stateRef.current?.compositionId === composition.id) {
+      const activeLoop = loopPlaybackRef.current?.compositionId === composition.id ? loopPlaybackRef.current : null
+      void play(composition, index, playheadBeatRef.current, activeLoop)
+    }
   }, [play])
 
   const togglePause = useCallback(async () => {
@@ -348,11 +381,14 @@ export function MusicLab() {
     const context = contextRef.current
     if (!current || !context || context.state !== 'running') return
     const composition = musicCatalog.compositions.find((item) => item.id === current.compositionId)
-    if (composition) void play(composition, current.stageIndex)
+    if (!composition) return
+    const activeLoop = loopPlaybackRef.current?.compositionId === composition.id ? loopPlaybackRef.current : null
+    void play(composition, current.stageIndex, playheadBeatRef.current, activeLoop)
   }, [play])
 
   useEffect(() => {
     if (!playback) {
+      playheadBeatRef.current = 0
       setPlayheadBeat(0)
       return undefined
     }
@@ -363,14 +399,23 @@ export function MusicLab() {
     const beatSeconds = 60 / stage.bpm
 
     const update = () => {
-      const elapsed = Math.max(0, context.currentTime - playbackOriginRef.current)
-      setPlayheadBeat((elapsed / beatSeconds) % composition.loopBeats)
+      const elapsedBeats = Math.max(0, context.currentTime - playbackOriginRef.current) / beatSeconds
+      const activeLoop = loopPlaybackRef.current?.compositionId === composition.id ? loopPlaybackRef.current : null
+      let beat: number
+      if (activeLoop) {
+        const span = Math.max(SEEK_STEP, activeLoop.endBeat - activeLoop.startBeat)
+        beat = activeLoop.startBeat + ((playbackStartBeatRef.current - activeLoop.startBeat + elapsedBeats) % span)
+      } else {
+        beat = (playbackStartBeatRef.current + elapsedBeats) % composition.loopBeats
+      }
+      playheadBeatRef.current = beat
+      setPlayheadBeat(beat)
     }
     update()
     if (paused) return undefined
     const timer = window.setInterval(update, 80)
     return () => window.clearInterval(timer)
-  }, [paused, playback])
+  }, [loopPlayback, paused, playback])
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -422,6 +467,7 @@ export function MusicLab() {
           const allTracks = [...new Map(Object.values(composition.variants).flat().map((track) => [track.id, track])).values()]
           const muted = new Set(mutedTracks[composition.id] ?? [])
           const tuning = trackTunings[composition.id] ?? {}
+          const activeLoop = loopPlayback?.compositionId === composition.id ? loopPlayback : null
           return (
             <article className="mf-music-card" data-status={composition.status} data-playing={isPlaying ? 'true' : 'false'} key={composition.id}>
               <div className="mf-music-card__number"><span>{composition.id}</span><b>{STATUS_LABEL[composition.status]}</b></div>
@@ -448,6 +494,10 @@ export function MusicLab() {
                 onResetTrack={(trackId) => resetTrackTuning(composition.id, trackId)}
                 onResetComposition={() => resetCompositionTuning(composition.id)}
                 onCommitPitchOrLength={replayCurrentTuning}
+                onSeek={(beat) => void play(composition, liveIndex, beat, null)}
+                onLoopRange={(startBeat, endBeat) => void play(composition, liveIndex, startBeat, { startBeat, endBeat })}
+                onClearLoop={() => void play(composition, liveIndex, isPlaying ? playheadBeatRef.current : 0, null)}
+                loopRange={activeLoop ? { startBeat: activeLoop.startBeat, endBeat: activeLoop.endBeat } : null}
                 playheadBeat={isPlaying ? playheadBeat : 0}
                 isPlaying={isPlaying}
                 paused={isPlaying && paused}

@@ -258,22 +258,22 @@ export function MusicLab() {
     if (!context || !composition) return undefined
     const stage = composition.stages[playback.stageIndex]
     const beatSeconds = 60 / stage.bpm
-    let frame = 0
 
     const update = () => {
       const elapsed = Math.max(0, context.currentTime - playbackOriginRef.current)
       setPlayheadBeat((elapsed / beatSeconds) % composition.loopBeats)
-      if (!paused) frame = window.requestAnimationFrame(update)
     }
     update()
-    return () => window.cancelAnimationFrame(frame)
+    if (paused) return undefined
+    const timer = window.setInterval(update, 80)
+    return () => window.clearInterval(timer)
   }, [paused, playback])
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.code !== 'Space' || !stateRef.current) return
       const target = event.target
-      if (target instanceof HTMLElement && (target.matches('input, textarea, select, button') || target.isContentEditable)) return
+      if (target instanceof HTMLElement && (target.matches('input, textarea, select') || target.isContentEditable)) return
       event.preventDefault()
       void togglePause()
     }

@@ -76,7 +76,7 @@ export function changedTrackCount(tuning: CompositionTrackTuning) {
 
 export function brightnessCutoff(brightness: number) {
   const normalized = clamp(brightness, -100, 100)
-  return clamp(8200 * Math.pow(2, normalized / 50), 900, 20000)
+  return clamp(18000 * Math.pow(2, normalized / 50), 900, 20000)
 }
 
 export function makeAudioLabConfigBlock(input: {

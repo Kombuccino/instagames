@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { musicCatalog as source } from '../music/catalog'
+import {
+  brightnessCutoff,
+  normalizeTrackTuning,
+  readAudioLabTuning,
+  writeAudioLabTuning,
+  type CompositionTrackTuning,
+  type TrackTuning,
+} from './audioLabTuning'
 import { MusicScorePanel } from './MusicScorePanel'
 import { SoundDesignLab } from './SoundDesignLab'
 import './musicLab.css'
@@ -29,6 +37,7 @@ type Catalog = { version: number, rule: string, compositions: Composition[] }
 type Filter = Status | 'all'
 type Playback = { compositionId: string, stageIndex: number }
 type SourceNode = OscillatorNode | AudioBufferSourceNode
+type TrackBus = { gain: GainNode, filter: BiquadFilterNode }
 
 const musicCatalog = source as unknown as Catalog
 const FILTERS: Array<[Filter, string]> = [['candidate', 'À ÉCOUTER'], ['selected', 'RETENUES'], ['archived', 'ARCHIVES'], ['all', 'TOUT']]
@@ -56,15 +65,24 @@ function noiseBuffer(context: AudioContext) {
   return buffer
 }
 
-function scheduleTone(context: AudioContext, output: AudioNode, track: Track, note: Note, origin: number, beatSeconds: number, sources: SourceNode[]) {
+function scheduleTone(
+  context: AudioContext,
+  output: AudioNode,
+  track: Track,
+  note: Note,
+  tuning: TrackTuning,
+  origin: number,
+  beatSeconds: number,
+  sources: SourceNode[],
+) {
   const [beat, durationBeats, midi, velocity] = note
   const start = origin + beat * beatSeconds
-  const duration = Math.max(.025, durationBeats * beatSeconds)
+  const duration = Math.max(.025, durationBeats * (tuning.noteLengthPercent / 100) * beatSeconds)
   const end = start + duration
   const osc = context.createOscillator()
   const gain = context.createGain()
   osc.type = track.wave === 'triangle' ? 'triangle' : track.wave === 'sawtooth' ? 'sawtooth' : 'square'
-  osc.frequency.setValueAtTime(hz(midi), start)
+  osc.frequency.setValueAtTime(hz(midi + tuning.transposeSemitones), start)
   const level = clamp(velocity / 127 * track.gain, .002, .2)
   gain.gain.setValueAtTime(.0001, start)
   gain.gain.exponentialRampToValueAtTime(level, start + Math.min(.009, duration * .2))
@@ -76,10 +94,20 @@ function scheduleTone(context: AudioContext, output: AudioNode, track: Track, no
   rememberSource(sources, osc)
 }
 
-function scheduleNoise(context: AudioContext, output: AudioNode, buffer: AudioBuffer, track: Track, note: Note, origin: number, beatSeconds: number, sources: SourceNode[]) {
+function scheduleNoise(
+  context: AudioContext,
+  output: AudioNode,
+  buffer: AudioBuffer,
+  track: Track,
+  note: Note,
+  tuning: TrackTuning,
+  origin: number,
+  beatSeconds: number,
+  sources: SourceNode[],
+) {
   const [beat, durationBeats, midi, velocity] = note
   const start = origin + beat * beatSeconds
-  const duration = Math.max(.025, Math.min(.15, durationBeats * beatSeconds))
+  const duration = Math.max(.025, Math.min(.3, durationBeats * (tuning.noteLengthPercent / 100) * beatSeconds))
   const sourceNode = context.createBufferSource()
   const filter = context.createBiquadFilter()
   const gain = context.createGain()
@@ -103,6 +131,9 @@ export function MusicLab() {
   const [paused, setPaused] = useState(false)
   const [playheadBeat, setPlayheadBeat] = useState(0)
   const [mutedTracks, setMutedTracks] = useState<Record<string, string[]>>({})
+  const [trackTunings, setTrackTunings] = useState<Record<string, CompositionTrackTuning>>(() => Object.fromEntries(
+    musicCatalog.compositions.map((composition) => [composition.id, readAudioLabTuning(composition.id)]),
+  ))
   const contextRef = useRef<AudioContext | null>(null)
   const outputRef = useRef<GainNode | null>(null)
   const noiseRef = useRef<AudioBuffer | null>(null)
@@ -112,7 +143,8 @@ export function MusicLab() {
   const nextStartRef = useRef(0)
   const playbackOriginRef = useRef(0)
   const mutedRef = useRef<Record<string, string[]>>({})
-  const trackBusesRef = useRef(new Map<string, GainNode>())
+  const tuningsRef = useRef<Record<string, CompositionTrackTuning>>(trackTunings)
+  const trackBusesRef = useRef(new Map<string, TrackBus>())
 
   const games = useMemo(() => [...new Map(musicCatalog.compositions.map((item) => [item.gameId, item.gameTitle])).entries()], [])
   const shown = useMemo(() => musicCatalog.compositions
@@ -151,15 +183,38 @@ export function MusicLab() {
     return contextRef.current
   }, [])
 
+  const tuningFor = useCallback((compositionId: string, trackId: string) => (
+    normalizeTrackTuning(tuningsRef.current[compositionId]?.[trackId])
+  ), [])
+
   const getTrackBus = useCallback((context: AudioContext, output: AudioNode, compositionId: string, trackId: string) => {
     const key = `${compositionId}:${trackId}`
     const existing = trackBusesRef.current.get(key)
     if (existing) return existing
-    const bus = context.createGain()
-    bus.gain.value = mutedRef.current[compositionId]?.includes(trackId) ? 0 : 1
-    bus.connect(output)
+
+    const tuning = normalizeTrackTuning(tuningsRef.current[compositionId]?.[trackId])
+    const muted = mutedRef.current[compositionId]?.includes(trackId) ?? false
+    const gain = context.createGain()
+    const filterNode = context.createBiquadFilter()
+    filterNode.type = 'lowpass'
+    filterNode.Q.value = .25
+    filterNode.frequency.value = brightnessCutoff(tuning.brightness)
+    gain.gain.value = muted || !tuning.enabled ? 0 : tuning.volumePercent / 100
+    gain.connect(filterNode).connect(output)
+
+    const bus = { gain, filter: filterNode }
     trackBusesRef.current.set(key, bus)
     return bus
+  }, [])
+
+  const refreshTrackBus = useCallback((compositionId: string, trackId: string) => {
+    const context = contextRef.current
+    const bus = trackBusesRef.current.get(`${compositionId}:${trackId}`)
+    if (!context || !bus) return
+    const tuning = normalizeTrackTuning(tuningsRef.current[compositionId]?.[trackId])
+    const muted = mutedRef.current[compositionId]?.includes(trackId) ?? false
+    bus.gain.gain.setTargetAtTime(muted || !tuning.enabled ? 0 : tuning.volumePercent / 100, context.currentTime, .012)
+    bus.filter.frequency.setTargetAtTime(brightnessCutoff(tuning.brightness), context.currentTime, .018)
   }, [])
 
   const scheduleLoop: (composition: Composition, state: Playback, origin: number) => void = useCallback((composition, state, origin) => {
@@ -174,10 +229,12 @@ export function MusicLab() {
     const loopSeconds = composition.loopBeats * beatSeconds
 
     tracks.filter((track) => enabled.has(track.id)).forEach((track) => {
-      const trackOutput = getTrackBus(context, output, composition.id, track.id)
+      const tuning = tuningFor(composition.id, track.id)
+      if (!tuning.enabled) return
+      const trackOutput = getTrackBus(context, output, composition.id, track.id).gain
       track.notes.forEach((note) => {
-        if (track.wave === 'noise') scheduleNoise(context, trackOutput, noise, track, note, origin, beatSeconds, sourcesRef.current)
-        else scheduleTone(context, trackOutput, track, note, origin, beatSeconds, sourcesRef.current)
+        if (track.wave === 'noise') scheduleNoise(context, trackOutput, noise, track, note, tuning, origin, beatSeconds, sourcesRef.current)
+        else scheduleTone(context, trackOutput, track, note, tuning, origin, beatSeconds, sourcesRef.current)
       })
     })
 
@@ -187,7 +244,7 @@ export function MusicLab() {
       if (!current || current.compositionId !== composition.id || context.state === 'suspended') return
       scheduleLoop(composition, current, nextStartRef.current)
     }, Math.max(80, (loopSeconds - .15) * 1000))
-  }, [getTrackBus])
+  }, [getTrackBus, tuningFor])
 
   const play = useCallback(async (composition: Composition, requestedStage?: number) => {
     stop()
@@ -235,18 +292,53 @@ export function MusicLab() {
   }, [scheduleLoop])
 
   const toggleMute = useCallback((compositionId: string, trackId: string) => {
-    setMutedTracks((current) => {
-      const existing = current[compositionId] ?? []
-      const willMute = !existing.includes(trackId)
-      const nextList = willMute ? [...existing, trackId] : existing.filter((id) => id !== trackId)
-      const next = { ...current, [compositionId]: nextList }
-      mutedRef.current = next
-      const context = contextRef.current
-      const bus = trackBusesRef.current.get(`${compositionId}:${trackId}`)
-      if (context && bus) bus.gain.setTargetAtTime(willMute ? 0 : 1, context.currentTime, .012)
-      return next
-    })
-  }, [])
+    const existing = mutedRef.current[compositionId] ?? []
+    const willMute = !existing.includes(trackId)
+    const nextList = willMute ? [...existing, trackId] : existing.filter((id) => id !== trackId)
+    const next = { ...mutedRef.current, [compositionId]: nextList }
+    mutedRef.current = next
+    setMutedTracks(next)
+    refreshTrackBus(compositionId, trackId)
+  }, [refreshTrackBus])
+
+  const updateTrackTuning = useCallback((compositionId: string, trackId: string, patch: Partial<TrackTuning>) => {
+    const currentComposition = tuningsRef.current[compositionId] ?? {}
+    const currentTrack = normalizeTrackTuning(currentComposition[trackId])
+    const nextTrack = normalizeTrackTuning({ ...currentTrack, ...patch })
+    const nextComposition = { ...currentComposition, [trackId]: nextTrack }
+    const next = { ...tuningsRef.current, [compositionId]: nextComposition }
+    tuningsRef.current = next
+    setTrackTunings(next)
+    writeAudioLabTuning(compositionId, nextComposition)
+    refreshTrackBus(compositionId, trackId)
+  }, [refreshTrackBus])
+
+  const resetTrackTuning = useCallback((compositionId: string, trackId: string) => {
+    const currentComposition = { ...(tuningsRef.current[compositionId] ?? {}) }
+    delete currentComposition[trackId]
+    const next = { ...tuningsRef.current, [compositionId]: currentComposition }
+    tuningsRef.current = next
+    setTrackTunings(next)
+    writeAudioLabTuning(compositionId, currentComposition)
+    refreshTrackBus(compositionId, trackId)
+  }, [refreshTrackBus])
+
+  const resetCompositionTuning = useCallback((compositionId: string) => {
+    const previous = tuningsRef.current[compositionId] ?? {}
+    const next = { ...tuningsRef.current, [compositionId]: {} }
+    tuningsRef.current = next
+    setTrackTunings(next)
+    writeAudioLabTuning(compositionId, {})
+    Object.keys(previous).forEach((trackId) => refreshTrackBus(compositionId, trackId))
+  }, [refreshTrackBus])
+
+  const replayCurrentTuning = useCallback(() => {
+    const current = stateRef.current
+    const context = contextRef.current
+    if (!current || !context || context.state !== 'running') return
+    const composition = musicCatalog.compositions.find((item) => item.id === current.compositionId)
+    if (composition) void play(composition, current.stageIndex)
+  }, [play])
 
   useEffect(() => {
     if (!playback) {
@@ -289,7 +381,10 @@ export function MusicLab() {
 
   useEffect(() => () => {
     stop()
-    trackBusesRef.current.forEach((bus) => bus.disconnect())
+    trackBusesRef.current.forEach((bus) => {
+      bus.gain.disconnect()
+      bus.filter.disconnect()
+    })
     trackBusesRef.current.clear()
     if (contextRef.current) void contextRef.current.close()
   }, [stop])
@@ -297,7 +392,7 @@ export function MusicLab() {
   return (
     <main className="mf-music-lab">
       <header className="mf-music-lab__head">
-        <div><small>MINIFUGG / USR: MOIGOD</small><h1>AUDIO LAB</h1><p>Musiques réactives et sound design procédural, avec partition inspectable et extraits copiables.</p></div>
+        <div><small>MINIFUGG / USR: MOIGOD</small><h1>AUDIO LAB</h1><p>Musiques réactives et sound design procédural, avec partition inspectable, mix local et extraits copiables.</p></div>
         <div className="mf-music-lab__counter"><b>{musicCatalog.compositions.length}</b><span>CRÉATIONS MUSICALES</span></div>
       </header>
 
@@ -313,7 +408,9 @@ export function MusicLab() {
           const liveIndex = isPlaying ? playback.stageIndex : chosen
           const live = composition.stages[liveIndex]
           const liveTracks = (composition.variants[live.variant] ?? []).filter((track) => live.activeTracks.includes(track.id))
+          const allTracks = [...new Map(Object.values(composition.variants).flat().map((track) => [track.id, track])).values()]
           const muted = new Set(mutedTracks[composition.id] ?? [])
+          const tuning = trackTunings[composition.id] ?? {}
           return (
             <article className="mf-music-card" data-status={composition.status} data-playing={isPlaying ? 'true' : 'false'} key={composition.id}>
               <div className="mf-music-card__number"><span>{composition.id}</span><b>{STATUS_LABEL[composition.status]}</b></div>
@@ -332,13 +429,19 @@ export function MusicLab() {
                 composition={composition}
                 stage={live}
                 tracks={liveTracks}
+                allTracks={allTracks}
                 mutedTrackIds={muted}
+                trackTunings={tuning}
                 onToggleMute={(trackId) => toggleMute(composition.id, trackId)}
+                onChangeTuning={(trackId, patch) => updateTrackTuning(composition.id, trackId, patch)}
+                onResetTrack={(trackId) => resetTrackTuning(composition.id, trackId)}
+                onResetComposition={() => resetCompositionTuning(composition.id)}
+                onCommitPitchOrLength={replayCurrentTuning}
                 playheadBeat={isPlaying ? playheadBeat : 0}
                 isPlaying={isPlaying}
                 paused={isPlaying && paused}
               />
-              <footer><span>Créée le {composition.createdAt}</span><span>La source MIDI symbolique reste archivée après décision.</span></footer>
+              <footer><span>Créée le {composition.createdAt}</span><span>Les réglages du Lab restent locaux jusqu’au copier-coller d’une config.</span></footer>
             </article>
           )
         })}

@@ -10,6 +10,7 @@ import {
 } from './audioLabTuning'
 import { MusicScorePanel } from './MusicScorePanel'
 import { SoundDesignLab } from './SoundDesignLab'
+import { VoiceIdeaRecorder } from './VoiceIdeaRecorder'
 import './musicLab.css'
 
 type Status = 'candidate' | 'selected' | 'archived'
@@ -392,7 +393,7 @@ export function MusicLab() {
   return (
     <main className="mf-music-lab">
       <header className="mf-music-lab__head">
-        <div><small>MINIFUGG / USR: MOIGOD</small><h1>AUDIO LAB</h1><p>Musiques réactives et sound design procédural, avec partition inspectable, mix local et extraits copiables.</p></div>
+        <div><small>MINIFUGG / USR: MOIGOD</small><h1>AUDIO LAB</h1><p>Musiques réactives et sound design procédural, avec partition inspectable, mix local, idées vocales et extraits copiables.</p></div>
         <div className="mf-music-lab__counter"><b>{musicCatalog.compositions.length}</b><span>CRÉATIONS MUSICALES</span></div>
       </header>
 
@@ -441,7 +442,16 @@ export function MusicLab() {
                 isPlaying={isPlaying}
                 paused={isPlaying && paused}
               />
-              <footer><span>Créée le {composition.createdAt}</span><span>Les réglages du Lab restent locaux jusqu’au copier-coller d’une config.</span></footer>
+              <VoiceIdeaRecorder
+                composition={composition}
+                stage={live}
+                isPlaying={isPlaying}
+                paused={isPlaying && paused}
+                playheadBeat={isPlaying ? playheadBeat : 0}
+                onStartMusic={() => play(composition, liveIndex)}
+                onResumeMusic={() => togglePause()}
+              />
+              <footer><span>Créée le {composition.createdAt}</span><span>Les réglages et prises du Lab restent locaux jusqu’à export/copie.</span></footer>
             </article>
           )
         })}

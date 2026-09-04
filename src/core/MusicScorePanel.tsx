@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import type { CSSProperties } from 'react'
+import type { CSSProperties, MouseEvent as ReactMouseEvent } from 'react'
 import { musicTrackLabel } from '../music/trackLabels'
 import {
   changedTrackCount,
@@ -35,6 +35,10 @@ type Props = {
   onResetTrack(trackId: string): void
   onResetComposition(): void
   onCommitPitchOrLength(): void
+  onSeek(beat: number): void
+  onLoopRange(startBeat: number, endBeat: number): void
+  onClearLoop(): void
+  loopRange: { startBeat: number, endBeat: number } | null
   playheadBeat: number
   isPlaying: boolean
   paused: boolean
@@ -96,6 +100,10 @@ export function MusicScorePanel({
   onResetTrack,
   onResetComposition,
   onCommitPitchOrLength,
+  onSeek,
+  onLoopRange,
+  onClearLoop,
+  loopRange,
   playheadBeat,
   isPlaying,
   paused,
@@ -109,6 +117,9 @@ export function MusicScorePanel({
   const trackKey = tracks.map((track) => track.id).join('|')
   const modifiedCount = changedTrackCount(trackTunings)
   const mixerTrack = tracks.find((track) => track.id === mixerTrackId) ?? null
+  const loopingSelection = Boolean(loopRange
+    && Math.abs(loopRange.startBeat - rangeStart) < .001
+    && Math.abs(loopRange.endBeat - rangeEnd) < .001)
 
   useEffect(() => {
     setSelectedTrackIds(new Set(tracks.map((track) => track.id)))
@@ -135,6 +146,15 @@ export function MusicScorePanel({
       else next.add(trackId)
       return next
     })
+  }
+
+  const seekFromTimeline = (event: ReactMouseEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect()
+    if (rect.width <= 0) return
+    const ratio = clamp((event.clientX - rect.left) / rect.width, 0, 1)
+    const maxBeat = Math.max(0, composition.loopBeats - STEP)
+    const beat = clamp(Math.round((ratio * composition.loopBeats) / STEP) * STEP, 0, maxBeat)
+    onSeek(beat)
   }
 
   const makeSelectionText = () => {
@@ -204,13 +224,13 @@ export function MusicScorePanel({
     <section className="mf-score-panel" data-open={open ? 'true' : 'false'}>
       <button type="button" className="mf-score-panel__toggle" onClick={() => setOpen((value) => !value)}>
         <span>{open ? '▾' : '▸'} PARTITION / MIX / SÉQUENCE</span>
-        <small>{tracks.length} pistes · {stage.bpm} BPM{modifiedCount ? ` · ${modifiedCount} MOD` : ''}{isPlaying ? paused ? ' · PAUSE' : ' · LECTURE' : ''}</small>
+        <small>{tracks.length} pistes · {stage.bpm} BPM{modifiedCount ? ` · ${modifiedCount} MOD` : ''}{loopRange ? ' · BOUCLE' : ''}{isPlaying ? paused ? ' · PAUSE' : ' · LECTURE' : ''}</small>
       </button>
 
       {open ? (
         <div className="mf-score-panel__body">
           <div className="mf-score-panel__help">
-            Chaque piste porte maintenant directement son <b>MUTE</b> et sa <b>TABLE DE MIX</b>. La case à gauche sert seulement à choisir les pistes incluses dans le copier-coller de séquence.
+            <b>CLIQUE DIRECTEMENT DANS LA TIMELINE</b> pour partir de cet endroit. Le clic est calé au quart de temps. Délimite ensuite DÉBUT / FIN et utilise <b>BOUCLE EXTRAIT</b> pour réécouter la même zone autant de fois que nécessaire.
           </div>
 
           <div className="mf-score-selection-toolbar">
@@ -245,7 +265,7 @@ export function MusicScorePanel({
                     <button type="button" data-active={muted} onClick={() => onToggleMute(track.id)} aria-label={`Mute ${label}`} title="Mute temporaire">M</button>
                     <button type="button" className="is-settings" data-active={modified || mixerTrackId === track.id} onClick={() => setMixerTrackId(track.id)} aria-label={`Table de mixage ${label}`} title="Ouvrir la table de mixage">⚙</button>
                   </div>
-                  <div className="mf-score-lane">
+                  <div className="mf-score-lane" onClick={seekFromTimeline} title="Cliquer pour lire depuis cet endroit">
                     <i className="mf-score-selection" style={{ left: `${(rangeStart / composition.loopBeats) * 100}%`, width: `${((rangeEnd - rangeStart) / composition.loopBeats) * 100}%` }} />
                     {track.notes.map(([beat, duration, midi, velocity], index) => {
                       const pitchRange = Math.max(1, pitchBounds.max - pitchBounds.min)
@@ -276,6 +296,11 @@ export function MusicScorePanel({
           <div className="mf-score-range">
             <label><span>DÉBUT <b>{formatTime(startTime)}</b> · beat {rangeStart.toFixed(2)}</span><input type="range" min={0} max={Math.max(0, rangeEnd - STEP)} step={STEP} value={rangeStart} onChange={(event) => setRangeStart(Math.min(Number(event.target.value), rangeEnd - STEP))} /></label>
             <label><span>FIN <b>{formatTime(endTime)}</b> · beat {rangeEnd.toFixed(2)}</span><input type="range" min={Math.min(composition.loopBeats, rangeStart + STEP)} max={composition.loopBeats} step={STEP} value={rangeEnd} onChange={(event) => setRangeEnd(Math.max(Number(event.target.value), rangeStart + STEP))} /></label>
+          </div>
+
+          <div className="mf-score-audition" data-looping={loopingSelection ? 'true' : 'false'}>
+            <button type="button" className="primary" onClick={() => loopingSelection ? onClearLoop() : onLoopRange(rangeStart, rangeEnd)}>{loopingSelection ? '■ QUITTER LA BOUCLE' : '↻ BOUCLE EXTRAIT'}</button>
+            <small>{formatTime(startTime)} → {formatTime(endTime)} · {(rangeEnd - rangeStart).toFixed(2)} beats{loopRange && !loopingSelection ? ' · une autre boucle est actuellement active' : ''}</small>
           </div>
 
           <div className="mf-score-copy">

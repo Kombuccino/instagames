@@ -79,6 +79,8 @@ The inspector should let the user:
 - mute/unmute one or several tracks independently;
 - select one or several tracks for feedback independently from mute state;
 - select a start/end range at musically useful precision;
+- click/tap the timeline to seek the whole composition to that musical position;
+- loop the selected start/end range for repeated audition without restarting the whole piece;
 - copy a deterministic text block containing music id, stage/BPM, variant, timecodes, beats, selected track ids/names and the note/events crossing that range;
 - paste that block directly into a development chat for a precise revision request.
 
@@ -89,6 +91,7 @@ Transport rules:
 - `Space` pauses/resumes the current Audio Lab music globally unless the user is typing in an input/textarea/select/contenteditable field;
 - pause/resume must preserve musical position rather than restart the loop;
 - muting should take effect immediately without rewriting the source;
+- timeline seeking acts on the complete mix, never just the row that was clicked;
 - changing the intensity manually may restart that audition at the beginning of its loop;
 - there is no automatic `1 → MAX` transport button: intensity stages are auditioned explicitly so feedback remains unambiguous.
 
@@ -164,27 +167,40 @@ Prefer modular music over one flattened loop when gameplay intensity changes.
 A reactive composition should expose:
 
 - an initial core that works alone;
-- additive layers that can enter on bar boundaries;
+- additive **and subtractive** layer changes on musical boundaries;
 - a BPM/intensity map tied to real gameplay cadence when the game has one;
-- an optional compatible max-pressure variation;
+- optional compatible high-pressure variations;
 - stable bar/loop boundaries so transitions stay musical;
 - recognizable motifs at every intensity.
 
-**Escalation should be rhythm-first, not melody-stack-first.** When intensity rises, prefer tempo, subdivisions, ghost notes, percussion density, syncopated bass, accents and rhythmic transformations before adding another pitched voice. New layers must preserve the hierarchy of the existing groove instead of taking over it. As a default, keep at most one clearly foreground melodic voice active at a time.
+**Escalation should be rhythm-first, not melody-stack-first.** When intensity rises, prefer tempo, carefully chosen subdivisions, percussion density, bass emphasis and rhythmic transformations before adding another pitched voice. New layers must preserve the hierarchy of the existing groove instead of taking over it. As a default, keep at most one clearly foreground melodic voice active at a time.
+
+### Groove is a gameplay contract
+
+For action/puzzle games whose interaction is helped by a beat, the underlying pulse is not decorative music: it is part of the gameplay feel.
+
+- Establish one unmistakable rhythmic spine, normally main drums plus bass.
+- Do not remove or obscure that spine merely to create a breakdown, descent or mathematical variation.
+- A descent should normally come from subtracting hats, ornaments, fills or melodic density while the foot pulse remains legible.
+- Syncopation, Euclidean patterns, prime-number accents, Fibonacci events and fills belong **around** the pulse; they must not make the player unsure where the beat is.
+- At every intensity, a listener should be able to tap a foot through the complete section without guessing where beat 1 went.
+- Main kick/snare accents must remain materially stronger than decorative percussion.
+- If a clever pattern weakens the groove, simplify or remove the clever pattern.
 
 ### Tempo-aware orchestration
 
 A higher intensity stage must not simply replay the exact same note density at a higher BPM.
 
 - Treat tempo bands as legitimate arrangement variants of the same composition.
+- Preserve approved pitches, motifs and harmony whenever possible; first solve high-speed problems by thinning or removing events rather than recomposing unrelated material.
 - As BPM increases, actively reduce melodic attack density: use longer notes, fewer events and clearer phrases.
 - If an earlier part becomes muddy, disable it or replace it with another part that preserves its musical role at the new speed.
-- High-speed states should often trade fast arpeggios / ornamentation for slower hooks, syncopated bass, half-time material or clearer rhythmic anchors.
+- High-speed states should often trade fast arpeggios / ornamentation for slower hooks, syncopated bass or clearer rhythmic anchors.
 - Bass and main drums may stay physically strong while ornamental percussion becomes sparser.
 - A layer transition may remove tracks as well as add them; progression is orchestration, not accumulation.
 - Preserve recognizable motifs/harmony across variants so the listener hears one composition evolving rather than unrelated songs.
 
-Longer reactive pieces should also have a musical form rather than one short flat loop. When appropriate, use named sections such as introduction, rise, refrain, breakdown/descent, rebuild and final refrain. The exact length is game-specific; do not impose one universal duration, but avoid excessive repetition when a run is expected to last longer than the loop.
+Longer reactive pieces should also have a musical form rather than one short flat loop. When appropriate, use named sections such as introduction, rise, refrain, descent, rebuild and final refrain. Those sections do **not** justify losing the gameplay pulse. Refrains should preferably be created by recognizable motif emphasis and arrangement, not by introducing unrelated harmony.
 
 If the game's mechanical cadence becomes too fast to map literally to musical BPM, group several game ticks into one beat and increase rhythmic subdivision only where it remains readable instead of driving the whole composition into unusable tempos.
 
@@ -243,10 +259,11 @@ The Tetra MindFuck music should make mathematics perceptible without becoming a 
 - handheld 8-bit / early portable-console timbre;
 - modern arrangement and escalation;
 - tempo derived from the falling-block cadence;
-- density growth based on powers of two;
-- prime-number accents (2/3/5/7 etc.) expressed mainly rhythmically;
+- an unbroken, foot-tappable rhythmic spine that supports rapid Tetra inputs;
+- density growth based on powers of two only where it does not obscure that spine;
+- prime-number accents (2/3/5/7 etc.) expressed mainly rhythmically around the core pulse;
 - Fibonacci-derived timing or phrases where useful;
-- multiply/divide ideas expressed through note duration, interval or subdivision transformations;
+- multiply/divide ideas expressed by note duration, interval or subdivision transformations;
 - modulo/polyrhythmic accents;
 - a final max-speed state that feels computationally overloaded while keeping the original groove readable.
 
@@ -268,6 +285,7 @@ The Lab must remain practical on a phone:
 - one tap to listen;
 - stage/intensity audition controls for music;
 - collapsible timeline/score review;
+- click/tap timeline seeking plus selectable excerpt looping;
 - pause/resume with Space and an explicit pause button;
 - per-track mute;
 - per-track local mix/tuning with reset + copy handoff;

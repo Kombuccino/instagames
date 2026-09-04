@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
+import './musicScorePanel.css'
 
 type Wave = 'square' | 'triangle' | 'sawtooth' | 'noise'
 type Note = [startBeat: number, durationBeats: number, midi: number, velocity: number]

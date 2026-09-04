@@ -42,9 +42,12 @@ Every entry must include:
 - key, meter and loop length;
 - intensity stages / BPM map;
 - separate layers/tracks;
+- **a clear human-readable role/name for every track** in addition to its stable technical id;
 - exact browser-preview note events;
 - intended `.mid` export filename(s);
 - status.
+
+Stable track ids are for code and precise feedback. The Audio Lab displays explicit names such as `Basse principale`, `Batterie euclidienne` or `Percussions Fibonacci` so a non-musician can identify what they are hearing.
 
 ## Music status lifecycle
 
@@ -63,6 +66,31 @@ The browser panel itself is intentionally read-only for production status. The u
 The catalog note/event data is the master partition. It must remain deterministic and losslessly exportable to Standard MIDI. Do not require a binary `.mid` blob in Git merely to audition music in the Lab.
 
 When a standalone MIDI file is needed, generate it from the catalog source and keep the declared `midiExports` filename stable. A later build/export utility may automate those derivatives without changing the composition identity.
+
+## Score / sequence review workflow
+
+Every music card in the Audio Lab should expose a collapsible **Partition / Séquence** inspector based on the symbolic source, preferably as a piano-roll/timeline rather than classical staff notation when timing/layer feedback is the goal.
+
+The inspector should let the user:
+
+- show/hide the score without making the normal music list excessively tall;
+- see one named row per currently active track;
+- see a synchronized playhead while listening;
+- mute/unmute one or several tracks independently;
+- select one or several tracks for feedback independently from mute state;
+- select a start/end range at musically useful precision;
+- copy a deterministic text block containing music id, stage/BPM, variant, timecodes, beats, selected track ids/names and the note/events crossing that range;
+- paste that block directly into a development chat for a precise revision request.
+
+The copied block starts with `MINIFUGG_AUDIO_SELECTION` and ends with a blank `feedback:` field. Treat a pasted block as an exact reference to the canonical symbolic catalog unless the user explicitly says otherwise.
+
+Transport rules:
+
+- `Space` pauses/resumes the current Audio Lab music globally unless the user is typing in an input/textarea/select/contenteditable field;
+- pause/resume must preserve musical position rather than restart the loop;
+- muting should take effect immediately without rewriting the source;
+- changing the intensity manually may restart that audition at the beginning of its loop;
+- there is no automatic `1 → MAX` transport button: intensity stages are auditioned explicitly so feedback remains unambiguous.
 
 ## Reactive game music
 
@@ -152,13 +180,16 @@ The automatic falling tick is intentionally silent. Manual movement and meaningf
 
 ## Browser playback
 
-`src/core/MusicLab.tsx` and `src/core/SoundDesignLab.tsx` intentionally use native WebAudio and symbolic catalogs. Do not add a MIDI or SFX playback dependency merely for the Lab unless the custom playback layer becomes insufficient.
+`src/core/MusicLab.tsx`, `src/core/MusicScorePanel.tsx` and `src/core/SoundDesignLab.tsx` intentionally use native WebAudio and symbolic catalogs. Do not add a MIDI or SFX playback dependency merely for the Lab unless the custom playback layer becomes insufficient.
 
 The Lab must remain practical on a phone:
 
 - one tap to listen;
 - stage/intensity audition controls for music;
-- an automatic `1 → MAX` escalation preview;
+- collapsible timeline/score review;
+- pause/resume with Space and an explicit pause button;
+- per-track mute;
+- multi-track + time-range copy for chat feedback;
 - direct preview of common and game-accented SFX;
 - stop works immediately for music;
 - playback cleans up continuous music scheduling when the Lab unmounts;

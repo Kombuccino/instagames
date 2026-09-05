@@ -7,7 +7,8 @@ Read together with:
 - `docs/PLATFORM_ECONOMY.md` for balances, costs and Free Play;
 - `docs/WELCOME_ILLUSTRATIONS.md` for Fugg/Bêta/Caca cover production;
 - `docs/PLATFORM_ART_DIRECTION.md` for Core identity;
-- `docs/PLATFORM_ENTRY_SCENES.md` for the cold-open before discovery.
+- `docs/PLATFORM_ENTRY_SCENES.md` for the cold-open before discovery;
+- `docs/PLATFORM_EXPORTS.md` for platform-specific capabilities such as sharing.
 
 This is a **MiniFugg Core** system. Individual games must not reimplement it.
 
@@ -55,18 +56,19 @@ The first horizontal play gesture belongs to the cover. Gameplay input begins on
 
 ## 3. Cover action rail: discreet, vertical, on the left
 
-Each active cover may expose a very small **vertical action rail on the left edge**.
+Each active cover exposes a very small **vertical action rail on the left edge**.
 
 This rail is part of MiniFugg Core, not part of the cover raster artwork.
 
-Recommended actions:
+Target actions:
 
 1. **Info / Community** — opens the current game's details/community side panel;
 2. **Like** — immediate toggle, no panel required;
 3. **Comments** — opens the same details/community side panel focused on comments;
-4. **Bookmark** — immediate toggle, no panel required.
+4. **Bookmark** — immediate toggle, no panel required;
+5. **Share** — essential platform action; its final behavior depends on the current distribution platform.
 
-Three actions may be used if Info/Community and Comments are combined, but do not grow this into a large toolbar.
+If Info/Community and Comments are combined later, the visible rail may contain four icons instead of five. Do not grow this into a large toolbar.
 
 ### Visual language
 
@@ -79,7 +81,8 @@ The rail should be extremely light and visually secondary to the cover:
 - no glossy/glass cards;
 - compact vertical spacing;
 - optional tiny count below or beside Like/Comments only if it remains readable;
-- active states may fill or accent the icon without turning the rail into a colored panel.
+- active states may fill or accent the icon without turning the rail into a colored panel;
+- the Share icon must remain immediately recognizable at small size.
 
 The intended reference is the **visual restraint and vertical rhythm** of social actions in Instagram/TikTok-style interfaces, but MiniFugg places the rail on the **left**, not the right.
 
@@ -100,9 +103,25 @@ Buttons are convenience shortcuts, not a second information architecture:
 
 - tapping **Info/Community** or **Comments** reaches the same side-panel family as the rightward details/community gesture;
 - tapping **Like** or **Bookmark** performs the action immediately and keeps the player on the cover;
+- tapping **Share** invokes the shared Core share capability once that capability is implemented for the current platform;
 - tapping the play CTA performs the same action as the leftward play gesture.
 
 The cover itself remains swipeable around the rail. Do not let the rail become a wide gesture-blocking strip.
+
+### Share is visually mandatory before its implementation is complete
+
+Sharing is considered essential to MiniFugg's discovery loop because players should be able to send a fun game to someone immediately from its cover.
+
+Therefore:
+
+- concept boards and UI prototypes should include the Share icon now;
+- do not spend current product-design time implementing every native/platform share path yet;
+- the eventual action belongs to **MiniFugg Core**, not individual games;
+- Core must detect/use the current platform adapter and choose the appropriate share mechanism;
+- Web, Android, iOS, desktop/store and embedded builds may use different native/system behaviors behind the same MiniFugg action;
+- individual games must never import vendor-specific sharing SDKs.
+
+The platform adapter boundary is defined in `docs/PLATFORM_EXPORTS.md`, which already reserves a `share(...)` capability for this purpose.
 
 ---
 
@@ -294,12 +313,12 @@ Exact community design is intentionally still open, but the spatial model is fix
 - center = cover / promise;
 - leftward play gesture = play / enter;
 - rightward details gesture = details / community;
-- left-side icon rail = direct social/info shortcuts;
+- left-side icon rail = direct social/info/share shortcuts;
 - vertical = previous / next game.
 
 The details view should remain visually anchored to the current game and should be able to return naturally to its cover.
 
-Info/Community and Comments icons on the left rail should open this same side-panel family, optionally focused on different tabs/sections. Like and Bookmark remain immediate cover-level actions.
+Info/Community and Comments icons on the left rail should open this same side-panel family, optionally focused on different tabs/sections. Like and Bookmark remain immediate cover-level actions. Share remains a direct Core-level action and does not require opening the community panel first.
 
 Do not finalize community information architecture merely to fill a concept board.
 
@@ -313,13 +332,14 @@ At minimum show:
 
 1. cold-open / entry scene;
 2. full-screen Fugg cover with visible coin balance and discreet left action rail;
-3. vertical transition between two covers;
-4. leftward play/open-box transition;
-5. actual game revealed behind the cover;
-6. rightward details/community state;
-7. Like/Bookmark immediate states and Info/Comments panel entry;
-8. Bêta template example;
-9. Caca template example.
+3. visible Share icon in that rail even before platform-specific share behavior is implemented;
+4. vertical transition between two covers;
+5. leftward play/open-box transition;
+6. actual game revealed behind the cover;
+7. rightward details/community state;
+8. Like/Bookmark immediate states and Info/Comments panel entry;
+9. Bêta template example;
+10. Caca template example.
 
 When comparing platform art directions, the information architecture must stay true to this contract. Do not change the product model just to make a familiar-looking mockup.
 
@@ -332,9 +352,12 @@ When comparing platform art directions, the information architecture must stay t
 - leftward gesture = play/open current game;
 - rightward gesture = details/community;
 - cover has a discreet vertical action rail on the **left**;
-- action rail target set = Info/Community, Like, Comments, Bookmark (3 may be used if Info+Comments are merged);
+- action rail target set = Info/Community, Like, Comments, Bookmark, **Share**;
+- if Info+Comments are merged, the rail may use four icons instead of five;
 - Like and Bookmark act immediately on the cover;
 - Info/Community and Comments open the current game's side-panel family;
+- Share is a first-class cover action and must be visible in concepts/UI;
+- Share implementation is intentionally deferred and later routes through the Core platform adapter appropriate to Web/mobile/desktop/store builds;
 - icons should be outline/hollow, visually light, without permanent button boxes;
 - the right side stays visually clean for the play/open-box direction;
 - free-player coin balance remains visible during browsing;

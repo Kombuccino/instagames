@@ -113,18 +113,21 @@ function scheduleSnare(input: EnhancedDrumInput) {
 
 function scheduleHat(input: EnhancedDrumInput) {
   const { context, output, noise, trackId, velocity, trackGain, start, durationScale, sources } = input
-  const level = clamp(velocity / 127 * trackGain * 1.7, .004, .11)
-  const baseDuration = trackId === 'MAX4_PRIME_ACCENTS' ? .12 : trackId === 'MAX4_DRIVE_HATS' ? .038 : .068
+  const driveHat = trackId === 'MAX4_DRIVE_HATS'
+  const levelMultiplier = driveHat ? 2.25 : 1.7
+  const maxLevel = driveHat ? .16 : .11
+  const level = clamp(velocity / 127 * trackGain * levelMultiplier, .004, maxLevel)
+  const baseDuration = trackId === 'MAX4_PRIME_ACCENTS' ? .12 : driveHat ? .058 : .068
   const duration = clamp(baseDuration * durationScale, .025, .18)
   const source = makeNoiseSource(context, noise)
   const high = context.createBiquadFilter()
   const band = context.createBiquadFilter()
   const gain = context.createGain()
   high.type = 'highpass'
-  high.frequency.value = trackId === 'MAX4_PRIME_ACCENTS' ? 4200 : 5600
+  high.frequency.value = trackId === 'MAX4_PRIME_ACCENTS' ? 4200 : driveHat ? 4300 : 5600
   band.type = 'bandpass'
-  band.frequency.value = trackId === 'MAX4_PRIME_ACCENTS' ? 7200 : 8800
-  band.Q.value = .55
+  band.frequency.value = trackId === 'MAX4_PRIME_ACCENTS' ? 7200 : driveHat ? 6800 : 8800
+  band.Q.value = driveHat ? .4 : .55
   gain.gain.setValueAtTime(level, start)
   gain.gain.exponentialRampToValueAtTime(.0001, start + duration)
   source.connect(high).connect(band).connect(gain).connect(output)

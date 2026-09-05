@@ -329,6 +329,103 @@ function primeArrangement(mode: ArrangementMode) {
   return longForm(primeSource(), 'prime', mode)
 }
 
+function primeMaxFootRail(): Track[] {
+  const kick: Note[] = []
+  const snare: Note[] = []
+  const bass: Note[] = []
+  const hats: Note[] = []
+  const hook: Note[] = []
+  const primeAccents: Note[] = []
+
+  for (let bar = 0; bar < BARS; bar += 1) {
+    const start = bar * 4
+    const root = ROOTS[bar % CYCLE_BARS]
+    const section = sectionForCycle(Math.floor(bar / CYCLE_BARS))
+    const refrain = section === 'refrain' || section === 'finale'
+    const descent = section === 'descent'
+
+    // Four real kicks per bar. Beat 1 is always the strongest event in the mix.
+    const kickFactor = section === 'finale' ? 1.06 : section === 'refrain' ? 1.03 : descent ? .96 : 1
+    ;[126, 108, 116, 108].forEach((velocity, beat) => {
+      add(kick, start + beat, .16, 36, clampVelocity(velocity * kickFactor))
+    })
+
+    // Backbeat is intentionally lighter than every kick, so 2 and 4 never steal the pulse.
+    if (bar >= 2) {
+      const snareVelocity = refrain ? 80 : descent ? 64 : 72
+      ;[1, 3].forEach((beat) => add(snare, start + beat, .13, 38, snareVelocity))
+    }
+
+    // One low line only: four readable quarter notes locked to the kick.
+    const bassPattern = descent
+      ? [root, root, root, root]
+      : [root, root, root + 7, root]
+    bassPattern.forEach((midi, beat) => {
+      const velocity = beat === 0 ? 98 : beat === 2 ? 84 : 74
+      add(bass, start + beat, .72, midi, refrain ? velocity + 4 : velocity)
+    })
+
+    // Offbeat propulsion enters gradually and disappears during the first half of the descent.
+    let hatOffsets: number[] = []
+    if (section === 'intro' && bar >= 4) hatOffsets = [1.5, 3.5]
+    else if (section === 'rise' || section === 'refrain' || section === 'finale') hatOffsets = [.5, 1.5, 2.5, 3.5]
+    else if (section === 'descent' && bar >= 28) hatOffsets = [3.5]
+    else if (section === 'rebuild') {
+      const count = Math.min(4, Math.floor((bar - 32) / 2) + 1)
+      hatOffsets = [.5, 1.5, 2.5, 3.5].slice(0, count)
+    }
+    hatOffsets.forEach((offset, index) => add(hats, start + offset, .065, 42, index === 0 ? 44 : 36))
+
+    // A repeatable two-bar phrase: six notes, identical rhythmic silhouette every time.
+    if (refrain && bar % 2 === 0) {
+      const chordA = CHORDS[bar % CYCLE_BARS]
+      const chordB = CHORDS[(bar + 1) % CYCLE_BARS]
+      const phrase = [
+        chordA[0] + 5,
+        chordA[1] + 5,
+        chordA[2] + 3,
+        chordB[2] + 3,
+        chordB[1] + 5,
+        chordB[0] + 5,
+      ]
+      const offsets = [0, 1.5, 3, 4.5, 6, 7]
+      const durations = [.9, .65, .8, .8, .65, .9]
+      phrase.forEach((midi, index) => {
+        add(hook, start + offsets[index], durations[index], midi, index === 0 ? 56 : index === 5 ? 52 : 46)
+      })
+    }
+
+    // Prime-number logic stays hidden in sparse offbeat accents, never in the core pulse.
+    if ((section === 'rise' || section === 'rebuild' || section === 'finale') && bar % 2 === 1) {
+      const primeOffsets = [.5, 1.5, 2.5, 3.5]
+      const primeIndex = [2, 3, 5, 7, 11, 13][bar % 6]
+      const offset = primeOffsets[(bar + primeIndex) % primeOffsets.length]
+      add(primeAccents, start + offset, .055, 46, 34)
+    }
+    if (bar % CYCLE_BARS === CYCLE_BARS - 1) {
+      add(primeAccents, start + 3.5, .07, 38, section === 'finale' ? 48 : 40)
+    }
+  }
+
+  return [
+    track('MAX3_KICK_RAIL', 'noise', .16, kick),
+    track('MAX3_SNARE_BACKBEAT', 'noise', .075, snare),
+    track('MAX3_BASS_RAIL', 'triangle', .145, bass),
+    track('MAX3_OFFBEAT_HATS', 'noise', .045, hats),
+    track('MAX3_REFRAIN_HOOK', 'square', .034, hook),
+    track('MAX3_PRIME_ACCENTS', 'noise', .035, primeAccents),
+  ]
+}
+
+const primeMaxFootRailTracks = [
+  'MAX3_KICK_RAIL',
+  'MAX3_SNARE_BACKBEAT',
+  'MAX3_BASS_RAIL',
+  'MAX3_OFFBEAT_HATS',
+  'MAX3_REFRAIN_HOOK',
+  'MAX3_PRIME_ACCENTS',
+]
+
 const reactive1 = ['L1_BASS_CORE', 'L1_ARP_PULSE', 'L1_DRUM_CORE']
 const reactive2 = [...reactive1, 'L2_HATS_CLOCK']
 const reactive3 = [...reactive2, 'L3_GHOST_DRUMS']
@@ -345,7 +442,7 @@ const prime6 = [...prime5, 'L6_PRIME_DRIVE']
 const primeMax = [...prime6, 'L2_PRIME_HATS']
 
 export const musicCatalog = {
-  version: 4,
+  version: 5,
   rule: 'Never delete a music proposal. Change its status to selected or archived.',
   compositions: [
     {
@@ -404,6 +501,26 @@ export const musicCatalog = {
         MID: primeArrangement('mid'),
         HIGH: primeArrangement('high'),
         MAX: primeArrangement('max'),
+      },
+    },
+    {
+      id: 'MF-MUS-0003',
+      gameId: 'tetramindfck',
+      gameTitle: 'Tetra MindFuck',
+      name: 'Prime Cascade — Rail MAX',
+      status: 'candidate',
+      createdAt: '2026-09-05',
+      summary: 'Réparation séparée du MAX : quatre kicks impossibles à perdre, une seule basse motrice, un refrain de deux mesures et des mathématiques réduites à des accents discrets.',
+      concept: ['170 BPM', 'four-on-the-floor', 'single bass rail', 'two-bar refrain', 'subtle prime accents'],
+      key: 'D minor',
+      meter: '4/4',
+      loopBeats: LOOP_BEATS,
+      midiExports: ['MF-MUS-0003_PrimeCascade_RailMAX.mid'],
+      stages: [
+        { label: 'MAX', bpm: GAME_SYNC_BPMS[6], variant: 'A', activeTracks: primeMaxFootRailTracks },
+      ],
+      variants: {
+        A: primeMaxFootRail(),
       },
     },
   ],

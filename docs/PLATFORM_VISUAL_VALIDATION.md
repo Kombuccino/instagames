@@ -1,10 +1,10 @@
 # MiniFugg — Current Platform Visual Validation
 
-Living record of the platform visual decisions already approved by the user. This file is intentionally short and should be updated whenever a visual direction is accepted/rejected so later work does not drift back to older concepts.
+Living record of the platform visual decisions already approved by the user. Update this file whenever a visual direction is accepted/rejected so later work does not drift back to older concepts.
 
 ## Approved system direction
 
-The latest converged platform board is approved **in principle** for the overall product grammar:
+The converged platform direction is approved **in principle** for the overall product grammar:
 
 - warm, stylized low-poly entry scenes;
 - simplified people and environments, not photorealistic lifestyle imagery;
@@ -20,25 +20,22 @@ The latest converged platform board is approved **in principle** for the overall
 
 Do not return to generic app-store feeds, large top/bottom Core bars, photorealistic scenes, or card-grid discovery unless the product contract is explicitly revised.
 
-## Logo / mascot: exact source direction to preserve
+## Logo / mascot status
 
-The user approved the **earlier Variation 2 / low-poly graphic adult identity study**, not the mascot/logo invented on the latest converged board.
+The user will now reconstruct the MiniFugg logo **manually in vector form** from the previously approved earlier Variation 2 direction.
 
-The approved identity direction includes:
+Do not spend further design time asking image generation to reinterpret or refine the wordmark. Treat the exact logo geometry as **pending user-supplied vector master**.
 
-- the same wordmark geometry and personality from that earlier Variation 2;
-- the same small red accent / ear-like triangular element integrated into the identity;
-- the same mascot/persona from that earlier study;
-- modern, graphic, compact treatment;
-- strong monochrome behavior plus the restrained red accent.
+When the user supplies the vector asset:
 
-**Do not freely reinterpret or redesign this identity in subsequent boards.** The next logo exercise must reconstruct/refine that specific approved direction and only compare layout variants such as:
+- preserve it exactly unless explicitly asked to modify it;
+- create required runtime/export variants from that master;
+- integrate it into Core identity, favicon/app-icon/lockups as needed;
+- use the normal asset pipeline for production files.
 
-- one-line `MiniFugg`;
-- two-line `Mini / Fugg`;
-- mascot-only;
-- lockup;
-- tiny/icon and monochrome tests.
+Mascot name: **Fuggy**.
+
+Fuggy remains directionally approved as the small low-poly companion/mascot and may appear naturally in MiniFugg entry scenes. Do not force Fuggy to dominate every scene; presence may be obvious, subtle or partly hidden depending on composition.
 
 ## MiniFugg branding on live game covers
 
@@ -93,24 +90,9 @@ Next UI studies should test quieter, more integrated treatments, for example:
 
 The CTA must trigger the same action as the leftward play gesture.
 
-## Interface details still to design
-
-The macro flow is now considered validated enough to move into detailed interface work.
-
-Next design tasks, in priority order:
-
-1. isolate and lock the approved Variation 2 logo/mascot, including one-line vs two-line wordmark;
-2. detail the live full-screen cover UI: coin balance, left action rail, play CTA, gesture affordances, and discreet global System/Home/Account entry point;
-3. detail the Info/Comments side panel and its return behavior;
-4. define the compact close-box control during gameplay;
-5. define the shared end-of-run Core surface for Replay / Quit / coin cost;
-6. refine the Bêta template;
-7. refine the Caca template;
-8. only after those are stable, implement platform-specific share behavior and deeper community IA.
-
 ## Left cover action rail
 
-Target actions remain:
+Target actions:
 
 - Info / Community;
 - Like;
@@ -129,15 +111,29 @@ Visual treatment:
 
 Share must be visible in visual prototypes even before its platform-specific functionality is implemented.
 
+## Next design tasks — current priority
+
+The logo is no longer blocking progress. Detailed interface work should proceed now in this order:
+
+1. **Cover UI detail study** — real full-screen Fugg cover, coin balance, left action rail, quieter Play CTA, gesture affordances, discreet System/Home/Account entry point. This is the next immediate visual task.
+2. **Info / Comments side panel** — layout, hierarchy, tabs/focus states, relationship to the cover, return behavior.
+3. **Gameplay close-box control** — icon, size, placement, safe-zone behavior over wildly different games.
+4. **End-of-run Core surface** — Replay / Quit / score / coin cost, without rebuilding a heavy platform shell.
+5. **Bêta template refinement** — reusable background + per-game title/logo + live translated text + `PLAY · 1 COIN`.
+6. **Caca template refinement** — reusable playful trash-box treatment + per-game title/logo + live translated text + `PLAY · FREE`.
+7. **Platform system/account sheet** — only enough to support global settings/account entry without creating a generic dashboard.
+8. **Share behavior and deeper community IA** — defer implementation until the visual/core shell is stable.
+
 ## Current status
 
 **Macro platform direction: validated.**
 
+**Logo: handed off to the user for vector reconstruction; do not regenerate.**
+
 Still open before production lock:
 
-- exact logo reconstruction/layout;
 - play CTA styling;
-- detailed cover UI spacing and iconography;
+- detailed cover UI spacing/iconography;
 - exact System/Home/Account control and placement;
 - community side-panel styling;
 - close-box icon/placement;

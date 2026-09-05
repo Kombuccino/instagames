@@ -1,0 +1,289 @@
+.mf-discovery-cover {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  container-type: size;
+  color: #fff;
+  background: #0b0c0e;
+  isolation: isolate;
+}
+
+.mf-discovery-cover__art {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 48%;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.mf-discovery-cover__shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.48) 0%, rgba(0,0,0,.12) 18%, transparent 39%),
+    linear-gradient(0deg, rgba(0,0,0,.66) 0%, rgba(0,0,0,.18) 18%, transparent 38%),
+    linear-gradient(180deg, rgba(0,0,0,.26), transparent 16%);
+}
+
+.mf-discovery-cover button {
+  border: 0;
+  color: inherit;
+  font: inherit;
+}
+
+.mf-discovery-cover button:disabled {
+  cursor: default;
+}
+
+.mf-discovery-cover__balance {
+  position: absolute;
+  z-index: 5;
+  top: max(14px, 3.2cqh);
+  right: max(14px, 4.2cqw);
+  display: flex;
+  align-items: center;
+  gap: clamp(5px, 1.4cqw, 9px);
+  font-size: clamp(12px, 4.6cqw, 20px);
+  line-height: 1;
+  text-shadow: 0 2px 8px rgba(0,0,0,.88);
+}
+
+.mf-discovery-cover__balance strong {
+  font-weight: 720;
+  letter-spacing: -.02em;
+}
+
+.mf-pixel-coin {
+  position: relative;
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: clamp(14px, 5.6cqw, 24px);
+  aspect-ratio: 1;
+  border: clamp(1px, .45cqw, 2px) solid #ffd96b;
+  border-radius: 34%;
+  background: #f6a914;
+  box-shadow:
+    inset clamp(2px, .8cqw, 4px) 0 0 #ffcf42,
+    inset clamp(-2px, -.8cqw, -4px) 0 0 #b86c00,
+    0 1px 4px rgba(0,0,0,.48);
+  transform: rotate(4deg);
+}
+
+.mf-pixel-coin::before,
+.mf-pixel-coin::after,
+.mf-pixel-coin i {
+  content: '';
+  position: absolute;
+  background: #ffe37c;
+}
+
+.mf-pixel-coin::before {
+  width: 42%;
+  height: 12%;
+  top: 18%;
+  left: 22%;
+}
+
+.mf-pixel-coin::after {
+  width: 12%;
+  height: 42%;
+  top: 27%;
+  left: 42%;
+}
+
+.mf-pixel-coin i {
+  width: 28%;
+  height: 10%;
+  right: 14%;
+  bottom: 17%;
+  opacity: .8;
+}
+
+.mf-pixel-coin.is-small {
+  width: clamp(12px, 4.5cqw, 20px);
+}
+
+.mf-discovery-cover__rail {
+  position: absolute;
+  z-index: 5;
+  left: max(10px, 3.5cqw);
+  top: 50%;
+  display: grid;
+  gap: clamp(8px, 2.6cqh, 18px);
+  transform: translateY(-46%);
+}
+
+.mf-discovery-cover__rail button {
+  display: grid;
+  justify-items: center;
+  gap: clamp(1px, .5cqh, 4px);
+  min-width: clamp(28px, 9cqw, 48px);
+  padding: 0;
+  background: transparent;
+  text-shadow: 0 2px 10px rgba(0,0,0,.9);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.52));
+  cursor: pointer;
+  transition: transform 120ms ease, color 120ms ease;
+}
+
+.mf-discovery-cover__rail button:active:not(:disabled) {
+  transform: scale(.92);
+}
+
+.mf-discovery-cover__rail button.is-like.is-active {
+  color: #ff3248;
+}
+
+.mf-discovery-cover__rail button.is-active:not(.is-like) {
+  color: #ffe1a0;
+}
+
+.mf-discovery-cover__rail small {
+  color: #fff;
+  font-size: clamp(8px, 2.7cqw, 12px);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.mf-cover-icon {
+  display: block;
+  width: clamp(22px, 8.3cqw, 36px);
+  height: auto;
+  overflow: visible;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mf-cover-icon-dot {
+  stroke: none;
+  fill: currentColor;
+}
+
+.mf-discovery-cover__change {
+  position: absolute;
+  z-index: 5;
+  left: max(12px, 4cqw);
+  bottom: max(14px, 3.3cqh);
+  display: grid;
+  justify-items: center;
+  gap: 0;
+  padding: 0;
+  background: transparent;
+  text-shadow: 0 2px 8px rgba(0,0,0,.92);
+  cursor: pointer;
+}
+
+.mf-discovery-cover__change span {
+  height: clamp(12px, 3.2cqh, 20px);
+  font-size: clamp(18px, 5cqw, 28px);
+  font-weight: 300;
+  line-height: .7;
+}
+
+.mf-discovery-cover__change strong {
+  font-size: clamp(7px, 2.2cqw, 11px);
+  font-weight: 760;
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+
+.mf-discovery-cover__play {
+  position: absolute;
+  z-index: 5;
+  right: max(10px, 3.2cqw);
+  bottom: max(10px, 2.3cqh);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(5px, 1.6cqw, 10px);
+  width: min(70cqw, 410px);
+  min-height: clamp(42px, 9.4cqh, 64px);
+  padding: clamp(8px, 1.9cqh, 13px) clamp(10px, 3cqw, 22px);
+  border: 1px solid rgba(255,255,255,.78) !important;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(11,11,13,.48);
+  box-shadow:
+    0 0 0 1px rgba(255,193,77,.18),
+    0 0 22px rgba(255,180,59,.2),
+    inset 0 0 18px rgba(255,255,255,.025);
+  backdrop-filter: blur(5px);
+  cursor: pointer;
+  text-shadow: 0 2px 8px rgba(0,0,0,.85);
+  transition: transform 120ms ease, background 120ms ease;
+}
+
+.mf-discovery-cover__play:active:not(:disabled) {
+  transform: scale(.975);
+  background: rgba(23,20,16,.65);
+}
+
+.mf-discovery-cover__play > span:first-child {
+  font-size: clamp(10px, 3.8cqw, 18px);
+  font-weight: 640;
+  letter-spacing: .015em;
+  white-space: nowrap;
+}
+
+.mf-discovery-cover__play b {
+  font-size: clamp(12px, 4cqw, 20px);
+  font-weight: 500;
+  letter-spacing: -.08em;
+}
+
+.mf-discovery-cover__coin-pair {
+  position: relative;
+  display: inline-block;
+  width: clamp(25px, 9cqw, 42px);
+  height: clamp(18px, 6cqw, 28px);
+  flex: 0 0 auto;
+}
+
+.mf-discovery-cover__coin-pair .mf-pixel-coin {
+  position: absolute;
+  top: 50%;
+  width: clamp(17px, 6.2cqw, 28px);
+  transform: translateY(-50%) rotate(3deg);
+}
+
+.mf-discovery-cover__coin-pair .mf-pixel-coin:first-child {
+  left: 0;
+  z-index: 2;
+}
+
+.mf-discovery-cover__coin-pair .mf-pixel-coin:last-child {
+  right: 0;
+  z-index: 1;
+  transform: translateY(-50%) rotate(-5deg);
+}
+
+@container (max-width: 250px) {
+  .mf-discovery-cover__rail {
+    gap: 8px;
+  }
+
+  .mf-discovery-cover__change {
+    bottom: 10px;
+  }
+
+  .mf-discovery-cover__play {
+    right: 7px;
+    bottom: 7px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mf-discovery-cover__rail button,
+  .mf-discovery-cover__play {
+    transition: none;
+  }
+}

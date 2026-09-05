@@ -1,23 +1,25 @@
-# MiniFugg Game Layout System v1
+# MiniFugg Game Layout System v2
 
-MiniFugg games should not invent a completely different responsive geometry for every screen size. The goal is not to make every game look the same; it is to keep important information, controls and proportions stable while preserving each game's art direction.
+MiniFugg games should keep stable proportions across screen sizes without wasting gameplay space on permanent platform chrome.
 
 The shared implementation lives in `src/core/gameLayout.css`.
+
+Read together with `docs/GAMEPLAY_SHELL.md`: active gameplay is now **almost fullscreen** and Core normally keeps only a small close-box / return-to-cover control.
+
+---
 
 ## 1. Principle
 
 Do not design separate arbitrary PC and mobile layouts from scratch.
 
-Use the same semantic layout zones on every screen:
+Use the same semantic **game-owned** zones on every screen:
 
 1. game HUD;
 2. main stage/playfield;
 3. game controls;
-4. optional anchored game-specific elements inside those zones.
+4. optional anchored game-specific elements.
 
-Core chrome remains outside those zones.
-
-The standard wrapper is:
+The standard wrapper remains useful:
 
 ```html
 <div class="mf-game-layout">
@@ -27,7 +29,27 @@ The standard wrapper is:
 </div>
 ```
 
-The wrapper automatically respects:
+These are zones for the **game's own interface**, not permanent MiniFugg platform bars.
+
+Under the new gameplay shell, `.mf-game-layout` should be able to use essentially the full active game container.
+
+Do not preserve old top/bottom empty strips merely because previous MiniFugg versions reserved room for Core navigation, score or a swipe gutter.
+
+---
+
+## 2. Core exclusion while playing is minimal
+
+During active gameplay, Core normally overlays only the compact close-box control defined in `docs/GAMEPLAY_SHELL.md`.
+
+Games must:
+
+- keep essential gameplay controls clear of that small local control;
+- respect device safe-area/notch insets;
+- otherwise use the available viewport.
+
+Old broad Core reservations such as large persistent top/bottom bars should not dictate new game composition.
+
+If existing CSS variables such as these remain for compatibility:
 
 ```css
 --minifugg-core-top-reserved
@@ -36,11 +58,13 @@ The wrapper automatically respects:
 --minifugg-core-left-reserved
 ```
 
-Backgrounds and non-interactive art may still fill the complete game surface.
+they should not be assumed to represent large permanent chrome in the new shell. Migration may reduce/collapse them as Core implementation catches up.
 
-## 2. Use container-relative tokens, not arbitrary viewport math
+---
 
-`gameLayout.css` defines stable design tokens:
+## 3. Use container-relative tokens, not arbitrary viewport math
+
+`gameLayout.css` defines stable design tokens such as:
 
 ```css
 --mf-pad-x
@@ -61,11 +85,9 @@ Backgrounds and non-interactive art may still fill the complete game surface.
 --mf-touch-lg
 ```
 
-These values are calculated from the actual game container using container-query units and bounded with `clamp()`.
+Prefer container-relative bounded sizing over raw `vw` / `vh` combinations.
 
-That means a very wide desktop window does not make game text absurdly large, and a narrow phone does not shrink important labels to fly-print.
-
-Prefer:
+Example:
 
 ```css
 .my-score-label {
@@ -78,21 +100,15 @@ Prefer:
 }
 ```
 
-instead of:
+The extra fullscreen space should improve the playfield, not cause uncontrolled scaling.
 
-```css
-font-size: 2vw;
-width: 13vw;
-height: 7vh;
-```
+---
 
-Raw `vw` / `vh` combinations are one of the main reasons the same game currently looks different across devices.
-
-## 3. Positions should be semantic or proportional
+## 4. Positions should be semantic or proportional
 
 Prefer CSS Grid/Flex inside the shared zones.
 
-For fixed overlays, use the shared anchors:
+For fixed game overlays, use shared anchors where useful:
 
 ```text
 mf-anchor-top-left
@@ -104,43 +120,44 @@ mf-anchor-bottom-center
 mf-anchor-bottom-right
 ```
 
-If an object belongs at 70% of a playfield, position it relative to `.mf-game-stage`, not relative to the full browser viewport.
+If an object belongs at 70% of a playfield, position it relative to `.mf-game-stage`, not the browser viewport.
 
-## 4. Portrait and landscape
+---
 
-The semantic zones remain the same in both orientations.
+## 5. Portrait and landscape
 
-Portrait typically reads:
+The semantic game hierarchy remains consistent across orientations, but there is no longer an architectural need to draw permanent Core bars above and below it.
 
-```text
-CORE IDENTITY
--------------
-GAME HUD
-
-MAIN STAGE
-
-GAME CONTROLS
--------------
-CORE ACTION DOCK / SWIPE
-```
-
-Landscape typically reads:
+Portrait target:
 
 ```text
-CORE IDENTITY                         CORE SCORE
--------------------------------------------------
-GAME HUD              MAIN STAGE          CORE DOCK
-                      / optional side HUD
-GAME CONTROLS
--------------------------------------------------
-SWIPE ESCAPE
+┌───────────────────────┐
+│ small Core close-box  │  ← overlay only
+│                       │
+│ GAME HUD              │
+│                       │
+│ MAIN STAGE            │
+│                       │
+│ GAME CONTROLS         │
+│                       │
+└───────────────────────┘
 ```
 
-The shared tokens use the short dimension in landscape so typography and touch controls do not inflate just because the screen became wider.
+Landscape target:
 
-Games declared `both` may rearrange internal Grid/Flex composition, but should preserve the same hierarchy and token sizes.
+```text
+┌────────────────────────────────────┐
+│ small Core close-box               │
+│ GAME HUD      MAIN STAGE / HUD     │
+│ GAME CONTROLS                      │
+└────────────────────────────────────┘
+```
 
-## 5. Text hierarchy
+Games declared `both` may rearrange internal Grid/Flex composition while preserving hierarchy and readable token sizes.
+
+---
+
+## 6. Text hierarchy
 
 Use a limited hierarchy rather than one-off font sizes everywhere:
 
@@ -152,7 +169,9 @@ Use a limited hierarchy rather than one-off font sizes everywhere:
 
 Do not use `xs` for essential instructions or controls.
 
-## 6. Touch hierarchy
+---
+
+## 7. Touch hierarchy
 
 Use:
 
@@ -160,47 +179,59 @@ Use:
 - `--mf-touch-md`: normal gameplay button;
 - `--mf-touch-lg`: dominant primary action / joystick control.
 
-Do not shrink controls on desktop merely because a mouse is available; the same game should still read as the same product.
+The close-box control is Core-owned and should have its own accessible hit target independent of the game's visual styling.
 
-## 7. Existing games
+---
 
-Older games currently contain substantial custom responsive CSS. The shared grid does not magically rewrite them.
+## 8. Existing-game migration
 
-Migration should be incremental:
+Older games may still be laid out around the previous Core shell.
 
-1. replace custom full-screen safe offsets with `.mf-game-layout`;
-2. move game HUD into `.mf-game-hud`;
-3. move the actual playfield into `.mf-game-stage`;
-4. move controls into `.mf-game-controls`;
-5. replace arbitrary text/touch sizes with shared tokens;
-6. keep game-specific visual styling, shapes, colors and animation untouched;
-7. remove device-specific media queries that only compensate for old absolute positioning.
+Migration should be deliberate:
 
-Do not migrate gameplay logic merely to adopt the layout grid.
+1. remove large empty padding that existed only for old Core top/bottom chrome;
+2. let `.mf-game-layout` expand into the reclaimed area;
+3. keep game HUD in `.mf-game-hud` when semantically useful;
+4. expand `.mf-game-stage` to use the newly available room;
+5. keep game controls in `.mf-game-controls` or appropriate local overlays;
+6. replace arbitrary text/touch sizes with shared tokens;
+7. reserve only the small local area needed by the Core close-box control;
+8. preserve gameplay and art direction.
 
-## 8. Exceptions
+Do not redesign a game's rules merely to adopt the new shell.
 
-A game may use a custom/freeform layout when the mechanic genuinely requires it, for example a full-screen drawing canvas or physics world. Even then:
+---
 
-- use shared typography/touch tokens for readable HUD;
-- respect Core safe zones;
-- position important elements relative to the game container or playfield, not arbitrary browser viewport dimensions;
-- document the reason in `ART_DIRECTION.md` or a game-specific layout note.
+## 9. Freeform exceptions
 
-## 9. Debugging
+A game may use a custom/freeform fullscreen layout when the mechanic genuinely requires it, for example:
 
-During development, add `data-layout-debug` to the game root to show outlines for the shared safe layout, HUD, stage and controls.
+- drawing canvas;
+- physics world;
+- runner;
+- direct-manipulation board;
+- full-screen swipe/drag mechanic.
 
-Remove it before considering the game finished.
+Under the new gesture contract this is easier, because active games no longer need to preserve a feed escape swipe.
+
+Even then:
+
+- use shared typography/touch tokens where useful;
+- keep the Core close-box control reachable;
+- respect device safe areas;
+- clean up pointer capture correctly;
+- document significant layout exceptions in `ART_DIRECTION.md`.
+
+---
 
 ## 10. Definition of done
 
-A layout is ready when the same hierarchy remains recognizable on:
+A layout is ready when:
 
-- narrow portrait phone;
-- tall portrait phone;
-- wide portrait/desktop frame;
-- supported landscape phone;
-- desktop mouse viewport.
-
-Positions may reflow, but information hierarchy, relative importance, text sizing and control sizing should not appear like a different game.
+- the game uses nearly all useful screen space on phone and desktop;
+- no obsolete Core top/bottom padding remains;
+- the close-box control does not obstruct essential gameplay;
+- the same hierarchy remains recognizable on narrow/tall phones and desktop;
+- game-owned HUD/controls remain readable;
+- orientation changes do not create a completely unrelated composition;
+- gameplay gestures work without being intercepted by cover discovery navigation.

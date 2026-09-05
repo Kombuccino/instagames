@@ -53,7 +53,60 @@ The first horizontal play gesture belongs to the cover. Gameplay input begins on
 
 ---
 
-## 3. Coin balance must stay visible while browsing
+## 3. Cover action rail: discreet, vertical, on the left
+
+Each active cover may expose a very small **vertical action rail on the left edge**.
+
+This rail is part of MiniFugg Core, not part of the cover raster artwork.
+
+Recommended actions:
+
+1. **Info / Community** — opens the current game's details/community side panel;
+2. **Like** — immediate toggle, no panel required;
+3. **Comments** — opens the same details/community side panel focused on comments;
+4. **Bookmark** — immediate toggle, no panel required.
+
+Three actions may be used if Info/Community and Comments are combined, but do not grow this into a large toolbar.
+
+### Visual language
+
+The rail should be extremely light and visually secondary to the cover:
+
+- simple outline icons;
+- hollow/transparent centers where the icon language allows it;
+- no permanent button rectangles around every icon;
+- no large opaque dock;
+- no glossy/glass cards;
+- compact vertical spacing;
+- optional tiny count below or beside Like/Comments only if it remains readable;
+- active states may fill or accent the icon without turning the rail into a colored panel.
+
+The intended reference is the **visual restraint and vertical rhythm** of social actions in Instagram/TikTok-style interfaces, but MiniFugg places the rail on the **left**, not the right.
+
+### Why the rail belongs on the left
+
+The right side should remain visually and spatially clean for the **play/open-box direction and transition**. The cover should still feel as if it can move/open toward the game without a persistent social toolbar sitting in that path.
+
+The action rail must not visually compete with:
+
+- the game title/logo;
+- `PLAY · N COINS` / `PLAY · FREE`;
+- the coin balance;
+- the cover art itself.
+
+### Relationship to gestures
+
+Buttons are convenience shortcuts, not a second information architecture:
+
+- tapping **Info/Community** or **Comments** reaches the same side-panel family as the rightward details/community gesture;
+- tapping **Like** or **Bookmark** performs the action immediately and keeps the player on the cover;
+- tapping the play CTA performs the same action as the leftward play gesture.
+
+The cover itself remains swipeable around the rail. Do not let the rail become a wide gesture-blocking strip.
+
+---
+
+## 4. Coin balance must stay visible while browsing
 
 For a normal free player, the current **combined coin balance** remains visible while vertically browsing covers.
 
@@ -67,7 +120,7 @@ The balance remains one unified player-facing number. Internal daily/durable com
 
 ---
 
-## 4. Play cost by curation status
+## 5. Play cost by curation status
 
 Current production rule:
 
@@ -92,7 +145,7 @@ The CTA performs the same action as the leftward play gesture; it is not a separ
 
 ---
 
-## 5. Coin-aware discovery weighting
+## 6. Coin-aware discovery weighting
 
 Discovery deliberately changes when a free player's usable coin balance reaches zero.
 
@@ -125,7 +178,7 @@ Lifetime / Free Play users are never treated as out-of-coins.
 
 ---
 
-## 6. Curation status is mostly internal
+## 7. Curation status is mostly internal
 
 Do not put a generic `FUGG` badge on finished games merely to expose internal curation state.
 
@@ -165,7 +218,7 @@ The humor can be strong, but the template should still look intentionally design
 
 ---
 
-## 7. Internationalization contract
+## 8. Internationalization contract
 
 Separate **art text** from **interface/state text**.
 
@@ -201,7 +254,7 @@ This is required so MiniFugg can add languages without redrawing every status co
 
 ---
 
-## 8. Play entry should feel like opening the game object
+## 9. Play entry should feel like opening the game object
 
 Playing should not feel like clicking a generic web button.
 
@@ -232,48 +285,58 @@ Every authored coin/opening SFX must follow `docs/MUSIC_LAB.md`.
 
 ---
 
-## 9. Details/community side
+## 10. Details/community side
 
 The rightward gesture is reserved for game context rather than launching another generic page.
 
 Exact community design is intentionally still open, but the spatial model is fixed:
 
 - center = cover / promise;
-- left = play / enter;
-- right = details / community;
+- leftward play gesture = play / enter;
+- rightward details gesture = details / community;
+- left-side icon rail = direct social/info shortcuts;
 - vertical = previous / next game.
 
 The details view should remain visually anchored to the current game and should be able to return naturally to its cover.
+
+Info/Community and Comments icons on the left rail should open this same side-panel family, optionally focused on different tabs/sections. Like and Bookmark remain immediate cover-level actions.
 
 Do not finalize community information architecture merely to fill a concept board.
 
 ---
 
-## 10. Concept-board requirement
+## 11. Concept-board requirement
 
 Future platform UI concept boards must show the **actual MiniFugg discovery grammar**, not a generic app-store feed.
 
 At minimum show:
 
 1. cold-open / entry scene;
-2. full-screen Fugg cover with visible coin balance;
+2. full-screen Fugg cover with visible coin balance and discreet left action rail;
 3. vertical transition between two covers;
 4. leftward play/open-box transition;
 5. actual game revealed behind the cover;
 6. rightward details/community state;
-7. Bêta template example;
-8. Caca template example.
+7. Like/Bookmark immediate states and Info/Comments panel entry;
+8. Bêta template example;
+9. Caca template example.
 
 When comparing platform art directions, the information architecture must stay true to this contract. Do not change the product model just to make a familiar-looking mockup.
 
 ---
 
-## 11. Current decisions locked
+## 12. Current decisions locked
 
 - discovery unit = one full-screen game cover;
 - vertical browsing = previous/next cover;
-- left = play;
-- right = details/community;
+- leftward gesture = play/open current game;
+- rightward gesture = details/community;
+- cover has a discreet vertical action rail on the **left**;
+- action rail target set = Info/Community, Like, Comments, Bookmark (3 may be used if Info+Comments are merged);
+- Like and Bookmark act immediately on the cover;
+- Info/Community and Comments open the current game's side-panel family;
+- icons should be outline/hollow, visually light, without permanent button boxes;
+- the right side stays visually clean for the play/open-box direction;
 - free-player coin balance remains visible during browsing;
 - Fugg = 2 coins;
 - Bêta = 1 coin;

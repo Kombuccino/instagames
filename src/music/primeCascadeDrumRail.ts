@@ -34,13 +34,13 @@ function sectionForBar(bar: number): Section {
 }
 
 export const primeCascadeDrumRailTrackIds = [
-  'MAX3_KICK_RAIL',
-  'MAX3_SNARE_BACKBEAT',
-  'MAX3_BASS_RAIL',
-  'MAX3_OFFBEAT_HATS',
-  'MAX3_DRIVE_HATS',
-  'MAX3_TOM_FILLS',
-  'MAX3_PRIME_ACCENTS',
+  'MAX4_KICK_RAIL',
+  'MAX4_SNARE_BACKBEAT',
+  'MAX4_BASS_RAIL',
+  'MAX4_OFFBEAT_HATS',
+  'MAX4_DRIVE_HATS',
+  'MAX4_TOM_FILLS',
+  'MAX4_PRIME_ACCENTS',
 ] as const
 
 export function primeCascadeDrumRail(): Track[] {
@@ -123,12 +123,12 @@ export function primeCascadeDrumRail(): Track[] {
   }
 
   return [
-    track('MAX3_KICK_RAIL', 'noise', .255, kick),
-    track('MAX3_SNARE_BACKBEAT', 'noise', .135, snare),
-    track('MAX3_BASS_RAIL', 'triangle', .085, bass),
-    track('MAX3_OFFBEAT_HATS', 'noise', .06, hats),
-    track('MAX3_DRIVE_HATS', 'noise', .038, driveHats),
-    track('MAX3_TOM_FILLS', 'noise', .15, tomFills),
-    track('MAX3_PRIME_ACCENTS', 'noise', .045, primeAccents),
+    track('MAX4_KICK_RAIL', 'noise', .255, kick),
+    track('MAX4_SNARE_BACKBEAT', 'noise', .135, snare),
+    track('MAX4_BASS_RAIL', 'triangle', .085, bass),
+    track('MAX4_OFFBEAT_HATS', 'noise', .06, hats),
+    track('MAX4_DRIVE_HATS', 'noise', .038, driveHats),
+    track('MAX4_TOM_FILLS', 'noise', .15, tomFills),
+    track('MAX4_PRIME_ACCENTS', 'noise', .045, primeAccents),
   ]
 }

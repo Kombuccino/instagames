@@ -1,11 +1,12 @@
 # MiniFugg — Platform Entry Scenes
 
-Living specification for MiniFugg cold-open scenes and the seamless transition from the physical/world scene into the live MiniFugg interface.
+Living specification for MiniFugg cold-open scenes and the seamless transition from the outside-world scene into live MiniFugg cover discovery.
 
 Read together with:
 
-- `docs/PLATFORM_ART_DIRECTION.md` for the platform brand and Core visual language;
-- `docs/META_PROGRESSION.md` for achievements and unlock rules;
+- `docs/PLATFORM_ART_DIRECTION.md` for brand/Core visual language;
+- `docs/DISCOVERY_NAVIGATION.md` for the full-screen cover flow after entry;
+- `docs/META_PROGRESSION.md` for scene unlocks;
 - `docs/ASSET_PIPELINE.md` for every production visual asset.
 
 This system belongs to **MiniFugg Core**, not to any individual game.
@@ -16,194 +17,148 @@ This system belongs to **MiniFugg Core**, not to any individual game.
 
 MiniFugg should not have one permanent decorative splash image.
 
-The preferred Device Portal direction becomes a **library of short everyday or absurd scenes**. On each return to MiniFugg, the player may enter through a different scene.
+The preferred entry family is a library of short everyday or absurd scenes. On return, the player may enter through a different scene.
 
-The common invariant is:
+Invariant:
 
-> **The player is physically somewhere, their own arm/hand is visible, they are holding a phone, MiniFugg is already alive on that phone, and entering the platform means moving into that screen.**
+> **The player is somewhere, their own arm/hand is visible, they hold a phone, MiniFugg is already alive on that phone, and entering the platform means moving into that screen.**
 
-The phone is never a floating magical device. It is held by the player or naturally placed in their immediate physical context.
-
-The scene is only the outside world. The phone screen is the bridge to the actual product.
+The phone is not a floating magical object. It is naturally held by the player or placed in their immediate context.
 
 ---
 
-## 2. Why rotating scenes matter
+## 2. Visual style is stylized low-poly, not realism
 
-Rotating entry scenes can become a recognizable MiniFugg signature and a small reason to enjoy returning to the platform.
+This is now a locked direction for the main scene family.
 
-They should create the feeling that MiniFugg can be played in tiny stolen moments anywhere:
+Do **not** render these scenes as photorealistic lifestyle advertising, pseudo-cinematic photography or literal reality captured inside the app.
 
-- while commuting;
-- while waiting;
-- while bored;
-- while avoiding something else;
-- during an awkward social moment;
-- in an unexpectedly absurd place.
+Preferred visual language:
 
-The scenes should not explain the current game catalog. They express **the habit and pleasure of opening MiniFugg**.
+- clear low-poly geometry;
+- visible simplification/faceting where useful;
+- warm, authored lighting;
+- matte/simple materials;
+- recognizable silhouettes;
+- people represented with low detail rather than portrait realism;
+- hands/arms simplified in the same visual language;
+- environments recognizable in roughly one second;
+- 2–5 major background elements rather than dense realism;
+- a small amount of atmospheric motion.
 
-The platform therefore gains an expandable universe without having to invent one giant permanent fantasy world.
+The goal is **a stylized little 3D diorama of real life**, not a realistic photograph of real life.
 
----
+The current strongest reference direction is the warmer low-poly scene exploration: contemporary transport/interior, simplified people, readable hand/phone, soft light, restrained detail.
 
-## 3. First-person point of view is a key rule
+Avoid:
 
-For the main Device Portal family, the camera should usually be the player's own point of view.
-
-Visible cues may include:
-
-- forearm / hand holding the phone;
-- knees / shoes / table edge / seat;
-- a small amount of immediate environment;
-- people or objects around the player;
-- the live phone screen as the focal point.
-
-The viewer should understand the situation in roughly one second.
-
-Avoid cinematic third-person compositions showing a generic protagonist using MiniFugg. The user should feel **I am here**, not **I am watching a character**.
-
-Hands/arms must stay visually simple and believable. They are framing devices, not hero characters.
+- realistic skin/hair/face rendering;
+- cinematic bokeh as a substitute for design;
+- generic game-ad photorealism;
+- cyberpunk Tokyo clichés;
+- glossy AAA sci-fi materials;
+- a Pixar-like mascot treatment;
+- excessive props/details merely to prove the scene is 3D.
 
 ---
 
-## 4. Scene design rules
+## 3. Why rotating scenes matter
 
-Each scene should be recognizable quickly and remain graphically light.
+Rotating scenes can become a recognizable MiniFugg signature and a small reason to enjoy returning.
 
-Prefer:
+They express tiny stolen moments where someone opens MiniFugg:
 
-- one clear location;
-- one clear social situation;
-- 2–5 major background elements maximum;
-- strong silhouette and camera framing;
-- large calm areas;
-- one or two small animated details;
-- believable lighting;
-- restrained materials;
-- a limited palette appropriate to the place.
+- commuting;
+- toilets;
+- waiting rooms;
+- date/restaurant;
+- bed at night;
+- office/meeting;
+- airport/station;
+- café;
+- more absurd rare contexts later.
 
-Do not fill the scene with game references, easter eggs or catalog objects by default.
-
-The visual interest should come from **situation + framing + light + motion**, not object density.
-
-The scene may be funny, awkward, cool, mundane or slightly inappropriate. It should still feel authored rather than random.
+The scenes should not explain the game catalog. They express **the habit and pleasure of opening MiniFugg**.
 
 ---
 
-## 5. Initial scene families
+## 4. First-person point of view
 
-These are examples, not a fixed catalog.
+For the main scene family, camera is normally the player's point of view.
 
-### Japanese metro
+Useful cues:
 
-First-person seated or standing view in a contemporary Japanese train.
+- forearm/hand holding phone;
+- knees/shoes/table/seat edge;
+- small amount of environment;
+- simplified people/objects around player;
+- live phone screen as focal point.
 
-Recognizable cues:
+Avoid third-person shots of a generic protagonist using MiniFugg.
 
-- train interior / straps / doors / restrained signage;
-- passengers partly asleep or looking at their own phones;
+The scene should read as **I am here** rather than **I am watching someone use an app**.
+
+---
+
+## 5. Initial prototype scene
+
+### Contemporary Japanese metro/train
+
+Use a stylized low-poly contemporary train scene, not a photorealistic Tokyo commercial.
+
+Recognizable cues may include:
+
+- simple carriage interior;
+- handles/doors/signage as graphic geometry;
+- passengers simplified into low-detail forms;
+- one sleepy head nod;
 - subtle carriage sway;
-- one nearby passenger's head slowly nodding with sleep;
-- player's hand holding the MiniFugg phone in foreground.
+- player's low-poly hand/arm holding the phone;
+- restrained modern lighting.
 
-The scene should feel observed and specific, not like a tourist caricature of Japan.
+It should feel specific and observed, not tourist/cyberpunk caricature.
 
-### Toilet
-
-A mundane private moment with the player's knees/legs and one hand holding the phone.
-
-Possible micro-motion:
-
-- fluorescent light flicker;
-- extractor fan shadow;
-- toilet-paper edge moving slightly;
-- tiny mascot appearance in the phone UI.
-
-The humor comes from recognizability, not gross detail.
-
-### Date / restaurant
-
-Player sits across from an attractive date while quietly opening MiniFugg.
-
-The date may look bored, amused, offended or also be checking their own phone.
-
-Keep the scene adult/social rather than romantic-kitsch.
-
-### Family / dinner table
-
-The phone sits just below table level or is held discreetly while a meal/conversation continues around it.
-
-### Waiting room
-
-Doctor, administration, garage, airport, dentist, etc. A perfect "tiny game moment" context.
-
-### Bed / late night
-
-Dark room, phone lighting the hand/blanket, sparse environment, possibly another sleeping person or pet nearby.
-
-### Office / meeting
-
-Phone hidden below a desk while a meeting continues. A projector glow or colleague movement can provide subtle animation.
-
-### Laundromat / station / airport
-
-Strong recognizable environment, repetitive ambient motion, easy to render lightly.
-
-### Car / deliberately inappropriate situation
-
-This may exist as an obviously satirical/absurd scene because MiniFugg can have mischievous adult humor.
-
-Do **not** frame it as advice to use a phone while driving. Prefer a visibly parked/stopped vehicle, a red-light gag, or an impossible exaggerated context that reads as fiction rather than instruction.
-
-### More absurd future scenes
-
-Once the basic everyday language is established, unlockable rare scenes can become much stranger while preserving the same first-person phone grammar.
-
-Examples: jury duty, funeral waiting area, backstage before a concert, spaceship airlock, medieval banquet, submarine, alien customs desk, etc.
-
-These should be rare surprises, not the baseline visual identity.
+Other initial scene families can include toilet, date, waiting room, bed/night, office, café and airport.
 
 ---
 
 ## 6. The logo does not rotate
 
-Scenes can change. The MiniFugg identity does not.
+Scenes change. MiniFugg identity does not.
 
-The following remain stable across every entry scene:
+Stable elements:
 
 - MiniFugg wordmark;
-- MiniFugg symbol/mascot mark;
+- symbol/mascot;
 - platform typography;
-- Core icon language;
+- icon language;
 - primary accent logic;
-- motion signature for entering the screen.
+- entry motion signature.
 
-The logo must not be redesigned to match each environment.
+Current logo exploration to continue:
 
-It can be physically integrated differently — reflected in glass, printed on a sticker, displayed on the phone, briefly projected by light — but the mark itself remains the same.
+- strong compact geometric wordmark;
+- small authored red accent/ear-like triangular detail;
+- test both **single-line** and **two-line** lockups while preserving the same visual DNA;
+- logo must remain legible in monochrome and at favicon size.
 
-This consistency is essential for marketing, app icon, social media and product recognition.
+Do not redesign the logo to match each scene.
 
 ---
 
-## 7. Phone screen = live product whenever possible
+## 7. Phone screen = live product
 
-The screen inside the phone should preferably be a **live DOM viewport**, not painted into the scene raster.
+The important screen/UI inside the low-poly phone should preferably be live DOM/UI rather than painted into the scene raster.
 
-It may show:
+The phone can show:
 
-- MiniFugg logo / minimal boot state;
-- the first feed item;
-- the first unlocked Fugg cover;
-- a game selected from the user's context;
-- a lightweight animated MiniFugg idle state.
+- MiniFugg boot/logo state;
+- the first full-screen game cover;
+- a currently selected/unlocked cover.
 
-This allows the opening transition to be genuinely seamless.
+Do **not** show a generic card/store grid merely because it looks familiar.
 
-The surrounding scene moves away; the same screen becomes fullscreen.
-
-Do not fake a detailed MiniFugg interface inside generated artwork if the real interface can be composited there instead.
+After the scene handoff, the product lands on the **full-screen cover discovery model** defined in `docs/DISCOVERY_NAVIGATION.md`.
 
 ---
 
@@ -211,180 +166,107 @@ Do not fake a detailed MiniFugg interface inside generated artwork if the real i
 
 Default transition:
 
-1. Scene appears.
-2. User recognizes the context.
-3. Phone is already visible and alive.
-4. MiniFugg logo/brand cue is readable.
-5. User swipes / enters.
-6. Player's hand raises or brings the phone closer while camera subtly meets it.
-7. Phone screen scales toward viewport edges.
-8. Device frame and external scene pass outside the viewport.
-9. Live MiniFugg UI remains in place and becomes fullscreen.
-10. Core controls/social/navigation resolve into their normal production positions.
+1. scene appears;
+2. context is understood quickly;
+3. phone is already visible/alive;
+4. MiniFugg logo/brand cue is readable;
+5. user enters;
+6. hand raises/brings phone closer while camera subtly meets it;
+7. phone screen scales toward viewport edges;
+8. device frame + outside scene pass beyond viewport;
+9. the same live MiniFugg screen becomes fullscreen;
+10. player lands on one full-screen game cover.
 
-There should be **no cut to a separate interface** at step 9.
-
-The transition is the product signature.
+There should be no cut to a generic storefront page at step 9.
 
 ---
 
-## 9. Motion inside the scene
+## 9. Motion inside scenes
 
-Scenes should feel alive but should not behave like looping animated wallpapers.
+Scenes should feel alive but not like looping animated wallpapers.
 
-Good ambient motion examples:
+Good motion examples:
 
-- train sway;
+- carriage sway;
 - sleepy head nod;
-- hand micro-movement / breathing;
-- passing light through a window;
+- hand micro-movement;
+- passing light;
 - fluorescent flicker;
-- rain on glass;
-- steam from food/drink;
-- fan rotation shadow;
-- elevator floor light;
-- reflection moving across the phone;
-- subtle vehicle vibration while stationary;
-- pet ear/tail movement.
+- fan shadow;
+- steam;
+- rain/reflection;
+- pet ear/tail;
+- subtle camera/body movement.
 
-Usually **one primary + one secondary motion** is enough.
-
-Avoid particles, floating icons and constant decorative motion unless the particular scene genuinely contains them.
+Usually one primary + one secondary ambient motion is enough.
 
 ---
 
 ## 10. Music and sound
 
-Each entry scene can carry a very short musical/ambient identity.
-
-Desired behavior:
-
-- small MiniFugg brand motif remains recognizable;
-- scene may alter instrumentation, ambience or rhythm;
-- Japanese metro may use carriage ambience + a restrained version of the motif;
-- toilet may have a dry fluorescent/vent ambience;
-- night/bed scene may use a softer minimal version;
-- rare absurd scenes can have more surprising arrangements.
-
-The scene audio should hand off smoothly to the feed/game audio rather than stopping with a hard cut.
-
-Do not build a long unskippable intro song. Entry scenes are short.
-
-Any authored music/SFX must follow `docs/MUSIC_LAB.md`.
-
----
-
-## 11. Scene library and repetition
-
-Launch with only a small high-quality set.
-
-Recommended initial target:
-
-- 2 or 3 scenes available by default;
-- additional scenes unlocked through platform/game achievements;
-- random or weighted choice among unlocked scenes;
-- avoid immediate repetition of the last shown scene;
-- optional rare-scene weighting;
-- optional seasonal/event scenes later.
-
-The platform should be designed so new scenes can be added over time without changing the brand system.
-
-A scene is content, not a new UI skin.
-
----
-
-## 12. Unlocking scenes
-
-Entry scenes are ideal meta rewards because they are visible outside any single game and reward exploration of MiniFugg as a platform.
+Each scene may carry a short ambient identity around a recognizable MiniFugg brand motif.
 
 Examples:
 
-- play 5 different games → unlock a new everyday scene;
-- finish 3 different Fugg games → unlock another;
-- earn achievements in several genres → unlock a stranger scene;
-- reach a platform discovery milestone → unlock a rare scene;
-- special/seasonal achievement → temporary or permanent special scene.
+- train ambience + restrained motif;
+- dry fluorescent/vent ambience in toilets;
+- soft minimal night version in bed;
+- more surprising arrangements for rare scenes.
 
-The exact achievement system is defined in `docs/META_PROGRESSION.md`.
+Audio should hand off smoothly to cover/game audio.
 
-Avoid making every scene depend on grind. Some should unlock from curiosity, variety or funny one-off goals.
+Do not make entry scenes long or unskippable.
+
+Any authored music/SFX follows `docs/MUSIC_LAB.md`.
 
 ---
 
-## 13. Technical production target
+## 11. Scene library / achievements
 
-Do not require heavy realtime 3D for every cold-open.
+Launch with a small high-quality set:
 
-Preferred lightweight approach:
+- 2–3 default scenes;
+- additional scenes unlocked through achievements;
+- weighted/random choice among unlocked scenes;
+- avoid immediate repetition;
+- rare/seasonal scenes later.
 
-- pre-rendered 3D / 2.5D base scene;
-- a few raster depth layers where useful;
-- transparent foreground arm/hand/device layers if needed;
+A newly unlocked scene may be forced once on the next launch so the player sees the reward, then joins normal rotation.
+
+Exact meta rules live in `docs/META_PROGRESSION.md`.
+
+---
+
+## 12. Technical production target
+
+Do not require heavy realtime 3D.
+
+Preferred lightweight implementation:
+
+- pre-rendered low-poly / 2.5D scene;
+- a few depth layers where useful;
+- transparent foreground arm/phone layers if needed;
 - live DOM phone viewport;
-- transforms for camera/device approach;
+- transforms for device/camera approach;
 - tiny independent layer motion;
-- optional very short lightweight video only when raster layers cannot reproduce the needed ambient motion efficiently.
+- optional short lightweight video only when raster layers cannot reproduce a needed ambient motion efficiently.
 
-The same scene should not load multiple megabytes of unnecessary texture just to create a 2-second impression.
-
-Every production image follows `docs/ASSET_PIPELINE.md` and its per-game/platform folder conventions.
+Every production image follows `docs/ASSET_PIPELINE.md` and the platform folder hierarchy.
 
 ---
 
-## 14. Modern, not retro
+## 13. Concept-board requirement
 
-These entry scenes belong to the **platform**, so they should generally feel contemporary even when an individual Fugg cover is retro.
+Do not validate the cold-open as an isolated pretty picture.
 
-Do not apply fake VHS, distressed paper, arcade fonts or 1980s color grading as a permanent treatment.
+A useful board should show:
 
-A scene may naturally contain old architecture or an old object, but the camera, materials, lighting, typography and Core UI remain contemporary.
+1. logo/mascot, including single-line and two-line tests;
+2. low-poly cold-open scene;
+3. phone approach/handoff;
+4. full-screen Fugg cover with visible coin balance;
+5. vertical cover navigation;
+6. leftward play/open-box transition;
+7. rightward details/community state.
 
-The contrast is valuable:
-
-- modern MiniFugg platform;
-- highly varied/possibly retro collectible covers;
-- independent in-game art directions.
-
----
-
-## 15. Visual research requirement
-
-When researching the Device Portal system, do not search only for "game splash screens".
-
-Also study:
-
-- first-person product photography / POV commercials;
-- contemporary handheld/device advertising;
-- editorial 3D everyday scenes;
-- subtle first-person game intros;
-- transit photography and observed social scenes;
-- film/title-sequence transitions into screens;
-- motion-design handoffs from physical object to UI;
-- modern brand systems that remain recognizable across changing campaign photography.
-
-Evaluate references by whether they can support **many different scenes with one stable brand**, not whether one frame is beautiful.
-
----
-
-## 16. First production prototype
-
-For the first real Device Portal test, use a **Japanese metro** scene because it tests nearly everything important:
-
-- immediately recognizable real-world setting;
-- people around the user without needing them to be the focus;
-- natural ambient motion;
-- clear reason to be holding a phone;
-- modern lighting/materials;
-- room for MiniFugg identity without a fantasy environment;
-- strong transition from handheld phone to fullscreen feed.
-
-Prototype it as a **system board**, not as one hero picture:
-
-1. cold-open frame;
-2. same scene with live MiniFugg phone screen;
-3. mid-transition frame as phone approaches;
-4. fullscreen feed after handoff;
-5. in-game Core frame;
-6. comments/profile sheet using the same brand system.
-
-Only after this works should the scene be turned into final production assets.
+The product interaction model must remain correct even while the visual direction is still exploratory.

@@ -14,12 +14,12 @@ type EnhancedDrumInput = {
 }
 
 const ENHANCED_DRUM_TRACKS = new Set([
-  'MAX3_KICK_RAIL',
-  'MAX3_SNARE_BACKBEAT',
-  'MAX3_OFFBEAT_HATS',
-  'MAX3_DRIVE_HATS',
-  'MAX3_TOM_FILLS',
-  'MAX3_PRIME_ACCENTS',
+  'MAX4_KICK_RAIL',
+  'MAX4_SNARE_BACKBEAT',
+  'MAX4_OFFBEAT_HATS',
+  'MAX4_DRIVE_HATS',
+  'MAX4_TOM_FILLS',
+  'MAX4_PRIME_ACCENTS',
 ])
 
 function clamp(value: number, min: number, max: number) {
@@ -114,16 +114,16 @@ function scheduleSnare(input: EnhancedDrumInput) {
 function scheduleHat(input: EnhancedDrumInput) {
   const { context, output, noise, trackId, velocity, trackGain, start, durationScale, sources } = input
   const level = clamp(velocity / 127 * trackGain * 1.7, .004, .11)
-  const baseDuration = trackId === 'MAX3_PRIME_ACCENTS' ? .12 : trackId === 'MAX3_DRIVE_HATS' ? .038 : .068
+  const baseDuration = trackId === 'MAX4_PRIME_ACCENTS' ? .12 : trackId === 'MAX4_DRIVE_HATS' ? .038 : .068
   const duration = clamp(baseDuration * durationScale, .025, .18)
   const source = makeNoiseSource(context, noise)
   const high = context.createBiquadFilter()
   const band = context.createBiquadFilter()
   const gain = context.createGain()
   high.type = 'highpass'
-  high.frequency.value = trackId === 'MAX3_PRIME_ACCENTS' ? 4200 : 5600
+  high.frequency.value = trackId === 'MAX4_PRIME_ACCENTS' ? 4200 : 5600
   band.type = 'bandpass'
-  band.frequency.value = trackId === 'MAX3_PRIME_ACCENTS' ? 7200 : 8800
+  band.frequency.value = trackId === 'MAX4_PRIME_ACCENTS' ? 7200 : 8800
   band.Q.value = .55
   gain.gain.setValueAtTime(level, start)
   gain.gain.exponentialRampToValueAtTime(.0001, start + duration)
@@ -171,21 +171,21 @@ export function isAudioLabEnhancedDrumTrack(trackId: string) {
 }
 
 export function scheduleAudioLabEnhancedDrum(input: EnhancedDrumInput) {
-  if (input.trackId === 'MAX3_KICK_RAIL') {
+  if (input.trackId === 'MAX4_KICK_RAIL') {
     scheduleKick(input)
     return true
   }
-  if (input.trackId === 'MAX3_SNARE_BACKBEAT') {
+  if (input.trackId === 'MAX4_SNARE_BACKBEAT') {
     scheduleSnare(input)
     return true
   }
-  if (input.trackId === 'MAX3_TOM_FILLS') {
+  if (input.trackId === 'MAX4_TOM_FILLS') {
     scheduleTom(input)
     return true
   }
-  if (input.trackId === 'MAX3_OFFBEAT_HATS'
-    || input.trackId === 'MAX3_DRIVE_HATS'
-    || input.trackId === 'MAX3_PRIME_ACCENTS') {
+  if (input.trackId === 'MAX4_OFFBEAT_HATS'
+    || input.trackId === 'MAX4_DRIVE_HATS'
+    || input.trackId === 'MAX4_PRIME_ACCENTS') {
     scheduleHat(input)
     return true
   }

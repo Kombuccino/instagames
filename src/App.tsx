@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { GameFeed } from './core/GameFeed'
-import { HomeSplash } from './core/HomeSplash'
 import { MusicLab } from './core/MusicLab'
+import { PlatformEntryScene } from './core/PlatformEntryScene'
 import { gameRegistry } from './core/gameRegistry'
 
 function opensDirectlyOnAGame() {
@@ -19,6 +19,6 @@ export default function App() {
   const [entered, setEntered] = useState(() => opensDirectlyOnAGame())
 
   if (opensMusicLab()) return <MusicLab />
-  if (!entered) return <HomeSplash onComplete={() => setEntered(true)} />
+  if (!entered) return <PlatformEntryScene onLaunch={() => setEntered(true)} />
   return <GameFeed games={gameRegistry} />
 }

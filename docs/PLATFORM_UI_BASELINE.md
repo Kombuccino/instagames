@@ -2,56 +2,79 @@
 
 This file records the visual baseline that later platform UI studies must refine instead of reinventing.
 
-## Canonical reference board
+## Canonical reference — user supplied
 
-The current UI baseline comes from the earlier low-poly convergence board built during the logo / entry-scene exploration. It contains:
+The **only canonical visual reference** for the current MiniFugg platform UI is the exact board re-supplied by the user on 2026-09-05 and archived in Google Drive as:
 
-- the warm low-poly bus entry scene;
-- Fuggy integrated into the scene;
-- the Lumen Trails full-screen cover example;
-- the dark, restrained platform UI language;
-- the initial **Side Panel + Gameplay Shell** treatment shown on the right side of that board.
+`MiniFugg - Graphic Archive / Platform / Reference Boards / platform-ui-canonical-reference-user-supplied-2026-09-05.png`
 
-The board is archived in Google Drive under:
+This exact image contains the approved visual family for:
 
-`MiniFugg - Graphic Archive / Platform / Reference Boards / platform-lowpoly-product-ui-reference-v3.png`
+- the graphite / near-black Core surface;
+- contemporary white typography with generous spacing;
+- thin hairline separators and very rare red accents;
+- the warm low-poly entry-scene language;
+- Fuggy as a simple low-poly mascot;
+- restrained cover chrome;
+- the narrow **Side Panel + Gameplay Shell** treatment;
+- compact, flat, editorial UI rather than a gaming dashboard.
 
-This board is a **design reference**, not a mandate to reuse its fictional game, copy, or exact logo geometry. Its layout language, density, restraint, panel treatment and relationship between cover / side panel / gameplay are the parts to preserve when refining the platform UI.
+Do not substitute another generated board because it also contains a low-poly scene, Lumen Trails, TetraMindFck, a dark panel, or similar ingredients. **Visual similarity is not enough: use this exact board as the reference.**
 
-## Important distinction
+## Relationship with later validated discovery controls
 
-The recently validated Cover UI work fixes the discovery controls and interaction grammar, including:
+Some functional cover details were explicitly refined and validated after the canonical board. Those later decisions remain valid and must be merged into the canonical visual language without redesigning that language:
 
-- full-screen authored cover;
+- authored cover fills the entire viewport;
 - coin balance at top-right;
-- transparent left action rail;
-- Insert Coin CTA;
-- Change Game affordance;
-- active Like / Bookmark states.
+- left action rail directly over artwork with no permanent icon backgrounds;
+- actions: Info, Like, Comments, Bookmark, Share;
+- `INSERT COIN x2` for Fugg and `INSERT COIN x1` for Bêta;
+- two overlapping pixel coins inside the Insert Coin cartouche after `xN` and before `>>`;
+- small separate `CHANGE GAME` affordance;
+- no `SWIPE TO PLAY`;
+- Like / Bookmark may have restrained active states.
 
-It does **not** authorize replacing the underlying visual language with a new invented TetraMindFck interface whenever another component is explored.
+If the old concept board and a later explicit user validation conflict on one of these functional details, keep the later explicit decision **while preserving the canonical board's typography, density, spacing, panel treatment and overall restraint**.
 
-When designing Info, Comments, account/settings, end-of-run or other Core surfaces, start from the low-poly convergence board's existing platform UI vocabulary and merge in only the already-approved discovery controls.
+## Canonical Side Panel / Gameplay language
+
+For Info, Comments, account/settings, end-of-run and other Core surfaces, start from section **05 — SIDE PANEL + GAMEPLAY SHELL** of the canonical board.
+
+Key characteristics:
+
+- narrow dark panel rather than a full replacement page;
+- flat or very subtle surface treatment, not glowing/neon/glass gaming UI;
+- thin borders / separators;
+- small, clean type hierarchy;
+- compact metadata and tabs;
+- cover/game remains visually primary;
+- gameplay shell has almost no permanent Core chrome;
+- no large rounded card soup;
+- no invented visual theme specific to the example game.
+
+Mutable text remains live and translatable.
 
 ## Do not drift
 
 Do not:
 
-- invent a new generic dark gaming dashboard for every board;
-- substitute an arbitrary TetraMindFck cover or unrelated art direction as the UI baseline;
-- redesign the cover, icon rail, typography, panel chrome and information architecture all at once when only one component is under study;
-- interpret a concept generated for one isolated test as validated platform language unless the user explicitly validates it.
+- use either of the generated `platform-side-panel-info-comments-study-v2a-lowpoly-baseline.png` or `v2b-lowpoly-baseline.png` as a reference; they are not validated;
+- return to the rejected TetraMindFck side-panel study;
+- invent a new generic dark gaming dashboard for every component;
+- add neon cyan outlines, heavy glow, glassmorphism, oversized pills or arcade UI merely because MiniFugg contains games;
+- redesign typography, iconography, panels, cover art and interaction model simultaneously when only one component is being studied;
+- reinterpret the canonical reference from memory when the exact image is available.
 
-## Side panel next step
+## Next Info / Comments study
 
-The next Info / Comments study must therefore:
+The next study must:
 
-1. visually reuse the **Side Panel + Gameplay Shell** language from the canonical low-poly convergence board;
-2. keep the already validated cover/discovery controls where they are relevant;
-3. refine only the panel structure, states, hierarchy, opening/closing behavior and comments presentation;
-4. remain visually anchored to the current game without becoming an App Store page or a generic social dashboard;
-5. keep all mutable text as live, translatable UI.
+1. use the exact user-supplied canonical board as visual reference;
+2. focus specifically on the **05 Side Panel + Gameplay Shell** vocabulary;
+3. merge only the already validated cover controls listed above;
+4. refine panel opening/closing, Info content hierarchy, Comments state and transitions;
+5. preserve the cover as the dominant visual object;
+6. avoid App Store, social-dashboard and gaming-dashboard conventions.
 
-## Rejected study
-
-The generated `platform-side-panel-info-comments-study-v1.png` based on an unrelated TetraMindFck UI is explicitly **rejected** as a platform reference. It remains archived only for history under the archive's `Side Panels / Rejected` folder.
+Until the user explicitly validates a new derivative, the canonical board remains the source of truth.

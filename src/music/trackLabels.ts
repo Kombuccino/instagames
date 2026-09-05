@@ -15,6 +15,12 @@ const TRACK_LABELS: Record<string, string> = {
   L4_MODULO_BASS: 'Basse modulo 3',
   L5_FIB_HOOK: 'Refrain Fibonacci',
   L6_PRIME_DRIVE: 'Pression nombres premiers',
+  MAX3_KICK_RAIL: 'Kick quatre-temps',
+  MAX3_SNARE_BACKBEAT: 'Caisse claire 2 et 4',
+  MAX3_BASS_RAIL: 'Basse motrice',
+  MAX3_OFFBEAT_HATS: 'Charleston de propulsion',
+  MAX3_REFRAIN_HOOK: 'Refrain deux mesures',
+  MAX3_PRIME_ACCENTS: 'Accents premiers discrets',
 }
 
 export function musicTrackLabel(id: string, fallback = id) {

@@ -4,7 +4,7 @@ This document is the product contract for browsing games, entering a game from i
 
 Read together with:
 
-- `docs/PLATFORM_ECONOMY.md` for balances, costs and Free Play;
+- `docs/PLATFORM_ECONOMY.md` for balances, costs and Lifetime;
 - `docs/WELCOME_ILLUSTRATIONS.md` for Fugg/Bêta/Caca cover production;
 - `docs/PLATFORM_ART_DIRECTION.md` for Core identity;
 - `docs/PLATFORM_ENTRY_SCENES.md` for the cold-open before discovery;
@@ -127,13 +127,13 @@ The platform adapter boundary is defined in `docs/PLATFORM_EXPORTS.md`, which al
 
 ## 4. Coin balance must stay visible while browsing
 
-For a normal free player, the current **combined coin balance** remains visible while vertically browsing covers.
+The current **combined coin balance** remains visible while vertically browsing covers.
 
 It should be compact and persistent rather than repeated inside every cover.
 
 The user should always understand whether a visible game is immediately playable and what it costs.
 
-Lifetime / Free Play users may show `∞` instead of a decrementing balance.
+Lifetime users also show their real remaining coin count. **Never replace Lifetime with `∞`: Lifetime provides 999 renewable coins per day.**
 
 The balance remains one unified player-facing number. Internal daily/durable composition is defined in `docs/PLATFORM_ECONOMY.md`.
 
@@ -158,7 +158,8 @@ Recommended CTA copy:
 - Fugg: `PLAY · 2 COINS`
 - Bêta: `PLAY · 1 COIN`
 - Caca: `PLAY · FREE`
-- Lifetime / Free Play: `PLAY · FREE PLAY` or an equivalent concise unlimited-state treatment.
+
+Lifetime does not change per-game pricing or the coin ritual; it changes the renewable daily allowance to 999 coins.
 
 The CTA performs the same action as the leftward play gesture; it is not a separate navigation path.
 
@@ -166,7 +167,7 @@ The CTA performs the same action as the leftward play gesture; it is not a separ
 
 ## 6. Coin-aware discovery weighting
 
-Discovery deliberately changes when a free player's usable coin balance reaches zero.
+Discovery deliberately changes when a player's usable coin balance reaches zero.
 
 ### Balance greater than zero
 
@@ -193,7 +194,7 @@ The paid Fugg/Bêta covers remain visible even though the current balance cannot
 
 Direct navigation to a specific game always remains possible regardless of weighting.
 
-Lifetime / Free Play users are never treated as out-of-coins.
+Lifetime users can theoretically reach zero after consuming their 999 daily coins plus any durable balance. If they do, the same zero-coin discovery behavior applies until the next refresh or until more durable coins are available.
 
 ---
 
@@ -360,7 +361,10 @@ When comparing platform art directions, the information architecture must stay t
 - Share implementation is intentionally deferred and later routes through the Core platform adapter appropriate to Web/mobile/desktop/store builds;
 - icons should be outline/hollow, visually light, without permanent button boxes;
 - the right side stays visually clean for the play/open-box direction;
-- free-player coin balance remains visible during browsing;
+- coin balance remains visible during browsing;
+- free account daily allowance = 40 coins;
+- Lifetime account daily allowance = 999 coins;
+- Lifetime is not unlimited and must not display `∞`;
 - Fugg = 2 coins;
 - Bêta = 1 coin;
 - Caca = free;

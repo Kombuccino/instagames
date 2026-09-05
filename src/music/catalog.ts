@@ -1,3 +1,5 @@
+import { primeCascadeDrumRail, primeCascadeDrumRailTrackIds } from './primeCascadeDrumRail'
+
 type Note = [startBeat: number, durationBeats: number, midi: number, velocity: number]
 type Wave = 'square' | 'triangle' | 'sawtooth' | 'noise'
 type ArrangementMode = 'low' | 'mid' | 'high' | 'max'
@@ -442,7 +444,7 @@ const prime6 = [...prime5, 'L6_PRIME_DRIVE']
 const primeMax = [...prime6, 'L2_PRIME_HATS']
 
 export const musicCatalog = {
-  version: 5,
+  version: 6,
   rule: 'Never delete a music proposal. Change its status to selected or archived.',
   compositions: [
     {
@@ -508,9 +510,9 @@ export const musicCatalog = {
       gameId: 'tetramindfck',
       gameTitle: 'Tetra MindFuck',
       name: 'Prime Cascade — Rail MAX',
-      status: 'candidate',
+      status: 'archived',
       createdAt: '2026-09-05',
-      summary: 'Réparation séparée du MAX : quatre kicks impossibles à perdre, une seule basse motrice, un refrain de deux mesures et des mathématiques réduites à des accents discrets.',
+      summary: 'Première réparation séparée du MAX, conservée pour historique. Le refrain mélodique et l’ancien moteur de percussions ont été rejetés après écoute du WAV.',
       concept: ['170 BPM', 'four-on-the-floor', 'single bass rail', 'two-bar refrain', 'subtle prime accents'],
       key: 'D minor',
       meter: '4/4',
@@ -521,6 +523,26 @@ export const musicCatalog = {
       ],
       variants: {
         A: primeMaxFootRail(),
+      },
+    },
+    {
+      id: 'MF-MUS-0004',
+      gameId: 'tetramindfck',
+      gameTitle: 'Tetra MindFuck',
+      name: 'Prime Cascade — Drum Rail MAX',
+      status: 'candidate',
+      createdAt: '2026-09-05',
+      summary: 'Nouvelle proposition MAX sans refrain mélodique : grosse caisse synthétisée, caisse claire avec corps, hats rapides, doubles kicks contrôlés et fills de toms portent seuls la vitesse.',
+      concept: ['170 BPM', 'real synthesized drums', 'percussion-led speed', 'quiet support bass', 'no melodic refrain'],
+      key: 'D minor',
+      meter: '4/4',
+      loopBeats: LOOP_BEATS,
+      midiExports: ['MF-MUS-0004_PrimeCascade_DrumRailMAX.mid'],
+      stages: [
+        { label: 'MAX', bpm: GAME_SYNC_BPMS[6], variant: 'A', activeTracks: [...primeCascadeDrumRailTrackIds] },
+      ],
+      variants: {
+        A: primeCascadeDrumRail(),
       },
     },
   ],

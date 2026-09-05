@@ -42,17 +42,42 @@ The approved identity direction includes:
 
 ## MiniFugg branding on live game covers
 
-Current recommendation: **do not place the MiniFugg wordmark permanently on every live game cover by default**.
+Do **not** add a large persistent MiniFugg wordmark overlay in a top corner of every cover.
 
-Reason:
+The authored cover artwork may already contain a **small MiniFugg signature/logo integrated into the graphic composition**, typically near a lower corner. That treatment is approved when it behaves like discreet editorial/publisher branding rather than platform chrome.
 
-- the cover should belong primarily to the game;
-- MiniFugg is already recognizable through the persistent Core coin balance, left action rail, gesture grammar, CTA language and box-opening transition;
-- permanent co-branding on every cover would weaken the authored game-cover identity.
+The distinction is important:
 
-For outbound sharing, MiniFugg branding can instead be added by the Core-generated share asset/card/video overlay. This keeps the live cover visually pure while preserving brand attribution when content leaves the platform.
+- **allowed / desirable:** subtle MiniFugg logo baked into the authored cover composition, low visual priority, often bottom-left or bottom-right;
+- **avoid:** a repeated Core overlay logo sitting prominently over every cover, especially top-left, obscuring or competing with the artwork.
 
-This recommendation may be revisited after real device mockups, but the default next visual tests should omit the MiniFugg wordmark from the cover artwork itself.
+The cover should belong primarily to the game. MiniFugg remains recognizable through the shared coin balance, action rail, gesture grammar, CTA language and box-opening transition.
+
+For outbound sharing, Core may additionally add MiniFugg branding to the generated share asset/card/video if stronger attribution is useful outside the platform.
+
+## Global platform access / Home / account / settings
+
+MiniFugg will eventually need a way to reach platform-level functions that do not belong to the current game, for example:
+
+- account/profile settings;
+- global preferences;
+- language/accessibility;
+- purchases / Free Play / coin details;
+- platform information;
+- other future Core settings.
+
+These functions must **not** be stuffed into the current game's Info/Community panel merely because that panel already exists.
+
+Current direction:
+
+- provide one discreet Core-level **System / Home / Account entry point** from the cover/discovery state;
+- keep it visually much quieter than the game artwork and left social rail;
+- do not use a large permanent MiniFugg logo as this control;
+- icon/name and exact corner/placement remain open for UI study;
+- avoid creating a conventional heavy app header merely to expose settings;
+- the control may open a compact platform sheet/home surface rather than navigating to a generic dashboard.
+
+The purpose is functional escape to platform-wide settings, not branding.
 
 ## Play CTA
 
@@ -75,7 +100,7 @@ The macro flow is now considered validated enough to move into detailed interfac
 Next design tasks, in priority order:
 
 1. isolate and lock the approved Variation 2 logo/mascot, including one-line vs two-line wordmark;
-2. detail the live full-screen cover UI: coin balance, left action rail, play CTA, gesture affordances;
+2. detail the live full-screen cover UI: coin balance, left action rail, play CTA, gesture affordances, and discreet global System/Home/Account entry point;
 3. detail the Info/Comments side panel and its return behavior;
 4. define the compact close-box control during gameplay;
 5. define the shared end-of-run Core surface for Replay / Quit / coin cost;
@@ -113,6 +138,7 @@ Still open before production lock:
 - exact logo reconstruction/layout;
 - play CTA styling;
 - detailed cover UI spacing and iconography;
+- exact System/Home/Account control and placement;
 - community side-panel styling;
 - close-box icon/placement;
 - end-of-run surface;

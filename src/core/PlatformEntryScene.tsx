@@ -9,6 +9,7 @@ import {
 } from 'react'
 import { DiscoveryCover } from './DiscoveryCover'
 import './platformEntryScene.css'
+import './platformEntrySceneSizing.css'
 
 type PlatformEntrySceneProps = {
   onLaunch: () => void

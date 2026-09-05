@@ -14,6 +14,21 @@ const HariBeta = withStatusWelcome('beta', 'HARI les dents pourries', 'Aligne le
 const ShooterCaca = withStatusWelcome('trash', 'Shoot the Shooter', 'Bois, mémorise, tiens jusqu’au blackout', ShootTheShooter)
 const DebthCaca = withStatusWelcome('trash', 'DebthOfLife', 'Cours ta vie · signe tes choix en sautant · meurs avec le meilleur bilan', DebthOfLife)
 
+// Temporary discovery covers so the full multi-game navigation can be evaluated now.
+// They are placeholders only: they do not promote Bêta/Caca to collectible Fugg cover status.
+function placeholderWelcome(gameId: string): NonNullable<InstagameDefinition['welcome']> {
+  return {
+    variants: [{
+      id: 'placeholder-v1',
+      label: 'Temporary cover',
+      image: `/assets/imported/${gameId}/welcome/cover-placeholder-v1.png`,
+      unlockScore: 0,
+    }],
+    selection: 'first',
+    motion: 'none',
+  }
+}
+
 export const gameRegistry: InstagameDefinition[] = [
   {
     id: 'train-fighter',
@@ -22,6 +37,7 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'beta',
     orientation: 'portrait',
+    welcome: placeholderWelcome('train-fighter'),
     component: TrainFighterBeta,
     instructions: {
       goal: 'Traverse les 4 mondes avec le plus de wagons possible et transforme ta petite loco en machine à baffes.',
@@ -57,6 +73,7 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'fugg',
     orientation: 'portrait',
+    welcome: placeholderWelcome('linefugg'),
     component: LineFugg,
     instructions: {
       goal: 'Trace 3 lignes et fabrique le plus gros score possible.',
@@ -90,6 +107,7 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'trash',
     orientation: 'landscape',
+    welcome: placeholderWelcome('shoot-the-shooter'),
     component: ShooterCaca,
     instructions: {
       goal: 'Bois un maximum de shooters sans finir à 100% d’alcool ni rater 3 verres.',
@@ -124,6 +142,7 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'fugg',
     orientation: 'portrait',
+    welcome: placeholderWelcome('vlads-skewers'),
     component: VladsSkewers,
     instructions: {
       goal: 'Prépare les brochettes demandées et sers le plus de clients possible.',
@@ -158,6 +177,7 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'beta',
     orientation: 'portrait',
+    welcome: placeholderWelcome('hari-rotten-teeth'),
     component: HariBeta,
     instructions: {
       goal: 'Aligne les bonbons pour pourrir toutes les dents de HARI.',
@@ -226,6 +246,7 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'fugg',
     orientation: 'portrait',
+    welcome: placeholderWelcome('crazy-papers'),
     component: CrazyPapers,
     instructions: {
       goal: 'Épuise chaque charge de travail, monte en grade et traite un maximum de documents avant que les piles envahissent le bureau.',
@@ -262,6 +283,7 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'trash',
     orientation: 'landscape',
+    welcome: placeholderWelcome('debth-of-life'),
     component: DebthCaca,
     instructions: {
       goal: 'Atteins 85 ans avec le meilleur patrimoine net possible.',

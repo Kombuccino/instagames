@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit --pretty false"
   },
   "dependencies": {
+    "@breezystack/lamejs": "^1.2.7",
     "@vitejs/plugin-react": "^4.3.3",
     "vite": "^5.4.10",
     "typescript": "^5.6.3",

@@ -95,7 +95,8 @@ export function primeCascadeDrumRail(): Track[] {
       })
     }
 
-    // Sixteenth-note propulsion grows by section. It is intentionally quiet but numerous.
+    // Sixteenth-note propulsion must be clearly audible: together with the offbeat hats it creates
+    // the fast 1/16 grid that makes MAX feel materially quicker than lower stages.
     let driveOffsets: number[] = []
     if (section === 'rise') driveOffsets = [2.25, 2.75, 3.25, 3.75]
     else if (refrain || finale) driveOffsets = [.25, .75, 1.25, 1.75, 2.25, 2.75, 3.25, 3.75]
@@ -103,7 +104,7 @@ export function primeCascadeDrumRail(): Track[] {
       const count = Math.min(8, (localBar + 1) * 2)
       driveOffsets = [.25, .75, 1.25, 1.75, 2.25, 2.75, 3.25, 3.75].slice(8 - count)
     } else if (descent && localBar >= 6) driveOffsets = [2.75, 3.25, 3.75]
-    driveOffsets.forEach((offset, index) => add(driveHats, start + offset, .045, 44, index % 2 === 0 ? 28 : 22))
+    driveOffsets.forEach((offset, index) => add(driveHats, start + offset, .06, 44, index % 2 === 0 ? 54 : 46))
 
     // Drum fills replace the rejected melodic refrain. They mark four- and eight-bar boundaries.
     const fillEveryTwoBars = finale && localBar % 2 === 1
@@ -127,7 +128,7 @@ export function primeCascadeDrumRail(): Track[] {
     track('MAX4_SNARE_BACKBEAT', 'noise', .135, snare),
     track('MAX4_BASS_RAIL', 'triangle', .085, bass),
     track('MAX4_OFFBEAT_HATS', 'noise', .06, hats),
-    track('MAX4_DRIVE_HATS', 'noise', .038, driveHats),
+    track('MAX4_DRIVE_HATS', 'noise', .075, driveHats),
     track('MAX4_TOM_FILLS', 'noise', .15, tomFills),
     track('MAX4_PRIME_ACCENTS', 'noise', .045, primeAccents),
   ]

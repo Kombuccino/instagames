@@ -22,7 +22,7 @@ Do not return to generic app-store feeds, large top/bottom Core bars, photoreali
 
 ## Logo / mascot status
 
-The user will now reconstruct the MiniFugg logo **manually in vector form** from the previously approved earlier Variation 2 direction.
+The user will reconstruct the MiniFugg logo **manually in vector form** from the previously approved earlier Variation 2 direction.
 
 Do not spend further design time asking image generation to reinterpret or refine the wordmark. Treat the exact logo geometry as **pending user-supplied vector master**.
 
@@ -43,27 +43,45 @@ Do **not** add a large persistent MiniFugg wordmark overlay in a top corner of e
 
 The authored cover artwork may already contain a **small MiniFugg signature/logo integrated into the graphic composition**, typically near a lower corner. That treatment is approved when it behaves like discreet editorial/publisher branding rather than platform chrome.
 
-The distinction is important:
-
 - **allowed / desirable:** subtle MiniFugg logo baked into the authored cover composition, low visual priority, often bottom-left or bottom-right;
-- **avoid:** a repeated Core overlay logo sitting prominently over every cover, especially top-left, obscuring or competing with the artwork.
-
-The cover should belong primarily to the game. MiniFugg remains recognizable through the shared coin balance, action rail, gesture grammar, CTA language and box-opening transition.
+- **avoid:** repeated Core overlay logo sitting prominently over every cover, especially top-left.
 
 For outbound sharing, Core may additionally add MiniFugg branding to the generated share asset/card/video if stronger attribution is useful outside the platform.
 
+## Cover UI v1 — validated
+
+The current full-screen cover UI is now **validated as the reference direction**. The validated visual reference is archived in Google Drive under:
+
+`MiniFugg - Graphic Archive / Platform / Cover UI / Validated / platform-cover-ui-tetramindfck-validated-v1.png`
+
+Locked characteristics:
+
+- the authored game cover continues to fill the **entire screen**; do not add a black/footer band below it;
+- the player's coin balance stays visible at the **top-right** during cover browsing, using the small pixel-coin visual language;
+- the left action rail remains directly over the artwork with **no permanent background plates, circles, docks or pills behind the icons**;
+- target rail actions remain Info, Like, Comments, Bookmark and Share;
+- default icons are thin/outline and visually secondary to the cover;
+- selected Like may use a restrained red/pink active highlight;
+- selected Bookmark may use a restrained filled/highlight state;
+- `SWIPE TO PLAY` is removed and must not return;
+- play CTA uses the **Insert Coin** metaphor, not a generic mobile-app Play button;
+- Fugg CTA copy: `INSERT COIN x2`;
+- Bêta CTA copy later adapts to `INSERT COIN x1`;
+- inside the light closed cartouche, the two overlapping pixel coins sit **after `x2` and before the rightward `>>` cue**;
+- the overlap ordering/orientation of the two coins should match the latest validated reference;
+- the CTA stays visually lightweight enough to work over many different cover art styles;
+- the `>>` cue reinforces the leftward play/open-box gesture direction without adding a large tutorial;
+- `CHANGE GAME` remains a small, separate browsing affordance at the bottom-left and may be tapped as an alternative to the vertical swipe;
+- `CHANGE GAME` must remain visually secondary and not be fused into the Insert Coin cartouche;
+- no large MiniFugg overlay logo is added over the cover.
+
+The current reference includes both a default state and a Like + Bookmark active-state example. Do not redesign unrelated elements when refining one remaining component.
+
 ## Global platform access / Home / account / settings
 
-MiniFugg will eventually need a way to reach platform-level functions that do not belong to the current game, for example:
+MiniFugg will eventually need a way to reach platform-level functions that do not belong to the current game, for example account/profile settings, language/accessibility, purchases / Free Play / coin details and platform information.
 
-- account/profile settings;
-- global preferences;
-- language/accessibility;
-- purchases / Free Play / coin details;
-- platform information;
-- other future Core settings.
-
-These functions must **not** be stuffed into the current game's Info/Community panel merely because that panel already exists.
+These functions must **not** be stuffed into the current game's Info/Community panel.
 
 Current direction:
 
@@ -74,55 +92,17 @@ Current direction:
 - avoid creating a conventional heavy app header merely to expose settings;
 - the control may open a compact platform sheet/home surface rather than navigating to a generic dashboard.
 
-The purpose is functional escape to platform-wide settings, not branding.
-
-## Play CTA
-
-The latest large red pill/button treatment is **not approved**. The play action itself is approved, but its visual treatment remains open.
-
-Next UI studies should test quieter, more integrated treatments, for example:
-
-- small typographic `PLAY · 2 COINS` treatment;
-- coin-slot / insert-coin metaphor;
-- thin edge tab;
-- understated bottom label;
-- another solution that does not look like a generic mobile-app primary button.
-
-The CTA must trigger the same action as the leftward play gesture.
-
-## Left cover action rail
-
-Target actions:
-
-- Info / Community;
-- Like;
-- Comments;
-- Bookmark;
-- Share.
-
-Visual treatment:
-
-- thin outline icons;
-- hollow/transparent centers where possible;
-- no permanent button rectangles;
-- no large opaque dock;
-- compact vertical rhythm;
-- placed on the **left** so the right side remains visually clear for the play/open-box direction.
-
-Share must be visible in visual prototypes even before its platform-specific functionality is implemented.
-
 ## Next design tasks — current priority
 
-The logo is no longer blocking progress. Detailed interface work should proceed now in this order:
+The logo and cover UI no longer block progress. Detailed interface work should now proceed in this order:
 
-1. **Cover UI detail study** — real full-screen Fugg cover, coin balance, left action rail, quieter Play CTA, gesture affordances, discreet System/Home/Account entry point. This is the next immediate visual task.
-2. **Info / Comments side panel** — layout, hierarchy, tabs/focus states, relationship to the cover, return behavior.
-3. **Gameplay close-box control** — icon, size, placement, safe-zone behavior over wildly different games.
-4. **End-of-run Core surface** — Replay / Quit / score / coin cost, without rebuilding a heavy platform shell.
-5. **Bêta template refinement** — reusable background + per-game title/logo + live translated text + `PLAY · 1 COIN`.
-6. **Caca template refinement** — reusable playful trash-box treatment + per-game title/logo + live translated text + `PLAY · FREE`.
-7. **Platform system/account sheet** — only enough to support global settings/account entry without creating a generic dashboard.
-8. **Share behavior and deeper community IA** — defer implementation until the visual/core shell is stable.
+1. **Info / Comments side panel** — layout, hierarchy, tabs/focus states, relationship to the cover, opening from the rightward gesture, and return behavior.
+2. **Gameplay close-box control** — icon, size, placement, safe-zone behavior over wildly different games.
+3. **End-of-run Core surface** — Replay / Quit / score / coin cost, without rebuilding a heavy platform shell.
+4. **Bêta template refinement** — reusable background + per-game title/logo + live translated text + `INSERT COIN x1`.
+5. **Caca template refinement** — reusable playful trash-box treatment + per-game title/logo + live translated text + free-entry treatment.
+6. **Platform system/account sheet** — only enough to support global settings/account entry without creating a generic dashboard.
+7. **Share behavior and deeper community IA** — defer implementation until the visual/Core shell is stable.
 
 ## Current status
 
@@ -130,12 +110,12 @@ The logo is no longer blocking progress. Detailed interface work should proceed 
 
 **Logo: handed off to the user for vector reconstruction; do not regenerate.**
 
+**Full-screen cover UI v1: validated.**
+
 Still open before production lock:
 
-- play CTA styling;
-- detailed cover UI spacing/iconography;
+- community Info/Comments side-panel styling;
 - exact System/Home/Account control and placement;
-- community side-panel styling;
-- close-box icon/placement;
+- gameplay close-box icon/placement;
 - end-of-run surface;
 - final Bêta/Caca template styling.

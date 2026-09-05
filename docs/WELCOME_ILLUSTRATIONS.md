@@ -1,74 +1,133 @@
 # MiniFugg — Welcome Illustrations System
 
-Living production specification for game welcome screens and the global MiniFugg home. Update this file when the art direction or product rules change.
+Living production specification for game cover art and status templates.
+
+Read together with:
+
+- `docs/DISCOVERY_NAVIGATION.md` for the cover-browsing / play / details gesture grammar;
+- `docs/WELCOME_ART_STYLES.md` for reusable Fugg cover styles;
+- `docs/PARALLAX_LAB.md` for layered cover tuning;
+- `docs/ASSET_PIPELINE.md` for image production and import.
+
+This document no longer defines the global platform home/cold-open. Platform entry is defined in `docs/PLATFORM_ART_DIRECTION.md` and `docs/PLATFORM_ENTRY_SCENES.md`.
+
+---
 
 ## 1. Product intent
 
-MiniFugg games are deliberately tiny, but a finished game can be introduced like a lost premium game from another era: beautiful illustrated cover art, stronger and more ambitious than the actual in-game graphics.
+A finished Fugg can be introduced like a tiny game with an absurdly ambitious premium cover: collectible, authored, memorable and often more elaborate than the actual in-game graphics.
 
-The contrast is intentional. The welcome screen sells the fantasy; the game then reveals its real, simpler visual language.
+The cover is also the primary MiniFugg discovery object. One cover fills the discovery viewport at a time.
 
-Primary CTA on game covers:
+The navigation/launch contract is **not** `SWIPE TO PLAY ↑` anymore.
 
-**SWIPE TO PLAY ↑**
+Current Core grammar:
 
-Never use `Tap to start` for this system.
+- vertical movement = browse previous/next cover;
+- leftward movement = play/open current game;
+- rightward movement = details/community.
+
+The visible play CTA must reflect current cost and perform the same action as the leftward gesture.
+
+---
 
 ## 2. Curation status rule
 
 Creative collectible welcome art is reserved for games with `status: 'fugg'`.
 
-### FUGG
+Do not expose a generic Fugg status badge simply because the internal game is curated.
 
-A finished/curated game gets the full collectible system:
+### Fugg
 
-- minimum 4 illustrated variants;
+A finished/curated game gets the premium cover system:
+
+- minimum 4 illustrated variants as a target;
 - variants may use different artistic and cultural interpretations;
-- unlock progressively through score / achievements / progression;
-- unlocked variants remain available;
-- selection may be random among unlocked variants or manually selectable later.
+- variants may unlock through score / achievements / progression;
+- parallax/motion may use real separated raster layers;
+- default authored cover language is English unless the variant is intentionally localized;
+- live MiniFugg UI overlays remain localizable.
 
-### BÊTA
+### Bêta
 
-A beta does **not** get the premium 4-cover system.
+A Bêta does **not** get the premium 4-cover system.
 
-Use a simpler generic beta intro:
+Use one reusable MiniFugg Bêta template family with minimal per-game customization:
 
-- small representative cover / thumbnail;
-- very visible `BÊTA` status;
-- explain that the game is playable but unfinished;
-- explicitly ask players for comments and bug reports;
-- CTA can still be `SWIPE TO PLAY ↑`.
+- game title/logo required;
+- optional tiny representative visual if useful;
+- reusable background/template;
+- live translated explanation that the game is playable but unfinished;
+- live translated request for comments / bug reports;
+- live `PLAY · 1 COIN` CTA.
 
-Suggested tone: constructive and inviting, not apologetic.
+Do not bake the explanatory Bêta sentences into the raster artwork.
 
-### CACA (`status: 'trash'` in code)
+### Caca (`status: 'trash'` in code)
 
-A Caca game also gets a generic status intro instead of collectible artwork.
+A Caca game uses one reusable Caca / Boîte à Caca template family instead of premium collectible art.
 
-The intro should communicate:
+Per-game customization:
 
-- `CACA` / `BOÎTE À CACA` clearly;
-- experimental, broken, weird or abandoned state;
-- play at your own risk;
-- it may never leave the box.
+- game title/logo required;
+- optional tiny representative visual;
+- reusable background/template;
+- live translated warning that the game is experimental, broken, weird or abandoned;
+- playful copy saying it may never leave the box;
+- live `PLAY · FREE` CTA.
 
-Tone can be funny and self-aware.
+The source-code status remains `trash` for compatibility unless explicitly migrated later; UI copy may use **CACA** / **BOÎTE À CACA**.
 
-The source-code status remains `trash` for compatibility unless explicitly migrated later; UI copy should use **CACA**.
+The humor can be strong but the template should still be intentionally designed.
 
-## 3. Standard Fugg variant set
+---
 
-Each Fugg should launch with at least four official variants.
+## 3. Internationalization
+
+Separate immutable authored art from mutable/localized product text.
+
+### Fugg artwork
+
+- English is the default language for authored covers.
+- A Japanese/Chinese/etc. edition may intentionally contain local language as part of that specific artwork.
+- Do not automatically redraw all covers for every UI locale.
+
+### Live UI text
+
+Anything dependent on locale, game status, coin cost or platform state should remain live text whenever practical.
+
+Examples:
+
+- Bêta explanation;
+- Caca warning;
+- comment/help request;
+- play price;
+- out-of-coins message;
+- accessibility labels;
+- details/community labels.
+
+For Bêta/Caca, compose the cover from:
+
+1. template background;
+2. per-game title/logo;
+3. live translated copy + CTA.
+
+---
+
+## 4. Standard Fugg variant set
+
+Each Fugg should target at least four official variants.
 
 1. **Hero / narrative illustration** — strong character or dramatic story moment.
 2. **European retro / micro-computer cover** — believable late-80s/early-90s commercial game packaging language.
 3. **Graphic poster / editorial interpretation** — more conceptual, authored and composition-driven.
-4. **Foreign edition / cultural reinterpretation** — e.g. Japanese, Chinese, Korean, Eastern-European, etc.
+4. **Foreign edition / cultural reinterpretation** — Japanese, Chinese, Korean, Eastern-European, etc.
 
-The fourth slot may have multiple candidates in production. Only one needs to ship as the default fourth official variant; extra cultural editions can become rare bonus unlocks later.
+Extra cultural editions can become rare bonus unlocks later.
 
-## 4. Anti-AI visual rules
+---
+
+## 5. Anti-AI visual rules
 
 Avoid the generic AI look:
 
@@ -76,7 +135,7 @@ Avoid the generic AI look:
 - no repeated identical mockup frame across every game;
 - no glossy plastic 3D finish by default;
 - no cinematic bloom everywhere;
-- no automatic centered hero + floating objects + giant title template;
+- no automatic centered hero + floating objects + giant-title template;
 - do not over-fill images merely to demonstrate detail.
 
 Prefer visible human decisions:
@@ -89,194 +148,168 @@ Prefer visible human decisions:
 - believable print artifacts and grain;
 - strong negative space when useful.
 
-European late-80s / early-90s illustrated game advertising is a useful base language, but not a single mandatory style.
+European late-80s / early-90s illustrated game advertising is a useful language for some variants, not the permanent MiniFugg platform style.
 
-## 5. Cultural editions
+---
+
+## 6. Cultural editions
 
 Cultural variants must feel like plausible local editorial reinterpretations, not tourist caricatures.
 
 Examples:
 
-- Japanese edition: energetic layout, stronger vertical rhythm, manga/editorial influence where appropriate;
+- Japanese edition: energetic hierarchy, vertical rhythm, local editorial influence where appropriate;
 - Chinese edition: alternative hierarchy, symbolic composition or print language appropriate to the concept;
-- Korean edition: potentially sharper, modern/technical energy;
-- Eastern-European edition: graphic/poster-oriented, conceptual, reduced palette.
+- Korean edition: sharper / modern / technical energy where useful;
+- Eastern-European edition: conceptual poster language, reduced palette, stronger graphic abstraction.
 
-Do not imitate a named living artist. Use broad historical / editorial visual languages.
+Do not imitate a named living artist. Use broad historical/editorial visual languages.
 
-## 6. Motion language
+---
 
-Welcome illustrations are primarily static art with restrained motion.
+## 7. Motion and parallax
 
-Default motion tier:
+Welcome covers are primarily authored static art with restrained motion.
 
-- real multi-plane parallax;
-- `SWIPE TO PLAY` rises with the cover when entering the game;
-- one or two local animated motifs from the actual artwork;
-- optional very slow breathing light / vignette.
+For a Fugg cover claiming parallax, visible moving elements must be real raster assets. Do not fake important cover props with CSS shapes or generic JS particles.
 
-Avoid full-screen perpetual motion and expensive video when a few transforms can create life.
+A finished parallax cover should normally include:
 
-### 6.1 Mandatory parallax production bundle
+1. flat master poster;
+2. background layer;
+3. midground layer;
+4. foreground/subject layer;
+5. overlay/title layer.
 
-For a Fugg cover with motion, **the visible moving elements must be generated/exported as real raster assets**. Do not fake important graphical elements with CSS shapes or generic JS particles.
+The exact layer count may vary, but all layers should share compatible dimensions/alignment.
 
-Every finished parallax cover should normally include:
+Runtime behavior may include:
 
-1. **flat master poster** — the approved full illustration, kept untouched for archive/reference;
-2. **background layer** — scenery / painted environment without the main subject;
-3. **midground layer** — explosion, props, smoke, tetrominos or other art that can move independently;
-4. **foreground/subject layer** — character or dominant object, ideally transparent;
-5. **overlay layer** — title, logo and `SWIPE TO PLAY ↑`, ideally transparent and moving very little.
+- smallest displacement in background;
+- medium displacement in midground;
+- strongest displacement in foreground;
+- title/CTA nearly fixed;
+- one or two local motions (`float`, `vibrate`, `breathe`, etc.);
+- optional CSS light/vignette because those are effects, not replacement artwork;
+- pause when slot is inactive;
+- `prefers-reduced-motion` support.
 
-The exact number may vary if the composition needs more/fewer layers, but there must be enough actual artwork to make depth visible. All layers should be generated at the same canvas size and alignment whenever possible so they stack without manual reconstruction.
+Layer tuning belongs in the desktop Parallax Lab.
 
-### 6.2 Runtime implementation
+---
 
-Use the generated layers with lightweight transforms:
+## 8. Discovery and play transition
 
-- background: smallest displacement;
-- midground: medium displacement;
-- foreground: strongest displacement;
-- title/CTA: almost fixed;
-- subtle raster-layer drift is allowed on mobile where there is no pointer hover;
-- optional light/vignette may remain CSS because it is an effect, not replacement artwork;
-- pause effects when the game slot is not active;
-- respect `prefers-reduced-motion`.
+The cover is part of the Core discovery system.
 
-The Core bottom swipe gutter remains an escape route. Outside that protected gutter, the welcome cover owns the **first forward navigation gesture**:
+Do not intercept vertical browsing to open gameplay.
 
-- finger swipe up → cover moves up and reveals the current game;
-- mouse wheel down → cover moves up and reveals the current game;
-- `ArrowDown` → cover moves up and reveals the current game.
+Current interaction contract is defined in `docs/DISCOVERY_NAVIGATION.md`:
 
-That first gesture must never jump directly to the following game in the feed.
+- finger moves upward → previous cover;
+- finger moves downward → next cover;
+- finger moves left → play/open;
+- finger moves right → details/community.
 
-## 7. Asset strategy
+The free-player coin balance remains visible while browsing.
+
+Current prices:
+
+- Fugg = 2 coins;
+- Bêta = 1 coin;
+- Caca = free.
+
+When play is committed, the cover should behave like a physical game object being opened rather than a generic webpage disappearing.
+
+Promising launch language:
+
+- short metallic coin `clang` for paid plays;
+- cover/lid/sleeve moves sideways;
+- shallow perspective or box-opening motion;
+- actual game is already visible behind/inside;
+- transition is short and tactile.
+
+Do not turn every launch into a long cinematic.
+
+---
+
+## 9. Asset strategy
 
 ### Master
 
-Keep the original generated/final art untouched and lossless. Never silently resize/recompress the production original.
+Keep original generated/final art untouched and lossless. Never silently resize/recompress the production original.
 
-Accepted importer formats are PNG, JPEG and WebP. The canonical pipeline is documented in `docs/ASSET_PIPELINE.md`.
-
-For parallax bundles, preserve transparent PNG masters for layers that need alpha.
+For parallax bundles, preserve transparent PNG masters for alpha layers.
 
 ### Runtime
 
-Runtime derivatives may be WebP when quality/weight is acceptable. The original masters must still be preserved.
+Runtime derivatives may be WebP when quality/weight is acceptable. Original masters remain preserved.
 
-Typical portrait artwork target: around 9:16, with important title/CTA content kept away from crop-sensitive edges.
+Typical portrait cover target: around 9:16, with important title content kept away from crop-sensitive edges.
 
-Current TetraMindFck tests show that same-resolution WebP derivatives can reduce multi-megabyte PNG masters to a few hundred kilobytes per layer/cover while preserving the intended visual quality.
+### Canonical pipeline
 
-## 8. Canonical asset pipeline
+For every production image/layer:
 
-For every MiniFugg production image or parallax layer:
+1. read `docs/ASSET_PIPELINE.md`;
+2. finalize art and production filename;
+3. upload to private Drive `Fugg/<game-id>/...` or documented platform folder;
+4. optionally add optimized WebP while preserving master;
+5. wait for / verify GitHub Actions import;
+6. verify every referenced file exists in `public/assets/imported/...`;
+7. reference only `/assets/imported/...` in the app.
 
-1. create/finalize the art;
-2. give it a unique ASCII production filename;
-3. upload the original to the private Google Drive `Fugg` inbox;
-4. optionally create a runtime WebP derivative while keeping the master untouched;
-5. upload the runtime derivative through the same Drive inbox;
-6. wait for / verify GitHub Actions import;
-7. verify every referenced file exists in `public/assets/imported/`;
-8. reference it only as `/assets/imported/<filename>` in the app.
+Never use public Drive links, FTP, manual binary GitHub upload or base64 chunking while the pipeline is available.
 
-Never use a public Drive link, FTP, manual binary GitHub upload, or base64 chunking while this pipeline is available.
+---
 
-## 9. TetraMindFck pilot
+## 10. TetraMindFck pilot
 
-TetraMindFck is the first production pilot for this system.
+TetraMindFck remains the first production pilot for the collectible Fugg cover/parallax system.
 
-Gameplay concept that the welcome art must represent:
+Gameplay concept the covers represent:
 
 - falling tetromino-like pieces;
 - arithmetic / mental overload;
-- a person or mind under pressure, fracturing, exploding or being overwhelmed;
-- the game name is **TetraMindFck**, never `Calc Drop` on marketing art.
+- a person/mind under pressure;
+- game name **TetraMindFck**, never `Calc Drop` on marketing art.
 
-Approved full-resolution directions:
+Approved directions include:
 
-- expressive hand-painted / pulp poster with a mind exploding;
+- expressive hand-painted / pulp poster;
 - retro European micro-computer cover;
-- graphic / Eastern-European poster treatment.
+- graphic / Eastern-European poster treatment;
+- cultural edition candidates such as Japanese/Chinese.
 
-Foreign-edition style candidates already explored in concept boards:
+The first pulp cover remains the reference implementation for real parallax bundles.
 
-- Japanese edition;
-- Chinese edition.
+Its approved layer config is tuned through the Parallax Lab and stored in production code after user validation.
 
-Do **not** crop those concept boards into production art. A cultural edition must be regenerated/finalized as its own standalone full-resolution master before entering the Drive pipeline.
+---
 
-### TetraMindFck variant 1 parallax bundle
+## 11. Production checklist
 
-The first pulp cover is the reference implementation for future covers. Its production layers are:
-
-- `tetramindfck-welcome-v1-parallax-bg.*`
-- `tetramindfck-welcome-v1-parallax-burst.*`
-- `tetramindfck-welcome-v1-parallax-subject.*`
-- `tetramindfck-welcome-v1-parallax-title.*`
-
-PNG masters are preserved; WebP counterparts are used at runtime after repository verification.
-
-### Initial unlock thresholds
-
-The pilot currently uses best-run score milestones:
-
-- variant 1: unlocked by default;
-- variant 2: 5,000;
-- variant 3: 15,000;
-- variant 4: target 30,000 once the cultural master is approved.
-
-Unlocked state is currently persisted locally as a pilot. Cross-device/profile unlock persistence can move into the platform data model later.
-
-## 10. Global MiniFugg home
-
-The global MiniFugg home should eventually use the same authored philosophy rather than a generic glossy AI landing page.
-
-Plan for several rotating home interpretations, for example:
-
-- strange European workshop / editorial illustration;
-- retro game-magazine ad;
-- graphic poster edition;
-- international edition.
-
-These are platform-level visuals, not tied to one game's unlock score.
-
-## 11. Production checklist for every new Fugg cover
-
-Before calling a cover finished:
+Before calling a Fugg cover finished:
 
 - standalone flat master approved;
-- parallax decomposition planned before integration;
-- real raster background generated;
-- real raster midground/FX generated where useful;
-- real raster subject/foreground generated where useful;
-- real raster title/CTA overlay generated where useful;
+- title readable;
+- cover art language intentional;
+- parallax decomposition planned if motion is promised;
+- real raster layers produced as needed;
 - all layers share compatible dimensions/alignment;
-- PNG masters kept untouched;
-- runtime WebP derivatives produced if useful;
-- every file uploaded through private Drive `Fugg`;
-- every runtime path verified in `public/assets/imported/`;
-- first swipe/wheel/ArrowDown opens the current game instead of scrolling to the next feed item;
-- bottom Core swipe gutter remains free;
+- PNG masters preserved;
+- runtime WebP derivatives produced when useful;
+- files uploaded through private Drive `Fugg` hierarchy;
+- runtime paths verified in `public/assets/imported/` before code references;
+- vertical discovery remains available;
+- leftward play/open transition works;
+- rightward details gesture remains available;
+- coin balance/price UI is live, not baked into art;
 - reduced-motion behavior tested.
 
-## 12. Current implementation state
+For Bêta/Caca templates additionally verify:
 
-Implemented on `main`:
-
-- reusable `src/core/FuggWelcome.tsx` welcome layer;
-- support for real raster `background / midground / foreground / overlay` assets;
-- layered pointer parallax and subtle raster drift;
-- cover exit animation that physically moves the cover upward before revealing gameplay;
-- first wheel-down gesture is intercepted by the cover and opens the current game;
-- `ArrowDown`, Enter and Space can enter from the cover;
-- local touch swipe surface keeps the Core bottom swipe gutter free;
-- TetraMindFck pauses gameplay until the welcome is dismissed;
-- unlocked TetraMindFck covers rotate deterministically from the feed seed;
-- best-run score persists locally for unlocks;
-- generic BÊTA and CACA intro gates are wired to the games carrying those curation statuses.
-
-The TetraMindFck pulp cover is the reference implementation for real parallax bundles. Variants 2 and 3 still use their flat posters until their own layer bundles are produced.
+- title/logo exists for every game;
+- status explanation is live/localizable;
+- background/template contains no language-dependent sentence that needs runtime translation;
+- correct cost is shown (1 coin / free).

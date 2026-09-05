@@ -8,6 +8,7 @@ import {
   type CompositionTrackTuning,
   type TrackTuning,
 } from './audioLabTuning'
+import { isAudioLabEnhancedDrumTrack, scheduleAudioLabEnhancedDrum } from './audioLabDrumSynth'
 import { MusicScorePanel } from './MusicScorePanel'
 import { SoundDesignLab } from './SoundDesignLab'
 import { VoiceIdeaRecorder } from './VoiceIdeaRecorder'
@@ -256,8 +257,24 @@ export function MusicLab() {
       track.notes.forEach((note) => {
         if (note[0] < chunkStart || note[0] >= chunkEnd) return
         const localNote: Note = [note[0] - chunkStart, note[1], note[2], note[3]]
-        if (track.wave === 'noise') scheduleNoise(context, trackOutput, noise, track, localNote, tuning, origin, beatSeconds, sourcesRef.current)
-        else scheduleTone(context, trackOutput, track, localNote, tuning, origin, beatSeconds, sourcesRef.current)
+        if (isAudioLabEnhancedDrumTrack(track.id)) {
+          scheduleAudioLabEnhancedDrum({
+            context,
+            output: trackOutput,
+            noise,
+            trackId: track.id,
+            midi: localNote[2],
+            velocity: localNote[3],
+            trackGain: track.gain,
+            start: origin + localNote[0] * beatSeconds,
+            durationScale: tuning.noteLengthPercent / 100,
+            sources: sourcesRef.current,
+          })
+        } else if (track.wave === 'noise') {
+          scheduleNoise(context, trackOutput, noise, track, localNote, tuning, origin, beatSeconds, sourcesRef.current)
+        } else {
+          scheduleTone(context, trackOutput, track, localNote, tuning, origin, beatSeconds, sourcesRef.current)
+        }
       })
     })
 

@@ -9,7 +9,7 @@ import {
   type CompositionTrackTuning,
   type TrackTuning,
 } from './audioLabTuning'
-import { exportAudioLabWav } from './audioLabWavExport'
+import { exportAudioLabMp3, exportAudioLabWav } from './audioLabWavExport'
 import { TrackMixerModal } from './TrackMixerModal'
 import './musicScorePanel.css'
 
@@ -23,6 +23,9 @@ type Composition = {
   gameTitle: string
   loopBeats: number
 }
+type ExportFormat = 'wav' | 'mp3'
+type ExportScope = 'piece' | 'excerpt'
+type ExportJob = `${ExportFormat}-${ExportScope}`
 
 type Props = {
   composition: Composition
@@ -115,7 +118,7 @@ export function MusicScorePanel({
   const [rangeStart, setRangeStart] = useState(0)
   const [rangeEnd, setRangeEnd] = useState(Math.min(4, composition.loopBeats))
   const [copied, setCopied] = useState<'sequence' | 'config' | null>(null)
-  const [exporting, setExporting] = useState<'piece' | 'excerpt' | null>(null)
+  const [exporting, setExporting] = useState<ExportJob | null>(null)
   const [exportError, setExportError] = useState<string | null>(null)
   const trackKey = tracks.map((track) => track.id).join('|')
   const modifiedCount = changedTrackCount(trackTunings)
@@ -219,12 +222,13 @@ export function MusicScorePanel({
     window.setTimeout(() => setCopied(null), 1400)
   }
 
-  const exportWav = async (scope: 'piece' | 'excerpt') => {
+  const exportAudio = async (format: ExportFormat, scope: ExportScope) => {
     if (exporting) return
-    setExporting(scope)
+    const job: ExportJob = `${format}-${scope}`
+    setExporting(job)
     setExportError(null)
     try {
-      await exportAudioLabWav({
+      const input = {
         compositionId: composition.id,
         compositionName: composition.name,
         stage,
@@ -234,10 +238,12 @@ export function MusicScorePanel({
         startBeat: scope === 'piece' ? 0 : rangeStart,
         endBeat: scope === 'piece' ? composition.loopBeats : rangeEnd,
         scope,
-      })
+      }
+      if (format === 'mp3') await exportAudioLabMp3(input)
+      else await exportAudioLabWav(input)
     } catch (error) {
-      console.error('Audio Lab WAV export failed', error)
-      setExportError('Export WAV impossible sur ce navigateur ou cet appareil.')
+      console.error(`Audio Lab ${format.toUpperCase()} export failed`, error)
+      setExportError(`Export ${format.toUpperCase()} impossible sur ce navigateur ou cet appareil.`)
     } finally {
       setExporting(null)
     }
@@ -333,13 +339,15 @@ export function MusicScorePanel({
 
           <div className="mf-score-audio-export" data-busy={exporting ? 'true' : 'false'}>
             <div>
-              <strong>EXPORT AUDIO WAV</strong>
-              <span>Rendu hors-ligne 44,1 kHz / 16-bit mono · niveau {stage.label} / {stage.bpm} BPM · mix, réglages et MUTES actuels inclus.</span>
+              <strong>EXPORT AUDIO WAV / MP3</strong>
+              <span>WAV 44,1 kHz / 16-bit mono pour l’analyse · MP3 mono 128 kb/s pour le partage · niveau {stage.label} / {stage.bpm} BPM · mix, réglages et MUTES actuels inclus.</span>
               {exportError ? <em>{exportError}</em> : null}
             </div>
             <div className="mf-score-audio-export__actions">
-              <button type="button" className="primary" disabled={Boolean(exporting)} onClick={() => void exportWav('piece')}>{exporting === 'piece' ? 'RENDU WAV…' : '↓ EXPORT WAV MORCEAU'}</button>
-              <button type="button" disabled={Boolean(exporting)} onClick={() => void exportWav('excerpt')}>{exporting === 'excerpt' ? 'RENDU WAV…' : '↓ EXPORT WAV EXTRAIT'}</button>
+              <button type="button" disabled={Boolean(exporting)} onClick={() => void exportAudio('wav', 'piece')}>{exporting === 'wav-piece' ? 'RENDU WAV…' : '↓ WAV MORCEAU'}</button>
+              <button type="button" disabled={Boolean(exporting)} onClick={() => void exportAudio('wav', 'excerpt')}>{exporting === 'wav-excerpt' ? 'RENDU WAV…' : '↓ WAV EXTRAIT'}</button>
+              <button type="button" className="primary" disabled={Boolean(exporting)} onClick={() => void exportAudio('mp3', 'piece')}>{exporting === 'mp3-piece' ? 'ENCODAGE MP3…' : '↓ MP3 MORCEAU'}</button>
+              <button type="button" className="primary" disabled={Boolean(exporting)} onClick={() => void exportAudio('mp3', 'excerpt')}>{exporting === 'mp3-excerpt' ? 'ENCODAGE MP3…' : '↓ MP3 EXTRAIT'}</button>
             </div>
           </div>
 

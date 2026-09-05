@@ -11,6 +11,7 @@ import './core/comments.css'
 import './core/commentPlayerIcons.css'
 import './core/profileLeaderboard.css'
 import './core/desktopDock.css'
+import './core/platformGameLoop.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

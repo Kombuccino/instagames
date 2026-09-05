@@ -1,27 +1,77 @@
-# MiniFugg Input & Swipe Contract
+# MiniFugg Input & Gesture Contract
 
-MiniFugg is a vertical game feed. A player must never become trapped inside a game because gameplay captures touch input.
+MiniFugg uses two different gesture contexts:
 
-## Guaranteed exit gesture
+1. **cover discovery** — Core owns the spatial navigation grammar;
+2. **active gameplay** — the game owns gameplay gestures and Core exposes an explicit close-box exit control.
 
-Core reserves a bottom swipe gutter using:
+Read together with:
 
-```css
---minifugg-swipe-gutter
---minifugg-core-bottom-reserved
-```
+- `docs/DISCOVERY_NAVIGATION.md` for cover browsing;
+- `docs/GAMEPLAY_SHELL.md` for fullscreen gameplay and exit;
+- `docs/GAME_LAYOUT_SYSTEM.md` for responsive game layout.
 
-The strip at the very bottom of each feed slot belongs to Core and always keeps `touch-action: pan-y`. It exists so the player can swipe to the next/previous game even when the current game has aggressive pointer handling.
+---
 
-Do not place game buttons, drag targets, joysticks, sliders, cards, text inputs or other interactive controls inside `--minifugg-core-bottom-reserved`.
+## 1. Cover discovery gesture grammar
 
-Decoration/background art may extend behind it.
+While a full-screen game cover is active, Core owns these gestures:
 
-## Keyboard ownership
+- finger moves upward → previous game cover;
+- finger moves downward → next game cover;
+- finger moves left → play / open current game;
+- finger moves right → details / community for current game.
 
-Keyboard gameplay controls belong to the active game, not to the feed.
+The cover owns these gestures until the play-entry transition completes.
 
-Core must not use common gameplay keys such as:
+Desktop equivalents may use wheel/trackpad/pointer gestures when appropriate. Keyboard navigation must not steal common gameplay keys once a game is active.
+
+---
+
+## 2. Active gameplay gesture ownership
+
+Once a game is open, the discovery grammar is suspended.
+
+The game may use the full practical input vocabulary it needs:
+
+- vertical swipe;
+- horizontal swipe;
+- drag;
+- hold;
+- wheel/trackpad when relevant;
+- pointer capture on local interaction surfaces;
+- keyboard controls.
+
+There is **no longer a permanent bottom Core swipe gutter whose purpose is to leave the game**.
+
+The player exits active gameplay using the explicit Core **close-box / return-to-cover** control defined in `docs/GAMEPLAY_SHELL.md`.
+
+This change exists specifically so games can reclaim almost the whole viewport and use gestures without fighting the old vertical-feed escape rule.
+
+---
+
+## 3. Close-box control is the guaranteed escape path
+
+Core must provide a small, always reachable control while gameplay is active.
+
+Activating it:
+
+1. exits/freezes the current session cleanly;
+2. reverses the box-opening metaphor;
+3. returns to the same game's cover;
+4. restores cover discovery gestures.
+
+Do not use an invisible edge gesture as the only exit mechanism.
+
+Do not jump to another game when closing.
+
+---
+
+## 4. Keyboard ownership
+
+Keyboard gameplay controls belong to the active game.
+
+Core must not intercept common gameplay keys while a game is active, including:
 
 - ArrowUp / ArrowDown / ArrowLeft / ArrowRight;
 - Space;
@@ -29,69 +79,66 @@ Core must not use common gameplay keys such as:
 - WASD / ZQSD;
 - letter keys commonly used for actions.
 
-On desktop, changing games should use mouse wheel / trackpad scrolling or pointer/touch-style feed gestures, not gameplay keys.
+Desktop cover browsing may use wheel/trackpad/pointer navigation rather than consuming these keys.
 
-A game may therefore safely use arrow keys for movement, soft drop, aiming, rotation or any other mechanic without accidentally changing the active MiniFugg.
+A dedicated `Escape` shortcut may later mirror the close-box button if Core adopts it globally, but this is optional and must not replace the visible control.
 
-## `touch-action` rule
+---
 
-Never put this on the root/fullscreen game container:
+## 5. `touch-action` rules
 
-```css
-.game-root {
-  touch-action: none;
-}
-```
+The old requirement to preserve `pan-y` on every fullscreen game root is removed.
 
-That disables the vertical feed gesture when a touch begins on the game.
+During active gameplay, a game may use the touch-action behavior its mechanic genuinely requires.
 
-Default root behavior should preserve vertical panning:
+Still follow good input hygiene:
 
-```css
-.game-root {
-  touch-action: pan-y;
-}
-```
+- use `touch-action: none` only when the mechanic benefits from exclusive touch handling;
+- prefer `touch-action: manipulation` for simple tap buttons;
+- avoid fullscreen pointer interception unless the gameplay surface itself is truly fullscreen;
+- keep the Core close-box control outside game pointer interception.
 
-Use `touch-action: none` only on the smallest gameplay element that genuinely requires exclusive pointer control, for example:
+The key invariant is no longer “feed swipe must always escape”. The invariant is:
 
-- a draggable joystick;
-- a drawing canvas;
-- a specific drag surface;
-- a hold/aim control.
+> **The Core close-box control must always remain reachable.**
 
-Buttons that only tap/click should generally use `touch-action: manipulation`.
+---
 
-## Pointer capture
+## 6. Pointer capture
 
-`setPointerCapture()` is allowed only for a real drag/hold interaction and must always be released or cleaned up on:
+`setPointerCapture()` is allowed for real drag/hold interactions and must be released or cleaned up on:
 
 - `pointerup`;
 - `pointercancel`;
 - component cleanup / loss of active state when relevant.
 
-Do not capture pointers on a fullscreen wrapper merely to simplify controls.
+Do not accidentally capture events that belong to the Core close-box control.
 
-## Feed gesture priority
+---
 
-A game may own local horizontal drag or precise gestures in its gameplay region, but Core must always retain a practical escape path.
+## 7. End-of-run input
 
-When designing controls:
+After a run ends, Core may present replay/quit actions.
 
-1. keep essential controls above `--minifugg-core-bottom-reserved`;
-2. prefer local interactive zones rather than fullscreen pointer interception;
-3. preserve `pan-y` outside those zones;
-4. test that a user can swipe away from the game on a phone without hunting for a tiny gap;
-5. test on desktop that gameplay keyboard controls do not navigate the feed.
+During that end state:
 
-## Definition of done
+- replay may consume the game's normal play cost;
+- quit returns to the same cover;
+- gameplay input should no longer remain active underneath the end-state controls.
+
+Exact visual treatment is defined separately from the gesture contract.
+
+---
+
+## 8. Definition of done
 
 Before finishing a game, verify:
 
-- swipe up/down can leave the game on touch devices;
-- mouse wheel / trackpad can navigate the feed on desktop;
-- arrow keys and other gameplay keys remain available to the active game;
-- the bottom Core gutter is not covered by game UI;
-- no fullscreen `touch-action: none` remains;
+- cover gestures work before the game opens;
+- leftward play gesture opens the current game rather than navigating away;
+- once gameplay is active, gameplay gestures are not intercepted by cover/feed navigation;
+- the close-box control is always reachable and usable on phone and desktop;
+- close-box returns to the same cover;
+- keyboard gameplay controls remain available to the active game;
 - pointer capture cannot remain stuck after cancellation;
-- the shared action dock and score do not hide gameplay controls.
+- old reserved bottom-feed escape padding/gutters are not unnecessarily reducing gameplay space.

@@ -1,4 +1,5 @@
 import { brightnessCutoff, normalizeTrackTuning, type CompositionTrackTuning } from './audioLabTuning'
+import { isAudioLabEnhancedDrumTrack, scheduleAudioLabEnhancedDrum } from './audioLabDrumSynth'
 
 type Wave = 'square' | 'triangle' | 'sawtooth' | 'noise'
 type Note = [startBeat: number, durationBeats: number, midi: number, velocity: number]
@@ -193,7 +194,7 @@ export async function exportAudioLabWav(input: ExportInput) {
   const startBeat = Math.max(0, input.startBeat)
   const endBeat = Math.max(startBeat + .25, input.endBeat)
   const musicalSeconds = (endBeat - startBeat) * beatSeconds
-  const renderSeconds = musicalSeconds + .12
+  const renderSeconds = musicalSeconds + .35
   const frameCount = Math.max(1, Math.ceil(renderSeconds * SAMPLE_RATE))
   const context = new OfflineAudioContext(1, frameCount, SAMPLE_RATE)
 
@@ -201,7 +202,7 @@ export async function exportAudioLabWav(input: ExportInput) {
   const compressor = context.createDynamicsCompressor()
   master.gain.setValueAtTime(.72, 0)
   master.gain.setValueAtTime(.72, musicalSeconds)
-  master.gain.exponentialRampToValueAtTime(.0001, Math.min(renderSeconds, musicalSeconds + .08))
+  master.gain.exponentialRampToValueAtTime(.0001, Math.min(renderSeconds, musicalSeconds + .25))
   compressor.threshold.value = -15
   compressor.knee.value = 8
   compressor.ratio.value = 5
@@ -223,7 +224,20 @@ export async function exportAudioLabWav(input: ExportInput) {
     trackGain.connect(trackFilter).connect(master)
 
     track.notes.forEach((note) => {
-      if (track.wave === 'noise') {
+      if (note[0] < startBeat || note[0] >= endBeat) return
+      if (isAudioLabEnhancedDrumTrack(track.id)) {
+        scheduleAudioLabEnhancedDrum({
+          context,
+          output: trackGain,
+          noise,
+          trackId: track.id,
+          midi: note[2],
+          velocity: note[3],
+          trackGain: track.gain,
+          start: (note[0] - startBeat) * beatSeconds,
+          durationScale: tuning.noteLengthPercent / 100,
+        })
+      } else if (track.wave === 'noise') {
         scheduleNoise(context, trackGain, noise, track, note, startBeat, endBeat, beatSeconds, tuning.noteLengthPercent)
       } else {
         scheduleTone(context, trackGain, track, note, startBeat, endBeat, beatSeconds, tuning.transposeSemitones, tuning.noteLengthPercent)

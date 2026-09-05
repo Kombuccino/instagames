@@ -8,13 +8,13 @@ Read together with `docs/DISCOVERY_NAVIGATION.md` for how coin state affects cov
 
 MiniFugg is an arcade platform, not a conventional mobile F2P economy.
 
-- **Free access:** every player receives **20 renewable coins per day**.
+- **Free access:** every player receives **40 renewable coins per day**.
 - **Play cost depends on curation status:** Fugg = 2 coins, Bêta = 1 coin, Caca = free.
 - **Coins launch/relaunch games; they do not buy power, levels or gameplay advantages.**
 - **Main coin display is unified:** the UI shows one total coin number, even though Core internally tracks renewable daily coins separately from durable coins.
 - **Durable coins:** purchased, gifted or otherwise permanent coins never expire.
 - **Spend order:** use renewable daily coins first, then durable coins.
-- **Daily refresh:** the renewable portion returns to 20 each day; unused renewable coins do not stack indefinitely.
+- **Daily refresh:** the renewable portion returns to 40 each day; unused renewable coins do not stack indefinitely.
 - **Occasional free coins:** MiniFugg may sometimes give or reveal bonus coins as small surprises.
 - **Lifetime / Free Play:** a one-time purchase removes the coin limit for MiniFugg games forever.
 - **Founder pricing:** Lifetime starts at **€9.99 until MiniFugg reaches 50 games**, then rises to **€12.99**. Later increases may continue gradually toward a soft ceiling around **€15** as the catalog grows.
@@ -49,7 +49,7 @@ Do not turn MiniFugg coins into a generic premium currency for skins, power, upg
 
 Core must keep at least two internal balances:
 
-1. `dailyCoins`: renewable allowance, maximum 20 after the daily refresh.
+1. `dailyCoins`: renewable allowance, maximum 40 after the daily refresh.
 2. `durableCoins`: purchased, gifted or permanent bonus coins.
 
 The player-facing default balance is:
@@ -66,9 +66,9 @@ When a paid play is started:
 4. if the combined balance is insufficient, present the out-of-coins / Free Play flow;
 5. Caca games with a 0-coin cost never debit the balance.
 
-At the daily refresh, `dailyCoins` returns to 20. `durableCoins` is unchanged.
+At the daily refresh, `dailyCoins` returns to 40. `durableCoins` is unchanged.
 
-Example accounting: a player with 500 durable coins begins a refreshed day with a displayed total of 520. Paid plays consume from the 20 renewable coins first, then from the durable balance. If 480 durable coins remain at the next daily refresh, the displayed total becomes 500.
+Example accounting: a player with 500 durable coins begins a refreshed day with a displayed total of 540. Paid plays consume from the 40 renewable coins first, then from the durable balance. If 480 durable coins remain at the next daily refresh, the displayed total becomes 520.
 
 ## 4. Balance UI
 
@@ -137,7 +137,7 @@ These rewards should:
 
 - €0
 - full catalog discovery;
-- 20 renewable coins per day;
+- 40 renewable coins per day;
 - Fugg plays cost 2 coins;
 - Bêta plays cost 1 coin;
 - Caca plays are free;

@@ -1,3 +1,5 @@
+import { bubbleTeaSparkle, bubbleTeaTrackIds, BUBBLE_TEA_BPM, BUBBLE_TEA_LOOP_BEATS } from './bubbleTeaSparkle'
+import { dinoLavaUrgency, dinoLavaTrackIds, DINO_LAVA_BPM, DINO_LAVA_LOOP_BEATS } from './dinoLavaUrgency'
 import { primeCascadeDrumRail, primeCascadeDrumRailTrackIds } from './primeCascadeDrumRail'
 
 type Note = [startBeat: number, durationBeats: number, midi: number, velocity: number]
@@ -103,7 +105,6 @@ function reactiveSource(): Track[] {
     const arpPattern = [0, 1, 2, 1, 0, 1, 3, 2, 0, 1, 2, 1, 3, 2, 1, 2]
     arpPattern.forEach((slot, index) => add(arp, start + index * .25, .18, chord[slot], index % 4 === 0 ? 50 : 39))
 
-    // Unambiguous foot pulse: kick / snare / kick / snare, every bar, every section.
     ;[0, 2].forEach((beat) => add(drums, start + beat, .14, 36, 112))
     ;[1, 3].forEach((beat) => add(drums, start + beat, .14, 38, 104))
 
@@ -165,8 +166,6 @@ function primeSource(): Track[] {
       add(bass, start + index * .5, .35, note, bit === 0 ? 84 : 60)
     }
 
-    // Keep the Euclidean flavour as secondary accents, but put an explicit
-    // four-beat spine underneath it so the player's foot never loses the bar.
     ;[0, 2].forEach((beat) => add(drums, start + beat, .11, 36, 106))
     ;[1, 3].forEach((beat) => add(drums, start + beat, .11, 38, 98))
     ;[1.5, 2.5].forEach((beat, index) => add(drums, start + beat, .065, index ? 38 : 36, 48))
@@ -218,58 +217,39 @@ function primeSource(): Track[] {
 
 function keepReactiveNote(trackId: string, mode: ArrangementMode, section: Section, beat: number, localBar: number) {
   if (trackId === 'L1_DRUM_CORE') return true
-
   if (trackId === 'L1_BASS_CORE') {
     if (mode === 'high' || mode === 'max') return isQuarter(beat)
     return true
   }
-
   if (trackId === 'L1_ARP_PULSE') {
     if (section === 'descent') return isQuarter(beat)
     if (mode === 'high' || mode === 'max') return isQuarter(beat)
     return true
   }
-
   if (trackId === 'L2_HATS_CLOCK') {
     if (section === 'intro' && localBar < 2) return false
     if (section === 'descent') return isOffbeatEighth(beat) && localBar % 2 === 0
     if (mode === 'high' || mode === 'max') return isOffbeatEighth(beat)
     return true
   }
-
-  if (trackId === 'L3_GHOST_DRUMS') {
-    return mode !== 'high' && mode !== 'max' && section !== 'intro' && section !== 'descent'
-  }
-
-  if (trackId === 'L4_BASS_SYNC') {
-    return section === 'rise' || section === 'refrain' || section === 'rebuild' || section === 'finale'
-  }
-
-  if (trackId === 'L5_SPARSE_HOOK') {
-    return section === 'refrain' || section === 'finale'
-  }
-
-  if (trackId === 'L6_DRIVE_DRUMS') {
-    return (mode === 'high' || mode === 'max') && (section === 'refrain' || section === 'finale')
-  }
-
+  if (trackId === 'L3_GHOST_DRUMS') return mode !== 'high' && mode !== 'max' && section !== 'intro' && section !== 'descent'
+  if (trackId === 'L4_BASS_SYNC') return section === 'rise' || section === 'refrain' || section === 'rebuild' || section === 'finale'
+  if (trackId === 'L5_SPARSE_HOOK') return section === 'refrain' || section === 'finale'
+  if (trackId === 'L6_DRIVE_DRUMS') return (mode === 'high' || mode === 'max') && (section === 'refrain' || section === 'finale')
   return true
 }
 
 function keepPrimeNote(trackId: string, mode: ArrangementMode, section: Section, beat: number, localBar: number) {
   if (trackId === 'L1_EUCLID_DRUM') return true
-
   if (trackId === 'L1_BINARY_BASS') {
     if (mode === 'high' || mode === 'max') return isQuarter(beat)
     return true
   }
-
   if (trackId === 'L1_OPERATOR_PULSE') {
     if (section === 'descent') return isQuarter(beat)
     if (mode === 'high' || mode === 'max') return isQuarter(beat)
     return true
   }
-
   if (trackId === 'L2_PRIME_HATS') {
     if (section === 'intro' && localBar < 2) return false
     if (section === 'descent') return false
@@ -279,46 +259,29 @@ function keepPrimeNote(trackId: string, mode: ArrangementMode, section: Section,
     }
     return true
   }
-
-  if (trackId === 'L3_FIB_RHYTHM') {
-    return mode !== 'high' && mode !== 'max' && section !== 'intro' && section !== 'descent'
-  }
-
-  if (trackId === 'L4_MODULO_BASS') {
-    return section === 'refrain' || section === 'rebuild' || section === 'finale'
-  }
-
-  if (trackId === 'L5_FIB_HOOK') {
-    return section === 'refrain' || section === 'finale'
-  }
-
-  if (trackId === 'L6_PRIME_DRIVE') {
-    return (mode === 'high' || mode === 'max') && (section === 'refrain' || section === 'finale')
-  }
-
+  if (trackId === 'L3_FIB_RHYTHM') return mode !== 'high' && mode !== 'max' && section !== 'intro' && section !== 'descent'
+  if (trackId === 'L4_MODULO_BASS') return section === 'refrain' || section === 'rebuild' || section === 'finale'
+  if (trackId === 'L5_FIB_HOOK') return section === 'refrain' || section === 'finale'
+  if (trackId === 'L6_PRIME_DRIVE') return (mode === 'high' || mode === 'max') && (section === 'refrain' || section === 'finale')
   return true
 }
 
 function longForm(source: Track[], family: Family, mode: ArrangementMode): Track[] {
   return source.map((sourceTrack) => {
     const notes: Note[] = []
-
     for (let cycle = 0; cycle < CYCLES; cycle += 1) {
       const section = sectionForCycle(cycle)
       const offset = cycle * CYCLE_BARS * 4
-
       sourceTrack.notes.forEach(([beat, duration, midi, velocity]) => {
         const localBar = Math.floor(beat / 4)
         const keep = family === 'reactive'
           ? keepReactiveNote(sourceTrack.id, mode, section, beat, localBar)
           : keepPrimeNote(sourceTrack.id, mode, section, beat, localBar)
         if (!keep) return
-
         const factor = sectionVelocity(section, sourceTrack.id)
         notes.push([beat + offset, duration, midi, clampVelocity(velocity * factor)])
       })
     }
-
     return track(sourceTrack.id, sourceTrack.wave, sourceTrack.gain, notes)
   })
 }
@@ -345,29 +308,17 @@ function primeMaxFootRail(): Track[] {
     const section = sectionForCycle(Math.floor(bar / CYCLE_BARS))
     const refrain = section === 'refrain' || section === 'finale'
     const descent = section === 'descent'
-
-    // Four real kicks per bar. Beat 1 is always the strongest event in the mix.
     const kickFactor = section === 'finale' ? 1.06 : section === 'refrain' ? 1.03 : descent ? .96 : 1
-    ;[126, 108, 116, 108].forEach((velocity, beat) => {
-      add(kick, start + beat, .16, 36, clampVelocity(velocity * kickFactor))
-    })
-
-    // Backbeat is intentionally lighter than every kick, so 2 and 4 never steal the pulse.
+    ;[126, 108, 116, 108].forEach((velocity, beat) => add(kick, start + beat, .16, 36, clampVelocity(velocity * kickFactor)))
     if (bar >= 2) {
       const snareVelocity = refrain ? 80 : descent ? 64 : 72
       ;[1, 3].forEach((beat) => add(snare, start + beat, .13, 38, snareVelocity))
     }
-
-    // One low line only: four readable quarter notes locked to the kick.
-    const bassPattern = descent
-      ? [root, root, root, root]
-      : [root, root, root + 7, root]
+    const bassPattern = descent ? [root, root, root, root] : [root, root, root + 7, root]
     bassPattern.forEach((midi, beat) => {
       const velocity = beat === 0 ? 98 : beat === 2 ? 84 : 74
       add(bass, start + beat, .72, midi, refrain ? velocity + 4 : velocity)
     })
-
-    // Offbeat propulsion enters gradually and disappears during the first half of the descent.
     let hatOffsets: number[] = []
     if (section === 'intro' && bar >= 4) hatOffsets = [1.5, 3.5]
     else if (section === 'rise' || section === 'refrain' || section === 'finale') hatOffsets = [.5, 1.5, 2.5, 3.5]
@@ -377,36 +328,21 @@ function primeMaxFootRail(): Track[] {
       hatOffsets = [.5, 1.5, 2.5, 3.5].slice(0, count)
     }
     hatOffsets.forEach((offset, index) => add(hats, start + offset, .065, 42, index === 0 ? 44 : 36))
-
-    // A repeatable two-bar phrase: six notes, identical rhythmic silhouette every time.
     if (refrain && bar % 2 === 0) {
       const chordA = CHORDS[bar % CYCLE_BARS]
       const chordB = CHORDS[(bar + 1) % CYCLE_BARS]
-      const phrase = [
-        chordA[0] + 5,
-        chordA[1] + 5,
-        chordA[2] + 3,
-        chordB[2] + 3,
-        chordB[1] + 5,
-        chordB[0] + 5,
-      ]
+      const phrase = [chordA[0] + 5, chordA[1] + 5, chordA[2] + 3, chordB[2] + 3, chordB[1] + 5, chordB[0] + 5]
       const offsets = [0, 1.5, 3, 4.5, 6, 7]
       const durations = [.9, .65, .8, .8, .65, .9]
-      phrase.forEach((midi, index) => {
-        add(hook, start + offsets[index], durations[index], midi, index === 0 ? 56 : index === 5 ? 52 : 46)
-      })
+      phrase.forEach((midi, index) => add(hook, start + offsets[index], durations[index], midi, index === 0 ? 56 : index === 5 ? 52 : 46))
     }
-
-    // Prime-number logic stays hidden in sparse offbeat accents, never in the core pulse.
     if ((section === 'rise' || section === 'rebuild' || section === 'finale') && bar % 2 === 1) {
       const primeOffsets = [.5, 1.5, 2.5, 3.5]
       const primeIndex = [2, 3, 5, 7, 11, 13][bar % 6]
       const offset = primeOffsets[(bar + primeIndex) % primeOffsets.length]
       add(primeAccents, start + offset, .055, 46, 34)
     }
-    if (bar % CYCLE_BARS === CYCLE_BARS - 1) {
-      add(primeAccents, start + 3.5, .07, 38, section === 'finale' ? 48 : 40)
-    }
+    if (bar % CYCLE_BARS === CYCLE_BARS - 1) add(primeAccents, start + 3.5, .07, 38, section === 'finale' ? 48 : 40)
   }
 
   return [
@@ -444,7 +380,7 @@ const prime6 = [...prime5, 'L6_PRIME_DRIVE']
 const primeMax = [...prime6, 'L2_PRIME_HATS']
 
 export const musicCatalog = {
-  version: 6,
+  version: 7,
   rule: 'Never delete a music proposal. Change its status to selected or archived.',
   compositions: [
     {
@@ -469,12 +405,7 @@ export const musicCatalog = {
         { label: '6', bpm: GAME_SYNC_BPMS[5], variant: 'HIGH', activeTracks: reactive6 },
         { label: 'MAX', bpm: GAME_SYNC_BPMS[6], variant: 'MAX', activeTracks: reactive6 },
       ],
-      variants: {
-        LOW: reactiveArrangement('low'),
-        MID: reactiveArrangement('mid'),
-        HIGH: reactiveArrangement('high'),
-        MAX: reactiveArrangement('max'),
-      },
+      variants: { LOW: reactiveArrangement('low'), MID: reactiveArrangement('mid'), HIGH: reactiveArrangement('high'), MAX: reactiveArrangement('max') },
     },
     {
       id: 'MF-MUS-0002',
@@ -498,12 +429,7 @@ export const musicCatalog = {
         { label: '6', bpm: GAME_SYNC_BPMS[5], variant: 'HIGH', activeTracks: prime6 },
         { label: 'MAX', bpm: GAME_SYNC_BPMS[6], variant: 'MAX', activeTracks: primeMax },
       ],
-      variants: {
-        LOW: primeArrangement('low'),
-        MID: primeArrangement('mid'),
-        HIGH: primeArrangement('high'),
-        MAX: primeArrangement('max'),
-      },
+      variants: { LOW: primeArrangement('low'), MID: primeArrangement('mid'), HIGH: primeArrangement('high'), MAX: primeArrangement('max') },
     },
     {
       id: 'MF-MUS-0003',
@@ -518,12 +444,8 @@ export const musicCatalog = {
       meter: '4/4',
       loopBeats: LOOP_BEATS,
       midiExports: ['MF-MUS-0003_PrimeCascade_RailMAX.mid'],
-      stages: [
-        { label: 'MAX', bpm: GAME_SYNC_BPMS[6], variant: 'A', activeTracks: primeMaxFootRailTracks },
-      ],
-      variants: {
-        A: primeMaxFootRail(),
-      },
+      stages: [{ label: 'MAX', bpm: GAME_SYNC_BPMS[6], variant: 'A', activeTracks: primeMaxFootRailTracks }],
+      variants: { A: primeMaxFootRail() },
     },
     {
       id: 'MF-MUS-0004',
@@ -538,12 +460,40 @@ export const musicCatalog = {
       meter: '4/4',
       loopBeats: LOOP_BEATS,
       midiExports: ['MF-MUS-0004_PrimeCascade_DrumRailMAX.mid'],
-      stages: [
-        { label: 'MAX', bpm: GAME_SYNC_BPMS[6], variant: 'A', activeTracks: [...primeCascadeDrumRailTrackIds] },
-      ],
-      variants: {
-        A: primeCascadeDrumRail(),
-      },
+      stages: [{ label: 'MAX', bpm: GAME_SYNC_BPMS[6], variant: 'A', activeTracks: [...primeCascadeDrumRailTrackIds] }],
+      variants: { A: primeCascadeDrumRail() },
+    },
+    {
+      id: 'MF-MUS-0005',
+      gameId: 'dino-destruction-concept',
+      gameTitle: 'Dino Destruction — concept',
+      name: 'Feet in Lava',
+      status: 'candidate',
+      createdAt: '2026-09-05',
+      summary: 'Urgence volcanique à 164 BPM : grosse caisse lourde, sub-basse en D, basse sale en contretemps, hats accélérés, stampede de toms et explosions qui envahissent le dernier quart.',
+      concept: ['dinosaur destruction', 'lava', 'heavy bass', 'explosions', 'percussion-led urgency'],
+      key: 'D minor',
+      meter: '4/4',
+      loopBeats: DINO_LAVA_LOOP_BEATS,
+      midiExports: ['MF-MUS-0005_FeetInLava.mid'],
+      stages: [{ label: 'LAVA', bpm: DINO_LAVA_BPM, variant: 'A', activeTracks: [...dinoLavaTrackIds] }],
+      variants: { A: dinoLavaUrgency() },
+    },
+    {
+      id: 'MF-MUS-0006',
+      gameId: 'bubble-tea-concept',
+      gameTitle: 'Bubble Tea — concept',
+      name: 'Pearl Pop Lounge',
+      status: 'candidate',
+      createdAt: '2026-09-05',
+      summary: 'Salon de thé pétillant à 94 BPM : basse ronde, accords maj7/min7, petit groove brossé, perles rebondissantes et bulles ascendantes qui réveillent le morceau sans casser le chill.',
+      concept: ['tea lounge', 'warm bass', 'maj7/min7', 'pearl bounce', 'sparkling bubble pops'],
+      key: 'C major / A minor',
+      meter: '4/4',
+      loopBeats: BUBBLE_TEA_LOOP_BEATS,
+      midiExports: ['MF-MUS-0006_PearlPopLounge.mid'],
+      stages: [{ label: 'CHILL', bpm: BUBBLE_TEA_BPM, variant: 'A', activeTracks: [...bubbleTeaTrackIds] }],
+      variants: { A: bubbleTeaSparkle() },
     },
   ],
 } as const

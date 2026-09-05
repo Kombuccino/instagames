@@ -28,6 +28,21 @@ const TRACK_LABELS: Record<string, string> = {
   MAX4_DRIVE_HATS: 'Charleston rapide 1/16',
   MAX4_TOM_FILLS: 'Fills de toms',
   MAX4_PRIME_ACCENTS: 'Accents ouverts discrets',
+  DINO_KICK_LAVA: 'Grosse caisse lave',
+  DINO_SNARE_CRACK: 'Caisse claire impact',
+  DINO_SUB_BASS: 'Sub-basse magma',
+  DINO_DIRT_BASS: 'Basse sale en contretemps',
+  DINO_DRIVE_HATS: 'Charleston urgence',
+  DINO_TOM_STAMPEDE: 'Toms stampede',
+  DINO_EXPLOSION_HITS: 'Explosions',
+  DINO_ALARM_STABS: 'Alarme deux notes',
+  BTEA_SOFT_KICK: 'Kick doux',
+  BTEA_BRUSH_SNARE: 'Snare brossée',
+  BTEA_WARM_BASS: 'Basse ronde',
+  BTEA_TEA_CHORDS: 'Accords salon de thé',
+  BTEA_PEARL_PLUCK: 'Perles rebondissantes',
+  BTEA_SHAKER: 'Shaker pétillant',
+  BTEA_BUBBLE_POP: 'Bulles pop',
 }
 
 export function musicTrackLabel(id: string, fallback = id) {

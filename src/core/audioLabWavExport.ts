@@ -19,7 +19,7 @@ type Stage = {
   activeTracks: string[]
 }
 
-type ExportInput = {
+export type AudioLabExportInput = {
   compositionId: string
   compositionName: string
   stage: Stage
@@ -31,7 +31,21 @@ type ExportInput = {
   scope: 'piece' | 'excerpt'
 }
 
+type LameEncoder = {
+  encodeBuffer(samples: Int16Array): Int8Array
+  flush(): Int8Array
+}
+
+type LameModule = {
+  Mp3Encoder?: new (channels: number, sampleRate: number, kbps: number) => LameEncoder
+  default?: {
+    Mp3Encoder?: new (channels: number, sampleRate: number, kbps: number) => LameEncoder
+  }
+}
+
 const SAMPLE_RATE = 44100
+const MP3_BITRATE_KBPS = 128
+const MP3_BLOCK_SIZE = 1152
 
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value))
@@ -128,68 +142,7 @@ function scheduleNoise(
   sourceNode.stop(start + duration + .02)
 }
 
-function writeAscii(view: DataView, offset: number, value: string) {
-  for (let index = 0; index < value.length; index += 1) view.setUint8(offset + index, value.charCodeAt(index))
-}
-
-function audioBufferToWav(buffer: AudioBuffer) {
-  const channelCount = buffer.numberOfChannels
-  const frameCount = buffer.length
-  const bytesPerSample = 2
-  const blockAlign = channelCount * bytesPerSample
-  const byteRate = buffer.sampleRate * blockAlign
-  const dataSize = frameCount * blockAlign
-  const arrayBuffer = new ArrayBuffer(44 + dataSize)
-  const view = new DataView(arrayBuffer)
-
-  writeAscii(view, 0, 'RIFF')
-  view.setUint32(4, 36 + dataSize, true)
-  writeAscii(view, 8, 'WAVE')
-  writeAscii(view, 12, 'fmt ')
-  view.setUint32(16, 16, true)
-  view.setUint16(20, 1, true)
-  view.setUint16(22, channelCount, true)
-  view.setUint32(24, buffer.sampleRate, true)
-  view.setUint32(28, byteRate, true)
-  view.setUint16(32, blockAlign, true)
-  view.setUint16(34, 16, true)
-  writeAscii(view, 36, 'data')
-  view.setUint32(40, dataSize, true)
-
-  const channels = Array.from({ length: channelCount }, (_, index) => buffer.getChannelData(index))
-  let offset = 44
-  for (let frame = 0; frame < frameCount; frame += 1) {
-    for (let channel = 0; channel < channelCount; channel += 1) {
-      const sample = clamp(channels[channel][frame], -1, 1)
-      view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true)
-      offset += 2
-    }
-  }
-
-  return new Blob([arrayBuffer], { type: 'audio/wav' })
-}
-
-function safePart(value: string) {
-  return value
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-zA-Z0-9_-]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
-
-function downloadBlob(blob: Blob, filename: string) {
-  const url = URL.createObjectURL(blob)
-  const anchor = document.createElement('a')
-  anchor.href = url
-  anchor.download = filename
-  anchor.rel = 'noopener'
-  document.body.appendChild(anchor)
-  anchor.click()
-  anchor.remove()
-  window.setTimeout(() => URL.revokeObjectURL(url), 30000)
-}
-
-export async function exportAudioLabWav(input: ExportInput) {
+async function renderAudioLab(input: AudioLabExportInput) {
   const beatSeconds = 60 / input.stage.bpm
   const startBeat = Math.max(0, input.startBeat)
   const endBeat = Math.max(startBeat + .25, input.endBeat)
@@ -245,10 +198,123 @@ export async function exportAudioLabWav(input: ExportInput) {
     })
   })
 
-  const rendered = await context.startRendering()
-  const wav = audioBufferToWav(rendered)
+  return {
+    buffer: await context.startRendering(),
+    startBeat,
+    endBeat,
+  }
+}
+
+function writeAscii(view: DataView, offset: number, value: string) {
+  for (let index = 0; index < value.length; index += 1) view.setUint8(offset + index, value.charCodeAt(index))
+}
+
+function audioBufferToWav(buffer: AudioBuffer) {
+  const channelCount = buffer.numberOfChannels
+  const frameCount = buffer.length
+  const bytesPerSample = 2
+  const blockAlign = channelCount * bytesPerSample
+  const byteRate = buffer.sampleRate * blockAlign
+  const dataSize = frameCount * blockAlign
+  const arrayBuffer = new ArrayBuffer(44 + dataSize)
+  const view = new DataView(arrayBuffer)
+
+  writeAscii(view, 0, 'RIFF')
+  view.setUint32(4, 36 + dataSize, true)
+  writeAscii(view, 8, 'WAVE')
+  writeAscii(view, 12, 'fmt ')
+  view.setUint32(16, 16, true)
+  view.setUint16(20, 1, true)
+  view.setUint16(22, channelCount, true)
+  view.setUint32(24, buffer.sampleRate, true)
+  view.setUint32(28, byteRate, true)
+  view.setUint16(32, blockAlign, true)
+  view.setUint16(34, 16, true)
+  writeAscii(view, 36, 'data')
+  view.setUint32(40, dataSize, true)
+
+  const channels = Array.from({ length: channelCount }, (_, index) => buffer.getChannelData(index))
+  let offset = 44
+  for (let frame = 0; frame < frameCount; frame += 1) {
+    for (let channel = 0; channel < channelCount; channel += 1) {
+      const sample = clamp(channels[channel][frame], -1, 1)
+      view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true)
+      offset += 2
+    }
+  }
+
+  return new Blob([arrayBuffer], { type: 'audio/wav' })
+}
+
+function floatChannelToInt16(channel: Float32Array) {
+  const samples = new Int16Array(channel.length)
+  for (let index = 0; index < channel.length; index += 1) {
+    const sample = clamp(channel[index], -1, 1)
+    samples[index] = sample < 0 ? Math.round(sample * 0x8000) : Math.round(sample * 0x7fff)
+  }
+  return samples
+}
+
+function copyEncodedBytes(bytes: Int8Array) {
+  const copy = new Uint8Array(bytes.length)
+  copy.set(bytes)
+  return copy.buffer
+}
+
+async function audioBufferToMp3(buffer: AudioBuffer) {
+  const lameModule = await import('@breezystack/lamejs') as unknown as LameModule
+  const Mp3Encoder = lameModule.Mp3Encoder ?? lameModule.default?.Mp3Encoder
+  if (!Mp3Encoder) throw new Error('MP3 encoder unavailable')
+
+  const encoder = new Mp3Encoder(1, buffer.sampleRate, MP3_BITRATE_KBPS)
+  const samples = floatChannelToInt16(buffer.getChannelData(0))
+  const chunks: BlobPart[] = []
+
+  for (let offset = 0; offset < samples.length; offset += MP3_BLOCK_SIZE) {
+    const encoded = encoder.encodeBuffer(samples.subarray(offset, offset + MP3_BLOCK_SIZE))
+    if (encoded.length > 0) chunks.push(copyEncodedBytes(encoded))
+  }
+
+  const tail = encoder.flush()
+  if (tail.length > 0) chunks.push(copyEncodedBytes(tail))
+  return new Blob(chunks, { type: 'audio/mpeg' })
+}
+
+function safePart(value: string) {
+  return value
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9_-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+function filenameFor(input: AudioLabExportInput, extension: 'wav' | 'mp3', startBeat: number, endBeat: number) {
   const rangePart = input.scope === 'excerpt' ? `_beats-${startBeat.toFixed(2)}-${endBeat.toFixed(2)}` : ''
-  const filename = `${safePart(input.compositionId)}_${safePart(input.compositionName)}_stage-${safePart(input.stage.label)}_${input.stage.bpm}bpm_${input.scope}${rangePart}.wav`
-  downloadBlob(wav, filename)
+  return `${safePart(input.compositionId)}_${safePart(input.compositionName)}_stage-${safePart(input.stage.label)}_${input.stage.bpm}bpm_${input.scope}${rangePart}.${extension}`
+}
+
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob)
+  const anchor = document.createElement('a')
+  anchor.href = url
+  anchor.download = filename
+  anchor.rel = 'noopener'
+  document.body.appendChild(anchor)
+  anchor.click()
+  anchor.remove()
+  window.setTimeout(() => URL.revokeObjectURL(url), 30000)
+}
+
+export async function exportAudioLabWav(input: AudioLabExportInput) {
+  const rendered = await renderAudioLab(input)
+  const filename = filenameFor(input, 'wav', rendered.startBeat, rendered.endBeat)
+  downloadBlob(audioBufferToWav(rendered.buffer), filename)
+  return filename
+}
+
+export async function exportAudioLabMp3(input: AudioLabExportInput) {
+  const rendered = await renderAudioLab(input)
+  const filename = filenameFor(input, 'mp3', rendered.startBeat, rendered.endBeat)
+  downloadBlob(await audioBufferToMp3(rendered.buffer), filename)
   return filename
 }

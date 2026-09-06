@@ -21,6 +21,9 @@ jobs:
         with:
           node-version: 22
 
+      - name: Repair temporary patch script
+        run: python ops/linefugg-polish/fix.py
+
       - name: Apply deterministic patch
         run: python ops/linefugg-polish/apply.py
 

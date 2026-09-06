@@ -9,6 +9,7 @@ import {
 } from 'react'
 import { FuggyEyes } from './graphics/FuggyEyes'
 import { PerspectiveTextureCanvas } from './graphics/PerspectiveTextureCanvas'
+import { PhoneWelcomeScreen } from './graphics/PhoneWelcomeScreen'
 import { ProjectiveDomSurface } from './graphics/ProjectiveDomSurface'
 import { createPlatformEntryMusic, type PlatformEntryMusicController } from './platformEntryMusic'
 import './platformEntryScene.css'
@@ -31,7 +32,6 @@ const SWIPE_THRESHOLD_PX = 42
 const ASSET_ROOT = '/assets/imported/platform/entry-scenes/metro-moment-v1'
 const WAGON_ART = `${ASSET_ROOT}/wagon-reader-fuggy.png`
 const CITY_ART = `${ASSET_ROOT}/city-loop-sunset.png`
-const LOGO_ART = '/assets/imported/platform/logo/minifugg-logo-canonical-2026-09-06.png'
 const ARM_VARIANTS = Array.from({ length: 8 }, (_, index) => `${ASSET_ROOT}/arms/arm-${String(index + 1).padStart(2, '0')}.png`)
 const ARM_STORAGE_KEY = 'minifugg:entry-arm:v1'
 
@@ -216,11 +216,10 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
             className="mf-entry-scene__phone-projective"
             planeClassName="mf-entry-scene__phone-ui"
             quad={PHONE_SCREEN_QUAD}
+            logicalWidth={56.28}
+            logicalHeight={100}
           >
-            <div className="mf-entry-scene__phone-content">
-              <img className="mf-entry-scene__phone-logo" src={LOGO_ART} alt="" draggable={false} />
-              <strong>Tap to play</strong>
-            </div>
+            <PhoneWelcomeScreen paused={entering} />
           </ProjectiveDomSurface>
         </div>
 

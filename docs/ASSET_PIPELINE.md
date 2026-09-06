@@ -2,6 +2,8 @@
 
 This file is the canonical contract for moving image assets created or prepared in ChatGPT into MiniFugg. Any MiniFugg conversation that creates or integrates images must read and follow it.
 
+This document governs **transport, storage and verification of image bytes**. When an approved game-art mockup/DA must be converted into actual runtime components, also follow `docs/GAME_ART_PRODUCTION_PIPELINE.md`; a flattened concept board is not automatically a valid runtime asset.
+
 ## Source folder
 
 Use the private Google Drive folder `Fugg` (ID `1o7YIB4qEPYNJvOI9yPr_6tUPEW3dDF0H`). Never make this folder public.
@@ -78,13 +80,14 @@ The Google identity is restricted to immutable GitHub repository ID `1352769382`
 When an image should enter MiniFugg:
 
 1. Read this file before deciding where to put the asset.
-2. Generate/finalize the image and give it its production name.
-3. Upload the final file with the connected Google Drive into `Fugg/<game-id>/...` (or a documented Core folder for platform-wide artwork).
-4. Do not use public Drive links, FTP, manual binary GitHub uploads, base64 chunking or runtime Drive hotlinks when this pipeline is available.
-5. Wait for or verify the GitHub Actions sync.
-6. Verify the file exists under the mirrored `public/assets/imported/...` path before changing code to reference it.
-7. Reference only `/assets/imported/...` from application code.
-8. During migrations, create/verify the new mirrored path before changing code references; keep the old repository path temporarily if needed, then delete it only after confirming nothing references it.
+2. If this image is derived from an approved gameplay DA/mockup, first perform the decomposition/state ownership pass from `docs/GAME_ART_PRODUCTION_PIPELINE.md`.
+3. Generate/finalize the image and give it its production name.
+4. Upload the final file with the connected Google Drive into `Fugg/<game-id>/...` (or a documented Core folder for platform-wide artwork).
+5. Do not use public Drive links, FTP, manual binary GitHub uploads, base64 chunking or runtime Drive hotlinks when this pipeline is available.
+6. Wait for or verify the GitHub Actions sync.
+7. Verify the file exists under the mirrored `public/assets/imported/...` path before changing code to reference it.
+8. Reference only `/assets/imported/...` from application code.
+9. During migrations, create/verify the new mirrored path before changing code references; keep the old repository path temporarily if needed, then delete it only after confirming nothing references it.
 
 ## Security boundaries
 

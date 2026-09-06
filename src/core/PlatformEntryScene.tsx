@@ -132,14 +132,15 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
             className="mf-entry-scene__city-canvas"
             paused={entering}
             speed={116}
-            slices={240}
-            nearX={-0.12}
-            farX={1.01}
-            nearTop={-0.28}
-            nearBottom={0.68}
-            farTop={0.34}
-            farBottom={0.40}
-            xCurve={3.1}
+            slices={260}
+            nearX={-0.16}
+            farX={1.02}
+            nearTop={-0.34}
+            nearBottom={0.78}
+            farTop={0.365}
+            farBottom={0.425}
+            xCurve={3.6}
+            depthCurve={1.18}
           />
         </div>
 

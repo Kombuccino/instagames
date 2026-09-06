@@ -1,16 +1,28 @@
-# Instagames
+# MiniFugg / Instagames
 
-A vertical, roulette-driven feed of tiny games designed to be playable instantly.
+A mobile-first catalog/feed of small authored games designed to start instantly and remain portable across web, mobile and desktop/store shells.
 
-## Core principles
+## Canonical architecture
 
-- Swipe up/down to jump into another game.
-- The feed order is shuffled in batches, with no immediate repeat between batches.
-- Only the active game and its immediate neighbours are mounted.
-- Games talk to the shell through a tiny runtime contract (`GameComponentProps`).
-- Real games are built separately under the project's **10 prompts per game** rule.
+- Core UI/platform: React + TypeScript + HTML/CSS.
+- 2D games and advanced animated covers: Phaser 4.
+- Genuine 3D low-poly/blockout games: Three.js.
+- Fixed logical game stage + uniform scaling across devices.
+- Shared session contract between game and Core.
+- Server-authoritative online economy/official ladders.
 
-The three entries currently in `src/games/demo` are runtime smoke tests, not official 10-prompt games.
+Read first:
+
+- `AGENTS.md`
+- `GAME_DEV_SPEC.md`
+- `docs/GAME_ENGINE_ARCHITECTURE.md`
+- `docs/GAME_MIGRATION_PLAN.md`
+
+## Existing catalog migration
+
+All games that predate the engine standard are currently marked `legacy-dom` and locked for migration in `src/core/gameRegistry.tsx`.
+
+Do not extend their old DOM/CSS/Canvas rendering. Migrate them to Phaser as part of the next substantive work on each game. All current covers are also marked **A METTRE A JOUR**.
 
 ## Local development
 
@@ -26,33 +38,30 @@ npm run typecheck
 npm run build
 ```
 
-## Add a game
+## New game
 
-Create a React component that accepts `GameComponentProps`:
+New real games follow the project's **10 prompts per game** rule.
 
-```tsx
-import type { GameComponentProps } from '../../core/types'
+2D games start on Phaser. 3D is Three.js only when the mechanic is intentionally 3D. The React component registered with Core acts as the game host/lifecycle bridge rather than rebuilding the game scene with responsive DOM layout.
 
-export function MyGame({ active, seed, session }: GameComponentProps) {
-  // Pause loops/audio when active === false.
-  // Use seed for deterministic per-run variation if useful.
-  // Report the current score with session.setScore(...).
-  return <div>...</div>
-}
-```
+Every game declares:
 
-Then register it in `src/core/gameRegistry.tsx`:
+- `orientation`;
+- `runtime`;
+- fixed `logicalViewport`;
+- `migration` state;
+- shared lifecycle/session behavior.
 
-```tsx
-{
-  id: 'my-game',
-  title: 'My Game',
-  description: 'One-line gameplay hook',
-  author: 'creator',
-  component: MyGame,
-}
-```
+Production images use `docs/ASSET_PIPELINE.md`.
+
+## Distribution targets
+
+- Web/PWA: canonical Vite build.
+- Android/iOS: Capacitor target shell.
+- Desktop/Steam: Electron target shell.
+
+Games never import store/OS SDKs directly; Core adapters own platform-specific integration.
 
 ## Deployment
 
-A multi-stage `Dockerfile` builds the Vite app and serves it from Nginx on port 80. Dokploy can deploy the repository directly from `main` using that Dockerfile.
+The multi-stage `Dockerfile` builds the Vite app and serves it from Nginx on port 80. Dokploy deploys the repository from `main`.

@@ -210,6 +210,9 @@ export function createPlatformEntryMusic(sceneStartedAtMs: number): PlatformEntr
       return false
     }
     if (audioContext.state !== 'running') return false
+    // Mount autoplay and a near-simultaneous first gesture can both be waiting
+    // on resume(). Only the first successful path is allowed to schedule music.
+    if (playing) return true
 
     playing = true
     nextBeat = sceneBeatNow()

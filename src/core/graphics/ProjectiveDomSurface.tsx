@@ -8,13 +8,16 @@ type ProjectiveDomSurfaceProps = {
   quad: readonly [Point, Point, Point, Point]
   children: ReactNode
   logicalSize?: number
+  logicalWidth?: number
+  logicalHeight?: number
 }
 
-function unitSquareToQuadMatrix(
+function unitRectangleToQuadMatrix(
   width: number,
   height: number,
   quad: readonly [Point, Point, Point, Point],
-  logicalSize: number,
+  logicalWidth: number,
+  logicalHeight: number,
 ) {
   const [[tlx, tly], [trx, try_], [brx, bry], [blx, bly]] = quad.map(([x, y]) => [x * width, y * height]) as unknown as [Point, Point, Point, Point]
 
@@ -53,13 +56,14 @@ function unitSquareToQuadMatrix(
     e = bly - tly + h * bly
   }
 
-  const inv = 1 / logicalSize
-  a *= inv
-  b *= inv
-  d *= inv
-  e *= inv
-  g *= inv
-  h *= inv
+  const invX = 1 / logicalWidth
+  const invY = 1 / logicalHeight
+  a *= invX
+  d *= invX
+  g *= invX
+  b *= invY
+  e *= invY
+  h *= invY
 
   return `matrix3d(${a},${d},0,${g},${b},${e},0,${h},0,0,1,0,${c},${f},0,1)`
 }
@@ -70,9 +74,13 @@ export function ProjectiveDomSurface({
   quad,
   children,
   logicalSize = 100,
+  logicalWidth,
+  logicalHeight,
 }: ProjectiveDomSurfaceProps) {
   const rootRef = useRef<HTMLDivElement>(null)
   const planeRef = useRef<HTMLDivElement>(null)
+  const planeWidth = logicalWidth ?? logicalSize
+  const planeHeight = logicalHeight ?? logicalSize
 
   useLayoutEffect(() => {
     const root = rootRef.current
@@ -90,8 +98,8 @@ export function ProjectiveDomSurface({
        */
       const width = root.clientWidth || root.offsetWidth
       const height = root.clientHeight || root.offsetHeight
-      if (width <= 0 || height <= 0) return
-      plane.style.transform = unitSquareToQuadMatrix(width, height, quad, logicalSize)
+      if (width <= 0 || height <= 0 || planeWidth <= 0 || planeHeight <= 0) return
+      plane.style.transform = unitRectangleToQuadMatrix(width, height, quad, planeWidth, planeHeight)
     }
 
     const observer = new ResizeObserver(update)
@@ -99,7 +107,7 @@ export function ProjectiveDomSurface({
     update()
 
     return () => observer.disconnect()
-  }, [quad, logicalSize])
+  }, [quad, planeWidth, planeHeight])
 
   return (
     <div ref={rootRef} className={className} aria-hidden="true">
@@ -110,8 +118,8 @@ export function ProjectiveDomSurface({
           position: 'absolute',
           left: 0,
           top: 0,
-          width: logicalSize,
-          height: logicalSize,
+          width: planeWidth,
+          height: planeHeight,
           transformOrigin: '0 0',
         }}
       >

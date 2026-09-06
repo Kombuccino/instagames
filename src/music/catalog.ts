@@ -12,7 +12,7 @@ import {
 
 export const musicCatalog = {
   ...coreCatalog,
-  version: 12,
+  version: 13,
   compositions: [
     ...coreCatalog.compositions,
     {
@@ -36,7 +36,7 @@ export const musicCatalog = {
       gameId: 'linefugg',
       gameTitle: 'LineFugg',
       name: 'Quick Sum Bounce',
-      status: 'candidate',
+      status: 'selected',
       createdAt: '2026-09-06',
       summary: 'Alternative joueuse réduite à son meilleur noyau : kick rond, rim-clap, ticks de contretemps et basse rebondissante sur Am–F–C–G / Am–F–Dm–E. Les deux voix mélodiques rejetées ont été retirées du mix canonique.',
       concept: ['quick mental calculation', 'syncopated four-track groove', 'percussion and bass only', 'playful not childish', 'short-session loop'],

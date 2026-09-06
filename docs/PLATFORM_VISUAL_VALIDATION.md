@@ -22,16 +22,17 @@ Do not return to generic app-store feeds, large top/bottom Core bars, photoreali
 
 ## Logo / mascot status
 
-The user will reconstruct the MiniFugg logo **manually in vector form** from the previously approved earlier Variation 2 direction.
+The MiniFugg wordmark visual is now **locked**. The canonical visual reference is the exact user-approved PNG registered in `docs/BRAND_ASSETS.md`:
 
-Do not spend further design time asking image generation to reinterpret or refine the wordmark. Treat the exact logo geometry as **pending user-supplied vector master**.
+`Fugg/platform/logo/minifugg-logo-canonical-2026-09-06.png`
 
-When the user supplies the vector asset:
+Expected runtime mirror after asset sync:
 
-- preserve it exactly unless explicitly asked to modify it;
-- create required runtime/export variants from that master;
-- integrate it into Core identity, favicon/app-icon/lockups as needed;
-- use the normal asset pipeline for production files.
+`/assets/imported/platform/logo/minifugg-logo-canonical-2026-09-06.png`
+
+Its geometry, proportions, custom letter shapes, spacing and red triangular accent are the reference. Do not ask image generation to reinterpret, improve, redraw or replace the wordmark, and do not substitute a similar typeface.
+
+A high-fidelity SVG trace is archived for evaluation, but it does **not** supersede the canonical PNG until the user explicitly validates that vector file as the master. Any future vector, monochrome, favicon, app-icon or lockup derivative must be checked against the canonical visual reference and registered in `docs/BRAND_ASSETS.md`.
 
 Mascot name: **Fuggy**.
 
@@ -157,7 +158,7 @@ Current direction:
 
 **Macro platform direction: validated.**
 
-**Logo: handed off to the user for vector reconstruction; do not regenerate.**
+**Logo visual: locked to the canonical user-approved PNG in `docs/BRAND_ASSETS.md`; do not regenerate or substitute it. Vector master still requires explicit validation.**
 
 **Cover UI: validated.**
 

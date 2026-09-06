@@ -17,6 +17,14 @@ export const DEFAULT_TRACK_TUNING: TrackTuning = {
 }
 
 const STORAGE_PREFIX = 'minifugg:audio-lab:track-tuning:v1:'
+const CANONICAL_REVISION_PREFIX = 'minifugg:audio-lab:canonical-revision:v1:'
+
+// When a reviewed local draft is explicitly applied to the repository, clear
+// that same stale draft once so the browser does not multiply it a second time.
+// The marker preserves every later edit the user makes after the deployment.
+const APPLIED_CANONICAL_REVISIONS: Record<string, string> = {
+  'MF-MUS-0007': 'reviewed-mix-2026-09-06-v1',
+}
 
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value))
@@ -45,9 +53,21 @@ function storageKey(compositionId: string) {
   return `${STORAGE_PREFIX}${compositionId}`
 }
 
+function migrateAppliedCanonicalDraft(compositionId: string) {
+  const revision = APPLIED_CANONICAL_REVISIONS[compositionId]
+  if (!revision || typeof window === 'undefined') return
+
+  const markerKey = `${CANONICAL_REVISION_PREFIX}${compositionId}`
+  if (window.localStorage.getItem(markerKey) === revision) return
+
+  window.localStorage.removeItem(storageKey(compositionId))
+  window.localStorage.setItem(markerKey, revision)
+}
+
 export function readAudioLabTuning(compositionId: string): CompositionTrackTuning {
   if (typeof window === 'undefined') return {}
   try {
+    migrateAppliedCanonicalDraft(compositionId)
     const raw = window.localStorage.getItem(storageKey(compositionId))
     if (!raw) return {}
     const parsed = JSON.parse(raw) as Record<string, Partial<TrackTuning>>

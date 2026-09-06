@@ -6,111 +6,131 @@
   transition: opacity 620ms ease;
 }
 
-.mf-fuggy-eyes__pair {
+.mf-fuggy-eyes__svg {
   position: absolute;
   inset: 0;
   display: block;
-  animation: mf-fuggy-eye-gaze 17.6s ease-in-out infinite;
-}
-
-.mf-fuggy-eyes__socket {
-  position: absolute;
-  width: 15%;
-  height: 42%;
-  transform: translate(-50%, -50%);
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-  background: linear-gradient(145deg, #25272a 0%, #1e1f21 48%, #17191b 100%);
-}
-
-.mf-fuggy-eyes__socket--left {
-  left: 32.4%;
-  top: 53.4%;
-}
-
-.mf-fuggy-eyes__socket--right {
-  left: 84.3%;
-  top: 39%;
-}
-
-.mf-fuggy-eyes__mark {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 54%;
-  height: 66%;
-  transform: translate(-50%, -50%);
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-  background: #fff;
-  transform-origin: 50% 50%;
-}
-
-.mf-fuggy-eyes__mark--left {
-  animation: mf-fuggy-eye-left 17.6s ease-in-out infinite;
-}
-
-.mf-fuggy-eyes__mark--right {
-  animation: mf-fuggy-eye-right 17.6s ease-in-out infinite;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
 /*
- * Fuggy stays within the canonical mask + white-diamond grammar: neutral,
- * blink, curious glances, sleepy, awake/surprised and happy squints.
+ * Cover only the two baked white diamonds from the wagon raster. Keeping these
+ * patches local preserves the original faceted visor shading instead of
+ * replacing the whole mask with a flat black plate.
  */
-@keyframes mf-fuggy-eye-gaze {
-  0%, 18%, 27%, 43%, 50%, 66%, 73%, 88%, 100% { transform: translate3d(0,0,0); }
-  31%, 39% { transform: translate3d(-4.5%,1.5%,0); }
-  55%, 63% { transform: translate3d(0,5%,0); }
-  77%, 84% { transform: translate3d(4.5%,-1.5%,0); }
+.mf-fuggy-eyes__mask {
+  fill: #1e1f21;
 }
 
-@keyframes mf-fuggy-eye-left {
-  0%, 17%, 22%, 43%, 49%, 66%, 72%, 86%, 94%, 100% {
-    transform: translate(-50%, -50%) scale(1,1) rotate(0deg);
-  }
-  19%, 20% {
-    transform: translate(-50%, -50%) scale(1.08,.08) rotate(0deg);
-  }
-  54%, 61% {
-    transform: translate(-50%, -42%) scale(1.02,.34) rotate(-4deg);
-  }
-  67%, 70% {
-    transform: translate(-50%, -50%) scale(1.18,1.18) rotate(0deg);
-  }
-  88%, 92% {
-    transform: translate(-50%, -48%) scale(1.12,.48) rotate(-13deg);
-  }
-  96%, 97% {
-    transform: translate(-50%, -50%) scale(1.05,.08) rotate(0deg);
-  }
+.mf-fuggy-eyes__state {
+  opacity: 0;
+  fill: #fff;
+  stroke: #fff;
+  stroke-width: 5;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  vector-effect: non-scaling-stroke;
 }
 
-@keyframes mf-fuggy-eye-right {
-  0%, 17%, 22%, 43%, 49%, 66%, 72%, 86%, 94%, 100% {
-    transform: translate(-50%, -50%) scale(1,1) rotate(0deg);
-  }
-  19%, 20% {
-    transform: translate(-50%, -50%) scale(1.08,.08) rotate(0deg);
-  }
-  54%, 61% {
-    transform: translate(-50%, -42%) scale(1.02,.34) rotate(4deg);
-  }
-  67%, 70% {
-    transform: translate(-50%, -50%) scale(1.18,1.18) rotate(0deg);
-  }
-  88%, 92% {
-    transform: translate(-50%, -48%) scale(1.12,.48) rotate(13deg);
-  }
-  96%, 97% {
-    transform: translate(-50%, -50%) scale(1.05,.08) rotate(0deg);
-  }
+.mf-fuggy-eyes__state polygon {
+  stroke: none;
 }
 
+.mf-fuggy-eyes__state circle {
+  fill: none;
+  stroke-width: 4.8;
+}
+
+/*
+ * Minimal kaomoji-inspired eye language from Fuggy's original direction:
+ * diamonds -> >< blink -> ^^ happy -> glance -> -- sleepy -> oo awake -> glance.
+ * No mouth or conventional cartoon face is introduced.
+ */
+.mf-fuggy-eyes__state--neutral {
+  animation: mf-fuggy-neutral 20s linear infinite;
+}
+
+.mf-fuggy-eyes__state--blink {
+  animation: mf-fuggy-blink 20s linear infinite;
+}
+
+.mf-fuggy-eyes__state--happy {
+  animation: mf-fuggy-happy 20s linear infinite;
+}
+
+.mf-fuggy-eyes__state--look-left {
+  animation: mf-fuggy-look-left 20s linear infinite;
+}
+
+.mf-fuggy-eyes__state--sleepy {
+  animation: mf-fuggy-sleepy 20s linear infinite;
+}
+
+.mf-fuggy-eyes__state--awake {
+  animation: mf-fuggy-awake 20s linear infinite;
+}
+
+.mf-fuggy-eyes__state--look-right {
+  animation: mf-fuggy-look-right 20s linear infinite;
+}
+
+@keyframes mf-fuggy-neutral {
+  0%, 15% { opacity: 1; }
+  16%, 19% { opacity: 0; }
+  20%, 32% { opacity: 0; }
+  33%, 40% { opacity: 1; }
+  41%, 89% { opacity: 0; }
+  90%, 100% { opacity: 1; }
+}
+
+@keyframes mf-fuggy-blink {
+  0%, 15.7% { opacity: 0; }
+  16.4%, 17.8% { opacity: 1; }
+  18.5%, 100% { opacity: 0; }
+}
+
+@keyframes mf-fuggy-happy {
+  0%, 19% { opacity: 0; }
+  20%, 31.5% { opacity: 1; }
+  33%, 100% { opacity: 0; }
+}
+
+@keyframes mf-fuggy-look-left {
+  0%, 40% { opacity: 0; }
+  41.5%, 51.5% { opacity: 1; }
+  53%, 100% { opacity: 0; }
+}
+
+@keyframes mf-fuggy-sleepy {
+  0%, 52% { opacity: 0; }
+  53.5%, 66% { opacity: 1; }
+  67.5%, 100% { opacity: 0; }
+}
+
+@keyframes mf-fuggy-awake {
+  0%, 67% { opacity: 0; }
+  68.5%, 77% { opacity: 1; }
+  78.5%, 100% { opacity: 0; }
+}
+
+@keyframes mf-fuggy-look-right {
+  0%, 78% { opacity: 0; }
+  79.5%, 88.5% { opacity: 1; }
+  90%, 100% { opacity: 0; }
+}
+
+/*
+ * Calibrated in the wagon image coordinate system, including the wagon's
+ * 12px/22px overscan. This is the physical visor area on the seated Fuggy.
+ */
 .mf-entry-scene__fuggy-eyes {
   z-index: 3;
-  left: 18.49%;
-  top: 52.45%;
-  width: 13.28%;
-  height: 3.71%;
+  left: calc(18.45% - 3.8px);
+  top: calc(52.35% + .5px);
+  width: calc(13.45% + 1.6px);
+  height: calc(4.35% + 1px);
 }
 
 .mf-entry-scene.is-entering .mf-entry-scene__fuggy-eyes {
@@ -118,9 +138,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mf-fuggy-eyes__pair,
-  .mf-fuggy-eyes__mark--left,
-  .mf-fuggy-eyes__mark--right {
+  .mf-fuggy-eyes__state {
     animation: none;
+  }
+
+  .mf-fuggy-eyes__state--neutral {
+    opacity: 1;
   }
 }

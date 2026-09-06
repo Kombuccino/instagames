@@ -13,11 +13,12 @@ type PerspectiveTextureCanvasProps = {
   farTop?: number
   farBottom?: number
   xCurve?: number
+  depthCurve?: number
 }
 
 type ProjectionConfig = Required<Pick<
   PerspectiveTextureCanvasProps,
-  'slices' | 'speed' | 'nearX' | 'farX' | 'nearTop' | 'nearBottom' | 'farTop' | 'farBottom' | 'xCurve'
+  'slices' | 'speed' | 'nearX' | 'farX' | 'nearTop' | 'nearBottom' | 'farTop' | 'farBottom' | 'xCurve' | 'depthCurve'
 >>
 
 function clamp(value: number, min: number, max: number) {
@@ -32,10 +33,8 @@ function wrap(value: number, size: number) {
   return ((value % size) + size) % size
 }
 
-function projectedX(t: number, curve: number) {
-  // Equal-width source strips become progressively narrower toward the far edge.
-  // This makes scenery enter small at the vanishing side, then grow as it moves near.
-  return 1 - Math.pow(1 - clamp(t, 0, 1), curve)
+function perspectiveAmount(t: number, curve: number) {
+  return Math.pow(clamp(t, 0, 1), curve)
 }
 
 export function drawLoopingTextureTrapezoid(
@@ -57,27 +56,35 @@ export function drawLoopingTextureTrapezoid(
   const nearBottom = config.nearBottom * height
   const farTop = config.farTop * height
   const farBottom = config.farBottom * height
-  const sourceStripWidth = sourceWidth / slices
 
+  /*
+   * Screen geometry is explicit: t=0 is always the near/left edge and t=1
+   * is always the far/right edge. Equal destination strips make that direction
+   * impossible to accidentally invert. Source strips grow towards the far edge,
+   * so more panorama pixels are squeezed into the same screen width on the right:
+   * scenery is visibly smaller at the vanishing point and grows as it moves left.
+   */
   for (let index = 0; index < slices; index += 1) {
-    const u0 = index / slices
-    const u1 = (index + 1) / slices
-    const p0 = projectedX(u0, config.xCurve)
-    const p1 = projectedX(u1, config.xCurve)
+    const t0 = index / slices
+    const t1 = (index + 1) / slices
 
-    const x0 = lerp(nearX, farX, p0)
-    const x1 = lerp(nearX, farX, p1)
-    const destinationWidth = Math.max(1.25, x1 - x0 + 1.1)
+    const x0 = lerp(nearX, farX, t0)
+    const x1 = lerp(nearX, farX, t1)
+    const destinationWidth = Math.max(1.25, x1 - x0 + 1.15)
 
-    const top0 = lerp(nearTop, farTop, p0)
-    const top1 = lerp(nearTop, farTop, p1)
-    const bottom0 = lerp(nearBottom, farBottom, p0)
-    const bottom1 = lerp(nearBottom, farBottom, p1)
+    const depth0 = perspectiveAmount(t0, config.depthCurve)
+    const depth1 = perspectiveAmount(t1, config.depthCurve)
+    const top0 = lerp(nearTop, farTop, depth0)
+    const top1 = lerp(nearTop, farTop, depth1)
+    const bottom0 = lerp(nearBottom, farBottom, depth0)
+    const bottom1 = lerp(nearBottom, farBottom, depth1)
     const destinationTop = (top0 + top1) * 0.5
     const destinationHeight = Math.max(1, ((bottom0 - top0) + (bottom1 - top1)) * 0.5)
 
-    const sourceX = wrap(scrollPx + u0 * sourceWidth, sourceWidth)
-    const wantedSourceWidth = sourceStripWidth + 1.5
+    const sourceU0 = perspectiveAmount(t0, config.xCurve)
+    const sourceU1 = perspectiveAmount(t1, config.xCurve)
+    const sourceX = wrap(scrollPx + sourceU0 * sourceWidth, sourceWidth)
+    const wantedSourceWidth = Math.max(.75, (sourceU1 - sourceU0) * sourceWidth + 1.5)
 
     if (sourceX + wantedSourceWidth <= sourceWidth) {
       ctx.drawImage(
@@ -142,6 +149,7 @@ export function PerspectiveTextureCanvas({
   farTop = 0.35,
   farBottom = 0.55,
   xCurve = 2.4,
+  depthCurve = 1.2,
 }: PerspectiveTextureCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -166,12 +174,12 @@ export function PerspectiveTextureCanvas({
       farTop,
       farBottom,
       xCurve,
+      depthCurve,
     }
 
     let frame = 0
     let disposed = false
     let startedAt = performance.now()
-    let pausedAt = 0
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     const resize = () => {
@@ -202,7 +210,7 @@ export function PerspectiveTextureCanvas({
       context.clearRect(0, 0, width, height)
 
       if (image.complete && image.naturalWidth > 0) {
-        const elapsedSeconds = reduceMotion ? 0 : Math.max(0, now - startedAt - pausedAt) / 1000
+        const elapsedSeconds = reduceMotion ? 0 : Math.max(0, now - startedAt) / 1000
         const scrollPx = elapsedSeconds * config.speed
         drawLoopingTextureTrapezoid(context, image, width, height, scrollPx, config)
       }
@@ -212,7 +220,6 @@ export function PerspectiveTextureCanvas({
 
     const handleLoad = () => {
       startedAt = performance.now()
-      pausedAt = 0
       cancelAnimationFrame(frame)
       frame = window.requestAnimationFrame(render)
     }
@@ -227,7 +234,7 @@ export function PerspectiveTextureCanvas({
       image.removeEventListener('load', handleLoad)
       cancelAnimationFrame(frame)
     }
-  }, [src, paused, slices, speed, nearX, farX, nearTop, nearBottom, farTop, farBottom, xCurve])
+  }, [src, paused, slices, speed, nearX, farX, nearTop, nearBottom, farTop, farBottom, xCurve, depthCurve])
 
   return <canvas ref={canvasRef} className={className} aria-hidden="true" />
 }

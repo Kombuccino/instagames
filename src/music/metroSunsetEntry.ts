@@ -11,7 +11,9 @@ type Track = {
 
 export const ENTRY_METRO_RAIL_CYCLE_SECONDS = 5.2
 export const ENTRY_METRO_BEATS_PER_RAIL_CYCLE = 8
-export const ENTRY_METRO_BPM = ENTRY_METRO_BEATS_PER_RAIL_CYCLE * 60 / ENTRY_METRO_RAIL_CYCLE_SECONDS
+// Exact derived tempo is 92.307692... BPM. Four decimals keeps the Audio Lab
+// readable while making the 5.2s carriage-cycle error sub-millisecond.
+export const ENTRY_METRO_BPM = 92.3077
 export const ENTRY_METRO_BARS = 16
 export const ENTRY_METRO_LOOP_BEATS = ENTRY_METRO_BARS * 4
 
@@ -72,17 +74,13 @@ export function metroSunsetEntry(): Track[] {
     const root = BASS_ROOTS[bar % BASS_ROOTS.length]
     const section = Math.floor(bar / 4)
 
-    // Long, low-velocity harmony: warm light rather than a foreground pad.
     chord.forEach((midi, index) => {
       add(chords, start, 3.72, midi, 28 + index * 2 + (section === 3 ? 3 : 0))
     })
 
-    // Two broad bass breaths per bar, deliberately leaving the rail joints free.
     add(bass, start, 1.52, root, bar % 4 === 0 ? 58 : 52)
     add(bass, start + 2, 1.3, root + 7, 44)
 
-    // Soft brush movement sits between the structural rail hits. The first four
-    // bars are deliberately sparse so the ta-tang establishes the identity first.
     if (bar >= 2) {
       const brushVelocity = section === 3 ? 34 : section === 1 ? 30 : 26
       add(brush, start + .5, .18, 38, brushVelocity)
@@ -90,8 +88,6 @@ export function metroSunsetEntry(): Track[] {
     }
   }
 
-  // A small two-bar motif appears after the environment has established itself.
-  // It returns with tiny variations instead of becoming a constant lead melody.
   const phrases = [
     { bar: 4, notes: [66, 69, 73, 71, 69, 66] },
     { bar: 6, notes: [64, 66, 69, 71, 69, 66] },

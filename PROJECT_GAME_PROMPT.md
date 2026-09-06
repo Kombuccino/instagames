@@ -2,52 +2,96 @@
 
 You are working inside the MiniFugg project.
 
-MiniFugg is a vertical feed of tiny mobile-first games. Each real game must be designed, implemented, debugged and finished in a maximum of 10 user prompts.
+MiniFugg is a mobile-first catalog/feed of tiny authored games. Each real new game must be designed, implemented, debugged and finished in a maximum of 10 user prompts.
 
-Before touching game code, read `AGENTS.md`, `GAME_DEV_SPEC.md`, `docs/STYLE_SYSTEM.md`, `docs/INPUT_GESTURES.md`, `docs/ORIENTATION_LAYOUT.md` and `docs/GAME_LAYOUT_SYSTEM.md` from `Kombuccino/instagames` on `main`. These files are authoritative and may evolve. Also read the relevant files under `docs/style-kits/` and `src/style-kits/catalog.ts` when choosing an art direction.
+Before touching game code, read the latest `main` versions of:
 
-Before creating, importing or integrating any image, read and apply `docs/ASSET_PIPELINE.md`. Production images go through the private Drive hierarchy `Fugg/<game-id>/...`, are mirrored by GitHub Actions under `public/assets/imported/<game-id>/...`, and are referenced as `/assets/imported/<game-id>/...`. Do not bypass that pipeline when it is available, and preserve originals unless I explicitly request optimization.
+- `AGENTS.md`
+- `GAME_DEV_SPEC.md`
+- `docs/GAME_ENGINE_ARCHITECTURE.md`
+- `docs/GAME_MIGRATION_PLAN.md`
+- `docs/GAME_LAYOUT_SYSTEM.md`
+- `docs/INPUT_GESTURES.md`
+- `docs/ORIENTATION_LAYOUT.md`
+- `docs/STYLE_SYSTEM.md`
+- the game's `ART_DIRECTION.md` if it exists.
 
-When I explicitly start creating a new game, immediately start the counter and display it in every development response:
+Before creating/importing/integrating any production image, read and apply `docs/ASSET_PIPELINE.md`.
+
+## 10-prompt counter
+
+When the user explicitly starts creating a new real game, immediately display in every development response:
 
 `🎮 <Game name> — Prompt N/10 — X prompts remaining`
 
-A prompt is one user message in the active creation sequence. Prompt 10 is final. Do not silently grant extra prompts.
+One user message in the active creation sequence = one prompt. Prompt 10 is final. Core/runtime/platform/documentation/export work does not consume this budget.
 
-Prompt 1 should normally produce a first playable implementation when repository access is available. If visual direction or orientation is unclear, keep that first prototype visually neutral and include only the useful choices from the compact preflight in `docs/STYLE_SYSTEM.md` in the same response. Do not automatically apply the usual dark/neon/glass AI styling. If I explicitly want to decide the art direction before coding, ask the preflight first and wait for my answers.
+Prompt 1 should normally produce a playable implementation when repository access is available. Infer safe obvious choices rather than spending prompts on unnecessary questions.
 
-When I already describe a clear visual direction or the mechanic clearly implies portrait/landscape, infer the relevant answers instead of asking redundant questions. Every real game should declare `orientation: 'portrait' | 'landscape' | 'both'` in the registry. You may recommend 2–3 style kits when multiple directions genuinely fit. Custom art direction is always allowed.
+## Runtime choice is already made
 
-Once the visual direction is selected, create or update `src/games/<game-id>/ART_DIRECTION.md` so later agents preserve the palette, material language, typography, motion and intentional deviations from the base kit.
+Do not ask the user to choose between Canvas, Pixi, Phaser, etc.
 
-Work on MiniFugg Core, deployment, shared UI, API, leaderboard infrastructure, style-kit/orientation/layout infrastructure, documentation or general product architecture does not count toward a game's 10 prompts.
+- New 2D game: **Phaser 4**.
+- New intentionally 3D low-poly/blockout game: **Three.js**.
+- Core UI: **React/TypeScript/HTML/CSS**.
 
-During a game's 10 prompts:
+Do not add PixiJS or a bespoke Canvas/WebGL game engine.
 
-- act and implement rather than producing long speculative plans;
-- inspect the current repository before editing;
-- implement directly in `Kombuccino/instagames` when repository access is available;
-- preserve the platform/game boundary in `GAME_DEV_SPEC.md`;
-- respect the visual-direction contract in `docs/STYLE_SYSTEM.md`;
-- respect the input/swipe contract in `docs/INPUT_GESTURES.md`;
-- respect the portrait/landscape contract in `docs/ORIENTATION_LAYOUT.md`;
-- respect the shared responsive layout contract in `docs/GAME_LAYOUT_SYSTEM.md`;
-- use `docs/ASSET_PIPELINE.md` for any production image created or integrated during the game;
-- use `.mf-game-layout`, `.mf-game-hud`, `.mf-game-stage`, `.mf-game-controls` and shared `--mf-text-*`, `--mf-touch-*`, spacing and padding tokens for normal game UI instead of inventing unrelated PC/mobile geometry;
-- keep the same semantic hierarchy across screen sizes; reflow when needed rather than creating a different-looking game;
-- do not rebuild generic MiniFugg UI inside a game;
-- keep essential game controls, text, targets and HUD outside all Core safe zones: top, bottom, left and right; backgrounds may continue behind them;
-- never cover the bottom swipe gutter;
-- avoid tiny text and make the main mechanic readable on a phone;
-- use the extra width of landscape to reorganize content, not merely shrink or stretch the portrait layout;
-- prioritize central mechanic first, then mobile UX, then distinctive visual polish;
-- reuse approved style-kit primitives/assets when useful instead of recreating generic objects every time;
-- test/build where tools permit;
-- when I ask for deployment, commit the working change to `main`, which Dokploy deploys automatically;
-- late in the 10-prompt budget, make strong reasonable decisions instead of wasting prompts on avoidable clarification.
+## Fixed logical stage
 
-For new games, use the shared lifecycle (`session.setScore`, `session.finish`, `restartToken`, `active`) and registry-declared platform features.
+Every game declares a canonical logical viewport.
 
-Do not count placeholder/demo/smoke-test components as real games unless I explicitly declare them to be one of the 10-prompt games.
+Defaults:
 
-When working on Core outside a game-creation sequence, do not show a game prompt counter.
+- portrait: `390 × 844`;
+- landscape: `844 × 390`.
+
+Author gameplay in those logical coordinates and uniformly scale the complete stage. Do not create different PC/mobile gameplay compositions. Tablet/desktop extra space belongs to optional Core side content or decorative overscan.
+
+The mobile composition must remain the complete reference experience.
+
+## Input
+
+Game logic uses semantic actions such as left/right/up/down/primary/secondary/pause, or intrinsic pointer/drag coordinates when required by the mechanic.
+
+Touch, keyboard/mouse and gamepad are mappings. Changing input hardware must not change gameplay geometry.
+
+## Existing game lock
+
+All current catalog games are under migration lock. If `migration.locked` is true, do not perform unrelated feature/polish/legacy responsive work.
+
+If the user asks to improve a locked game, migrate it to its declared target runtime first/as part of the request. A minimal urgent security/blocking fix is the only exception.
+
+## Art direction and polish
+
+Once visual direction is chosen, create/update `src/games/<game-id>/ART_DIRECTION.md`.
+
+A Fugg must not feel like a generic HTML prototype under a premium cover. Use authored assets, motion, sound, interaction feedback and appropriate FX to give gameplay emotional/visual identity. Simple pixel art or low-poly/blockout is valid when deliberately finished.
+
+Production art uses the Drive asset pipeline; do not bypass it.
+
+## Core boundary
+
+Games do not rebuild or directly call:
+
+- account/auth UI;
+- wallet/coins;
+- purchases;
+- official leaderboard transport;
+- love/comments/bookmarks/share;
+- Steam/App Store/Google Play SDKs.
+
+Use the shared lifecycle/session contract (`active`, `seed`, `restartToken`, `session.setScore`, `session.finish`).
+
+Purchased games may be playable offline, but offline scores/rewards/wallet state are never authoritative online.
+
+## Repository behavior
+
+- Inspect current `main` before editing.
+- Implement directly in `Kombuccino/instagames` when repository access is available.
+- Keep one canonical implementation; delete superseded renderer code after migration/cutover.
+- Build/typecheck where tools permit.
+- Do not leave an accepted final state only on a temporary branch.
+
+When working on Core outside a new-game creation sequence, do not show a game prompt counter.

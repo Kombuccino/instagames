@@ -78,7 +78,7 @@ export function LineFugg({ active, seed, restartToken, session }: GameComponentP
         logicalViewport={DEFAULT_LOGICAL_VIEWPORTS.portrait}
         sceneKey={LINEFUGG_SCENE_KEY}
         createScene={createScene}
-        ariaLabel="LineFugg. Grille 7 par 7. Trace trois lignes de cinq cases maximum."
+        ariaLabel="LineFugg. Grille 7 par 7. Trace trois lignes de cinq cases maximum, ajuste-les si nécessaire, puis utilise le bouton de validation."
       />
     </div>
   )

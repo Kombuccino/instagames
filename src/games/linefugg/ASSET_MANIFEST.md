@@ -1,179 +1,103 @@
 # LineFugg — Production Asset Manifest
 
-Status: canonical gameplay asset inventory for the approved orbital/astrolabe art direction.
+Status: canonical gameplay asset inventory for the approved Orbital Accounting direction.
 
-All raster/illustrated production assets must use the private Drive pipeline in `docs/ASSET_PIPELINE.md`.
+All raster/illustrated production assets follow `docs/ASSET_PIPELINE.md`.
 
 Canonical app prefix:
 
 `/assets/imported/linefugg/`
 
-## Production raster assets
+## Integrated production raster
 
-### 1. `backgrounds/orbital-stage-bg-v1.webp`
+### `backgrounds/orbital-stage-master-v1.png`
 
-Purpose: full 390×844 authored celestial environment behind gameplay.
+Status: **integrated on main**.
 
-Requirements:
-- deep ink-blue star field;
-- antique celestial-chart linework;
-- brass/bronze observatory details near edges;
-- decorative planets / astrolabe fragments;
-- no game name/logo;
-- no slogans or non-functional text;
-- no baked numbers, grid, calculations or buttons;
-- keep center clean enough for the 7×7 board and lower calculation stack;
-- top-left must remain visually quiet enough for Core close control;
-- may include decorative overscan-like edge elements inside the canonical stage, but nothing gameplay-critical.
+Drive source:
 
-Runtime: static image plus subtle Phaser parallax/twinkle overlays.
-
-### 2. `ui/orbital-board-frame-v1.webp`
-
-Purpose: transparent ornate brass frame around the 7×7 board.
-
-Requirements:
-- transparent center;
-- square frame sized for the canonical ~370-unit board;
-- crisp brass corners, engraved astronomical motifs;
-- no grid lines or numbers baked in;
-- visually rich but narrow enough not to reduce cell legibility.
-
-Runtime: static Phaser image above background and below dynamic grid/text/lines.
-
-### 3. `ui/orbital-parchment-strip-v1.webp`
-
-Purpose: reusable transparent/isolated parchment calculation row.
-
-Requirements:
-- warm parchment with brass attachment/edge detail;
-- no baked text, formula, arrows or score;
-- horizontal and readable at small size;
-- designed to tile/reuse for three rows.
-
-Runtime: three instances, dynamic text rendered in Phaser.
-
-### 4. `ui/orbital-total-plate-v1.webp`
-
-Purpose: dark/brass total-score plate below calculation rows.
-
-Requirements:
-- no baked label or value;
-- strong central readable area;
-- restrained celestial engraving.
-
-Runtime: static plate + dynamic sigma/total value.
-
-### 5. `ui/orbital-control-ring-v1.webp`
-
-Purpose: reusable brass circular bezel for Undo and Validate controls.
-
-Requirements:
-- transparent center or center suitable for dynamic tint/fill;
-- no icon or text baked in;
-- same geometry for both controls;
-- supports dim/inactive and active green Validate states via Phaser tint/overlays.
-
-Runtime: two instances with procedural icon and state glow.
-
-### 6. `ui/orbital-orb-bezel-v1.webp`
-
-Purpose: reusable small celestial/brass bezel for the three line indicators.
-
-Requirements:
-- transparent or dark center;
-- no fixed color baked into the center;
-- no pips/dots baked in;
-- compact and readable between bottom buttons.
-
-Runtime: three instances tinted/overlaid vermilion, violet, gold; five procedural pips below/around each orb.
-
-## Optional enhancement asset
-
-### 7. `props/orbital-armillary-v1.webp`
-
-Purpose: independently animated upper armillary/planet mechanism if the full-stage background does not provide enough depth.
-
-Requirements:
-- transparent background;
-- no text;
-- brass rings and central planet;
-- composition designed for very slow rotation/float without covering board/HUD.
-
-This asset is optional. Do not create it if the background + procedural ring overlays already achieve the approved look cleanly.
-
-## Procedural Phaser elements — no raster asset required
-
-These must remain engine-rendered because they are stateful/dynamic:
-
-- exact 7×7 grid geometry and cell hit areas;
-- dynamic cell fills for positive / negative / × / ÷ state;
-- all numbers/operators;
-- three drawn line shafts and arrowheads;
-- luminous start/end nodes;
-- active drag preview;
-- live result bubble below finger/pointer;
-- selected-cell halos;
-- line energy pulse;
-- invalid-placement flare/recoil;
-- three line-indicator colors and five cell-count pips each;
-- Undo arrow icon;
-- Validate check icon;
-- enabled/disabled control glow;
-- calculation formulas/results;
-- total value;
-- star twinkles, tiny particles, glints and low-cost orbit motion.
-
-## Geometry / layering contract
-
-Authored against one fixed `390×844` stage only.
-
-Recommended layer order:
-
-1. `orbital-stage-bg-v1.webp`;
-2. low-cost ambient celestial FX;
-3. board frame / parchment / total / control bezels;
-4. grid cell backgrounds;
-5. line shafts / node glows;
-6. cell numbers/operators above lines;
-7. calculations / total / icons / pips;
-8. transient feedback FX / live result bubble.
-
-Important: numbers/operators must remain visually above traced lines.
-
-## File-format guidance
-
-- Prefer WebP for illustrated opaque/semi-opaque backgrounds and frames when quality is visually equivalent.
-- Preserve high-quality originals in Drive if an original PNG is generated; only create an optimized derivative when useful.
-- No SVG through the Drive importer.
-- Each file must remain below pipeline limits.
-
-## Production paths
-
-Drive:
-
-`Fugg/linefugg/backgrounds/...`
-`Fugg/linefugg/ui/...`
-`Fugg/linefugg/props/...`
+`Fugg/linefugg/backgrounds/orbital-stage-master-v1.png`
 
 GitHub mirror:
 
-`public/assets/imported/linefugg/backgrounds/...`
-`public/assets/imported/linefugg/ui/...`
-`public/assets/imported/linefugg/props/...`
+`public/assets/imported/linefugg/backgrounds/orbital-stage-master-v1.png`
 
-Application:
+Runtime URL:
 
-`/assets/imported/linefugg/backgrounds/...`
-`/assets/imported/linefugg/ui/...`
-`/assets/imported/linefugg/props/...`
+`/assets/imported/linefugg/backgrounds/orbital-stage-master-v1.png`
+
+Purpose: approved Orbital Accounting master plate providing the authored celestial/brass environment and visual material reference.
+
+Runtime treatment:
+- loaded by Phaser at the fixed logical stage `390×844`;
+- uniformly cover-scaled, never used as a responsive layout source;
+- its concept-only baked close icon is occluded because Core owns the close affordance;
+- every baked gameplay zone in the master is covered by opaque Phaser-owned surfaces before the live gameplay is drawn;
+- only the celestial/brass environmental artwork remains visible from the raster;
+- no baked number, operator, line, calculation, score or button is used as game state.
+
+This is the only raster required by the current gameplay implementation. Do not keep or introduce duplicate legacy gameplay artwork beside it.
+
+## Phaser-rendered production surfaces
+
+The following elements are intentionally engine-rendered because they are stateful or need exact logical geometry. They are not missing raster assets:
+
+- exact 7×7 board geometry and hit areas;
+- brass board chassis and enamel cell surfaces;
+- positive, negative, multiplier and divisor cell materials;
+- all numbers/operators;
+- three line shafts and arrowheads;
+- identical glow grammar for vermilion, violet and gold lines;
+- luminous start/end nodes;
+- moving start→end energy pulse;
+- active drag preview and invalid-state feedback;
+- live result plate under pointer/finger;
+- selected/crossed-cell halos;
+- three calculation rows and their dynamic formulas/results;
+- total plate and mathematically derived total;
+- Undo icon/button state;
+- Validate icon/button state;
+- three orbital line indicators;
+- five pips per line, lit from the actual number of cells used;
+- emerald Validate pulse only at 3/3;
+- star twinkles, armillary tracing, glints and low-cost ambient motion.
+
+## Geometry / layering contract
+
+Everything is authored against one fixed `390×844` stage.
+
+Layer order:
+
+1. `orbital-stage-master-v1.png`;
+2. dark/opaque masks over concept-only baked gameplay;
+3. ambient celestial FX;
+4. live board/cell surfaces;
+5. line shafts and node glows;
+6. cell numbers/operators **above the lines**;
+7. calculation rows, total, controls and line indicators;
+8. transient feedback and live result plate.
+
+The board remains approximately 370 logical units wide. No device-specific geometry or alternate desktop/mobile composition is permitted.
+
+## End-state contract
+
+The asset/UI implementation must preserve the gameplay rule:
+
+- line 3 does not resolve the run automatically;
+- at 3/3 the player may still Undo and redraw;
+- Validate becomes emerald only at 3/3;
+- only the enabled Validate check calls `session.finish(...)`.
+
+## Cover
+
+Cover: **A METTRE A JOUR** after gameplay visual stabilization. No gameplay asset in this manifest should be treated as the final cover.
 
 ## Definition of integrated
 
-An asset is production-integrated only when:
+A raster asset is production-integrated only when:
 
-1. final bytes are uploaded under the correct private Drive folder;
-2. the Drive sync has mirrored them into `public/assets/imported/linefugg/...` on `main`;
+1. its final bytes live in the correct private Drive folder;
+2. Drive sync mirrors the exact bytes into `public/assets/imported/linefugg/...` on `main`;
 3. the mirrored file is verified in GitHub;
-4. Phaser references only `/assets/imported/linefugg/...`;
-5. no temporary local/public URL or duplicate legacy asset remains.
+4. application code references only `/assets/imported/linefugg/...`;
+5. no temporary Drive/public URL, manual binary upload or duplicate legacy asset is used.

@@ -20,7 +20,7 @@ type PointerStart = {
   y: number
 }
 
-const ENTER_DURATION_MS = 680
+const ENTER_DURATION_MS = 860
 const TAP_SLOP_PX = 14
 const SWIPE_THRESHOLD_PX = 42
 const ASSET_ROOT = '/assets/imported/platform/entry-scenes/metro-moment-v1'
@@ -132,29 +132,32 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
             className="mf-entry-scene__city-canvas"
             paused={entering}
             speed={116}
-            slices={220}
-            nearX={-0.1}
-            farX={0.92}
-            nearTop={-0.24}
-            nearBottom={0.66}
-            farTop={0.28}
-            farBottom={0.46}
-            xCurve={2.55}
+            slices={240}
+            nearX={-0.12}
+            farX={1.01}
+            nearTop={-0.28}
+            nearBottom={0.68}
+            farTop={0.34}
+            farBottom={0.40}
+            xCurve={3.1}
           />
         </div>
 
         <div className="mf-entry-scene__carriage" aria-hidden="true">
           <img className="mf-entry-scene__wagon" src={WAGON_ART} alt="" draggable={false} decoding="sync" fetchPriority="high" />
+        </div>
 
-          <div className="mf-entry-scene__hand-group">
-            <img className="mf-entry-scene__arm" src={arm} alt="" draggable={false} decoding="sync" fetchPriority="high" />
-            <div className="mf-entry-scene__phone-ui">
+        <div className="mf-entry-scene__hand-group" aria-hidden="true">
+          <img className="mf-entry-scene__arm" src={arm} alt="" draggable={false} decoding="sync" fetchPriority="high" />
+          <div className="mf-entry-scene__phone-ui">
+            <div className="mf-entry-scene__phone-content">
               <img className="mf-entry-scene__phone-logo" src={LOGO_ART} alt="" draggable={false} />
               <strong>Tap to play</strong>
-              <span className="mf-entry-scene__phone-blackout" />
             </div>
           </div>
         </div>
+
+        <span className="mf-entry-scene__flash" aria-hidden="true" />
       </div>
     </main>
   )

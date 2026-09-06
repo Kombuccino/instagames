@@ -1,0 +1,96 @@
+.mf-phone-welcome {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #07111d;
+}
+
+.mf-phone-welcome__background {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+/*
+ * The source dance frames are square PNGs. The projective phone plane itself is
+ * authored at the 941x1672 source aspect ratio, so this slightly wide logical
+ * box compensates for the phone's perspective and keeps Fuggy looking compact
+ * instead of skinny after the homography.
+ */
+.mf-phone-welcome__dance-stage {
+  position: absolute;
+  left: 4%;
+  top: 3.5%;
+  width: 92%;
+  height: 46%;
+  display: block;
+  transform-origin: 50% 76%;
+  animation: mf-phone-welcome-dance-bob 1.52s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.mf-phone-welcome__dancer {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  filter: drop-shadow(0 1.2px 1.6px rgba(0,0,0,.38));
+  -webkit-user-drag: none;
+}
+
+/* The red CTA is baked into the selected artwork. This live glow sits exactly
+ * over it so the call to action pulses without duplicating its text. */
+.mf-phone-welcome__cta-pulse {
+  position: absolute;
+  left: 14.4%;
+  top: 77.2%;
+  width: 71.2%;
+  height: 9.8%;
+  display: block;
+  border-radius: 999px;
+  border: .45px solid rgba(255,218,192,.58);
+  box-shadow:
+    0 0 2.1px rgba(255,91,74,.62),
+    0 0 5.8px rgba(255,58,62,.38),
+    inset 0 0 2.4px rgba(255,255,255,.16);
+  animation: mf-phone-welcome-cta-pulse 1.45s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes mf-phone-welcome-dance-bob {
+  0%, 100% { transform: translate3d(0,0,0) rotate(-.25deg); }
+  25% { transform: translate3d(-.6%,.5%,0) rotate(.35deg); }
+  50% { transform: translate3d(.4%,1%,0) rotate(-.15deg); }
+  75% { transform: translate3d(.7%,.35%,0) rotate(.28deg); }
+}
+
+@keyframes mf-phone-welcome-cta-pulse {
+  0%, 100% {
+    opacity: .48;
+    transform: scale(.965);
+    box-shadow:
+      0 0 1.8px rgba(255,91,74,.5),
+      0 0 4.5px rgba(255,58,62,.26),
+      inset 0 0 2px rgba(255,255,255,.12);
+  }
+  50% {
+    opacity: .96;
+    transform: scale(1.035);
+    box-shadow:
+      0 0 3px rgba(255,120,84,.82),
+      0 0 8.5px rgba(255,58,62,.55),
+      inset 0 0 3px rgba(255,255,255,.22);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mf-phone-welcome__dance-stage,
+  .mf-phone-welcome__cta-pulse {
+    animation: none;
+  }
+}

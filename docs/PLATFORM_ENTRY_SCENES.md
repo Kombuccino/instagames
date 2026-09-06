@@ -69,6 +69,18 @@ Use a contemporary stylized low-poly carriage with a few observed cues: handles/
 
 It should feel specific without tourist/cyberpunk caricature.
 
+### Validated phone boot screen v1 — 2026-09-06
+
+The selected metro-phone boot treatment is the dark navy/black version with floating game-card motifs, warm spotlight, MiniFugg wordmark and red `Tap to play` call-to-action.
+
+Fuggy is deliberately a separate transparent animation layer above that background. The current production loop uses five generated low-poly poses in a ping-pong sequence (`01 → 02 → 03 → 04 → 05 → 04 → 03 → 02`) to create a gentle arms-up hip dance without requiring a 3D rig.
+
+Production runtime root:
+
+`/assets/imported/platform/entry-scenes/metro-moment-v1/phone-screen-v1/`
+
+The approved visual reference and generated frame masters are also preserved in the private Graphic Archive under the metro entry-scene selected assets.
+
 ## 6. Stable brand
 
 Scenes rotate; MiniFugg identity does not.

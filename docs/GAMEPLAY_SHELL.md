@@ -7,7 +7,8 @@ Read together with:
 - `docs/DISCOVERY_NAVIGATION.md` for cover browsing and play entry;
 - `docs/INPUT_GESTURES.md` for gesture ownership;
 - `docs/GAME_LAYOUT_SYSTEM.md` for responsive in-game layout;
-- `docs/PLATFORM_ECONOMY.md` for replay cost and coin rules.
+- `docs/PLATFORM_ECONOMY.md` for replay cost and coin rules;
+- `docs/PLATFORM_UI_SYSTEM.md` for shared Core typography, tabs, badges, avatars, lists and CSS primitives.
 
 This is a Core-level contract. Individual games must not rebuild the platform shell locally.
 
@@ -142,12 +143,30 @@ The preferred continuity is:
 
 The result plate should prioritize:
 
+- `GAME OVER` / end-of-run title;
 - final score;
 - personal best;
+- current leaderboard ranking summary when available;
 - a restrained `NEW BEST` indication when applicable;
 - leaderboard access when enabled;
 - replay with the correct coin cost;
-- quit / close back to the same cover.
+- **`RAGE QUIT`** back to the same cover.
+
+Do **not** put the MiniFugg logo in the result plate.
+
+### Rank summary
+
+When valid rank data is available, show a compact ranking indication next to the score/best group, for example:
+
+- `TOP 5`;
+- `TOP 46`;
+- `> TOP 100` when the player is outside the first hundred.
+
+If Core does not have valid rank data, hide the field instead of inventing a rank.
+
+Use the same rank semantics/data source as Leaderboard.
+
+### Replay treatment
 
 Replay treatment should reuse the already validated coin/cartouche vocabulary rather than a generic giant mobile-app button:
 
@@ -157,6 +176,8 @@ Replay treatment should reuse the already validated coin/cartouche vocabulary ra
 - equivalent no-cost treatment for Lifetime / Free Play where the economy contract says so.
 
 The player's remaining coin balance may be shown here because another spending decision is being made.
+
+`RAGE QUIT` is intentionally playful MiniFugg wording. It remains live/localizable UI text.
 
 ### Reward moment
 
@@ -174,19 +195,59 @@ Do not let these turn the result state into a reward dashboard. Prefer one conci
 
 Leaderboard is a **full Core panel**, not a half-sheet and not a storefront page.
 
-Current direction:
+Its visual primitives must come from `docs/PLATFORM_UI_SYSTEM.md` rather than a leaderboard-specific design system.
 
-- opened from the personal high-score row in Info;
-- return should conceptually take the player back to Info rather than dumping them somewhere unrelated;
-- show only leaderboard periods actually configured by the game (`DAY`, `WEEK`, `GLOBAL` as applicable);
-- do not invent `Friends`, genre filters, platform filters or other tabs unless those systems genuinely exist;
-- show a clean top list with rank, player identity and score;
-- when the current player is outside the visible top list, keep a compact personal row pinned near the bottom when backend rank data is available;
-- do not fabricate a rank when the backend cannot supply it;
-- creator / `999` identity treatments may appear when useful, but ranking remains the visual priority;
-- scrolling/loading additional ranks should be simple and progressive rather than a separate dashboard.
+### Entry and Back behavior
 
-The current runtime already exposes leaderboard data; visual refinement belongs to shared Core.
+The top-left arrow is contextual Back.
+
+- opened from Info -> return to the same Info panel and preserve its previous scroll position;
+- opened from Game Over -> return to that Game Over state;
+- future entry points return to their actual origin.
+
+Do not hardwire the arrow to a generic “Social” destination.
+
+### Tabs
+
+Leaderboard exposes three product tabs:
+
+- `DAY`;
+- `WEEK`;
+- `FRIENDS`.
+
+The labels are centered with a short red active underline centered directly beneath the active label.
+
+`FRIENDS` is part of the intended product direction even if the relationship backend is implemented later.
+
+Do not add unrelated filters such as genre, difficulty, platform or session length.
+
+### Ranking list
+
+- allow scrolling through the first **100** players;
+- no horizontal separator rules between players;
+- use spacing/alignment rather than lines to structure rows;
+- keep rank, avatar, nickname/badges and score visually consistent with the rest of Core;
+- top positions may receive restrained rank emphasis without changing the entire player-row system.
+
+### Current player behavior
+
+When the current player's actual row is visible in the scroll viewport:
+
+- highlight it subtly so the player can find themselves quickly;
+- do not also show a duplicated pinned row.
+
+When the player's row scrolls out of the visible viewport:
+
+- show the compact personal row pinned at the bottom;
+- hide/remove that pinned duplicate as soon as the actual row becomes visible again.
+
+If the player is outside the top 100, the pinned row may remain available when backend rank data exists.
+
+Never fabricate a rank.
+
+### Footer
+
+Do not show a decorative MiniFugg baseline/tagline at the bottom of the functional leaderboard panel.
 
 ---
 
@@ -248,6 +309,12 @@ Current temporary asset convention:
 - cover discovery gestures are suspended while gameplay is active;
 - game input can use the full gesture vocabulary while active;
 - end-of-run uses the **frozen gameplay**, never cover artwork;
-- end-of-run shows Core-owned replay + quit actions;
+- end-of-run does not show the MiniFugg logo;
+- end-of-run uses `RAGE QUIT` for the playful quit action;
+- end-of-run may show `TOP N` / `> TOP 100` when valid rank data exists;
+- end-of-run shows Core-owned replay + leaderboard + quit actions;
 - replay cost follows game status pricing unless the economy contract changes later;
-- leaderboard is a full panel showing only real configured periods/features.
+- leaderboard is a full panel with `DAY / WEEK / FRIENDS`;
+- leaderboard scrolls through the top 100 without row separator lines;
+- current-player pinned row appears only while the real row is outside the visible viewport;
+- leaderboard Back returns to its actual originating Core surface.

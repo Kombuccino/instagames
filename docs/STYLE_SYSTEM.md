@@ -1,8 +1,10 @@
-# MiniFugg Visual Style System v1.1
+# MiniFugg Visual Style System v1.2
 
-This document exists to prevent every AI-built game from converging on the same generic visual language.
+This document exists to prevent every AI-built game from converging on the same generic visual language and to keep visual production compatible with the canonical MiniFugg runtime.
 
-MiniFugg Core is consistent. The games should not all look consistent. The shared shell owns title, creator, social actions and score. The game surface should have a strong independent art direction.
+MiniFugg Core is consistent. The games should not all look consistent. The game surface should have a strong independent art direction.
+
+Before creating or modifying gameplay graphics, also read `docs/GAME_ENGINE_ARCHITECTURE.md`, `docs/GAME_LAYOUT_SYSTEM.md`, the game's `ART_DIRECTION.md` when present, and `docs/ASSET_PIPELINE.md` for every production image.
 
 ## 1. Anti-default rule
 
@@ -10,7 +12,7 @@ Unless the user explicitly asks for it, do not default to dark navy/black plus p
 
 If no art direction has been chosen yet, use a deliberately neutral prototype: flat colors, simple geometry, large readable type, no decorative polish. Do not let the prototype become the house style.
 
-## 2. Visual + layout preflight
+## 2. Visual + orientation preflight
 
 When a new game does not already imply a clear art direction or orientation, expose a compact QCM. Infer answers that are obvious and only ask what is useful.
 
@@ -62,13 +64,46 @@ B. kit with custom palette/characters
 C. mix at most two kits
 D. fully custom
 
-Do not force all questions when the user already answered them implicitly. For orientation especially, infer obvious geometry: falling blocks are usually portrait; horizontal conveyor/racing/timing mechanics often benefit from landscape.
+Do not force all questions when the user already answered them implicitly. Prompt 1 should still move the game forward. If answers are missing, build gameplay with neutral temporary art and present only the useful choices in the same response.
 
-Prompt 1 should still move the game forward. If answers are missing, build gameplay with neutral temporary art and present the useful QCM choices in the same response. Apply the chosen direction on the next prompt. If the user explicitly wants to decide art direction before coding, then wait for those answers.
+## 3. Canonical composition rule for graphics
 
-See `docs/ORIENTATION_LAYOUT.md` for the orientation contract.
+Gameplay art is authored for the game's **fixed logical stage**, not for a particular phone, browser or monitor.
 
-## 3. Style kits
+Default authored stages are:
+
+- portrait: `390 × 844` logical units;
+- landscape: `844 × 390` logical units.
+
+The central composition must remain the same on phone, tablet, browser and desktop/store builds. Runtime adaptation is uniform scaling of the whole logical stage, not a redesign of object positions.
+
+When producing sprites, boards, backgrounds, HUD art, illustrated physical objects or layered compositions:
+
+- define their intended position/size relative to the canonical logical stage;
+- keep gameplay-critical relationships stable;
+- do not create separate PC/mobile compositions merely because the aspect ratio differs;
+- do not assume all phones have the same aspect ratio;
+- allow decorative backgrounds/overscan to extend beyond the canonical stage when useful;
+- keep essential gameplay and readable content inside the canonical stage;
+- use extra desktop/tablet width only for optional Core sidecars or non-critical decorative ambience.
+
+If screenshots from different devices are normalized to the same logical stage size, the gameplay composition should align almost exactly.
+
+## 4. Asset-production consequence
+
+For any production image, follow `docs/ASSET_PIPELINE.md`.
+
+Artwork should be delivered in forms that preserve flexibility inside the engine:
+
+- important independent moving objects should normally be separate assets/sprites;
+- backgrounds may be larger than the canonical stage when overscan is useful;
+- layered covers should keep independently animated subjects/layers separate;
+- avoid baking controls or mutable UI text into gameplay art unless explicitly intended;
+- preserve source resolution and originals unless optimization is explicitly requested.
+
+Do not recreate important authored raster art procedurally in Phaser/Three.js merely because the engine can draw shapes. Engine-generated graphics are appropriate for dynamic FX, particles, masks, lights, debug/prototype geometry and genuinely procedural elements.
+
+## 5. Style kits
 
 The machine-readable catalog is in `src/style-kits/catalog.ts`. Detailed kits live in `docs/style-kits/`.
 
@@ -76,41 +111,13 @@ A kit defines palette philosophy, geometry and silhouette, typography, texture/m
 
 Record the chosen direction inside the game folder as `ART_DIRECTION.md`, including deviations from the base kit. Future agents should read it before changing visuals.
 
-## 4. Core safe zones
+## 6. Readability
 
-MiniFugg exposes global CSS variables:
+Avoid tiny fly-print inside games. Important text should generally be at least 14px equivalent on the canonical phone presentation, primary labels should be much larger, and fewer clear labels are preferable to many tiny ones.
 
-```css
---minifugg-core-top-reserved
---minifugg-core-bottom-reserved
---minifugg-core-left-reserved
---minifugg-core-right-reserved
---minifugg-swipe-gutter
-```
+Do not solve a wider screen by shrinking or redistributing the canonical gameplay composition. Wider space belongs outside the central logical stage unless the game explicitly supports a separate canonical orientation.
 
-Portrait mainly reserves top + bottom. Landscape phone moves the action dock to the right, so the right reservation becomes important and the bottom reservation becomes much smaller.
-
-Backgrounds, particles and non-interactive decoration may extend behind Core chrome. Essential gameplay must not. Do not put critical buttons, readable instructions, important touch targets, drag endpoints, inventory, timers or other essential HUD under these zones.
-
-```css
-.my-game-safe-ui {
-  position: absolute;
-  top: var(--minifugg-core-top-reserved);
-  right: var(--minifugg-core-right-reserved);
-  bottom: var(--minifugg-core-bottom-reserved);
-  left: var(--minifugg-core-left-reserved);
-}
-```
-
-A full-screen canvas may fill the viewport, but meaningful interactive bounds should account for these insets.
-
-## 5. Readability
-
-Avoid tiny fly-print inside games too. Important text should generally be at least 14px equivalent on a phone, primary labels should be much larger, and fewer clear labels are preferable to many tiny ones.
-
-Landscape is not an excuse to shrink text: use the extra width to reorganize information instead of making the portrait layout smaller.
-
-## 6. Useful defaults by game type
+## 7. Useful defaults by game type
 
 - roguelike / dungeon / tile tactics -> Pixel Dungeon
 - puzzle / cozy / sorting / food -> Paper Cut
@@ -119,4 +126,4 @@ Landscape is not an excuse to shrink text: use the extra width to reorganize inf
 - racing / sports / reflex score chase -> Sports Broadcast
 - numbers / logic / word / abstract strategy -> Editorial Grid
 
-These are recommendations, not restrictions. The assistant may propose 2–3 kits when the concept could go in different directions.
+These are recommendations, not restrictions. The assistant may propose 2–3 kits when the concept could genuinely go in different directions.

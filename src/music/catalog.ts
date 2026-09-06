@@ -11,7 +11,7 @@ import {
 
 export const musicCatalog = {
   ...coreCatalog,
-  version: 9,
+  version: 10,
   compositions: [
     ...coreCatalog.compositions,
     {
@@ -19,10 +19,10 @@ export const musicCatalog = {
       gameId: 'linefugg',
       gameTitle: 'LineFugg',
       name: 'Vector Rush — Three Lines',
-      status: 'candidate',
+      status: 'selected',
       createdAt: '2026-09-06',
-      summary: 'Boucle courte et sèche pour tracer vite : kick net, caisse claire vectorielle, curseur en doubles croches, basse syncopée et motif de trois attaques qui rappelle les trois lignes disponibles.',
-      concept: ['three-line gesture', 'precise electro grid', 'fast cursor hats', 'short-session loop', 'geometric tension'],
+      summary: 'Boucle courte et sèche pour tracer vite : kick net, caisse claire vectorielle, curseur en doubles croches, basse syncopée et petit trait ascendant. L’ancienne impulsion aiguë trois lignes a été retirée du mix canonique.',
+      concept: ['three-line board', 'precise electro grid', 'fast cursor hats', 'short-session loop', 'geometric tension'],
       key: 'E minor',
       meter: '4/4',
       loopBeats: LINEFUGG_SHORT_LOOP_BEATS,
@@ -37,9 +37,9 @@ export const musicCatalog = {
       name: 'Quick Sum Bounce',
       status: 'candidate',
       createdAt: '2026-09-06',
-      summary: 'Alternative plus joueuse et syncopée : kick rond, rim-clap de validation, petits ticks irréguliers, basse rebondissante et signature mélodique en trois couleurs.',
-      concept: ['quick mental calculation', 'syncopated bounce', 'three-color hook', 'playful not childish', 'short-session loop'],
-      key: 'A minor / C major',
+      summary: 'Alternative joueuse réécrite autour d’une progression Am–F–C–G / Am–F–Dm–E : le kick, le rim-clap et la basse rebondissante restent, tandis qu’une question et une réponse mélodiques alternent sans superposition ni notes étrangères aux accords.',
+      concept: ['quick mental calculation', 'syncopated bounce', 'two-bar call and response', 'playful not childish', 'short-session loop'],
+      key: 'A minor',
       meter: '4/4',
       loopBeats: LINEFUGG_SHORT_LOOP_BEATS,
       midiExports: ['MF-MUS-0009_QuickSumBounce.mid'],

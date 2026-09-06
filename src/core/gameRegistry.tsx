@@ -1,4 +1,4 @@
-import type { GameFeatureConfig, InstagameDefinition } from './types'
+import type { GameFeatureConfig, GameLogicalViewport, GameMigrationConfig, InstagameDefinition } from './types'
 import { LineFugg } from '../games/linefugg/LineFugg'
 import { ShootTheShooter } from '../games/shoot-the-shooter/ShootTheShooter'
 import { VladsSkewers } from '../games/vlads-skewers/VladsSkewers'
@@ -24,8 +24,19 @@ const STANDARD_FEATURES: GameFeatureConfig = {
   remix: false,
 }
 
+const PORTRAIT_STAGE: GameLogicalViewport = { width: 390, height: 844 }
+const LANDSCAPE_STAGE: GameLogicalViewport = { width: 844, height: 390 }
+
+const PHASER_MIGRATION_REQUIRED: GameMigrationConfig = {
+  state: 'required',
+  targetRuntime: 'phaser-2d',
+  locked: true,
+  cover: 'update-required',
+}
+
 // Temporary discovery covers let Core navigation be tested across the whole catalog.
 // They do not change curation status and are not collectible Fugg variants.
+// All current covers remain explicitly marked A METTRE A JOUR until migrated.
 function placeholderWelcome(gameId: string): NonNullable<InstagameDefinition['welcome']> {
   return {
     variants: [{
@@ -47,6 +58,9 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'beta',
     orientation: 'portrait',
+    runtime: 'legacy-dom',
+    logicalViewport: PORTRAIT_STAGE,
+    migration: PHASER_MIGRATION_REQUIRED,
     welcome: placeholderWelcome('train-fighter'),
     component: TrainFighter,
     instructions: {
@@ -70,6 +84,9 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'fugg',
     orientation: 'portrait',
+    runtime: 'legacy-dom',
+    logicalViewport: PORTRAIT_STAGE,
+    migration: PHASER_MIGRATION_REQUIRED,
     welcome: placeholderWelcome('linefugg'),
     component: LineFugg,
     instructions: {
@@ -91,6 +108,9 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'trash',
     orientation: 'landscape',
+    runtime: 'legacy-dom',
+    logicalViewport: LANDSCAPE_STAGE,
+    migration: PHASER_MIGRATION_REQUIRED,
     welcome: placeholderWelcome('shoot-the-shooter'),
     component: ShootTheShooter,
     instructions: {
@@ -113,6 +133,9 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'fugg',
     orientation: 'portrait',
+    runtime: 'legacy-dom',
+    logicalViewport: PORTRAIT_STAGE,
+    migration: PHASER_MIGRATION_REQUIRED,
     welcome: placeholderWelcome('vlads-skewers'),
     component: VladsSkewers,
     instructions: {
@@ -135,6 +158,9 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'beta',
     orientation: 'portrait',
+    runtime: 'legacy-dom',
+    logicalViewport: PORTRAIT_STAGE,
+    migration: PHASER_MIGRATION_REQUIRED,
     welcome: placeholderWelcome('hari-rotten-teeth'),
     component: HariRottenTeeth,
     instructions: {
@@ -157,6 +183,9 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'fugg',
     orientation: 'portrait',
+    runtime: 'legacy-dom',
+    logicalViewport: PORTRAIT_STAGE,
+    migration: PHASER_MIGRATION_REQUIRED,
     welcome: TETRAMINDFCK_WELCOME,
     component: TetraMindFck,
     instructions: {
@@ -179,6 +208,9 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'fugg',
     orientation: 'portrait',
+    runtime: 'legacy-dom',
+    logicalViewport: PORTRAIT_STAGE,
+    migration: PHASER_MIGRATION_REQUIRED,
     welcome: placeholderWelcome('crazy-papers'),
     component: CrazyPapers,
     instructions: {
@@ -203,6 +235,9 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'trash',
     orientation: 'landscape',
+    runtime: 'legacy-dom',
+    logicalViewport: LANDSCAPE_STAGE,
+    migration: PHASER_MIGRATION_REQUIRED,
     welcome: placeholderWelcome('debth-of-life'),
     component: DebthOfLife,
     instructions: {

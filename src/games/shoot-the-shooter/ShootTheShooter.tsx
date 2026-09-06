@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react'
 import type { GameComponentProps } from '../../core/types'
 import './ShootTheShooter.css'
-import './ShootTheShooter.mobile-fix.css'
+import './ShootTheShooter.mobile.css'
 import './ShootTheShooter.landscape.css'
 
 type GlassType = 'classic' | 'tapered' | 'tall' | 'heavy' | 'flared' | 'mini'

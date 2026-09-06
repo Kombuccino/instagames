@@ -19,6 +19,8 @@ For any game work, read the latest `main` versions of:
 - `docs/ORIENTATION_LAYOUT.md`
 - the game's `ART_DIRECTION.md` when present.
 
+For any Phaser task, also use the repo skill `.agents/skills/phaser-minifugg/SKILL.md` and consult the relevant official Phaser 4.2.1 vendor skill documented in `docs/PHASER_SKILLS.md`. MiniFugg rules override generic Phaser guidance.
+
 For any approved game-DA implementation, asset decomposition or final gameplay-art pass, also read `docs/GAME_ART_PRODUCTION_PIPELINE.md`.
 
 For each substantial game pass, read/update `src/games/<id>/GAME_STATUS.md` (create it if missing). Before art, cover, animation or audio work, recover the approved references, decisions and rejected directions from the game's `ART_DIRECTION.md`, asset manifest and linked discussions. Do not ask the user to repeat settled choices or substitute generic generated art. Follow the continuity and visual acceptance checks in `docs/GAME_CREATION_PIPELINE.md`.
@@ -192,3 +194,15 @@ screen. Explicit pause/stop must survive foreground and subsequent gestures.
 Create music handles inside lifecycle setup, destroy them during cleanup, stop
 owned SFX and cancel delayed callbacks. Preserve catalog data and use fades.
 Only offline file rendering may create an `OfflineAudioContext` outside Core.
+
+## 16. Official Phaser skills are pinned, not floating
+
+MiniFugg uses the free official Phaser AI-agent skills as implementation reference.
+They are pinned to the same Phaser runtime version as the app and vendored under
+`vendor/phaser-skills/<version>/`; see `docs/PHASER_SKILLS.md`.
+
+Do not pull skills from Phaser `master` while the runtime remains on an older
+release. Do not hand-edit the vendor copy. Update the Phaser dependency and the
+skill snapshot together. Use `.agents/skills/phaser-minifugg/SKILL.md` as the
+project routing layer so Codex reads only the relevant subsystem skills and keeps
+MiniFugg architecture authoritative.

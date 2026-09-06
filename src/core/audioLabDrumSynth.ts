@@ -29,6 +29,8 @@ const ENHANCED_DRUM_TRACKS = new Set([
   'BTEA_BRUSH_SNARE',
   'BTEA_SHAKER',
   'BTEA_BUBBLE_POP',
+  'ENTRY_RAIL_TATANG',
+  'ENTRY_BRUSH_SWISH',
 ])
 
 function clamp(value: number, min: number, max: number) {
@@ -142,16 +144,17 @@ function scheduleSnare(input: EnhancedDrumInput) {
 
 function scheduleBrushSnare(input: EnhancedDrumInput) {
   const { context, output, noise, velocity, trackGain, start, durationScale, sources } = input
-  const level = clamp(velocity / 127 * trackGain * .9, .006, .09)
-  const duration = clamp(.16 * durationScale, .1, .24)
+  const entry = input.trackId === 'ENTRY_BRUSH_SWISH'
+  const level = clamp(velocity / 127 * trackGain * (entry ? .78 : .9), .004, entry ? .065 : .09)
+  const duration = clamp((entry ? .21 : .16) * durationScale, .1, entry ? .3 : .24)
   const source = makeNoiseSource(context, noise)
   const high = context.createBiquadFilter()
   const low = context.createBiquadFilter()
   const gain = context.createGain()
   high.type = 'highpass'
-  high.frequency.value = 900
+  high.frequency.value = entry ? 650 : 900
   low.type = 'lowpass'
-  low.frequency.value = 5200
+  low.frequency.value = entry ? 3900 : 5200
   gain.gain.setValueAtTime(level, start)
   gain.gain.exponentialRampToValueAtTime(.0001, start + duration)
   source.connect(high).connect(low).connect(gain).connect(output)
@@ -294,6 +297,58 @@ function scheduleBubblePop(input: EnhancedDrumInput) {
   remember(oscillator, sources)
 }
 
+function scheduleRailJoint(input: EnhancedDrumInput) {
+  const { context, output, noise, midi, velocity, trackGain, start, durationScale, sources } = input
+  const tang = midi >= 39
+  const level = clamp(velocity / 127 * trackGain * (tang ? 1.18 : 1), .006, .14)
+  const duration = clamp((tang ? .115 : .065) * durationScale, .04, .17)
+
+  const strike = makeNoiseSource(context, noise)
+  const high = context.createBiquadFilter()
+  const band = context.createBiquadFilter()
+  const low = context.createBiquadFilter()
+  const strikeGain = context.createGain()
+  high.type = 'highpass'
+  high.frequency.value = tang ? 340 : 520
+  band.type = 'bandpass'
+  band.frequency.value = tang ? 980 : 1540
+  band.Q.value = tang ? .72 : .9
+  low.type = 'lowpass'
+  low.frequency.value = 3900
+  strikeGain.gain.setValueAtTime(level * (tang ? 1 : .78), start)
+  strikeGain.gain.exponentialRampToValueAtTime(.0001, start + duration)
+  strike.connect(high).connect(band).connect(low).connect(strikeGain).connect(output)
+  strike.start(start)
+  strike.stop(start + duration + .02)
+  remember(strike, sources)
+
+  const ring = context.createOscillator()
+  const ringGain = context.createGain()
+  ring.type = 'triangle'
+  ring.frequency.setValueAtTime(tang ? 430 : 620, start)
+  ring.frequency.exponentialRampToValueAtTime(tang ? 315 : 470, start + duration)
+  ringGain.gain.setValueAtTime(Math.max(.002, level * (tang ? .42 : .28)), start)
+  ringGain.gain.exponentialRampToValueAtTime(.0001, start + duration)
+  ring.connect(ringGain).connect(output)
+  ring.start(start)
+  ring.stop(start + duration + .02)
+  remember(ring, sources)
+
+  if (tang) {
+    const body = context.createOscillator()
+    const bodyGain = context.createGain()
+    body.type = 'sine'
+    body.frequency.setValueAtTime(138, start)
+    body.frequency.exponentialRampToValueAtTime(82, start + Math.min(.12, duration + .03))
+    bodyGain.gain.setValueAtTime(Math.max(.0015, level * .22), start)
+    bodyGain.gain.exponentialRampToValueAtTime(.0001, start + Math.min(.14, duration + .04))
+    body.connect(bodyGain).connect(output)
+    body.start(start)
+    body.stop(start + Math.min(.15, duration + .05))
+    remember(body, sources)
+  }
+}
+
 export function isAudioLabEnhancedDrumTrack(trackId: string) {
   return ENHANCED_DRUM_TRACKS.has(trackId)
 }
@@ -311,7 +366,7 @@ export function scheduleAudioLabEnhancedDrum(input: EnhancedDrumInput) {
     scheduleSnare(input)
     return true
   }
-  if (input.trackId === 'BTEA_BRUSH_SNARE') {
+  if (input.trackId === 'BTEA_BRUSH_SNARE' || input.trackId === 'ENTRY_BRUSH_SWISH') {
     scheduleBrushSnare(input)
     return true
   }
@@ -329,6 +384,10 @@ export function scheduleAudioLabEnhancedDrum(input: EnhancedDrumInput) {
   }
   if (input.trackId === 'BTEA_BUBBLE_POP') {
     scheduleBubblePop(input)
+    return true
+  }
+  if (input.trackId === 'ENTRY_RAIL_TATANG') {
+    scheduleRailJoint(input)
     return true
   }
   if (input.trackId === 'MAX4_OFFBEAT_HATS'

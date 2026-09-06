@@ -27,7 +27,6 @@ export const lineFuggVectorTrackIds = [
   'LF8_SNARE_SNAP',
   'LF8_HATS_CURSOR',
   'LF8_BASS_VECTOR',
-  'LF8_THREE_LINE_PULSE',
   'LF8_LINE_SWEEP',
 ] as const
 
@@ -36,7 +35,6 @@ export function lineFuggVectorRush(): Track[] {
   const snare: Note[] = []
   const hats: Note[] = []
   const bass: Note[] = []
-  const pulse: Note[] = []
   const sweep: Note[] = []
   const roots = [40, 40, 38, 36, 40, 43, 38, 35] as const // E E D C E G D B
 
@@ -63,12 +61,6 @@ export function lineFuggVectorRush(): Track[] {
       add(bass, start + offset, index === 0 || index === 3 ? .42 : .25, bassNotes[index], index === 0 ? 88 : index === 3 ? 78 : 64)
     })
 
-    // Three attacks are the identity: one for each line available to the player.
-    const triad = bar % 2 === 0 ? [64, 67, 71] : [62, 66, 69]
-    ;[.5, 1.75, 3].forEach((offset, index) => {
-      add(pulse, start + offset, .18, triad[index], index === 0 ? 58 : 48)
-    })
-
     // A short rising line every two bars evokes the finger drawing across cells.
     if (bar % 2 === 1) {
       const line = [64, 67, 71, 76]
@@ -81,7 +73,6 @@ export function lineFuggVectorRush(): Track[] {
     track('LF8_SNARE_SNAP', 'noise', .088, snare),
     track('LF8_HATS_CURSOR', 'noise', .062, hats),
     track('LF8_BASS_VECTOR', 'triangle', .102, bass),
-    track('LF8_THREE_LINE_PULSE', 'square', .035, pulse),
     track('LF8_LINE_SWEEP', 'sawtooth', .018, sweep),
   ]
 }
@@ -95,6 +86,29 @@ export const lineFuggBounceTrackIds = [
   'LF9_THREE_COLOR_HOOK',
 ] as const
 
+const BOUNCE_ROOTS = [45, 41, 48, 43, 45, 41, 38, 40] as const // Am F C G / Am F Dm E
+const BOUNCE_THIRDS = [3, 4, 4, 4, 3, 4, 3, 4] as const
+const BOUNCE_QUESTIONS: ReadonlyArray<readonly number[] | null> = [
+  [69, 72, 76, 72], // Am
+  null,
+  [67, 72, 76, 72], // C
+  null,
+  [69, 72, 76, 72], // Am
+  null,
+  [69, 74, 77, 74], // Dm
+  null,
+]
+const BOUNCE_ANSWERS: ReadonlyArray<readonly number[] | null> = [
+  null,
+  [69, 72, 77], // F
+  null,
+  [71, 74, 79], // G
+  null,
+  [69, 72, 77], // F
+  null,
+  [68, 71, 76], // E, then resolves cleanly to Am when the loop restarts
+]
+
 export function lineFuggQuickSumBounce(): Track[] {
   const kick: Note[] = []
   const rim: Note[] = []
@@ -102,40 +116,48 @@ export function lineFuggQuickSumBounce(): Track[] {
   const bass: Note[] = []
   const pluck: Note[] = []
   const hook: Note[] = []
-  const roots = [45, 45, 48, 43, 45, 41, 43, 44] as const // A A C G A F G G# approach
 
   for (let bar = 0; bar < LINEFUGG_SHORT_BARS; bar += 1) {
     const start = bar * 4
-    const root = roots[bar]
-    const answerBar = bar % 4 === 3
+    const root = BOUNCE_ROOTS[bar]
+    const phraseEnd = bar === 3 || bar === 7
 
-    // Looser than Vector Rush: a round kick and a syncopated pickup create bounce.
-    ;[0, 2.5].forEach((beat, index) => add(kick, start + beat, .16, 36, index === 0 ? 96 : 76))
-    if (answerBar) add(kick, start + 3.5, .11, 36, 66)
+    // The original round kick/rim identity stays, but the offbeat skeleton is
+    // now regular enough that the player never loses the bar.
+    ;[0, 2.5].forEach((beat, index) => add(kick, start + beat, .16, 36, index === 0 ? 98 : 76))
+    if (phraseEnd) add(kick, start + 3.5, .11, 36, 68)
     ;[1, 3].forEach((beat, index) => add(rim, start + beat, .09, 38, index === 0 ? 76 : 84))
-
-    // A light uneven tick rather than a straight machine-gun hat pattern.
-    ;[.5, 1.25, 2, 2.75, 3.5].forEach((offset, index) => {
-      add(shaker, start + offset, .055, 42, index === 2 ? 48 : 34 + (index % 2) * 5)
+    ;[.5, 1.5, 2.5, 3.5].forEach((offset, index) => {
+      add(shaker, start + offset, .055, 42, index === 2 ? 47 : 36)
     })
 
-    const bassOffsets = [0, .75, 1.75, 2.5, 3.25] as const
-    const bassNotes = [root, root + 7, root + 12, root + 7, root + 2] as const
+    // Chord-tone bass with a sustained final note removes the unexplained
+    // half-beat holes heard in the first draft.
+    const bassOffsets = [0, .75, 1.5, 2.25, 3] as const
+    const bassDurations = [.55, .35, .4, .35, .86] as const
+    const bassNotes = [root, root + 7, root + 12, root + 7, root + BOUNCE_THIRDS[bar] + 12] as const
     bassOffsets.forEach((offset, index) => {
-      add(bass, start + offset, index === 0 ? .58 : .32, bassNotes[index], index === 0 ? 80 : 58 + (index === 2 ? 8 : 0))
+      add(bass, start + offset, bassDurations[index], bassNotes[index], index === 0 ? 82 : index === 4 ? 68 : 60)
     })
 
-    // Tiny calculation exchange: question, answer, confirmation.
-    const question = bar % 2 === 0 ? [69, 72, 76] : [67, 71, 74]
-    ;[.25, 1.5, 2.25].forEach((offset, index) => {
-      add(pluck, start + offset, index === 2 ? .28 : .16, question[index], index === 2 ? 50 : 42)
-    })
+    // One foreground voice at a time: even bars ask, odd bars answer.
+    // Every pitch belongs to the current chord, so the playful syncopation no
+    // longer sounds like accidental wrong notes.
+    const question = BOUNCE_QUESTIONS[bar]
+    if (question) {
+      const offsets = [.25, 1, 1.75, 2.5] as const
+      const durations = [.22, .22, .32, .8] as const
+      question.forEach((midi, index) => {
+        add(pluck, start + offsets[index], durations[index], midi, index === 3 ? 51 : 43)
+      })
+    }
 
-    // Orange / violet / yellow translated into a friendly three-note signature.
-    if (bar === 1 || bar === 3 || bar === 5 || bar === 7) {
-      const phrase = bar < 4 ? [76, 79, 81] : [79, 81, 84]
-      ;[.5, 1.25, 2.25].forEach((offset, index) => {
-        add(hook, start + offset, index === 2 ? .42 : .24, phrase[index], answerBar ? 50 : 43)
+    const answer = BOUNCE_ANSWERS[bar]
+    if (answer) {
+      const offsets = [.5, 1.25, 2.25] as const
+      const durations = [.28, .32, 1.15] as const
+      answer.forEach((midi, index) => {
+        add(hook, start + offsets[index], durations[index], midi, index === 2 ? 52 : 45)
       })
     }
   }
@@ -143,9 +165,9 @@ export function lineFuggQuickSumBounce(): Track[] {
   return [
     track('LF9_KICK_BOUNCE', 'noise', .105, kick),
     track('LF9_RIM_CLAP', 'noise', .082, rim),
-    track('LF9_SHAKER_TICK', 'noise', .058, shaker),
-    track('LF9_WARM_BASS', 'triangle', .095, bass),
-    track('LF9_CALC_PLUCK', 'square', .03, pluck),
-    track('LF9_THREE_COLOR_HOOK', 'triangle', .034, hook),
+    track('LF9_SHAKER_TICK', 'noise', .054, shaker),
+    track('LF9_WARM_BASS', 'triangle', .1, bass),
+    track('LF9_CALC_PLUCK', 'square', .027, pluck),
+    track('LF9_THREE_COLOR_HOOK', 'triangle', .032, hook),
   ]
 }

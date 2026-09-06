@@ -1,5 +1,7 @@
 # AI development instructions
 
+Before modifying production source structure, refactoring an existing implementation, or adding replacement files, read `docs/REPOSITORY_WORKFLOW.md`. Git history is the version archive: production source must keep one canonical implementation per responsibility instead of accumulating `V2`/`V3`/`final`/`old`/`fix` copies.
+
 Before creating or modifying any MiniFugg game, read `GAME_DEV_SPEC.md`, `docs/STYLE_SYSTEM.md`, `docs/INPUT_GESTURES.md`, `docs/ORIENTATION_LAYOUT.md`, `docs/GAME_LAYOUT_SYSTEM.md`, `docs/GAMEPLAY_SHELL.md` and `docs/PLATFORM_EXPORTS.md` completely. They are the normative game-development, visual-direction, input, orientation, layout, active-game-shell and distribution-portability contracts for this repository.
 
 Before creating, importing or integrating image assets, also read `docs/ASSET_PIPELINE.md`. It is the normative Drive -> GitHub image pipeline. Use that pipeline instead of manual binary GitHub uploads, base64 chunking, public Drive links or FTP.
@@ -58,3 +60,7 @@ Before creating or modifying Fugg welcome covers / cover art, also read `docs/WE
 34. Platform entry scenes are collectible Core content. Their surroundings may vary widely, but the MiniFugg logo/mascot/Core identity stays stable. Prefer a small default scene set plus achievement-unlocked scenes instead of one permanent splash or an ever-growing unstructured random catalog.
 35. Shared Core UI must use the semantic system in `docs/PLATFORM_UI_SYSTEM.md`. Do not create screen-specific variants for ordinary body text, headings, player names, Creator/999 badges, avatars, tabs, list rows or standard actions when a shared primitive can express the same role.
 36. The MiniFugg wordmark is a locked brand asset. Read `docs/BRAND_ASSETS.md` and use its canonical reference; never redraw, regenerate, approximate with a font, or silently substitute another MiniFugg logo variant.
+37. Production source uses Git for version history. Edit the canonical file in place; do not accumulate `V2`/`V3`/`final`/`old`/`backup`/chronological `fix` implementations on `main`. If a replacement becomes canonical, delete the superseded source in the same cleanup.
+38. Multiple game CSS files are allowed when they have stable semantic responsibilities. Name them by responsibility (`mobile`, `landscape`, `effects`, etc.), never by prompt/version chronology.
+39. Game CSS must stay inside the game's visual universe: use game-owned selectors/prefixes and shared tokens, but never target Core `.mf-*`, `.game-feed`, `.game-slot`, `.game-card`, `.game-surface`, `body`, `html`, `#root` or `:root` to alter platform presentation. Core must not depend on game-private selectors either.
+40. Developer labs/editors may coexist with production, but must be clearly identifiable as tooling. Dead preview/demo/alternate UI components that are no longer imported belong in Git history, not beside the canonical production UI.

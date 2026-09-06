@@ -2,7 +2,7 @@
 
 Mis à jour : 7 septembre 2026. Base inspectée : `589f24f` sur `main`.
 
-Phase : reprise de l'intégration artistique après audit. Maturité : jeu jouable, finition Fugg à revoir et vérifier.
+Phase : production et intégration artistiques. Maturité : prototype, GD et équilibrage validés par l'utilisateur ; finition Fugg à revoir et vérifier.
 Statut registre : `fugg` historique, inchangé par cet audit. Runtime : `phaser-2d`, stage portrait `390 × 844`, migration `current`, non verrouillée. Cover : `update-required`, placeholder.
 Livraison : implémentation existante présente sur `main` ; correspondance du site déployé avec ce commit non vérifiée dans cette passe documentaire.
 Séquence initiale : jeu existant ; historique du compteur inconnu, aucun nouveau compteur.
@@ -10,6 +10,8 @@ Séquence initiale : jeu existant ; historique du compteur inconnu, aucun nouvea
 ## Intention et décisions retenues
 
 Tracer trois lignes de cinq cases maximum sur une grille 7 × 7 pour maximiser le total. Les lignes sont droites, horizontales, verticales ou diagonales ; chaque paire partage au plus une case. Calcul dans le sens du tracé. Grille quotidienne déterministe. Après trois lignes, annulation/redessin restent possibles ; seule la validation explicite termine la partie.
+
+Validation utilisateur explicite du 7 septembre 2026 : « Proto, GD et équilibre sont trés bons, ils sont validés ». Ces étapes sont acquises. Préserver les règles et paramètres retenus pendant la production artistique ; ne pas rouvrir une phase de recherche de GD ou d'équilibrage sans nouvelle demande. Les tests techniques restants vérifient l'absence de régression de l'intégration, sans remettre cette validation en attente.
 
 DA **Orbital Accounting** approuvée le 6 septembre 2026 : instrument céleste en laiton, bleu encre, parchemin, nombres prioritaires. Pas de texte décoratif ou de nom du jeu dans le gameplay. Trois indicateurs avec cinq points chacun, présents une seule fois. Musiques canoniques : MF-MUS-0008 et MF-MUS-0009.
 
@@ -21,8 +23,9 @@ Références : [ART_DIRECTION.md et contrat artistique](ART_DIRECTION.md), [ASSE
 
 | Lot | État | Réalisé / preuve | Reste / critère de sortie |
 | --- | --- | --- | --- |
-| Prototype et boucle Core | À vérifier | Jeu Phaser jouable, règles et liaison Core dans les sources | Rejouer entrée → trois lignes → annulation → validation → reprise ; vérifier un seul finish |
-| GD et équilibre | À vérifier | Règles retenues documentées, calcul quotidien existant | Essais de difficulté/plaisir, limites des opérations et scores ; ne pas changer le GD pour faciliter le décor |
+| Prototype | Validé | Validation explicite de l'utilisateur le 7 septembre 2026 | Acquis ; préserver la boucle jouable |
+| GD et équilibre | Validé | Validation explicite de l'utilisateur le 7 septembre 2026 | Acquis ; conserver règles et paramètres pendant la réalisation artistique |
+| Intégration Core / non-régression | À vérifier | Liaison Core existante dans les sources | Après modifications, rejouer entrée → trois lignes → annulation → validation → reprise ; vérifier un seul finish et la conservation du gameplay validé |
 | Composition et inputs | À faire | Stage canonique ; code : grille utile de 282 unités dans un panneau plus large | Revoir blockout, taille tactile et zones de calcul ; le document DA vise environ 370 unités de grille, écart à résoudre |
 | DA | Validé | Choix Orbital Accounting et master identifiés dans ART_DIRECTION.md | Conserver cette direction ; validation de l'intégration reste distincte |
 | Assets / intégration | À faire | Pack v5 importé et utilisé, manifeste existant | Corriger ratios et zones utiles des bandes, chevauchements des textes et alignement du dock ; mesurer les contrats avant toute régénération |
@@ -51,5 +54,7 @@ Blocages : aucun pour la documentation et le blockout. Vérifier l'accès effect
 - Budgets de fluidité, chargement et mémoire : à fixer puis mesurer sur les cibles retenues. Une estimation RGBA des images n'est pas une mesure de mémoire GPU.
 
 ## Derniers changements / enseignements
+
+7 septembre 2026 — validation explicite du prototype, du GD et de l'équilibrage enregistrée. Le chantier porte désormais sur la réalisation artistique et sa vérification ; les tests de non-régression restent distincts de l'acceptation du jeu.
 
 7 septembre 2026 — fiche initialisée et contrat artistique relié à la notice commune. Une référence approuvée n'est pas un asset runtime ; conserver les proportions utiles, partager les ancrages entre art et état, produire séparément les pièces à animer. FIT et build réussi ne prouvent ni ergonomie ni fidélité. Le prochain passage reprend ces décisions sans faire répéter l'utilisateur.

@@ -32,9 +32,8 @@
 }
 
 /*
- * Canvas texture warp. The panorama is sampled into narrow source strips and
- * remapped onto a very aggressive near-left / far-right trapezoid. Overscan
- * keeps every transparent window filled while the carriage moves.
+ * Canvas texture warp. The near edge is explicitly left and the far/vanishing
+ * edge explicitly right. Overscan keeps every transparent window filled.
  */
 .mf-entry-scene__city-canvas {
   position: absolute;
@@ -52,7 +51,7 @@
   z-index: 2;
   transform-origin: 50% 58%;
   will-change: transform;
-  animation: mf-entry-carriage-motion 7.6s ease-in-out infinite;
+  animation: mf-entry-carriage-motion 5.2s linear infinite;
 }
 
 .mf-entry-scene__wagon,
@@ -75,18 +74,18 @@
 }
 
 /*
- * Hand is deliberately independent from the carriage. It follows almost the
- * same bumps with a slight temporal delay, producing a small inertia cue.
- * Its resting pose is shifted 15% right and 20% down as requested.
+ * The hand has the requested 15% right / 20% down resting pose. Its train
+ * rhythm starts 90ms after the carriage and is slightly damped, so every
+ * wheel-joint "ta-tang" reaches the hand a fraction later.
  */
 .mf-entry-scene__hand-group {
   position: absolute;
   inset: 0;
   z-index: 3;
   transform-origin: 44.1% 47.5%;
-  transform: translate3d(15%,20%,0) scale(.91);
+  transform: translate3d(15%,20%,0) scale(.91) rotate(-1.6deg);
   will-change: transform, opacity;
-  animation: mf-entry-hand-inertia 7.6s ease-in-out 120ms infinite both;
+  animation: mf-entry-hand-inertia 5.2s linear 90ms infinite both;
 }
 
 .mf-entry-scene__arm {
@@ -97,29 +96,29 @@
 }
 
 /*
- * The generated phones all share one locked geometry. The DOM surface is now
- * clipped to the actual inner-screen quadrilateral instead of a loose rotated
- * rectangle, so it follows the bezel far more closely.
+ * The phone is slightly diagonal in the generated arm artwork. This viewport
+ * is fitted to the inner bezel as a quadrilateral rather than left as a plain
+ * rectangle; the hand itself is also straightened by ~1.6deg.
  */
 .mf-entry-scene__phone-ui {
   position: absolute;
   z-index: 2;
-  left: 27.1%;
-  top: 29.5%;
-  width: 33.05%;
-  height: 36.72%;
+  left: 26.8%;
+  top: 29.2%;
+  width: 33.7%;
+  height: 37.1%;
   overflow: hidden;
-  clip-path: polygon(21.9% 0%, 100% 1.45%, 85.2% 100%, 0% 95.75%);
-  background: linear-gradient(145deg, rgba(6,8,11,.91), rgba(10,13,17,.82));
+  clip-path: polygon(13.5% 0%, 100% 2.5%, 87.3% 100%, 0% 95.2%);
+  background: linear-gradient(145deg, rgba(6,8,11,.94), rgba(10,13,17,.86));
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.025);
   transform-origin: 50% 50%;
 }
 
 .mf-entry-scene__phone-content {
   position: absolute;
-  inset: 0;
+  inset: -1.5%;
   overflow: hidden;
-  transform: rotate(.45deg) skewY(.6deg) scale(.97);
+  transform: rotate(.15deg) skewY(-1.75deg) skewX(-.3deg) scale(.985);
   transform-origin: 50% 50%;
 }
 
@@ -184,11 +183,6 @@
   transform: scale(1.025);
 }
 
-/*
- * Delivery animation: the phone centre travels to viewport centre while the
- * full arm + physical phone scale together. At ~78% the mapped screen reaches
- * roughly 94-96% of stage height, which is where the flash begins.
- */
 .mf-entry-scene.is-entering .mf-entry-scene__hand-group {
   animation: mf-entry-hand-deliver 860ms cubic-bezier(.14,.84,.17,1) forwards;
 }
@@ -212,56 +206,81 @@
   pointer-events: none;
 }
 
-/* Integer-pixel carriage motion keeps the raster crisp. */
+/*
+ * Soft carriage drift plus three paired rail-joint impacts per loop. Closely
+ * spaced keyframes create the familiar ta-tang / ta-tang without blurring the
+ * raster with rotation or sub-pixel transforms.
+ */
 @keyframes mf-entry-carriage-motion {
   0%, 100% { transform: translate3d(0,0,0); }
-  17% { transform: translate3d(0,-1px,0); }
-  34% { transform: translate3d(-1px,1px,0); }
-  51% { transform: translate3d(1px,0,0); }
-  65% { transform: translate3d(0,1px,0); }
-  78% { transform: translate3d(0,-1px,0); }
-  82% { transform: translate3d(-2px,2px,0); }
-  83.5% { transform: translate3d(1px,-1px,0); }
-  85% { transform: translate3d(0,0,0); }
+  9% { transform: translate3d(1px,-1px,0); }
+  18% { transform: translate3d(0,1px,0); }
+  23% { transform: translate3d(-1px,2px,0); }
+  24.5% { transform: translate3d(1px,-2px,0); }
+  26% { transform: translate3d(0,-1px,0); }
+  27.5% { transform: translate3d(0,0,0); }
+  36% { transform: translate3d(-1px,0,0); }
+  44% { transform: translate3d(0,1px,0); }
+  48% { transform: translate3d(-1px,2px,0); }
+  49.5% { transform: translate3d(1px,-2px,0); }
+  51% { transform: translate3d(0,-1px,0); }
+  52.5% { transform: translate3d(0,0,0); }
+  61% { transform: translate3d(1px,0,0); }
+  69% { transform: translate3d(0,-1px,0); }
+  73% { transform: translate3d(-1px,2px,0); }
+  74.5% { transform: translate3d(1px,-2px,0); }
+  76% { transform: translate3d(0,-1px,0); }
+  77.5% { transform: translate3d(0,0,0); }
+  87% { transform: translate3d(-1px,0,0); }
+  95% { transform: translate3d(0,1px,0); }
 }
 
-/* Same rhythm as the carriage, delayed and slightly damped for hand inertia. */
+/* Same rail rhythm, delayed and damped, with a tiny rotational inertia cue. */
 @keyframes mf-entry-hand-inertia {
-  0%, 100% { transform: translate3d(15%,20%,0) scale(.91); }
-  19% { transform: translate3d(15%,calc(20% - 1px),0) scale(.91); }
-  37% { transform: translate3d(calc(15% - 1px),calc(20% + 1px),0) scale(.9105); }
-  54% { transform: translate3d(calc(15% + 1px),20%,0) scale(.91); }
-  68% { transform: translate3d(15%,calc(20% + 1px),0) scale(.91); }
-  81% { transform: translate3d(15%,calc(20% - 1px),0) scale(.91); }
-  84.5% { transform: translate3d(calc(15% - 2px),calc(20% + 2px),0) scale(.912); }
-  86.5% { transform: translate3d(calc(15% + 1px),calc(20% - 1px),0) scale(.909); }
-  88% { transform: translate3d(15%,20%,0) scale(.91); }
+  0%, 100% { transform: translate3d(15%,20%,0) scale(.91) rotate(-1.6deg); }
+  9% { transform: translate3d(calc(15% + 1px),calc(20% - 1px),0) scale(.91) rotate(-1.56deg); }
+  18% { transform: translate3d(15%,calc(20% + 1px),0) scale(.91) rotate(-1.62deg); }
+  23% { transform: translate3d(calc(15% - 1px),calc(20% + 1px),0) scale(.911) rotate(-1.66deg); }
+  24.5% { transform: translate3d(calc(15% + 1px),calc(20% - 1px),0) scale(.909) rotate(-1.54deg); }
+  27.5% { transform: translate3d(15%,20%,0) scale(.91) rotate(-1.6deg); }
+  36% { transform: translate3d(calc(15% - 1px),20%,0) scale(.91) rotate(-1.62deg); }
+  44% { transform: translate3d(15%,calc(20% + 1px),0) scale(.91) rotate(-1.6deg); }
+  48% { transform: translate3d(calc(15% - 1px),calc(20% + 1px),0) scale(.911) rotate(-1.66deg); }
+  49.5% { transform: translate3d(calc(15% + 1px),calc(20% - 1px),0) scale(.909) rotate(-1.54deg); }
+  52.5% { transform: translate3d(15%,20%,0) scale(.91) rotate(-1.6deg); }
+  61% { transform: translate3d(calc(15% + 1px),20%,0) scale(.91) rotate(-1.56deg); }
+  69% { transform: translate3d(15%,calc(20% - 1px),0) scale(.91) rotate(-1.58deg); }
+  73% { transform: translate3d(calc(15% - 1px),calc(20% + 1px),0) scale(.911) rotate(-1.66deg); }
+  74.5% { transform: translate3d(calc(15% + 1px),calc(20% - 1px),0) scale(.909) rotate(-1.54deg); }
+  77.5% { transform: translate3d(15%,20%,0) scale(.91) rotate(-1.6deg); }
+  87% { transform: translate3d(calc(15% - 1px),20%,0) scale(.91) rotate(-1.62deg); }
+  95% { transform: translate3d(15%,calc(20% + 1px),0) scale(.91) rotate(-1.6deg); }
 }
 
 @keyframes mf-entry-hand-deliver {
   0% {
     opacity: 1;
-    transform: translate3d(15%,20%,0) scale(.91);
+    transform: translate3d(15%,20%,0) scale(.91) rotate(-1.6deg);
   }
   38% {
     opacity: 1;
-    transform: translate3d(11.5%,13%,0) scale(1.32);
+    transform: translate3d(11.5%,13%,0) scale(1.32) rotate(-1.15deg);
   }
   64% {
     opacity: 1;
-    transform: translate3d(7.5%,5.5%,0) scale(2.08);
+    transform: translate3d(7.5%,5.5%,0) scale(2.08) rotate(-.65deg);
   }
   78% {
     opacity: 1;
-    transform: translate3d(5.9%,2.5%,0) scale(2.55);
+    transform: translate3d(5.9%,2.5%,0) scale(2.55) rotate(-.22deg);
   }
   86% {
     opacity: 1;
-    transform: translate3d(5.9%,2.5%,0) scale(2.64);
+    transform: translate3d(5.9%,2.5%,0) scale(2.64) rotate(0deg);
   }
   100% {
     opacity: 0;
-    transform: translate3d(5.9%,2.5%,0) scale(2.76);
+    transform: translate3d(5.9%,2.5%,0) scale(2.76) rotate(0deg);
   }
 }
 
@@ -306,7 +325,7 @@
 
 @media (max-height: 720px) {
   .mf-entry-scene__hand-group {
-    transform: translate3d(15%,16%,0) scale(.91);
+    transform: translate3d(15%,16%,0) scale(.91) rotate(-1.6deg);
     animation-name: mf-entry-hand-inertia-compact;
   }
 
@@ -316,12 +335,13 @@
 }
 
 @keyframes mf-entry-hand-inertia-compact {
-  0%, 100% { transform: translate3d(15%,16%,0) scale(.91); }
-  19% { transform: translate3d(15%,calc(16% - 1px),0) scale(.91); }
-  37% { transform: translate3d(calc(15% - 1px),calc(16% + 1px),0) scale(.9105); }
-  54% { transform: translate3d(calc(15% + 1px),16%,0) scale(.91); }
-  68% { transform: translate3d(15%,calc(16% + 1px),0) scale(.91); }
-  84.5% { transform: translate3d(calc(15% - 2px),calc(16% + 2px),0) scale(.912); }
+  0%, 100% { transform: translate3d(15%,16%,0) scale(.91) rotate(-1.6deg); }
+  23% { transform: translate3d(calc(15% - 1px),calc(16% + 1px),0) scale(.911) rotate(-1.66deg); }
+  24.5% { transform: translate3d(calc(15% + 1px),calc(16% - 1px),0) scale(.909) rotate(-1.54deg); }
+  48% { transform: translate3d(calc(15% - 1px),calc(16% + 1px),0) scale(.911) rotate(-1.66deg); }
+  49.5% { transform: translate3d(calc(15% + 1px),calc(16% - 1px),0) scale(.909) rotate(-1.54deg); }
+  73% { transform: translate3d(calc(15% - 1px),calc(16% + 1px),0) scale(.911) rotate(-1.66deg); }
+  74.5% { transform: translate3d(calc(15% + 1px),calc(16% - 1px),0) scale(.909) rotate(-1.54deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -332,12 +352,12 @@
   }
 
   .mf-entry-scene__hand-group {
-    transform: translate3d(15%,20%,0) scale(.91);
+    transform: translate3d(15%,20%,0) scale(.91) rotate(-1.6deg);
   }
 
   .mf-entry-scene.is-entering .mf-entry-scene__hand-group {
     opacity: 0;
-    transform: translate3d(5.9%,2.5%,0) scale(2.76);
+    transform: translate3d(5.9%,2.5%,0) scale(2.76) rotate(0deg);
     transition: transform 1ms linear, opacity 1ms linear;
   }
 

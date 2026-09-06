@@ -138,12 +138,17 @@ export function createPlatformEntryMusic(sceneStartedAtMs: number): PlatformEntr
     noise = makeNoiseBuffer(context)
 
     master = context.createGain()
+    const highpass = context.createBiquadFilter()
     const lowpass = context.createBiquadFilter()
     const compressor = context.createDynamicsCompressor()
 
     // Conservative production headroom. The rail joint and bass can coincide,
     // so keep the scene comfortably below digital full scale before compression.
-    master.gain.value = .38
+    // A gentle 58Hz high-pass avoids wasting laptop-speaker excursion on rumble.
+    master.gain.value = .34
+    highpass.type = 'highpass'
+    highpass.frequency.value = 58
+    highpass.Q.value = .55
     lowpass.type = 'lowpass'
     lowpass.frequency.value = 10800
     lowpass.Q.value = .18
@@ -152,7 +157,7 @@ export function createPlatformEntryMusic(sceneStartedAtMs: number): PlatformEntr
     compressor.ratio.value = 7
     compressor.attack.value = .004
     compressor.release.value = .2
-    master.connect(lowpass).connect(compressor).connect(context.destination)
+    master.connect(highpass).connect(lowpass).connect(compressor).connect(context.destination)
     return context
   }
 

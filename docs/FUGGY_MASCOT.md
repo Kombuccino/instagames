@@ -62,7 +62,17 @@ Allowed examples:
 - mischievous/playful;
 - peeking, waving, walking, sitting, jumping.
 
-Avoid turning Fuggy into a conventional cartoon face with detailed eyebrows, human lips, exposed teeth or large expressive pupils. The mask + eye diamonds are the primary face grammar.
+The eye language may temporarily simplify the two white diamonds into tiny **kaomoji / Japanese-emoticon-like marks** inside the same black visor. This is canonical for animated Fuggy expressions as long as it remains restrained and eye-only. Useful examples include:
+
+- `^^` for happy / pleased;
+- `--` or `==` for sleepy / dozing;
+- `><` for a tight blink, excitement or a playful squeeze;
+- `oo` for suddenly awake / surprised;
+- shifted small diamonds or marks for looking left/right.
+
+These marks replace the visible eye diamonds for the duration of the expression; do not leave the fixed white eyes visible underneath an animated expression. Do not add a mouth to complete the emoticon.
+
+Avoid turning Fuggy into a conventional cartoon face with detailed eyebrows, human lips, exposed teeth or large expressive pupils. The mask + restrained white eye marks are the primary face grammar.
 
 ## 360° / scene consistency
 

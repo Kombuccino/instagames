@@ -13,6 +13,7 @@ import { ProjectiveDomSurface } from './graphics/ProjectiveDomSurface'
 import { createPlatformEntryMusic, type PlatformEntryMusicController } from './platformEntryMusic'
 import './platformEntryScene.css'
 import './phoneProjectiveSurface.css'
+import './platformEntrySceneHandoff.css'
 
 type PlatformEntrySceneProps = {
   onLaunch: () => void
@@ -35,16 +36,16 @@ const ARM_VARIANTS = Array.from({ length: 8 }, (_, index) => `${ASSET_ROOT}/arms
 const ARM_STORAGE_KEY = 'minifugg:entry-arm:v1'
 
 /*
- * Measured from the physical inner display of the locked 941x1672 phone art.
- * Order: top-left, top-right, bottom-right, bottom-left, in stage fractions.
- * ProjectiveDomSurface now resolves these points in the parent's local space,
- * so the hand's scale/rotation is applied exactly once to both art and DOM.
+ * Re-measured from the production arm PNGs themselves rather than from a
+ * rendered screenshot. Six independently generated variants converge within
+ * roughly one source pixel on these inner-display edges; the two remaining
+ * variants use the same locked phone geometry. Order is TL, TR, BR, BL.
  */
 const PHONE_SCREEN_QUAD = [
-  [0.3241, 0.2967],
-  [0.6260, 0.3038],
-  [0.5632, 0.6519],
-  [0.2582, 0.6400],
+  [0.338072, 0.297603],
+  [0.629183, 0.297324],
+  [0.559736, 0.660858],
+  [0.263604, 0.652634],
 ] as const
 
 function chooseArm() {
@@ -94,13 +95,40 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
     const music = createPlatformEntryMusic(sceneStartedAtRef.current)
     musicRef.current = music
 
-    // Best-effort autoplay. Browsers that permit audio for this origin will
-    // start immediately. Otherwise the same controller is resumed on the first
-    // pointer/key/wheel gesture without losing the 5.2s carriage phase.
-    void music.start()
+    const retryMusic = () => {
+      void music.start()
+    }
+    const retryWhenVisible = () => {
+      if (!document.hidden) retryMusic()
+    }
+
+    /*
+     * A Ctrl+F5 destroys the old AudioContext. Browsers may suspend the fresh
+     * context until the document is fully shown or receives a trusted gesture,
+     * so retry at those lifecycle boundaries as well as on the initial mount.
+     * This does not attempt to bypass browser autoplay policy; it simply makes
+     * every permitted start opportunity deterministic.
+     */
+    retryMusic()
+    const delayedRetry = window.setTimeout(retryMusic, 240)
+    window.addEventListener('pageshow', retryMusic)
+    window.addEventListener('focus', retryMusic)
+    document.addEventListener('visibilitychange', retryWhenVisible)
+    document.addEventListener('pointerdown', retryMusic, true)
+    document.addEventListener('keydown', retryMusic, true)
+    document.addEventListener('touchstart', retryMusic, true)
+    document.addEventListener('wheel', retryMusic, true)
 
     return () => {
       if (timerRef.current !== null) window.clearTimeout(timerRef.current)
+      window.clearTimeout(delayedRetry)
+      window.removeEventListener('pageshow', retryMusic)
+      window.removeEventListener('focus', retryMusic)
+      document.removeEventListener('visibilitychange', retryWhenVisible)
+      document.removeEventListener('pointerdown', retryMusic, true)
+      document.removeEventListener('keydown', retryMusic, true)
+      document.removeEventListener('touchstart', retryMusic, true)
+      document.removeEventListener('wheel', retryMusic, true)
       music.stop()
       if (musicRef.current === music) musicRef.current = null
     }

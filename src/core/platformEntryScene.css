@@ -26,54 +26,26 @@
 
 .mf-entry-scene__city {
   position: absolute;
-  inset: -4% -10% -3%;
+  inset: -2.5%;
   overflow: hidden;
   background: linear-gradient(180deg, #a8c9ed 0 20%, #efbd83 55%, #bd9274 100%);
-  perspective: 1600px;
-  perspective-origin: 100% 44%;
   transition: opacity 420ms ease 120ms;
 }
 
 /*
- * The authored carriage has a strong vanishing point to the upper-right:
- * the large foreground window is on the left and every following window
- * recedes towards the right. The panorama therefore lives on one real 3D
- * plane whose far/right edge is deliberately smaller and whose near/left
- * edge grows towards the viewer. This is intentionally pronounced enough
- * to read immediately through the transparent window cut-outs.
+ * Real texture warp: the panorama is sampled into narrow source strips and
+ * mapped by canvas onto a pronounced trapezoid. The left/near edge is about
+ * five times taller than the right/far edge, with overscan outside the stage
+ * so every transparent window stays filled during carriage motion.
  */
-.mf-entry-scene__city-plane {
+.mf-entry-scene__city-canvas {
   position: absolute;
-  left: -30%;
-  top: -8%;
-  width: 170%;
-  height: 70%;
-  overflow: hidden;
-  transform-origin: 100% 50%;
-  transform: rotateY(40deg) scale(.72, .86);
-  backface-visibility: hidden;
-  will-change: transform;
-}
-
-.mf-entry-scene__city-track {
-  position: absolute;
-  top: -10%;
-  left: -7%;
-  display: flex;
-  width: max-content;
-  height: 124%;
-  will-change: transform;
-  animation: mf-entry-city-loop 27s linear infinite;
-}
-
-.mf-entry-scene__city-track img {
+  inset: -5%;
   display: block;
-  flex: 0 0 auto;
-  width: auto;
-  height: 100%;
+  width: 110%;
+  height: 110%;
   max-width: none;
-  image-rendering: auto;
-  -webkit-user-drag: none;
+  pointer-events: none;
 }
 
 .mf-entry-scene__carriage {
@@ -200,7 +172,6 @@
   opacity: .2;
 }
 
-.mf-entry-scene.is-entering .mf-entry-scene__city-track,
 .mf-entry-scene.is-entering .mf-entry-scene__carriage,
 .mf-entry-scene.is-entering .mf-entry-scene__hand-group {
   animation-play-state: paused;
@@ -239,11 +210,6 @@
   z-index: 20;
   border: 2px solid rgba(255,255,255,.7);
   pointer-events: none;
-}
-
-@keyframes mf-entry-city-loop {
-  from { transform: translate3d(0,0,0); }
-  to { transform: translate3d(-50%,0,0); }
 }
 
 /* Integer-pixel translation keeps the raster noticeably crisper than tiny rotations/sub-pixel moves. */
@@ -289,7 +255,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mf-entry-scene__city-track,
   .mf-entry-scene__carriage,
   .mf-entry-scene__hand-group,
   .mf-entry-scene__phone-ui strong {

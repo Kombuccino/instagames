@@ -4,8 +4,24 @@ export type GameLeaderboardPeriod = 'daily' | 'weekly' | 'global'
 export type GameLeaderboardSort = 'desc' | 'asc'
 export type GameOrientation = 'portrait' | 'landscape' | 'both'
 export type GameCurationStatus = 'fugg' | 'beta' | 'trash'
+export type GameRuntimeKind = 'legacy-dom' | 'phaser-2d' | 'three-3d'
+export type GameMigrationState = 'required' | 'in-progress' | 'current'
+export type CoverMigrationState = 'update-required' | 'in-progress' | 'current'
 /** Persisted discovery preference kept for profile/API backward compatibility. */
 export type FeedPreference = 'fugg' | 'beta' | 'all'
+
+export type GameLogicalViewport = {
+  width: number
+  height: number
+}
+
+export type GameMigrationConfig = {
+  state: GameMigrationState
+  targetRuntime: Exclude<GameRuntimeKind, 'legacy-dom'>
+  /** Locked games may only receive migration work or minimal urgent blocking/security fixes. */
+  locked: boolean
+  cover: CoverMigrationState
+}
 
 export type GameWelcomeLayerRole = 'background' | 'midground' | 'foreground' | 'overlay'
 export type GameWelcomeMotionType = 'none' | 'float' | 'vibrate' | 'breathe' | 'drift' | 'sway'
@@ -14,7 +30,7 @@ export type GameWelcomeMotion = {
   type: GameWelcomeMotionType
   /** Multiplier around 1.0. Higher values animate faster. */
   speed?: number
-  /** Visual displacement/intensity in CSS pixels for motion presets. */
+  /** Legacy cover-interpreter intensity. New advanced animated covers target Phaser. */
   intensity?: number
   /** Direction in degrees for directional presets such as drift/float. */
   direction?: number
@@ -23,9 +39,9 @@ export type GameWelcomeMotion = {
 }
 
 export type GameWelcomeLayerFx = {
-  /** CSS blur radius in pixels. Keep subtle. */
+  /** Legacy cover-interpreter blur radius. */
   blur?: number
-  /** Drop-shadow/glow radius in pixels. 0 disables it. */
+  /** Legacy cover-interpreter glow radius. 0 disables it. */
   glow?: number
 }
 
@@ -37,13 +53,13 @@ export type GameWelcomeLayer = {
   objectPosition?: string
   /** Layer scale in percent. 100 means the authored canvas size. */
   scale?: number
-  /** Layer translation as a percentage of the authored full-canvas layer size. */
+  /** Legacy cover-interpreter translation values retained during migration. */
   x?: number
   y?: number
   rotation?: number
   /** 0..100 */
   opacity?: number
-  /** Pointer/device parallax amplitude in CSS pixels at full tilt. */
+  /** Legacy cover-interpreter parallax amplitude retained during migration. */
   parallaxX?: number
   parallaxY?: number
   motion?: GameWelcomeMotion
@@ -56,7 +72,7 @@ export type GameWelcomeVariant = {
   image: string
   unlockScore?: number
   objectPosition?: string
-  /** Real raster layers for parallax. Important visual objects must remain raster assets. */
+  /** Existing raster layers are preserved during migration; new advanced motion targets Phaser. */
   layers?: GameWelcomeLayer[]
 }
 
@@ -64,6 +80,7 @@ export type GameWelcomeConfig = {
   variants: GameWelcomeVariant[]
   /** Stable per-feed-slot rotation among unlocked covers. */
   selection?: 'seeded' | 'first'
+  /** Legacy simple-motion hint. */
   motion?: 'subtle' | 'none'
 }
 
@@ -115,6 +132,12 @@ export type InstagameDefinition = {
   author?: string
   status: GameCurationStatus
   orientation: GameOrientation
+  /** Active renderer. Existing catalog entries remain legacy-dom until migrated. */
+  runtime: GameRuntimeKind
+  /** Fixed authored coordinate system. Physical screen size only scales this uniformly. */
+  logicalViewport: GameLogicalViewport
+  /** Explicit migration lock/state for the current catalog. */
+  migration: GameMigrationConfig
   /** Core-owned discovery cover configuration. Games must not render their own cover/welcome UI. */
   welcome?: GameWelcomeConfig
   component: ComponentType<GameComponentProps>

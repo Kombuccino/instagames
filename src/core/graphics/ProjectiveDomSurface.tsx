@@ -80,8 +80,18 @@ export function ProjectiveDomSurface({
     if (!root || !plane) return
 
     const update = () => {
-      const bounds = root.getBoundingClientRect()
-      plane.style.transform = unitSquareToQuadMatrix(bounds.width, bounds.height, quad, logicalSize)
+      /*
+       * IMPORTANT: use the element's local layout dimensions, not
+       * getBoundingClientRect(). The surface commonly lives inside an animated
+       * scale/rotate parent (the hand in the metro scene). A transformed
+       * bounding box would bake the parent transform into the homography and
+       * then CSS would apply the parent transform a second time, shrinking and
+       * offsetting the projected content relative to the physical phone.
+       */
+      const width = root.clientWidth || root.offsetWidth
+      const height = root.clientHeight || root.offsetHeight
+      if (width <= 0 || height <= 0) return
+      plane.style.transform = unitSquareToQuadMatrix(width, height, quad, logicalSize)
     }
 
     const observer = new ResizeObserver(update)

@@ -64,12 +64,13 @@ Canonical files include:
 
 - `fuggy-canonical-source-2026-09-06.afphoto` — user-supplied source;
 - `fuggy-canonical-user-reference-preview-2026-09-06.png` — source preview;
-- `fuggy-canonical-reference-board-v1-2026-09-06.png` — approved expanded 360°/pose/expression board;
-- `3D/fuggy-canonical-base-v1.glb` — first editable low-poly 3D base;
-- `3D/fuggy-canonical-base-v1.obj` — interchange version;
-- `3D/fuggy-canonical-base-v1.zip` — packaged working set.
+- `fuggy-canonical-reference-board-v1-2026-09-06.png` — approved expanded 360°/pose/expression board.
 
-Do not generate a new mascot from a generic verbal description when these references are available. New scenes must use the canonical Fuggy geometry and face language defined in `docs/FUGGY_MASCOT.md`.
+There is currently **no approved 3D Fuggy asset**. The first experimental 3D v1 was explicitly rejected and removed from the canonical reference area. It must not be used, imported, rendered, rigged or treated as a proportional/model reference. Rejected files are preserved only in:
+
+`MiniFugg - Graphic Archive / Branding / Mascot - Rejected Studies /`
+
+Do not generate a new mascot from a generic verbal description when the canonical references are available. New scenes must use the canonical Fuggy geometry and face language defined in `docs/FUGGY_MASCOT.md`.
 
 ## Favicon / app icon status
 
@@ -98,6 +99,7 @@ Once an icon direction is approved:
 - A subtle MiniFugg publisher signature may be integrated into authored cover art, but the logo geometry itself remains the canonical one.
 - Do not add a large persistent MiniFugg wordmark overlay over every game cover; follow `docs/PLATFORM_VISUAL_VALIDATION.md`.
 - Fuggy may change pose, angle, lighting, scene and expression, but must remain the same mascot.
+- Never use a rejected or experimental mascot/3D asset as a canonical source unless the user explicitly re-approves it.
 
 ## Runtime integration rule
 

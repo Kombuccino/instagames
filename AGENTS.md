@@ -15,6 +15,8 @@ For any game work, read the latest `main` versions of:
 - `docs/ORIENTATION_LAYOUT.md`
 - the game's `ART_DIRECTION.md` when present.
 
+For any approved game-DA implementation, asset decomposition or final gameplay-art pass, also read `docs/GAME_ART_PRODUCTION_PIPELINE.md`.
+
 For Core/platform work also read the relevant platform documents, especially `docs/PLATFORM_UI_BASELINE.md`, `docs/PLATFORM_VISUAL_VALIDATION.md`, `docs/DISCOVERY_NAVIGATION.md`, `docs/PLATFORM_ECONOMY.md`, `docs/PLATFORM_EXPORTS.md` and `docs/PLATFORM_ART_DIRECTION.md`.
 
 For any production image creation/import/integration, first read and follow `docs/ASSET_PIPELINE.md`.
@@ -134,6 +136,8 @@ Production images use the canonical pipeline:
 Never use public Drive URLs, FTP, manual binary GitHub uploads or base64 chunking while that pipeline is available. Preserve originals without resize/recompression unless explicitly requested.
 
 Important visual objects promised as authored art must be real imported assets; procedural engine shapes are fine for genuinely procedural effects, prototypes and non-art primitives.
+
+An approved DA/mockup is not automatically a runtime background or atlas. Before final integration, decompose it according to `docs/GAME_ART_PRODUCTION_PIPELINE.md`: permanent environment, animatable decoration, structural surfaces, stateful controls and engine-owned dynamic gameplay. Mutable gameplay/UI state must never remain baked underneath the live Phaser layer.
 
 ## 11. Visual quality
 

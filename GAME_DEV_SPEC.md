@@ -1,377 +1,197 @@
-# MiniFugg Game Development Contract v1.3
+# MiniFugg Game Development Specification
 
-This file is the source of truth for every AI or developer creating a MiniFugg game. Read it completely before writing or modifying game code. Also read `docs/STYLE_SYSTEM.md`, `docs/INPUT_GESTURES.md` and `docs/ORIENTATION_LAYOUT.md`.
+Version 2.0 — canonical engine/runtime contract.
 
-## 1. Product idea
+Read with `AGENTS.md`, `docs/GAME_ENGINE_ARCHITECTURE.md`, `docs/GAME_LAYOUT_SYSTEM.md`, `docs/INPUT_GESTURES.md`, `docs/ORIENTATION_LAYOUT.md` and `docs/GAME_MIGRATION_PLAN.md`.
 
-MiniFugg is a vertical feed of tiny, instantly playable games. The user swipes up/down to move between games. Games must feel immediate, mobile-first and understandable in seconds.
+## 1. Product goal
 
-A real game is designed and finished in a maximum of **10 user prompts**. Platform/Core work does **not** consume a game's 10 prompts.
+MiniFugg is a mobile-first catalog of small authored games. A game should be quick to understand, fast to start and visually distinctive, while remaining portable across browser, mobile-store and desktop/store builds.
 
-## 2. The 10-prompt rule
+The platform should eventually support hundreds of games without turning into hundreds of incompatible technical stacks.
 
-When the user explicitly starts a new game, count user prompts starting at 1. Every answer while building that game must visibly include:
+## 2. Standard stack
 
-`🎮 <Game name> — Prompt N/10 — X prompts remaining`
+### Core
 
-Prompt 10 is the last development prompt. Do not quietly extend the budget. Bug fixes, polish and deployment requests during that game's active creation sequence count.
+React + TypeScript + HTML/CSS owns platform UI, discovery, accounts, social, economy and store/platform adapters.
 
-Do not count work about MiniFugg Core, shared UI, API, deployment, accounts, social features, leaderboards, style-kit/orientation infrastructure or this specification.
+### 2D gameplay
 
-## 3. Technical boundary
+Phaser 4 is the default and expected runtime for all new 2D games and all existing catalog migrations.
 
-Current stack:
+### 3D gameplay
 
-- React 18
-- TypeScript
-- Vite
-- CSS
-- browser APIs such as Canvas/WebGL/WebAudio when useful
+Three.js is reserved for intentionally 3D games, typically low-poly/blockout with simple materials, lighting and restrained FX.
 
-A normal first-party game lives in `src/games/<game-id>/` and should normally modify only its directory plus its entry in `src/core/gameRegistry.tsx`.
+### Not part of the standard
 
-Do **not** modify Core/runtime/platform files while building a game unless the user explicitly asks for a platform change. Avoid new npm dependencies unless genuinely necessary.
+Do not add PixiJS or a second 2D engine. Do not build new raw Canvas/WebGL gameplay frameworks. Existing DOM/CSS/Canvas games remain usable only as migration references until replaced.
 
-## 4. Runtime contract
+## 3. Canonical logical viewport
 
-Every game receives `GameComponentProps` from `src/core/types.ts`:
+Every game declares a fixed logical viewport in the registry.
 
-```ts
-export type GameComponentProps = {
-  active: boolean
-  seed: number
-  restartToken: number
-  session: {
-    setScore(score: number): void
-    finish(payload: {
-      score: number
-      boardId?: string
-      metadata?: Record<string, string | number | boolean>
-    }): void
-  }
-}
-```
+Defaults:
 
-### active
+- portrait: `390 × 844`;
+- landscape: `844 × 390`.
 
-`true` only while the game is active. Pause timers, animation loops and audio when false. Never keep expensive work running off-screen.
+The full game world/UI composition is authored against this coordinate system. A physical screen only changes the uniform display scale.
 
-### seed
+A phone, tablet, desktop browser, Electron window and mobile WebView must preserve the same internal positions/proportions.
 
-Use the feed seed when deterministic variation is useful. A daily challenge may derive deterministic gameplay from the UTC day.
+Wide screens may receive optional Core sidebars or decorative overscan outside the canonical stage. They do not cause the central game to reflow.
 
-### restartToken
+## 4. Registry contract
 
-The Core increments this when the common Replay action is used. A game using `session.finish()` must reset all run state when this value changes.
+Every real game declares at least:
 
-### session.setScore(score)
+- `id`;
+- `title`;
+- `status`;
+- `orientation`;
+- `runtime`;
+- `logicalViewport`;
+- `migration`;
+- `component`;
+- `features` / instructions as relevant.
 
-Reports the live score to MiniFugg. The platform owns the generic score chip. Do not duplicate a generic floating score UI unless gameplay itself requires a game-specific display.
+During the current migration program, existing games use `runtime: 'legacy-dom'` and are locked until converted to `phaser-2d`.
 
-### session.finish({ score, boardId?, metadata? })
+## 5. Lifecycle contract
 
-Call once when a run is over. This hands the generic end flow to Core: final score, nickname, score submission, ladders and Replay.
+Game React hosts receive:
 
-Do not build generic nickname / save score / leaderboard / replay UI inside a new game.
+- `active`;
+- `seed`;
+- `restartToken`;
+- `session`.
 
-Usually omit `boardId`: Core will publish the score to the leaderboard periods configured for the game. Use an explicit boardId only for a special level, season or challenge that intentionally overrides normal period boards.
+Rules:
 
-## 5. Shared platform chrome and safe zones
+- pause expensive rendering/audio when inactive;
+- release listeners and engine resources on unmount;
+- restart deterministically enough for intended gameplay when `restartToken` changes;
+- report live score with `session.setScore` when useful;
+- finish exactly once per run with `session.finish`.
 
-The general MiniFugg interface is outside the game and owned by Core.
+The game must not own platform navigation, wallet or leaderboard transport.
 
-Current shared chrome includes:
+## 6. Input contract
 
-- readable game title;
-- clickable `@creator`;
-- short game description;
-- play count;
-- action dock containing rules, love, comments and bookmark;
-- generic score module;
-- leaderboard sheet;
-- common finish/replay flow;
-- nickname persistence.
+Prefer semantic actions:
 
-A game must not recreate these features or place essential content underneath them.
+- `left`, `right`, `up`, `down`;
+- `primary`, `secondary`;
+- `pause`.
 
-Core exposes global layout variables:
+Use pointer coordinates/drag only when the mechanic intrinsically requires them.
 
-```css
---minifugg-core-top-reserved
---minifugg-core-bottom-reserved
---minifugg-core-left-reserved
---minifugg-core-right-reserved
---minifugg-swipe-gutter
-```
-
-In portrait, Core primarily reserves top + bottom. On a landscape phone, the action dock moves to the right and `--minifugg-core-right-reserved` becomes non-zero.
-
-Background art, particles and non-interactive decoration may extend behind Core chrome. Essential game-owned content must stay outside it: buttons, important text, touch targets, drag endpoints, inventory, timers and critical HUD.
-
-Example:
-
-```css
-.game-safe-layer {
-  position: absolute;
-  top: var(--minifugg-core-top-reserved);
-  right: var(--minifugg-core-right-reserved);
-  bottom: var(--minifugg-core-bottom-reserved);
-  left: var(--minifugg-core-left-reserved);
-}
-```
-
-A canvas may fill the viewport, but meaningful interactive coordinates should account for the reserved areas.
+Map touch, keyboard/mouse and gamepad onto gameplay actions separately. Control presentation may vary; game-world geometry does not.
 
-## 6. Registry declaration
+Core's visible close-box remains outside the game capture layer and always exits back to the same cover.
 
-Shared features and orientation are declared in `src/core/gameRegistry.tsx`.
+## 7. Art and asset contract
 
-```ts
-{
-  id: 'my-game',
-  title: 'My Game',
-  description: 'One-line gameplay hook',
-  author: 'creatorHandle',
-  orientation: 'portrait', // 'portrait' | 'landscape' | 'both'
-  component: MyGame,
-  instructions: {
-    goal: 'Do the thing before time runs out.',
-    rules: ['Rule one', 'Rule two'],
-    controls: ['Tap', 'Swipe'],
-  },
-  features: {
-    help: true,
-    love: true,
-    comments: true,
-    bookmark: true,
-    leaderboard: {
-      enabled: true,
-      periods: ['daily', 'weekly'],
-      sort: 'desc',
-      limit: 10,
-    },
-    share: false,
-    remix: false,
-  },
-}
-```
+Every game should have an `ART_DIRECTION.md` once its visual direction is established.
 
-Love, comments and bookmark are platform features. Never implement their persistence inside a game.
+Production images must use `docs/ASSET_PIPELINE.md`.
 
-## 7. Orientation
+A finished Fugg must not rely on generic CSS geometry as a substitute for promised authored art. Engine primitives are appropriate for procedural effects, debug geometry and deliberately geometric styles.
 
-Every real game should declare a preferred orientation:
+Visual quality should include, as appropriate:
 
-- `portrait`: designed primarily for an upright phone;
-- `landscape`: designed primarily for a phone turned sideways;
-- `both`: two deliberately designed responsive layouts.
+- authored sprite/shape language;
+- secondary animation;
+- impact/interaction feedback;
+- transitions;
+- sound design;
+- particles/lighting/shake/FX;
+- coherent typography/HUD.
 
-Core remains functional in both physical orientations. The preference describes how the gameplay should be designed; do not fake landscape by rotating the DOM.
+The objective is that gameplay carries emotional identity comparable to the cover, even when the style is intentionally simple.
 
-If the mechanic clearly implies an orientation, infer it. If genuinely unclear, include `portrait / landscape / both / decide for me` as one compact question in the same preflight as visual direction. Do not spend a whole game prompt only on orientation.
+## 8. Performance contract
 
-Landscape games must use the right-side safe-zone variable and should normally implement phone-landscape rules with a media query such as:
+Mobile is the performance reference.
 
-```css
-@media (orientation: landscape) and (max-height: 650px) {
-  /* deliberate phone-landscape layout */
-}
-```
+For Phaser/Three games:
 
-See `docs/ORIENTATION_LAYOUT.md`. `Shoot the Shooter` is the first landscape reference implementation.
+- pool frequently created objects when useful;
+- reuse textures/materials;
+- avoid unbounded particles/entities;
+- destroy listeners/resources cleanly;
+- keep texture sizes appropriate to actual display needs;
+- pause inactive scenes;
+- avoid expensive full-screen post FX unless measured on phones.
 
-## 8. Visual direction and style kits
+Do not optimize by reducing the canonical geometry differently on each platform. Reduce asset/effect cost instead.
 
-MiniFugg deliberately does **not** have one visual style for all games. Core is the consistent shell; each game should have its own art direction.
+## 9. Economy and official score boundary
 
-Before visual polish, read:
+Games never maintain MiniFugg wallet balances or implement store purchases.
 
-- `docs/STYLE_SYSTEM.md`
-- `docs/style-kits/README.md`
-- relevant kit file(s)
-- `src/style-kits/catalog.ts`
+Online official state is Core/server-owned.
 
-If the user did not specify a clear style, use the visual preflight defined in `docs/STYLE_SYSTEM.md`. Do not default to dark backgrounds, purple/cyan gradients, glowing blobs, glass panels and tiny pale labels.
+Purchased games may run offline. Offline local values may be modified by the owner and are not trusted:
 
-Prompt 1 should still advance gameplay. When visual answers are missing, use deliberately neutral temporary art and ask the visual QCM in the same response. If the user explicitly wants to choose art direction before coding, wait for the answers.
+- no official leaderboard submission;
+- no official rewards;
+- no local-wallet upload into the server wallet.
 
-Once selected, create `src/games/<game-id>/ART_DIRECTION.md` containing:
+Gameplay must remain fun without embedding anti-tamper complexity into each game.
 
-- chosen style kit or `custom`;
-- palette and any deviations;
-- typography direction;
-- material/texture language;
-- motion language;
-- reusable kit assets being used;
-- custom characters/props;
-- explicit references and things to avoid.
+## 10. Distribution contract
 
-Future prompts and future agents must preserve this file unless the user asks to change direction.
+A game cannot import vendor/store SDKs directly.
 
-Existing kits:
+The same game source must remain packageable for:
 
-- Pixel Dungeon
-- Paper Cut
-- Ink Pulp
-- Toybox
-- Sports Broadcast
-- Editorial Grid
+- web/PWA;
+- static/portal builds when appropriate;
+- Android/iOS through the MiniFugg mobile shell target;
+- desktop/Steam through the MiniFugg desktop shell target.
 
-Custom styles and deliberate combinations are allowed. Prefer at most two base kits in one game unless there is a strong art-direction reason.
+Platform capabilities are Core adapters.
 
-## 9. Readability
+## 11. Existing-game migration lock
 
-Avoid the tiny-text syndrome. On a phone:
+If `migration.locked` is true, normal changes to that game are prohibited until migration.
 
-- important readable game text should generally be at least 14px equivalent;
-- primary labels and scores should be substantially larger;
-- prefer fewer strong labels over many tiny ones;
-- touch targets should be comfortably tappable;
-- game HUD should not visually compete with Core identity chrome.
+Allowed:
 
-## 10. Score and leaderboard model
+- direct engine/layout migration;
+- asset integration that is part of that migration;
+- migration-associated visual polish;
+- minimal urgent security/blocking fix.
 
-Games own scoring logic but **Core owns score storage and rankings**.
+Not allowed:
 
-A finished run reports one score using `session.finish()`.
+- adding another legacy responsive fix;
+- adding more DOM sprites to a sprite-heavy game;
+- creating a new custom Canvas helper to avoid the engine migration;
+- unrelated feature creep.
 
-Leaderboard periods currently supported:
+## 12. 10-prompt creation rule
 
-- `daily`
-- `weekly`
-- `global`
+When the user explicitly creates a new real game, creation/implementation/debug/polish must fit in 10 user prompts. Core/runtime infrastructure does not consume that budget.
 
-Core maps them to board ids such as:
+Prompt 1 should normally produce a playable implementation. Make strong reasonable decisions rather than wasting the budget on avoidable clarification.
 
-- `day:2026-09-01`
-- `week:2026-W36`
-- `global`
+New 2D games begin on Phaser rather than creating a disposable DOM prototype that will immediately need migration.
 
-A game can expose multiple periods simultaneously. In production PostgreSQL keeps the raw score timestamp as the source of truth; day/week are query windows, not duplicate score rows.
+## 13. Definition of done for a new/migrated game
 
-Sort direction is declared per game (`desc` for higher-is-better, `asc` for lower-is-better).
+A game is technically current when:
 
-## 11. Platform data/API boundary
+- it uses the declared canonical runtime;
+- logical geometry is stable across phone/tablet/desktop;
+- touch and desktop controls work;
+- lifecycle cleanup is correct;
+- Core close/score/restart behavior works;
+- production assets follow the pipeline;
+- old production renderer is deleted after cutover;
+- build/typecheck pass.
 
-Games never call a database directly. Games never own player identity, nickname, plays, loves, bookmarks or comments.
-
-The platform transport lives in `src/core/platformApi.ts`.
-
-When `VITE_MINIFUGG_API_URL` is absent, Core uses browser-local fallbacks for development. When present, Core uses the remote MiniFugg API.
-
-Finished-run score API:
-
-- `POST /v1/scores` — insert the finished run once
-- `GET /v1/leaderboards/:gameId/:boardId?limit=10&sort=desc`
-
-Social API consumed by Core:
-
-- `GET /v1/games/:gameId/stats`
-- `POST /v1/games/:gameId/plays`
-- `PUT /v1/games/:gameId/love`
-- `DELETE /v1/games/:gameId/love`
-- `PUT /v1/games/:gameId/bookmark`
-- `DELETE /v1/games/:gameId/bookmark`
-- `GET /v1/games/:gameId/comments`
-- `POST /v1/games/:gameId/comments`
-
-See `docs/PLATFORM_DATA_MODEL.md` for the recommended PostgreSQL schema.
-
-Client-only score validation is not secure. Competitive ladders will eventually require run proofs or game-specific server validation.
-
-## 12. UX rules for games
-
-Default target: phone in the orientation declared by the game.
-
-A MiniFugg game should:
-
-- start almost immediately;
-- require no account before play;
-- be understandable quickly, with details available through the common rules panel;
-- use touch as primary input;
-- remain practical with mouse on desktop when possible;
-- avoid conflicting browser scroll/zoom gestures during gameplay;
-- preserve the Core feed escape/swipe gutter;
-- fit inside the game surface;
-- survive pause/resume when swiping away and back;
-- never assume a fixed phone resolution;
-- respect Core safe zones and device safe areas in every supported orientation.
-
-Never put `touch-action: none` on the fullscreen/root game surface. See `docs/INPUT_GESTURES.md`.
-
-Prefer one strong mechanic over menus, progression trees or settings.
-
-## 13. Performance rules
-
-Only the active game and neighbours are mounted by the feed. A game must still clean up its own resources:
-
-- intervals/timeouts
-- requestAnimationFrame loops
-- event listeners
-- audio playback/AudioContext
-- WebGL resources
-
-Do not make continuous network requests from gameplay. Avoid large assets unless essential.
-
-## 14. Ownership boundary
-
-### The game owns
-
-- gameplay
-- game-specific visuals and art direction
-- game-specific layout for its declared orientation(s)
-- game-specific HUD strictly needed for the mechanic
-- run state
-- deterministic generation
-- scoring logic
-- win/lose/end condition
-
-### MiniFugg Core owns
-
-- feed/swiping
-- responsive portrait/landscape shell
-- title/creator/description/plays chrome
-- action dock placement
-- generic score display
-- rules panel
-- daily/weekly/global ladders
-- nickname and score transport
-- love/bookmark/comments
-- generic final score/replay flow
-- accounts/profile later
-- share/remix/follow/tips later
-
-When in doubt, do not duplicate a generic platform feature inside the game.
-
-## 15. Security constraints
-
-First-party games are compiled with the app today, but code should remain compatible with a future sandboxed public-creation model.
-
-Do not put secrets/API keys in game code. Do not access cookies/auth tokens/private platform state. Do not require arbitrary external scripts. Do not create custom backend endpoints for one game unless explicitly approved as a platform capability.
-
-## 16. Definition of done
-
-Before declaring a game finished, check:
-
-- gameplay works on touch;
-- gameplay is understandable quickly;
-- preferred orientation is declared in the registry;
-- gameplay is deliberately laid out for that orientation;
-- `both` games have genuinely tested portrait and landscape layouts;
-- no important content is hidden by Core top/bottom/left/right reserved zones;
-- the bottom swipe gutter remains usable;
-- no obvious desktop/mobile overflow;
-- art direction is intentional and recorded in `ART_DIRECTION.md` once selected;
-- important text is readable on phone;
-- score updates through `session.setScore`;
-- finished runs call `session.finish` when using the shared end flow;
-- `restartToken` resets the run;
-- timers/loops respect `active` and clean up;
-- rules and platform feature flags are in the registry;
-- generic platform UI has not been duplicated;
-- TypeScript should build without errors;
-- final code is on `main` when deployment was requested.
-
-## 17. Migration note
-
-Older games may predate this contract and still contain legacy UI, portrait-only assumptions or generic AI visual patterns. Do not copy those sections into new games. Preserve gameplay while migrating them deliberately toward the Core-owned, orientation-aware and style-directed model.
+A game is Fugg-quality only when its visual/audio presentation is also deliberately finished, not merely functional.

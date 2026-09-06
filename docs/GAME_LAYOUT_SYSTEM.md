@@ -74,7 +74,7 @@ On wide screens, Core may use left/right space for optional:
 
 Do not enlarge the game non-uniformly just to consume every desktop pixel. Do not move canonical controls into sidebars.
 
-The game's own backdrop may fill or overscan its **game surface** so the authored stage does not look like a narrow object floating inside its slot, but it must stop at the game-surface boundary. It must not turn a portrait Fugg into a browser-wide experience on desktop.
+The game's own backdrop may fill or overscan its **game surface** so the authored stage does not look like a narrow object floating inside its slot, but it must stop at the game-surface boundary. It must not turn a portrait Fugg into a browser-wide experience on desktop. For decorative backdrops, `cover` + crop is preferred when preserving visual scale matters: narrow screens may lose non-critical left/right decoration rather than shrinking the backdrop with `contain`. Gameplay geometry still uses the fixed logical stage and uniform FIT.
 
 ## 6. Phaser implementation
 

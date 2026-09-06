@@ -72,26 +72,16 @@ export function LineFugg({ active, seed, restartToken, session }: GameComponentP
         position: 'absolute',
         inset: 0,
         overflow: 'hidden',
-        background: '#02070e',
+        backgroundColor: '#02070e',
+        backgroundImage: `linear-gradient(rgba(1, 5, 12, .10), rgba(1, 5, 12, .10)), url(${LINEFUGG_BACKGROUND})`,
+        backgroundPosition: 'center center',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
       }}
       onPointerDownCapture={() => {
         if (active) void musicRef.current?.start()
       }}
     >
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'absolute',
-          inset: '-4%',
-          backgroundImage: `linear-gradient(rgba(1, 5, 12, .22), rgba(1, 5, 12, .22)), url(${LINEFUGG_BACKGROUND})`,
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: 'cover',
-          filter: 'saturate(.92) brightness(.72)',
-          transform: 'scale(1.04)',
-          pointerEvents: 'none',
-        }}
-      />
       <PhaserGameHost
         active={active}
         restartToken={restartToken}

@@ -20,9 +20,10 @@ Canonical app prefix: `/assets/imported/linefugg/`.
 
 - pure celestial observatory environment;
 - no grid, score, controls, text or baked mutable gameplay;
-- rendered inside the canonical 390×844 Phaser scene;
-- the same image may also be used by the React game wrapper as decorative overscan outside the fitted Phaser canvas on wide screens;
-- overscan never changes gameplay geometry.
+- rendered by the React LineFugg wrapper as the decorative backdrop of the Core-owned game surface;
+- use CSS `cover`: narrow/tall screens crop non-critical left/right decoration instead of shrinking the backdrop to `contain`;
+- Phaser remains transparent and owns the fixed 390×844 gameplay composition above it;
+- the backdrop stops at the Core game-surface boundary; desktop gutters remain Core-owned/black.
 
 ### 2. Board instrument
 
@@ -101,7 +102,7 @@ Layer order:
 9. Undo — 3 indicators/pips — Validate;
 10. transient live/feedback FX.
 
-Wide screens may show decorative background overscan outside the fitted 390×844 canvas, but no gameplay element moves or stretches.
+The decorative background may cover/crop inside the Core game surface around the fitted 390×844 canvas, but it never paints into desktop gutters and no gameplay element moves or stretches.
 
 ## Representative state validation
 

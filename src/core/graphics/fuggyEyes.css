@@ -1,0 +1,126 @@
+.mf-fuggy-eyes {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 620ms ease;
+}
+
+.mf-fuggy-eyes__pair {
+  position: absolute;
+  inset: 0;
+  display: block;
+  animation: mf-fuggy-eye-gaze 17.6s ease-in-out infinite;
+}
+
+.mf-fuggy-eyes__socket {
+  position: absolute;
+  width: 15%;
+  height: 42%;
+  transform: translate(-50%, -50%);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  background: linear-gradient(145deg, #25272a 0%, #1e1f21 48%, #17191b 100%);
+}
+
+.mf-fuggy-eyes__socket--left {
+  left: 32.4%;
+  top: 53.4%;
+}
+
+.mf-fuggy-eyes__socket--right {
+  left: 84.3%;
+  top: 39%;
+}
+
+.mf-fuggy-eyes__mark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 54%;
+  height: 66%;
+  transform: translate(-50%, -50%);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  background: #fff;
+  transform-origin: 50% 50%;
+}
+
+.mf-fuggy-eyes__mark--left {
+  animation: mf-fuggy-eye-left 17.6s ease-in-out infinite;
+}
+
+.mf-fuggy-eyes__mark--right {
+  animation: mf-fuggy-eye-right 17.6s ease-in-out infinite;
+}
+
+/*
+ * Fuggy stays within the canonical mask + white-diamond grammar: neutral,
+ * blink, curious glances, sleepy, awake/surprised and happy squints.
+ */
+@keyframes mf-fuggy-eye-gaze {
+  0%, 18%, 27%, 43%, 50%, 66%, 73%, 88%, 100% { transform: translate3d(0,0,0); }
+  31%, 39% { transform: translate3d(-4.5%,1.5%,0); }
+  55%, 63% { transform: translate3d(0,5%,0); }
+  77%, 84% { transform: translate3d(4.5%,-1.5%,0); }
+}
+
+@keyframes mf-fuggy-eye-left {
+  0%, 17%, 22%, 43%, 49%, 66%, 72%, 86%, 94%, 100% {
+    transform: translate(-50%, -50%) scale(1,1) rotate(0deg);
+  }
+  19%, 20% {
+    transform: translate(-50%, -50%) scale(1.08,.08) rotate(0deg);
+  }
+  54%, 61% {
+    transform: translate(-50%, -42%) scale(1.02,.34) rotate(-4deg);
+  }
+  67%, 70% {
+    transform: translate(-50%, -50%) scale(1.18,1.18) rotate(0deg);
+  }
+  88%, 92% {
+    transform: translate(-50%, -48%) scale(1.12,.48) rotate(-13deg);
+  }
+  96%, 97% {
+    transform: translate(-50%, -50%) scale(1.05,.08) rotate(0deg);
+  }
+}
+
+@keyframes mf-fuggy-eye-right {
+  0%, 17%, 22%, 43%, 49%, 66%, 72%, 86%, 94%, 100% {
+    transform: translate(-50%, -50%) scale(1,1) rotate(0deg);
+  }
+  19%, 20% {
+    transform: translate(-50%, -50%) scale(1.08,.08) rotate(0deg);
+  }
+  54%, 61% {
+    transform: translate(-50%, -42%) scale(1.02,.34) rotate(4deg);
+  }
+  67%, 70% {
+    transform: translate(-50%, -50%) scale(1.18,1.18) rotate(0deg);
+  }
+  88%, 92% {
+    transform: translate(-50%, -48%) scale(1.12,.48) rotate(13deg);
+  }
+  96%, 97% {
+    transform: translate(-50%, -50%) scale(1.05,.08) rotate(0deg);
+  }
+}
+
+.mf-entry-scene__fuggy-eyes {
+  z-index: 3;
+  left: 18.49%;
+  top: 52.45%;
+  width: 13.28%;
+  height: 3.71%;
+}
+
+.mf-entry-scene.is-entering .mf-entry-scene__fuggy-eyes {
+  opacity: .32;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mf-fuggy-eyes__pair,
+  .mf-fuggy-eyes__mark--left,
+  .mf-fuggy-eyes__mark--right {
+    animation: none;
+  }
+}

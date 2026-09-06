@@ -1,103 +1,257 @@
 # LineFugg — Production Asset Manifest
 
-Status: canonical gameplay asset inventory for the approved Orbital Accounting direction.
+Status: canonical modular gameplay asset inventory for the approved **Orbital Accounting** direction.
 
-All raster/illustrated production assets follow `docs/ASSET_PIPELINE.md`.
+Production method: `docs/GAME_ART_PRODUCTION_PIPELINE.md`.
+Image transport: `docs/ASSET_PIPELINE.md`.
 
 Canonical app prefix:
 
 `/assets/imported/linefugg/`
 
-## Integrated production raster
+## Critical correction
 
 ### `backgrounds/orbital-stage-master-v1.png`
 
-Status: **integrated on main**.
+Status: **REFERENCE ONLY — never render in gameplay**.
 
-Drive source:
+This is the flattened approved/concept master that exposed the production mistake: it contains baked board/UI/control state. It remains useful as a visual reference for composition/material language, but it must not be loaded by Phaser after the modular cutover.
 
-`Fugg/linefugg/backgrounds/orbital-stage-master-v1.png`
+No runtime mask/cover-up strategy is allowed for this master. Git history and this reference file preserve the approved source; production uses the isolated assets below.
 
-GitHub mirror:
+---
 
-`public/assets/imported/linefugg/backgrounds/orbital-stage-master-v1.png`
+# Runtime layer stack
 
-Runtime URL:
+## 1. Permanent environment
 
-`/assets/imported/linefugg/backgrounds/orbital-stage-master-v1.png`
+### `backgrounds/orbital-stage-bg-v3.png`
 
-Purpose: approved Orbital Accounting master plate providing the authored celestial/brass environment and visual material reference.
+Family: permanent environment.
 
-Runtime treatment:
-- loaded by Phaser at the fixed logical stage `390×844`;
-- uniformly cover-scaled, never used as a responsive layout source;
-- its concept-only baked close icon is occluded because Core owns the close affordance;
-- every baked gameplay zone in the master is covered by opaque Phaser-owned surfaces before the live gameplay is drawn;
-- only the celestial/brass environmental artwork remains visible from the raster;
-- no baked number, operator, line, calculation, score or button is used as game state.
+Drive: `Fugg/linefugg/backgrounds/orbital-stage-bg-v3.png`
+GitHub: `public/assets/imported/linefugg/backgrounds/orbital-stage-bg-v3.png`
+Runtime: `/assets/imported/linefugg/backgrounds/orbital-stage-bg-v3.png`
 
-This is the only raster required by the current gameplay implementation. Do not keep or introduce duplicate legacy gameplay artwork beside it.
+Purpose:
+- pure celestial/astronomical background;
+- no grid;
+- no score;
+- no calculation rows;
+- no controls;
+- no baked game state or translated copy.
 
-## Phaser-rendered production surfaces
+Logical destination: complete `390×844` stage background using cover crop without gameplay geometry dependence.
 
-The following elements are intentionally engine-rendered because they are stateful or need exact logical geometry. They are not missing raster assets:
+Runtime depth: lowest game layer.
 
-- exact 7×7 board geometry and hit areas;
-- brass board chassis and enamel cell surfaces;
-- positive, negative, multiplier and divisor cell materials;
-- all numbers/operators;
-- three line shafts and arrowheads;
-- identical glow grammar for vermilion, violet and gold lines;
+## 2. Animatable decoration
+
+### `props/orbital-upper-ornament-v3.png`
+
+Family: animatable decoration.
+
+Drive: `Fugg/linefugg/props/orbital-upper-ornament-v3.png`
+Runtime: `/assets/imported/linefugg/props/orbital-upper-ornament-v3.png`
+
+Purpose: isolated upper armillary/observatory ornament.
+
+Logical destination: upper third of stage, behind status/board.
+Motion: very slow float/scale breathing; procedural Phaser rings/glints may animate independently above/below it.
+
+No gameplay information is baked into this prop.
+
+## 3. Structural gameplay surfaces
+
+### `ui/orbital-board-frame-v4.png`
+
+Family: structural surface.
+Purpose: isolated brass frame around the exact dynamic 7×7 board.
+Logical destination: board bounds, approximately `376×376` logical units including frame.
+Transparency: transparent gameplay center.
+Dynamic content above/inside: cell tiles, hit areas, paths, numbers/operators, glows.
+
+### Cell family
+
+- `ui/orbital-cell-neutral-v2.png`
+- `ui/orbital-cell-multiply-v2.png`
+- `ui/orbital-cell-divide-v2.png`
+
+Family: reusable structural surfaces.
+Logical destination: one 7×7 cell (`~52.86×52.86` logical units), slightly inset for frame gap.
+
+Ownership:
+- raster owns material/bezel only;
+- Phaser owns every number/operator glyph;
+- positive and negative additive numbers use the neutral material;
+- multiplier/divisor material is visually distinct;
+- selected/crossed/preview/error overlays remain Phaser-owned.
+
+### `ui/orbital-calc-row-v3.png`
+
+Family: reusable structural surface.
+Purpose: blank parchment calculation strip.
+Instances: exactly 3, one per possible line.
+Logical destination: approximately `356×40` each.
+Dynamic content above: line-color marker, formula, `=`, result.
+No formula/value is baked.
+
+### `ui/orbital-total-plate-v3.png`
+
+Family: structural surface.
+Purpose: blank brass/navy total plate.
+Logical destination: approximately `210×42`.
+Dynamic content above: sigma/total value.
+No numeric total is baked.
+
+### `ui/orbital-control-dock-v4.png`
+
+Family: structural/decorative surface.
+Purpose: lower observatory ornament connecting the controls into one physical instrument rather than floating UI blocks.
+Logical destination: lower control zone, behind buttons and line indicators.
+No button, icon, pip or state is baked into the dock.
+
+## 4. Stateful line indicators
+
+The three indicator sprites share one geometry/material family; only the celestial core color differs.
+
+- `ui/orbital-indicator-red-v4.png`
+- `ui/orbital-indicator-violet-v4.png`
+- `ui/orbital-indicator-gold-v4.png`
+
+Family: stateful component base.
+Logical destination: ~`40×40` orb each.
+
+Raster owns:
+- brass bezel;
+- colored celestial core.
+
+Phaser owns:
+- dim/active alpha;
+- active pulse;
+- 5 pips per orb;
+- exact number of illuminated pips from line cell count;
+- current-line glow.
+
+Pips must never be baked into indicator files.
+
+## 5. Stateful controls
+
+Controls are isolated assets, never part of background/dock.
+
+### Undo family
+
+- `ui/orbital-undo-disabled-v4.png`
+- `ui/orbital-undo-idle-v4.png`
+- `ui/orbital-undo-pressed-v4.png`
+
+States:
+- disabled: no line can be undone;
+- idle: at least one line exists and no press is active;
+- pressed: pointer/touch is currently pressing the control.
+
+Icon is universal and intentionally baked into the isolated state sprite. No translated copy.
+
+### Validate family
+
+- `ui/orbital-validate-disabled-v4.png`
+- `ui/orbital-validate-ready-v4.png`
+- `ui/orbital-validate-pressed-v4.png`
+
+States:
+- disabled: fewer than 3 valid lines;
+- ready: exactly 3 lines exist;
+- pressed: enabled Validate is being pressed.
+
+**Validate is green only in ready/pressed enabled states.**
+
+Only a pointer-up from the enabled control triggers `session.finish(...)`.
+
+## 6. Phaser-owned dynamic gameplay
+
+These are deliberately not baked assets:
+
+- 7×7 geometry/hit areas;
+- board numbers/operators;
+- positive `+` grammar (implicit in board, attached token in formulas);
+- negative signs;
+- all three path shafts;
+- arrowheads;
 - luminous start/end nodes;
-- moving start→end energy pulse;
-- active drag preview and invalid-state feedback;
-- live result plate under pointer/finger;
-- selected/crossed-cell halos;
-- three calculation rows and their dynamic formulas/results;
-- total plate and mathematically derived total;
-- Undo icon/button state;
-- Validate icon/button state;
-- three orbital line indicators;
-- five pips per line, lit from the actual number of cells used;
-- emerald Validate pulse only at 3/3;
-- star twinkles, armillary tracing, glints and low-cost ambient motion.
+- active drag preview;
+- invalid drag state;
+- live score under finger/pointer;
+- selected/crossed-cell overlays;
+- path travel pulse;
+- formulas/results;
+- total numeric value;
+- five indicator pips per line;
+- transient glints/ripples/particles;
+- slow procedural orbital rings/stars.
 
-## Geometry / layering contract
+Numbers/operators remain above paths.
 
-Everything is authored against one fixed `390×844` stage.
+---
 
-Layer order:
+# Canonical 390×844 composition
 
-1. `orbital-stage-master-v1.png`;
-2. dark/opaque masks over concept-only baked gameplay;
-3. ambient celestial FX;
-4. live board/cell surfaces;
-5. line shafts and node glows;
-6. cell numbers/operators **above the lines**;
-7. calculation rows, total, controls and line indicators;
-8. transient feedback and live result plate.
+One authored composition only; no device-specific rearrangement.
 
-The board remains approximately 370 logical units wide. No device-specific geometry or alternate desktop/mobile composition is permitted.
+Recommended logical stack:
 
-## End-state contract
+1. pure background;
+2. upper ornament + ambient orbital FX;
+3. board frame;
+4. dynamic cell tiles/grid content;
+5. path/glow layer;
+6. cell glyphs above paths;
+7. 3 calculation strips;
+8. total plate;
+9. control dock;
+10. Undo — 3 indicators/pips — Validate;
+11. transient live/feedback FX.
 
-The asset/UI implementation must preserve the gameplay rule:
+Core close-box clearance remains respected in the upper-left.
 
-- line 3 does not resolve the run automatically;
-- at 3/3 the player may still Undo and redraw;
-- Validate becomes emerald only at 3/3;
-- only the enabled Validate check calls `session.finish(...)`.
+# Representative state validation
 
-## Cover
+Before considering the visual implementation stable, inspect:
 
-Cover: **A METTRE A JOUR** after gameplay visual stabilization. No gameplay asset in this manifest should be treated as the final cover.
+1. 0 lines;
+2. active drag;
+3. 1 line;
+4. 2 lines;
+5. 3 lines, before validation;
+6. Validate ready/green;
+7. invalid path;
+8. Undo after 3 lines;
+9. Validate press/submit transition.
 
-## Definition of integrated
+There must be no ghost button, duplicate board, fake score or pre-baked path visible in any state.
+
+# Gameplay contract preserved
+
+- board: 7×7;
+- max 3 lines;
+- max 5 cells per line;
+- pairwise crossing: max 1 shared cell;
+- scoring unchanged;
+- daily board unchanged;
+- after line 3 the run remains editable;
+- only Validate submits to Core/ladder;
+- Undo remains available before submission.
+
+# Cover
+
+Cover remains **A METTRE A JOUR** until the gameplay art has stabilized. None of these runtime assets should be treated as the final cover by default.
+
+# Definition of integrated
 
 A raster asset is production-integrated only when:
 
-1. its final bytes live in the correct private Drive folder;
-2. Drive sync mirrors the exact bytes into `public/assets/imported/linefugg/...` on `main`;
-3. the mirrored file is verified in GitHub;
-4. application code references only `/assets/imported/linefugg/...`;
-5. no temporary Drive/public URL, manual binary upload or duplicate legacy asset is used.
+1. final bytes are under the correct private Drive path;
+2. Drive sync mirrors them into `public/assets/imported/linefugg/...` on `main`;
+3. the mirror is explicitly verified;
+4. Phaser references only `/assets/imported/linefugg/...`;
+5. no flattened mockup is used to fake multiple runtime layers;
+6. no obsolete runtime reference remains after the modular cutover.

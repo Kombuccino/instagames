@@ -1,66 +1,170 @@
-# AI development instructions
+# MiniFugg agent rules
 
-Before modifying production source structure, refactoring an existing implementation, or adding replacement files, read `docs/REPOSITORY_WORKFLOW.md`. Git history is the version archive: production source must keep one canonical implementation per responsibility instead of accumulating `V2`/`V3`/`final`/`old`/`fix` copies.
+This file is authoritative for any AI or developer modifying `Kombuccino/instagames`.
 
-Before creating or modifying any MiniFugg game, read `GAME_DEV_SPEC.md`, `docs/STYLE_SYSTEM.md`, `docs/INPUT_GESTURES.md`, `docs/ORIENTATION_LAYOUT.md`, `docs/GAME_LAYOUT_SYSTEM.md`, `docs/GAMEPLAY_SHELL.md` and `docs/PLATFORM_EXPORTS.md` completely. They are the normative game-development, visual-direction, input, orientation, layout, active-game-shell and distribution-portability contracts for this repository.
+## 1. Read before editing
 
-Before creating, importing or integrating image assets, also read `docs/ASSET_PIPELINE.md`. It is the normative Drive -> GitHub image pipeline. Use that pipeline instead of manual binary GitHub uploads, base64 chunking, public Drive links or FTP.
+For any game work, read the latest `main` versions of:
 
-Before creating or modifying MiniFugg music, MIDI compositions, reactive game audio, sound design or SFX, also read `docs/MUSIC_LAB.md`. Every AI-created music proposal and authored SFX identity must be registered in the Audio Lab catalogs and preserved instead of being deleted.
+- `AGENTS.md`
+- `GAME_DEV_SPEC.md`
+- `docs/GAME_ENGINE_ARCHITECTURE.md`
+- `docs/GAME_MIGRATION_PLAN.md`
+- `docs/GAME_LAYOUT_SYSTEM.md`
+- `docs/INPUT_GESTURES.md`
+- `docs/ORIENTATION_LAYOUT.md`
+- the game's `ART_DIRECTION.md` when present.
 
-Before creating or modifying the MiniFugg platform identity, global home/cold-open, shared Core chrome, mascot, logo, social sheets or the visual transition from the home into discovery, read `docs/BRAND_ASSETS.md`, `docs/PLATFORM_ART_DIRECTION.md`, `docs/PLATFORM_ENTRY_SCENES.md` **and** `docs/PLATFORM_VISUAL_VALIDATION.md`. The main rotating entry-scene family is stylized warm low-poly / diorama 3D, not photorealistic lifestyle imagery. Use first-person arm/hand + phone grammar and transition seamlessly into the live MiniFugg viewport. Preserve already-approved visual decisions from `PLATFORM_VISUAL_VALIDATION.md` and the canonical logo contract from `BRAND_ASSETS.md` instead of freely redesigning them in later concept boards.
+For Core/platform work also read the relevant platform documents, especially `docs/PLATFORM_UI_BASELINE.md`, `docs/PLATFORM_VISUAL_VALIDATION.md`, `docs/DISCOVERY_NAVIGATION.md`, `docs/PLATFORM_ECONOMY.md`, `docs/PLATFORM_EXPORTS.md` and `docs/PLATFORM_ART_DIRECTION.md`.
 
-Before creating or modifying any shared MiniFugg Core interface — Cover, Info, Comments, Leaderboard, Game Over, Profile/Creator, Settings, Account, achievements or future shared panels — also read `docs/PLATFORM_UI_BASELINE.md` and `docs/PLATFORM_UI_SYSTEM.md`. Shared Core typography, player names, badges, avatars, tabs, lists, buttons and text styles must come from the central semantic UI system instead of inventing a new CSS vocabulary per screen.
+For any production image creation/import/integration, first read and follow `docs/ASSET_PIPELINE.md`.
 
-Before modifying the game-discovery feed, cover gestures, game-launch transition, status templates, or how coin state affects which games are surfaced, read `docs/DISCOVERY_NAVIGATION.md`. MiniFugg discovery is one full-screen cover at a time, not a generic grid/card storefront.
+## 2. Runtime architecture is fixed
 
-Before modifying the active in-game Core chrome, exit behavior, fullscreen allocation or end-of-run replay/quit shell, read `docs/GAMEPLAY_SHELL.md`. Active gameplay is almost fullscreen; Core normally keeps only a small close-box / return-to-cover control.
+Do not choose a new engine per game.
 
-Before creating or modifying MiniFugg coins, game-launch/replay charging, Free Play/Lifetime UI, purchase/store flows, pricing presentation, coin rewards, out-of-coins states or any other monetization surface, read `docs/PLATFORM_ECONOMY.md`. The economy is Core-owned; games must not implement their own coin or storefront logic. Current session prices are Fugg=2 coins, Bêta=1 coin, Caca=free.
+- Core UI/login/discovery/Info/Comments/shop/leaderboards: **React + TypeScript + HTML/CSS**.
+- New and migrated 2D gameplay: **Phaser 4**.
+- Advanced animated covers: **Phaser 4**; static covers may remain normal Core raster art.
+- Genuine 3D low-poly/blockout gameplay: **Three.js**.
 
-Before creating or modifying platform achievements, cross-game progression, trophy/reward UI, or rewards that unlock entry scenes or other Core content, read `docs/META_PROGRESSION.md`. Games should report achievement-relevant events/results to Core instead of reimplementing platform achievement state/UI locally.
+Do not add PixiJS as a parallel production runtime.
 
-Before creating or modifying Fugg welcome covers / cover art, also read `docs/WELCOME_ILLUSTRATIONS.md` **and** `docs/WELCOME_ART_STYLES.md`. The first defines the collectible Fugg system, Bêta/Caca templates, internationalization and parallax asset bundles; the second is the reusable cover-style catalog. Before tuning layer position, scale, parallax, motion, FX or unlock scores, also read `docs/PARALLAX_LAB.md`.
+Do not create new bespoke raw Canvas/WebGL/WebGPU gameplay renderers unless the user explicitly reopens the architecture decision. Existing custom Canvas and DOM/CSS renderers are legacy migration sources, not foundations to extend.
 
-## Mandatory rules
+## 3. Canonical logical stage — mandatory
 
-1. A newly started real game has a strict budget of 10 user prompts.
-2. For every response during that game's creation, visibly show: `🎮 <Game> — Prompt N/10 — X prompts remaining`.
-3. Platform/Core work does not consume a game's 10 prompts.
-4. Keep game code inside `src/games/<game-id>/` plus its registry entry unless the user explicitly asks for Core changes.
-5. Never reimplement generic platform features (leaderboard, nickname, rules sheet, final score/replay, love, comments, bookmarks, share/remix) inside a new game.
-6. Use `GameComponentProps` and the shared session API from `src/core/types.ts`.
-7. New games should finish runs with `session.finish(...)` and reset when `restartToken` changes.
-8. Do not add dependencies, backend endpoints, secrets or external scripts casually.
-9. Optimize for phone play, immediate interaction, simple controls and fast understanding. Explicitly declare each game's preferred `orientation` as `portrait`, `landscape` or `both` in the registry.
-10. If orientation is genuinely unclear, include a compact portrait / landscape / both choice in the same preflight as the visual QCM. Do not spend a whole game prompt only asking orientation.
-11. Use the shared MiniFugg layout grid from `src/core/gameLayout.css` for normal game HUD / stage / controls. Prefer `.mf-game-layout`, `.mf-game-hud`, `.mf-game-stage`, `.mf-game-controls` and shared `--mf-text-*`, `--mf-touch-*`, spacing and padding tokens over device-specific raw `vw`/`vh` positioning.
-12. Keep the same semantic information hierarchy across supported screen sizes. Reflow when necessary, but do not create unrelated mobile and desktop compositions unless the mechanic genuinely requires it.
-13. Active gameplay should use almost the entire available viewport. Do not reserve large permanent top/bottom Core bars or preserve obsolete empty padding from the old feed shell. Respect device safe areas and only the small local exclusion needed by the Core close-box control.
-14. Once gameplay is active, cover/feed discovery gestures are suspended. The game may use vertical/horizontal gestures it genuinely needs; do not force root `pan-y` merely to preserve the old feed escape gesture.
-15. Core must keep one small, always reachable close-box / return-to-cover control during active gameplay. It returns to the same game cover. Do not rely on an invisible bottom swipe gutter as the only way to escape a game.
-16. Keyboard gameplay controls belong to the active game. Core navigation must not intercept Arrow keys, Space, Enter, WASD/ZQSD or other common gameplay keys once gameplay is active.
-17. Use pointer capture only for real local drag/hold interactions and always clean it up on pointer up/cancel and lifecycle cleanup where relevant. Never trap the Core close-box control behind a full-screen pointer layer.
-18. Do not fall back to the generic AI aesthetic. Read the style kit catalog in `docs/style-kits/` and `src/style-kits/catalog.ts`. If visual direction is unclear, use the visual preflight from `docs/STYLE_SYSTEM.md`.
-19. Once a visual direction is chosen, create/read `src/games/<game-id>/ART_DIRECTION.md` and preserve it across later prompts.
-20. If existing game code conflicts with these contracts, treat the contracts as the target architecture and preserve gameplay while migrating deliberately.
-21. For production image assets, use the `Fugg` Drive inbox documented in `docs/ASSET_PIPELINE.md`, wait for/verify the automatic sync into `public/assets/imported/`, and reference only `/assets/imported/...` from the app. Never hotlink Drive.
-22. Game discovery uses one full-screen cover at a time. While a cover is active: finger up = previous cover, finger down = next cover, finger left = play/open current game, finger right = details/community. Do not replace this with a generic grid/card storefront unless the product contract is explicitly revised.
-23. For free players, keep the unified coin balance visible while browsing covers. Core prices are Fugg=2 coins, Bêta=1 coin, Caca=0/free. With coins, heavily weight Fugg (~90%) with occasional Bêta (~10%); at zero coins, target roughly 50% Caca while continuing to show Fugg/Bêta in the other half.
-24. Do not expose a compulsory Fugg badge. Finished Fugg games communicate quality through authored collectible covers. Bêta and Caca use reusable templates with a per-game title/logo and live translated explanatory copy/CTA above the artwork.
-25. A Fugg cover that claims parallax must use real generated raster layers (background / midground / foreground / overlay as appropriate), imported through the asset pipeline. Do not substitute CSS-drawn props or generic JS particles for actual cover art.
-26. Use the desktop Parallax Lab (`/?game=<game-id>&usr=moigod`) to tune Fugg cover layers when practical. The Lab is preview-only: it may save drafts locally and copy a `MINIFUGG_PARALLAX_CONFIG` text block, but it must not write directly to GitHub or production. Apply validated copied configs through the normal repository workflow.
-27. Default authored Fugg cover language is English unless a cover is intentionally localized. Status explanations, prices, comments/help prompts and other mutable UI copy must stay live/localizable rather than baked into raster art.
-28. The play-entry transition should feel like accepting a coin and opening a game object/box. Paid plays may use a short coin-clang SFX, then the cover/lid/sleeve opens laterally to reveal the actual game behind it. Closing the game should reverse that metaphor and return to the same cover. Keep both transitions short and tactile.
-29. During active gameplay, the free-player coin balance, social actions and discovery navigation should not remain permanently over the game by default. Reintroduce relevant balance/cost only when the player is making a launch/replay decision.
-30. End-of-run replay/quit belongs to Core. Replay normally costs the current game's status price (Fugg 2 / Bêta 1 / Caca free), while quit/close returns to the same cover. Games report completion; they do not implement MiniFugg spending UI themselves.
-31. Every AI-created MiniFugg music proposal gets a permanent `MF-MUS-####` id, appears in `/?usr=moigod&lab=music`, keeps its symbolic MIDI source and stable MIDI export identity, and is never deleted. User decisions change catalog status to `selected` or `archived` according to `docs/MUSIC_LAB.md`.
-32. Every authored MiniFugg SFX identity gets a permanent `MF-SFX-####` id and appears in the Audio Lab. Prefer the shared semantic vocabulary (`move`, `rotate`, `softDrop`, `land`, `levelUp`, `success`, `fail`) plus a per-game accent before inventing game-specific sounds. Never delete old SFX identities; archive or supersede them according to `docs/MUSIC_LAB.md`.
-33. A game must remain distribution-agnostic. Never import Steam-, Google Play-, Android-, iOS-, itch.io- or host-specific SDKs directly inside a game. Platform capabilities belong behind MiniFugg Core adapters/export shells so the same game source can ship as web, static ZIP, standalone, desktop/Steam or mobile-store builds without per-game rewrites.
-34. Platform entry scenes are collectible Core content. Their surroundings may vary widely, but the MiniFugg logo/mascot/Core identity stays stable. Prefer a small default scene set plus achievement-unlocked scenes instead of one permanent splash or an ever-growing unstructured random catalog.
-35. Shared Core UI must use the semantic system in `docs/PLATFORM_UI_SYSTEM.md`. Do not create screen-specific variants for ordinary body text, headings, player names, Creator/999 badges, avatars, tabs, list rows or standard actions when a shared primitive can express the same role.
-36. The MiniFugg wordmark is a locked brand asset. Read `docs/BRAND_ASSETS.md` and use its canonical reference; never redraw, regenerate, approximate with a font, or silently substitute another MiniFugg logo variant.
-37. Production source uses Git for version history. Edit the canonical file in place; do not accumulate `V2`/`V3`/`final`/`old`/`backup`/chronological `fix` implementations on `main`. If a replacement becomes canonical, delete the superseded source in the same cleanup.
-38. Multiple game CSS files are allowed when they have stable semantic responsibilities. Name them by responsibility (`mobile`, `landscape`, `effects`, etc.), never by prompt/version chronology.
-39. Game CSS must stay inside the game's visual universe: use game-owned selectors/prefixes and shared tokens, but never target Core `.mf-*`, `.game-feed`, `.game-slot`, `.game-card`, `.game-surface`, `body`, `html`, `#root` or `:root` to alter platform presentation. Core must not depend on game-private selectors either.
-40. Developer labs/editors may coexist with production, but must be clearly identifiable as tooling. Dead preview/demo/alternate UI components that are no longer imported belong in Git history, not beside the canonical production UI.
+Gameplay has a fixed authored coordinate system. Default targets:
+
+- portrait: `390 × 844` logical units;
+- landscape: `844 × 390` logical units.
+
+Screen/browser/device changes apply **uniform scaling only** to the canonical game stage. Do not redesign or reflow critical gameplay geometry for PC vs phone. Do not position important game objects primarily with `vw`/`vh`.
+
+A phone is the complete reference experience. Tablet/desktop extra space may host optional Core sidecars or decorative overscan, but it must never move or resize elements relative to one another inside the canonical game.
+
+Device pixel ratio may improve render resolution but never changes logical coordinates.
+
+## 4. Existing games are frozen for migration
+
+All current games are explicitly marked in `src/core/gameRegistry.tsx` with `runtime`, `logicalViewport` and `migration` metadata.
+
+When `migration.locked === true`:
+
+- no new gameplay feature;
+- no normal polish pass;
+- no additional legacy responsive/CSS/Canvas workaround;
+- only direct migration work is allowed, except for a minimal urgent security/blocking regression fix.
+
+If the user asks to improve a locked game, migrate it first/as part of the request.
+
+Read `src/games/README.md` and `docs/GAME_MIGRATION_PLAN.md`.
+
+When migration becomes canonical, delete the superseded renderer/code in the same cleanup. Git history is the archive; do not retain V2/V3/OLD production files.
+
+## 5. Current covers are migration-marked
+
+All current game covers are considered **A METTRE A JOUR** until their registry cover migration state is `current`.
+
+Do not expand the legacy CSS parallax/FuggWelcome system. Existing TetraMindFck layered work may be used as visual/data reference while migrating to the shared Phaser cover runtime.
+
+## 6. New game 10-prompt rule
+
+A real new game must be created and finished in a maximum of 10 user prompts.
+
+When the user explicitly begins a new game, show in every game-development response:
+
+`🎮 <Game name> — Prompt N/10 — X prompts remaining`
+
+One user message in the active creation sequence = one prompt. Prompt 10 is final. Core/platform/runtime/export/documentation/migration-infrastructure work does not consume a game's 10 prompts.
+
+Use Prompt 1 to produce a playable implementation when repository access is available. Avoid spending prompts on questions that can be inferred safely.
+
+## 7. Input portability
+
+Game logic consumes semantic actions (`left`, `right`, `up`, `down`, `primary`, `secondary`, `pause`) or direct pointer coordinates when the mechanic genuinely requires them.
+
+Map hardware separately:
+
+- touch/pointer on mobile/tablet;
+- keyboard/mouse on desktop;
+- gamepad on desktop/store builds.
+
+Changing input device must not change gameplay geometry.
+
+During active gameplay, the game owns gameplay gestures. Core keeps its explicit close-box/return control reachable. Cover discovery gestures are suspended while playing.
+
+## 8. Core/game boundary
+
+Games do not implement platform UI or platform economy.
+
+Core owns:
+
+- auth/player identity;
+- coins and purchases;
+- entitlements;
+- official leaderboard submission;
+- love/comments/bookmarks/share;
+- discovery/navigation;
+- store/platform adapters.
+
+Games report through the shared session/lifecycle contract (`active`, `seed`, `restartToken`, `session.setScore`, `session.finish`).
+
+Do not call the database, Steam, Google Play, App Store or platform SDKs directly from a game.
+
+## 9. Online/offline trust boundary
+
+Online coins, purchases, entitlements and official ladders are server-authoritative.
+
+A purchased game may be playable offline. Offline local state is untrusted by design:
+
+- local coins may be tampered with;
+- offline score never enters an official ladder;
+- offline play grants no official server reward;
+- reconnecting never overwrites the server wallet with a client wallet.
+
+Do not build fragile invasive DRM merely to protect local offline values.
+
+## 10. Assets
+
+Production images use the canonical pipeline:
+
+`private Drive Fugg hierarchy → GitHub Actions sync → public/assets/imported/... → /assets/imported/...`
+
+Never use public Drive URLs, FTP, manual binary GitHub uploads or base64 chunking while that pipeline is available. Preserve originals without resize/recompression unless explicitly requested.
+
+Important visual objects promised as authored art must be real imported assets; procedural engine shapes are fine for genuinely procedural effects, prototypes and non-art primitives.
+
+## 11. Visual quality
+
+MiniFugg gameplay must not settle for a generic “small HTML5 game” presentation.
+
+A Fugg-quality game needs deliberate art direction, authored assets where appropriate, readable silhouettes, motion, sound, feedback and enough visual/emotional character that the cover-to-game transition is not a major quality drop.
+
+Do not confuse engine complexity with polish: simple pixel art, paper art or low-poly/blockout can be excellent if intentionally finished.
+
+## 12. Repository discipline
+
+- Inspect `main` before editing.
+- Keep one canonical implementation.
+- Do not create avoidable duplicate files (`V2`, `final-final`, backups, etc.).
+- Delete obsolete production code/assets once replacement is canonical and safe.
+- Keep user-approved visual references unchanged unless explicitly asked.
+- Run/build/typecheck where tools permit.
+- `main` is the deployable source of truth; do not leave the accepted state only on an abandoned branch.
+
+## 13. Distribution portability
+
+Games depend on MiniFugg, never on a store/OS.
+
+Target shells:
+
+- browser/PWA: normal web build;
+- Android/iOS: Capacitor target;
+- desktop/Steam: Electron target.
+
+Platform-specific APIs belong behind Core adapters. Packaging technology may evolve without rewriting games.
+
+## 14. Security
+
+Never put secrets/private keys/store credentials in client code or the repository. Treat the browser/app client as attacker-controlled for shared economy and competition. Validate authoritative actions server-side.

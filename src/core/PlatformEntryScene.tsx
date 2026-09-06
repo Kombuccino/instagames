@@ -7,6 +7,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type WheelEvent as ReactWheelEvent,
 } from 'react'
+import { FuggyEyes } from './graphics/FuggyEyes'
 import { PerspectiveTextureCanvas } from './graphics/PerspectiveTextureCanvas'
 import { ProjectiveDomSurface } from './graphics/ProjectiveDomSurface'
 import { createPlatformEntryMusic, type PlatformEntryMusicController } from './platformEntryMusic'
@@ -34,15 +35,16 @@ const ARM_VARIANTS = Array.from({ length: 8 }, (_, index) => `${ASSET_ROOT}/arms
 const ARM_STORAGE_KEY = 'minifugg:entry-arm:v1'
 
 /*
- * Measured against the locked 941x1672 arm artwork. Order is
- * top-left, top-right, bottom-right, bottom-left, in stage fractions.
- * The reusable ProjectiveDomSurface maps the live DOM onto this exact quad.
+ * Measured from the physical inner display of the locked 941x1672 phone art.
+ * Order: top-left, top-right, bottom-right, bottom-left, in stage fractions.
+ * ProjectiveDomSurface now resolves these points in the parent's local space,
+ * so the hand's scale/rotation is applied exactly once to both art and DOM.
  */
 const PHONE_SCREEN_QUAD = [
-  [0.3348, 0.2955],
-  [0.6111, 0.3020],
-  [0.5484, 0.6513],
-  [0.2678, 0.6376],
+  [0.3241, 0.2967],
+  [0.6260, 0.3038],
+  [0.5632, 0.6519],
+  [0.2582, 0.6400],
 ] as const
 
 function chooseArm() {
@@ -177,6 +179,7 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
 
         <div className="mf-entry-scene__carriage" aria-hidden="true">
           <img className="mf-entry-scene__wagon" src={WAGON_ART} alt="" draggable={false} decoding="sync" fetchPriority="high" />
+          <FuggyEyes className="mf-entry-scene__fuggy-eyes" />
         </div>
 
         <div className="mf-entry-scene__hand-group" aria-hidden="true">

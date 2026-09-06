@@ -1,21 +1,31 @@
-import type { InstagameDefinition } from './types'
-import { withStatusWelcome } from './StatusWelcome'
+import type { GameFeatureConfig, InstagameDefinition } from './types'
 import { LineFugg } from '../games/linefugg/LineFugg'
 import { ShootTheShooter } from '../games/shoot-the-shooter/ShootTheShooter'
 import { VladsSkewers } from '../games/vlads-skewers/VladsSkewers'
 import { HariRottenTeeth } from '../games/hari-rotten-teeth/HariRottenTeeth'
 import { TetraMindFck } from '../games/calc-drop/TetraMindFck'
+import { TETRAMINDFCK_WELCOME } from '../games/calc-drop/welcome'
 import { CrazyPapers } from '../games/crazy-papers/CrazyPapers'
 import { DebthOfLife } from '../games/debth-of-life/DebthOfLife'
 import { TrainFighter } from '../games/train-fighter/TrainFighter'
 
-const TrainFighterBeta = withStatusWelcome('beta', 'Train Fighter', 'Change de voie · équipe ton train · choisis tes bastons', TrainFighter)
-const HariBeta = withStatusWelcome('beta', 'HARI les dents pourries', 'Aligne les bonbons · pourris toute la mâchoire', HariRottenTeeth)
-const ShooterCaca = withStatusWelcome('trash', 'Shoot the Shooter', 'Bois, mémorise, tiens jusqu’au blackout', ShootTheShooter)
-const DebthCaca = withStatusWelcome('trash', 'DebthOfLife', 'Cours ta vie · signe tes choix en sautant · meurs avec le meilleur bilan', DebthOfLife)
+const STANDARD_FEATURES: GameFeatureConfig = {
+  help: true,
+  love: true,
+  comments: true,
+  bookmark: true,
+  leaderboard: {
+    enabled: true,
+    periods: ['daily', 'weekly'],
+    sort: 'desc',
+    limit: 100,
+  },
+  share: true,
+  remix: false,
+}
 
-// Temporary discovery covers so the full multi-game navigation can be evaluated now.
-// They are placeholders only: they do not promote Bêta/Caca to collectible Fugg cover status.
+// Temporary discovery covers let Core navigation be tested across the whole catalog.
+// They do not change curation status and are not collectible Fugg variants.
 function placeholderWelcome(gameId: string): NonNullable<InstagameDefinition['welcome']> {
   return {
     variants: [{
@@ -38,7 +48,7 @@ export const gameRegistry: InstagameDefinition[] = [
     status: 'beta',
     orientation: 'portrait',
     welcome: placeholderWelcome('train-fighter'),
-    component: TrainFighterBeta,
+    component: TrainFighter,
     instructions: {
       goal: 'Traverse les 4 mondes avec le plus de wagons possible et transforme ta petite loco en machine à baffes.',
       rules: [
@@ -51,20 +61,7 @@ export const gameRegistry: InstagameDefinition[] = [
       ],
       controls: ['LEFT / RIGHT pour changer de voie', 'Clavier : ← →, A/D ou Q/D'],
     },
-    features: {
-      help: true,
-      love: true,
-      comments: true,
-      bookmark: true,
-      leaderboard: {
-        enabled: true,
-        periods: ['daily', 'weekly'],
-        sort: 'desc',
-        limit: 10,
-      },
-      share: false,
-      remix: false,
-    },
+    features: STANDARD_FEATURES,
   },
   {
     id: 'linefugg',
@@ -85,20 +82,7 @@ export const gameRegistry: InstagameDefinition[] = [
       ],
       controls: ['Glisse pour tracer une ligne', 'Relâche pour valider', 'Annule avant le 3e trait'],
     },
-    features: {
-      help: true,
-      love: true,
-      comments: true,
-      bookmark: true,
-      leaderboard: {
-        enabled: true,
-        periods: ['daily', 'weekly'],
-        sort: 'desc',
-        limit: 10,
-      },
-      share: false,
-      remix: false,
-    },
+    features: STANDARD_FEATURES,
   },
   {
     id: 'shoot-the-shooter',
@@ -108,7 +92,7 @@ export const gameRegistry: InstagameDefinition[] = [
     status: 'trash',
     orientation: 'landscape',
     welcome: placeholderWelcome('shoot-the-shooter'),
-    component: ShooterCaca,
+    component: ShootTheShooter,
     instructions: {
       goal: 'Bois un maximum de shooters sans finir à 100% d’alcool ni rater 3 verres.',
       rules: [
@@ -120,20 +104,7 @@ export const gameRegistry: InstagameDefinition[] = [
       ],
       controls: ['Tape au bon moment', 'Clavier : Espace ou Entrée'],
     },
-    features: {
-      help: true,
-      love: true,
-      comments: true,
-      bookmark: true,
-      leaderboard: {
-        enabled: true,
-        periods: ['daily', 'weekly'],
-        sort: 'desc',
-        limit: 10,
-      },
-      share: false,
-      remix: false,
-    },
+    features: STANDARD_FEATURES,
   },
   {
     id: 'vlads-skewers',
@@ -155,20 +126,7 @@ export const gameRegistry: InstagameDefinition[] = [
       ],
       controls: ['Maintiens et glisse pour déplacer la brochette', 'Empale avec la pointe', 'Brochette complète : va jusqu’au client'],
     },
-    features: {
-      help: true,
-      love: true,
-      comments: true,
-      bookmark: true,
-      leaderboard: {
-        enabled: true,
-        periods: ['daily', 'weekly'],
-        sort: 'desc',
-        limit: 10,
-      },
-      share: false,
-      remix: false,
-    },
+    features: STANDARD_FEATURES,
   },
   {
     id: 'hari-rotten-teeth',
@@ -178,7 +136,7 @@ export const gameRegistry: InstagameDefinition[] = [
     status: 'beta',
     orientation: 'portrait',
     welcome: placeholderWelcome('hari-rotten-teeth'),
-    component: HariBeta,
+    component: HariRottenTeeth,
     instructions: {
       goal: 'Aligne les bonbons pour pourrir toutes les dents de HARI.',
       rules: [
@@ -190,20 +148,7 @@ export const gameRegistry: InstagameDefinition[] = [
       ],
       controls: ['← → déplacer', '↓ accélérer', '↔ changer l’orientation', '↻ changer l’ordre des bonbons'],
     },
-    features: {
-      help: true,
-      love: true,
-      comments: true,
-      bookmark: true,
-      leaderboard: {
-        enabled: true,
-        periods: ['daily', 'weekly'],
-        sort: 'desc',
-        limit: 10,
-      },
-      share: false,
-      remix: false,
-    },
+    features: STANDARD_FEATURES,
   },
   {
     id: 'tetramindfck',
@@ -212,6 +157,7 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'fugg',
     orientation: 'portrait',
+    welcome: TETRAMINDFCK_WELCOME,
     component: TetraMindFck,
     instructions: {
       goal: 'Complète des lignes et construis les calculs les plus rentables possible.',
@@ -224,20 +170,7 @@ export const gameRegistry: InstagameDefinition[] = [
       ],
       controls: ['← → déplacer', '↓ accélérer la chute', '↺ ↻ tourner', 'Clavier : flèches, Z et X'],
     },
-    features: {
-      help: true,
-      love: true,
-      comments: true,
-      bookmark: true,
-      leaderboard: {
-        enabled: true,
-        periods: ['daily', 'weekly'],
-        sort: 'desc',
-        limit: 10,
-      },
-      share: false,
-      remix: false,
-    },
+    features: STANDARD_FEATURES,
   },
   {
     id: 'crazy-papers',
@@ -261,20 +194,7 @@ export const gameRegistry: InstagameDefinition[] = [
       ],
       controls: ['Tape sur l’un des 5 tampons de service', 'Clavier : 1 COMPTA · 2 CIVIL · 3 URBA · 4 RH · 5 JURIDIQUE'],
     },
-    features: {
-      help: true,
-      love: true,
-      comments: true,
-      bookmark: true,
-      leaderboard: {
-        enabled: true,
-        periods: ['daily', 'weekly'],
-        sort: 'desc',
-        limit: 10,
-      },
-      share: false,
-      remix: false,
-    },
+    features: STANDARD_FEATURES,
   },
   {
     id: 'debth-of-life',
@@ -284,7 +204,7 @@ export const gameRegistry: InstagameDefinition[] = [
     status: 'trash',
     orientation: 'landscape',
     welcome: placeholderWelcome('debth-of-life'),
-    component: DebthCaca,
+    component: DebthOfLife,
     instructions: {
       goal: 'Atteins 85 ans avec le meilleur patrimoine net possible.',
       rules: [
@@ -297,19 +217,6 @@ export const gameRegistry: InstagameDefinition[] = [
       ],
       controls: ['Maintiens SAUTER pour viser le contrat du haut', 'Relâche tôt pour rester plus bas', 'Clavier : Espace, ↑, W ou Z'],
     },
-    features: {
-      help: true,
-      love: true,
-      comments: true,
-      bookmark: true,
-      leaderboard: {
-        enabled: true,
-        periods: ['daily', 'weekly'],
-        sort: 'desc',
-        limit: 10,
-      },
-      share: false,
-      remix: false,
-    },
+    features: STANDARD_FEATURES,
   },
 ]

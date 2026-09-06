@@ -20,6 +20,8 @@ The approved expanded mascot/model sheet is archived as:
 
 Any future depiction that conflicts with these references is wrong unless the user explicitly approves a redesign.
 
+**Important:** these mascot boards are authoritative for Fuggy only. Any MiniFugg wordmark drawn inside a generated mascot/icon board is illustrative and must not supersede the separate canonical wordmark in `docs/BRAND_ASSETS.md`.
+
 ## Locked visual traits
 
 Fuggy must preserve these recognizable traits:

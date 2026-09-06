@@ -1,144 +1,82 @@
-# MiniFugg Input & Gesture Contract
+# MiniFugg — Input and Gesture Contract
 
-MiniFugg uses two different gesture contexts:
+MiniFugg separates platform navigation from active gameplay and maps hardware to semantic game actions.
 
-1. **cover discovery** — Core owns the spatial navigation grammar;
-2. **active gameplay** — the game owns gameplay gestures and Core exposes an explicit close-box exit control.
+## 1. Cover/discovery mode
 
-Read together with:
+When the game is not active, Core owns discovery gestures and controls according to `docs/DISCOVERY_NAVIGATION.md`.
 
-- `docs/DISCOVERY_NAVIGATION.md` for cover browsing;
-- `docs/GAMEPLAY_SHELL.md` for fullscreen gameplay and exit;
-- `docs/GAME_LAYOUT_SYSTEM.md` for responsive game layout.
+A cover must not implement its own competing page-navigation grammar.
 
----
+## 2. Active gameplay mode
 
-## 1. Cover discovery gesture grammar
+Once gameplay starts, the game owns interaction inside the canonical game stage.
 
-While a full-screen game cover is active, Core owns these gestures:
+Core discovery swipes are suspended. Core's explicit close/return control remains reachable outside the game capture layer and returns to the same game's cover.
 
-- finger moves upward → previous game cover;
-- finger moves downward → next game cover;
-- finger moves left → play / open current game;
-- finger moves right → details / community for current game.
+## 3. Semantic actions
 
-The cover owns these gestures until the play-entry transition completes.
+Prefer game logic that consumes stable actions rather than device keys:
 
-Desktop equivalents may use wheel/trackpad/pointer gestures when appropriate. Keyboard navigation must not steal common gameplay keys once a game is active.
+- `left`
+- `right`
+- `up`
+- `down`
+- `primary`
+- `secondary`
+- `pause`
 
----
+The shared runtime action vocabulary is declared in `src/core/runtime/gameRuntimePolicy.ts`.
 
-## 2. Active gameplay gesture ownership
+Use direct pointer positions, dragging or multi-touch only when those gestures are intrinsically part of the mechanic.
 
-Once a game is open, the discovery grammar is suspended.
+## 4. Device mappings
 
-The game may use the full practical input vocabulary it needs:
+The same semantic action can be triggered by different hardware.
 
-- vertical swipe;
-- horizontal swipe;
-- drag;
-- hold;
-- wheel/trackpad when relevant;
-- pointer capture on local interaction surfaces;
-- keyboard controls.
+Examples:
 
-There is **no longer a permanent bottom Core swipe gutter whose purpose is to leave the game**.
+- mobile/tablet: on-screen controls, taps, drags, swipes;
+- desktop: keyboard and mouse;
+- store/desktop builds: gamepad where useful.
 
-The player exits active gameplay using the explicit Core **close-box / return-to-cover** control defined in `docs/GAMEPLAY_SHELL.md`.
+Do not hard-code game rules around `Space`, `ArrowLeft`, a specific touch button or Steam input. Those are mappings.
 
-This change exists specifically so games can reclaim almost the whole viewport and use gestures without fighting the old vertical-feed escape rule.
+## 5. Geometry does not follow the controls
 
----
+Control presentation may adapt between devices. Gameplay geometry does not.
 
-## 3. Close-box control is the guaranteed escape path
+Examples:
 
-Core must provide a small, always reachable control while gameplay is active.
+- a touch D-pad may appear on a phone and disappear on keyboard desktop;
+- a pointer hint may become a key hint;
+- a gamepad glyph may replace a keyboard glyph.
 
-Activating it:
+None of those changes may move the board, character, camera, collision world or other canonical gameplay layers into a different composition.
 
-1. exits/freezes the current session cleanly;
-2. reverses the box-opening metaphor;
-3. returns to the same game's cover;
-4. restores cover discovery gestures.
+## 6. Pointer precision
 
-Do not use an invisible edge gesture as the only exit mechanism.
+Hit testing must use the runtime's logical coordinate system after mapping the physical pointer into the canonical stage.
 
-Do not jump to another game when closing.
+Do not compare raw browser pixel coordinates directly with logical game objects without applying the stage transform. This prevents the kind of near-edge misses that can appear when physical CSS geometry and gameplay coordinates drift apart.
 
----
+## 7. Touch behavior
 
-## 4. Keyboard ownership
+During gameplay:
 
-Keyboard gameplay controls belong to the active game.
+- prevent browser scrolling/selection only inside the intended game interaction surface;
+- keep Core close/return controls outside the capture region;
+- use pointer capture for drags when the interaction must continue after the finger/mouse crosses an object's immediate bounds;
+- do not freeze a dragged game object merely because the pointer leaves its allowed movement region — clamp the object while continuing to track the pointer.
 
-Core must not intercept common gameplay keys while a game is active, including:
+## 8. Keyboard and gamepad
 
-- ArrowUp / ArrowDown / ArrowLeft / ArrowRight;
-- Space;
-- Enter;
-- WASD / ZQSD;
-- letter keys commonly used for actions.
+Keyboard listeners must be attached/removed with the game lifecycle and ignored when the game is inactive.
 
-Desktop cover browsing may use wheel/trackpad/pointer navigation rather than consuming these keys.
+Gamepad support belongs to the shared runtime mapping. A game may declare which semantic actions it uses, but must not import a store-specific controller SDK.
 
-A dedicated `Escape` shortcut may later mirror the close-box button if Core adopts it globally, but this is optional and must not replace the visible control.
+## 9. Accessibility and reduced motion
 
----
+Core HTML controls remain ordinary accessible DOM controls. Game-specific Canvas/WebGL interaction should expose useful accessible labels/instructions in Core where practical.
 
-## 5. `touch-action` rules
-
-The old requirement to preserve `pan-y` on every fullscreen game root is removed.
-
-During active gameplay, a game may use the touch-action behavior its mechanic genuinely requires.
-
-Still follow good input hygiene:
-
-- use `touch-action: none` only when the mechanic benefits from exclusive touch handling;
-- prefer `touch-action: manipulation` for simple tap buttons;
-- avoid fullscreen pointer interception unless the gameplay surface itself is truly fullscreen;
-- keep the Core close-box control outside game pointer interception.
-
-The key invariant is no longer “feed swipe must always escape”. The invariant is:
-
-> **The Core close-box control must always remain reachable.**
-
----
-
-## 6. Pointer capture
-
-`setPointerCapture()` is allowed for real drag/hold interactions and must be released or cleaned up on:
-
-- `pointerup`;
-- `pointercancel`;
-- component cleanup / loss of active state when relevant.
-
-Do not accidentally capture events that belong to the Core close-box control.
-
----
-
-## 7. End-of-run input
-
-After a run ends, Core may present replay/quit actions.
-
-During that end state:
-
-- replay may consume the game's normal play cost;
-- quit returns to the same cover;
-- gameplay input should no longer remain active underneath the end-state controls.
-
-Exact visual treatment is defined separately from the gesture contract.
-
----
-
-## 8. Definition of done
-
-Before finishing a game, verify:
-
-- cover gestures work before the game opens;
-- leftward play gesture opens the current game rather than navigating away;
-- once gameplay is active, gameplay gestures are not intercepted by cover/feed navigation;
-- the close-box control is always reachable and usable on phone and desktop;
-- close-box returns to the same cover;
-- keyboard gameplay controls remain available to the active game;
-- pointer capture cannot remain stuck after cancellation;
-- old reserved bottom-feed escape padding/gutters are not unnecessarily reducing gameplay space.
+Honor `prefers-reduced-motion` for non-essential cover/Core motion. Gameplay motion required by the mechanic may remain, but avoid unnecessary camera/FX intensity when a reduced-motion mode is provided.

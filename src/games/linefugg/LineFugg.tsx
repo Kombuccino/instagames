@@ -8,6 +8,7 @@ import { musicCatalog } from '../../music/catalog'
 import { LINEFUGG_SCENE_KEY, LineFuggScene } from './LineFuggScene'
 
 const LINEFUGG_MUSIC_IDS = ['MF-MUS-0008', 'MF-MUS-0009'] as const
+const LINEFUGG_BACKGROUND = '/assets/imported/linefugg/backgrounds/orbital-stage-bg-v5.png'
 
 const LINEFUGG_MUSIC = LINEFUGG_MUSIC_IDS
   .map((id) => musicCatalog.compositions.find((composition) => composition.id === id))
@@ -67,11 +68,30 @@ export function LineFugg({ active, seed, restartToken, session }: GameComponentP
 
   return (
     <div
-      style={{ position: 'absolute', inset: 0 }}
+      style={{
+        position: 'absolute',
+        inset: 0,
+        overflow: 'hidden',
+        background: '#02070e',
+      }}
       onPointerDownCapture={() => {
         if (active) void musicRef.current?.start()
       }}
     >
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: '-4%',
+          backgroundImage: `linear-gradient(rgba(1, 5, 12, .22), rgba(1, 5, 12, .22)), url(${LINEFUGG_BACKGROUND})`,
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
+          filter: 'saturate(.92) brightness(.72)',
+          transform: 'scale(1.04)',
+          pointerEvents: 'none',
+        }}
+      />
       <PhaserGameHost
         active={active}
         restartToken={restartToken}

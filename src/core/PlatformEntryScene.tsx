@@ -7,6 +7,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type WheelEvent as ReactWheelEvent,
 } from 'react'
+import { PerspectiveTextureCanvas } from './graphics/PerspectiveTextureCanvas'
 import './platformEntryScene.css'
 
 type PlatformEntrySceneProps = {
@@ -126,12 +127,20 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
     >
       <div className="mf-entry-scene__stage">
         <div className="mf-entry-scene__city" aria-hidden="true">
-          <div className="mf-entry-scene__city-plane">
-            <div className="mf-entry-scene__city-track">
-              <img src={CITY_ART} alt="" draggable={false} />
-              <img src={CITY_ART} alt="" draggable={false} />
-            </div>
-          </div>
+          <PerspectiveTextureCanvas
+            src={CITY_ART}
+            className="mf-entry-scene__city-canvas"
+            paused={entering}
+            speed={116}
+            slices={220}
+            nearX={-0.1}
+            farX={0.92}
+            nearTop={-0.24}
+            nearBottom={0.66}
+            farTop={0.28}
+            farBottom={0.46}
+            xCurve={2.55}
+          />
         </div>
 
         <div className="mf-entry-scene__carriage" aria-hidden="true">

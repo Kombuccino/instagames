@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import type { GameComment, GameSocialStats } from './social'
 import type { InstagameDefinition } from './types'
+import { PhaserCoverHost } from './runtime/PhaserCoverHost'
 import './platformCover.css'
 
 export type PlatformPanel = 'info' | 'comments' | null
@@ -8,6 +9,7 @@ export type PlatformPanel = 'info' | 'comments' | null
 type Props = {
   game: InstagameDefinition
   catalog: InstagameDefinition[]
+  active: boolean
   seed: number
   coins: number
   cost: number
@@ -140,7 +142,7 @@ function CommentCard({ thread, depth = 0, reportedId, onReport }: { thread: Comm
 
 export function PlatformCoverShell(props: Props) {
   const {
-    game, catalog, seed, coins, cost, social, comments, bestScore, panel, nickname, commentText, launchError,
+    game, catalog, active, seed, coins, cost, social, comments, bestScore, panel, nickname, commentText, launchError,
     onPanel, onClosePanel, onToggleLove, onToggleBookmark, onPlay, onChangeGame, onShare,
     onNicknameChange, onCommentTextChange, onPostComment, onOpenLeaderboard, onSelectCover,
   } = props
@@ -184,8 +186,25 @@ export function PlatformCoverShell(props: Props) {
   const activeCover = variants.find((variant) => variant.id === activeVariantId)
 
   return (
-    <div className="mf-cover-shell" onPointerDown={beginGesture} onPointerUp={endGesture} onPointerCancel={() => { gesture.current = null }}>
-      {activeCover?.image && <div className="mf-core-selected-cover" aria-hidden="true"><img src={activeCover.image} alt="" draggable={false} /></div>}
+    <div
+      className="mf-cover-shell"
+      data-cover-migration={game.migration.cover}
+      onPointerDown={beginGesture}
+      onPointerUp={endGesture}
+      onPointerCancel={() => { gesture.current = null }}
+    >
+      {activeCover?.image && (
+        <div className="mf-core-selected-cover">
+          <img src={activeCover.image} alt="" draggable={false} aria-hidden="true" />
+          {active && activeCover.runtime === 'phaser-2d' && activeCover.layers?.length ? (
+            <PhaserCoverHost
+              active={!panel}
+              variant={activeCover}
+              ariaLabel={`${game.title} — ${activeCover.label}`}
+            />
+          ) : null}
+        </div>
+      )}
       <div className="mf-coin-balance" aria-label={`${coins} coins`}><PixelCoin /><strong>{formatSocialCount(coins)}</strong></div>
 
       <nav className="mf-cover-rail" aria-label="Game actions">

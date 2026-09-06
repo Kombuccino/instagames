@@ -66,9 +66,9 @@ button { color: inherit; }
   font-size: 13px;
 }
 
-/* Temporary platform-wide migration marker. All current covers are flagged until
-   the first per-game cover migration lands and this becomes registry-driven. */
-.mf-cover-shell::after {
+/* Temporary marker for covers that have not reached their canonical runtime. */
+.mf-cover-shell[data-cover-migration='update-required']::after,
+.mf-cover-shell[data-cover-migration='in-progress']::after {
   content: 'A METTRE A JOUR';
   position: absolute;
   z-index: 50;

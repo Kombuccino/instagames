@@ -1,237 +1,115 @@
-# MiniFugg Game Layout System v2
+# MiniFugg — Game Layout System
 
-MiniFugg games should keep stable proportions across screen sizes without wasting gameplay space on permanent platform chrome.
+This document defines how gameplay geometry behaves across phones, tablets, desktop browsers and wrapped applications.
 
-The shared implementation lives in `src/core/gameLayout.css`.
+## 1. Core rule
 
-Read together with `docs/GAMEPLAY_SHELL.md`: active gameplay is now **almost fullscreen** and Core normally keeps only a small close-box / return-to-cover control.
+**Gameplay is not responsively reflowed. It is authored once in a fixed logical stage and uniformly scaled.**
 
----
+The old approach of using viewport-dependent layout tokens/media queries to rearrange critical game elements is legacy and must not be used for migrated/new gameplay.
 
-## 1. Principle
+Default logical stages:
 
-Do not design separate arbitrary PC and mobile layouts from scratch.
+- portrait: `390 × 844`;
+- landscape: `844 × 390`.
 
-Use the same semantic **game-owned** zones on every screen:
+A game may declare another fixed logical size if needed, but the size is explicit and stable.
 
-1. game HUD;
-2. main stage/playfield;
-3. game controls;
-4. optional anchored game-specific elements.
+## 2. Uniform fit
 
-The standard wrapper remains useful:
+Given logical size `(LW, LH)` and available central area `(AW, AH)`:
 
-```html
-<div class="mf-game-layout">
-  <header class="mf-game-hud">...</header>
-  <main class="mf-game-stage">...</main>
-  <footer class="mf-game-controls">...</footer>
-</div>
-```
+`scale = min(AW / LW, AH / LH)`
 
-These are zones for the **game's own interface**, not permanent MiniFugg platform bars.
+Then:
 
-Under the new gameplay shell, `.mf-game-layout` should be able to use essentially the full active game container.
+- displayed width = `LW × scale`;
+- displayed height = `LH × scale`;
+- center the result in the available central area.
 
-Do not preserve old top/bottom empty strips merely because previous MiniFugg versions reserved room for Core navigation, score or a swipe gutter.
+Never independently stretch X/Y.
 
----
+Never use the physical viewport as the simulation coordinate system.
 
-## 2. Core exclusion while playing is minimal
+## 3. What stays fixed
 
-During active gameplay, Core normally overlays only the compact close-box control defined in `docs/GAMEPLAY_SHELL.md`.
+Across device sizes, these relationships must remain the same:
 
-Games must:
+- sprite positions relative to each other;
+- board/grid/mouth/track proportions;
+- hit boxes;
+- camera framing;
+- authored HUD positions inside the game;
+- distances and collision coordinates;
+- layer composition.
 
-- keep essential gameplay controls clear of that small local control;
-- respect device safe-area/notch insets;
-- otherwise use the available viewport.
+This is specifically intended to eliminate failures such as HARI/TetraMindFck looking materially different on PC and phone.
 
-Old broad Core reservations such as large persistent top/bottom bars should not dictate new game composition.
+## 4. What may adapt
 
-If existing CSS variables such as these remain for compatibility:
+Only the following may change by environment:
 
-```css
---minifugg-core-top-reserved
---minifugg-core-right-reserved
---minifugg-core-bottom-reserved
---minifugg-core-left-reserved
-```
+- the uniform scale of the canonical stage;
+- render pixel density / device pixel ratio;
+- control presentation/mapping (touch vs keyboard/mouse/gamepad);
+- optional Core sidecars outside the canonical stage;
+- decorative overscan outside the canonical stage;
+- safe-area padding outside/around the canonical stage when required by device chrome.
 
-they should not be assumed to represent large permanent chrome in the new shell. Migration may reduce/collapse them as Core implementation catches up.
+The game mechanic must remain complete without sidecars or overscan.
 
----
+## 5. Desktop/tablet extra space
 
-## 3. Use container-relative tokens, not arbitrary viewport math
+The mobile composition is the reference.
 
-`gameLayout.css` defines stable design tokens such as:
+On wide screens, Core may use left/right space for optional:
 
-```css
---mf-pad-x
---mf-pad-y
---mf-gap-1
---mf-gap-2
---mf-gap-3
---mf-gap-4
+- leaderboard;
+- comments;
+- profile/creator info;
+- session stats;
+- discovery/community context.
 
---mf-text-xs
---mf-text-sm
---mf-text-md
---mf-text-lg
---mf-text-xl
+Do not enlarge the game non-uniformly just to consume every desktop pixel. Do not move canonical controls into sidebars.
 
---mf-touch-sm
---mf-touch-md
---mf-touch-lg
-```
+## 6. Phaser implementation
 
-Prefer container-relative bounded sizing over raw `vw` / `vh` combinations.
+2D games use Phaser with a fixed logical width/height and aspect-preserving `FIT` scaling centered in the host.
 
-Example:
+Do not use Phaser `RESIZE` as the normal MiniFugg gameplay policy because it changes the game/canvas world dimensions with the parent.
 
-```css
-.my-score-label {
-  font-size: var(--mf-text-md);
-}
+Coordinates used by game objects, cameras and physics remain logical coordinates.
 
-.my-action {
-  min-width: var(--mf-touch-md);
-  min-height: var(--mf-touch-md);
-}
-```
+## 7. Three.js implementation
 
-The extra fullscreen space should improve the playfield, not cause uncontrolled scaling.
+Three.js games also use a fixed authored logical composition. The renderer may resize its physical backbuffer with the host/device pixel ratio, but camera framing must preserve the intended canonical composition.
 
----
+For perspective cameras, adapt renderer resolution/aspect deliberately without exposing new playable world merely because a desktop window is wider. Extra 3D overscan may exist decoratively, but gameplay-critical framing remains stable.
 
-## 4. Positions should be semantic or proportional
+## 8. Legacy DOM layout
 
-Prefer CSS Grid/Flex inside the shared zones.
+`.mf-game-layout`, `.mf-game-hud`, `.mf-game-stage`, `.mf-game-controls` and `--mf-*` layout tokens remain available only to keep legacy games functioning during migration and for ordinary Core/HTML UI where appropriate.
 
-For fixed game overlays, use shared anchors where useful:
+They are no longer the canonical strategy for gameplay geometry.
 
-```text
-mf-anchor-top-left
-mf-anchor-top-center
-mf-anchor-top-right
-mf-anchor-center
-mf-anchor-bottom-left
-mf-anchor-bottom-center
-mf-anchor-bottom-right
-```
+Do not spend migration time perfecting legacy responsive behavior. Replace it with the fixed logical stage.
 
-If an object belongs at 70% of a playfield, position it relative to `.mf-game-stage`, not the browser viewport.
+## 9. Text and touch targets
 
----
+Text and game controls authored inside the logical stage scale with the stage. Choose logical sizes that remain readable on the smallest supported phone.
 
-## 5. Portrait and landscape
+Platform/Core HTML controls may use normal accessible CSS sizing and safe-area handling because they are outside the game-world geometry.
 
-The semantic game hierarchy remains consistent across orientations, but there is no longer an architectural need to draw permanent Core bars above and below it.
+## 10. Validation matrix
 
-Portrait target:
+Before a migrated/new game is marked current, verify at least:
 
-```text
-┌───────────────────────┐
-│ small Core close-box  │  ← overlay only
-│                       │
-│ GAME HUD              │
-│                       │
-│ MAIN STAGE            │
-│                       │
-│ GAME CONTROLS         │
-│                       │
-└───────────────────────┘
-```
+- narrow phone portrait or landscape as appropriate;
+- larger modern phone;
+- tablet-sized viewport;
+- desktop browser with significant unused side space;
+- high-DPI device/emulation;
+- touch input;
+- keyboard/mouse input when supported.
 
-Landscape target:
-
-```text
-┌────────────────────────────────────┐
-│ small Core close-box               │
-│ GAME HUD      MAIN STAGE / HUD     │
-│ GAME CONTROLS                      │
-└────────────────────────────────────┘
-```
-
-Games declared `both` may rearrange internal Grid/Flex composition while preserving hierarchy and readable token sizes.
-
----
-
-## 6. Text hierarchy
-
-Use a limited hierarchy rather than one-off font sizes everywhere:
-
-- `--mf-text-xs`: secondary, non-critical text;
-- `--mf-text-sm`: normal game labels;
-- `--mf-text-md`: important HUD labels;
-- `--mf-text-lg`: major values / alerts;
-- `--mf-text-xl`: exceptional score/combo/impact text.
-
-Do not use `xs` for essential instructions or controls.
-
----
-
-## 7. Touch hierarchy
-
-Use:
-
-- `--mf-touch-sm`: secondary compact action;
-- `--mf-touch-md`: normal gameplay button;
-- `--mf-touch-lg`: dominant primary action / joystick control.
-
-The close-box control is Core-owned and should have its own accessible hit target independent of the game's visual styling.
-
----
-
-## 8. Existing-game migration
-
-Older games may still be laid out around the previous Core shell.
-
-Migration should be deliberate:
-
-1. remove large empty padding that existed only for old Core top/bottom chrome;
-2. let `.mf-game-layout` expand into the reclaimed area;
-3. keep game HUD in `.mf-game-hud` when semantically useful;
-4. expand `.mf-game-stage` to use the newly available room;
-5. keep game controls in `.mf-game-controls` or appropriate local overlays;
-6. replace arbitrary text/touch sizes with shared tokens;
-7. reserve only the small local area needed by the Core close-box control;
-8. preserve gameplay and art direction.
-
-Do not redesign a game's rules merely to adopt the new shell.
-
----
-
-## 9. Freeform exceptions
-
-A game may use a custom/freeform fullscreen layout when the mechanic genuinely requires it, for example:
-
-- drawing canvas;
-- physics world;
-- runner;
-- direct-manipulation board;
-- full-screen swipe/drag mechanic.
-
-Under the new gesture contract this is easier, because active games no longer need to preserve a feed escape swipe.
-
-Even then:
-
-- use shared typography/touch tokens where useful;
-- keep the Core close-box control reachable;
-- respect device safe areas;
-- clean up pointer capture correctly;
-- document significant layout exceptions in `ART_DIRECTION.md`.
-
----
-
-## 10. Definition of done
-
-A layout is ready when:
-
-- the game uses nearly all useful screen space on phone and desktop;
-- no obsolete Core top/bottom padding remains;
-- the close-box control does not obstruct essential gameplay;
-- the same hierarchy remains recognizable on narrow/tall phones and desktop;
-- game-owned HUD/controls remain readable;
-- orientation changes do not create a completely unrelated composition;
-- gameplay gestures work without being intercepted by cover discovery navigation.
+Expected result: screenshots of the canonical stage should align after uniform scaling. Differences should be control affordances, pixel density or optional outside-stage content — not shifted gameplay composition.

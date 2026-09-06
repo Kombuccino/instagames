@@ -4,65 +4,26 @@
   z-index: 170;
   top: max(8px, calc(env(safe-area-inset-top, 0px) + 6px));
   left: max(8px, calc(env(safe-area-inset-left, 0px) + 6px));
-  display: grid;
-  place-items: center;
   width: 48px;
   height: 48px;
-  padding: 0;
-  border: 0;
-  border-radius: 10px;
-  color: var(--mf-ui-text);
-  background: transparent;
   opacity: .82;
-  cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .88));
-  transition: opacity 140ms ease, background 140ms ease, transform 140ms ease;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .55));
+  transition: opacity 140ms ease, transform 140ms ease;
 }
 
 .mf-game-close-box:hover,
 .mf-game-close-box:focus-visible {
   opacity: 1;
-  background: rgba(9, 12, 13, .48);
 }
 
-.mf-game-close-box:focus-visible {
-  outline: 2px solid var(--mf-ui-text);
-  outline-offset: -3px;
-}
+.mf-game-close-box:active { transform: scale(.93); }
 
-.mf-game-close-box:active { transform: scale(.96); }
-.mf-game-close-box .mf-platform-icon { display: none; }
-
-/*
- * The glyph is intentionally drawn independently from the 48px hit target:
- * a small cover/box frame plus an inward chevron. The control remains easy to
- * hit without turning into permanent gameplay chrome.
- */
-.mf-game-close-box::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 20px;
-  height: 24px;
-  border: 1.5px solid currentColor;
-  border-radius: 3px;
-  background: linear-gradient(90deg, transparent 0 61%, rgba(255, 255, 255, .44) 62% 68%, transparent 69%);
-  transform: translate(-50%, -50%);
-}
-
-.mf-game-close-box::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 7px;
-  height: 7px;
-  border-left: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
-  transform: translate(-33%, -50%) rotate(45deg);
+.mf-game-close-box .mf-platform-icon-return-cover {
+  width: 28px;
+  height: 28px;
+  stroke-width: 1.8;
 }
 
 .game-feed:has(.game-card[data-phase='playing']) {

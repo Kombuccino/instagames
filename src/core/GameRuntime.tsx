@@ -86,6 +86,16 @@ function CloseIcon() {
   )
 }
 
+function ReturnToCoverIcon() {
+  return (
+    <svg className="mf-platform-icon mf-platform-icon-return-cover" viewBox="0 0 24 24" aria-hidden="true" fill="none">
+      <path d="M5 4.5h11.5a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5V4.5Z" />
+      <path d="M15.5 7v10" />
+      <path d="m9 8.5 3.5 3.5L9 15.5" />
+    </svg>
+  )
+}
+
 export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntimeProps) {
   const rootRef = useRef<HTMLElement>(null)
   const launchTimerRef = useRef<number | null>(null)
@@ -352,7 +362,7 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
       )}
 
       {phase === 'playing' && !finished && (
-        <button type="button" className="mf-game-close-box" onClick={closeGame} aria-label="Return to cover"><CloseIcon /></button>
+        <button type="button" className="mf-game-close-box mf-ui-icon-action" onClick={closeGame} aria-label="Return to cover"><ReturnToCoverIcon /></button>
       )}
 
       {leaderboardOpen && (

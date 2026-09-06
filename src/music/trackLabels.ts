@@ -44,10 +44,12 @@ const TRACK_LABELS: Record<string, string> = {
   BTEA_SHAKER: 'Shaker pétillant',
   BTEA_BUBBLE_POP: 'Bulles pop',
   ENTRY_RAIL_TATANG: 'Ta-tang des rails · synchro rame',
+  ENTRY_LOW_PULSE: 'Petite pulsation grave',
+  ENTRY_BRUSH_SWISH: 'Brosses de la rame',
+  ENTRY_FAST_SHIMMER: 'Petit rythme rapide 1/16',
   ENTRY_WARM_BASS: 'Basse chaude du wagon',
   ENTRY_SUNSET_CHORDS: 'Accords coucher de soleil',
-  ENTRY_WINDOW_KEYS: 'Mélodie des vitres',
-  ENTRY_BRUSH_SWISH: 'Brosses légères',
+  ENTRY_WINDOW_KEYS: 'Éclats joyeux des vitres',
 }
 
 export function musicTrackLabel(id: string, fallback = id) {

@@ -1,5 +1,6 @@
 import { bubbleTeaSparkle, bubbleTeaTrackIds, BUBBLE_TEA_BPM, BUBBLE_TEA_LOOP_BEATS } from './bubbleTeaSparkle'
 import { dinoLavaUrgency, dinoLavaTrackIds, DINO_LAVA_BPM, DINO_LAVA_LOOP_BEATS } from './dinoLavaUrgency'
+import { metroSunsetEntry, metroSunsetEntryTrackIds, ENTRY_METRO_BPM, ENTRY_METRO_LOOP_BEATS } from './metroSunsetEntry'
 import { primeCascadeDrumRail, primeCascadeDrumRailTrackIds } from './primeCascadeDrumRail'
 
 type Note = [startBeat: number, durationBeats: number, midi: number, velocity: number]
@@ -32,10 +33,6 @@ const CHORDS = [
   [57, 61, 64, 69],
 ]
 
-// Levels 1–5 are derived from CalcDrop's real dropDelay curve:
-// 820ms, 672ms, 551ms, 452ms, 371ms -> ~73, 89, 109, 133, 162 BPM.
-// Above that, tempo is capped. Arrangement density changes instead of forcing
-// the same dense melody through an ever faster clock.
 const GAME_SYNC_BPMS = [73, 89, 109, 133, 162, 166, 170] as const
 
 function track(id: string, wave: Wave, gain: number, notes: Note[]): Track {
@@ -82,9 +79,6 @@ function sectionVelocity(section: Section, trackId: string) {
   return anchor ? 1.08 : 1.04
 }
 
-// These eight bars are intentionally the musical source that existed before
-// the long-form rewrite. The 48-bar arrangements below preserve these pitches,
-// harmony and rhythmic identities instead of composing new material on top.
 function reactiveSource(): Track[] {
   const bass: Note[] = []
   const arp: Note[] = []
@@ -98,7 +92,6 @@ function reactiveSource(): Track[] {
   ROOTS.forEach((root, bar) => {
     const start = bar * 4
     const chord = CHORDS[bar]
-
     const bassPattern = [root, root, root + 7, root, root + 12, root + 7, root, root + 7]
     bassPattern.forEach((note, index) => add(bass, start + index * .5, .46, note, index === 0 || index === 4 ? 96 : 76))
 
@@ -380,7 +373,7 @@ const prime6 = [...prime5, 'L6_PRIME_DRIVE']
 const primeMax = [...prime6, 'L2_PRIME_HATS']
 
 export const musicCatalog = {
-  version: 7,
+  version: 8,
   rule: 'Never delete a music proposal. Change its status to selected or archived.',
   compositions: [
     {
@@ -494,6 +487,22 @@ export const musicCatalog = {
       midiExports: ['MF-MUS-0006_PearlPopLounge.mid'],
       stages: [{ label: 'CHILL', bpm: BUBBLE_TEA_BPM, variant: 'A', activeTracks: [...bubbleTeaTrackIds] }],
       variants: { A: bubbleTeaSparkle() },
+    },
+    {
+      id: 'MF-MUS-0007',
+      gameId: 'platform-entry',
+      gameTitle: 'MiniFugg — accueil',
+      name: 'Sunset Rail — Ta-Tang',
+      status: 'candidate',
+      createdAt: '2026-09-06',
+      summary: 'Boucle douce calée sur la rame : 5,2 s de mouvement deviennent exactement 8 temps à 92,3077 BPM, avec les trois ta-tang visuels transformés en percussion-signature au milieu d’accords chauds, basse ronde et petite mélodie de vitre.',
+      concept: ['elevated metro sunset', 'scene-synced rail rhythm', 'warm maj7/min7 harmony', 'soft urban loop', 'ta-tang signature'],
+      key: 'D major / B minor',
+      meter: '4/4',
+      loopBeats: ENTRY_METRO_LOOP_BEATS,
+      midiExports: ['MF-MUS-0007_SunsetRail_TaTang.mid'],
+      stages: [{ label: 'SUNSET', bpm: ENTRY_METRO_BPM, variant: 'A', activeTracks: [...metroSunsetEntryTrackIds] }],
+      variants: { A: metroSunsetEntry() },
     },
   ],
 } as const

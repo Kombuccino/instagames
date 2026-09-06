@@ -34,6 +34,13 @@ const PHASER_MIGRATION_REQUIRED: GameMigrationConfig = {
   cover: 'update-required',
 }
 
+const PHASER_MIGRATION_CURRENT_COVER_PENDING: GameMigrationConfig = {
+  state: 'current',
+  targetRuntime: 'phaser-2d',
+  locked: false,
+  cover: 'update-required',
+}
+
 // Temporary discovery covers let Core navigation be tested across the whole catalog.
 // They do not change curation status and are not collectible Fugg variants.
 // All current covers remain explicitly marked A METTRE A JOUR until migrated.
@@ -84,9 +91,9 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'fugg',
     orientation: 'portrait',
-    runtime: 'legacy-dom',
+    runtime: 'phaser-2d',
     logicalViewport: PORTRAIT_STAGE,
-    migration: PHASER_MIGRATION_REQUIRED,
+    migration: PHASER_MIGRATION_CURRENT_COVER_PENDING,
     welcome: placeholderWelcome('linefugg'),
     component: LineFugg,
     instructions: {

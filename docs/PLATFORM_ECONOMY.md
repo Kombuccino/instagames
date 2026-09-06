@@ -1,31 +1,27 @@
 # MiniFugg Platform Economy
 
-This document is the product/economic contract for MiniFugg. It defines how coins, Lifetime access, pricing and monetization should appear and behave across Core, discovery and game-launch flows.
+This document is the product/economic contract for MiniFugg. It defines coins, Lifetime access, paid-game offline access and the trust boundary between client and server.
 
-Read together with `docs/DISCOVERY_NAVIGATION.md` for how coin state affects cover browsing and launch UX.
+Read together with `docs/DISCOVERY_NAVIGATION.md` and `docs/PLATFORM_EXPORTS.md`.
 
 ## 1. Executive summary
 
 MiniFugg is an arcade platform, not a conventional mobile F2P economy.
 
-- **Free access:** every free player receives **40 renewable coins per day**.
-- **Play cost depends on curation status:** Fugg = 2 coins, Bêta = 1 coin, Caca = free.
-- **Coins launch/relaunch games; they do not buy power, levels or gameplay advantages.**
-- **Main coin display is unified:** the UI shows one total coin number, even though Core internally tracks renewable daily coins separately from durable coins.
-- **Durable coins:** purchased, gifted or otherwise permanent coins never expire.
-- **Spend order:** use renewable daily coins first, then durable coins.
-- **Daily refresh:** the renewable portion resets to the account's daily allowance; unused renewable coins do not stack indefinitely.
-- **Occasional free coins:** MiniFugg may sometimes give or reveal bonus coins as small surprises.
-- **Lifetime:** a one-time purchase raises the renewable allowance to **999 coins per day**. Lifetime is deliberately not mathematically unlimited.
-- **Founder pricing:** Lifetime starts at **€9.99 until MiniFugg reaches 50 games**, then rises to **€12.99**. Later increases may continue gradually toward a soft ceiling around **€15** as the catalog grows.
-- **Lifetime is never discounted as a normal sales tactic.** Its value proposition is that buying earlier is cheaper; the price only moves upward as MiniFugg grows.
-- **Coin packs may be discounted heavily.** A reference offer is approximately **500 durable coins for €7–8**, with exact commercial values adjustable.
-- **Successful MiniFugg games may become separate premium standalone products.** Lifetime applies to the MiniFugg platform catalog, not every future standalone edition.
-- **Additional revenue:** OSTs, merch and other fan/collector products are encouraged when the universe supports them.
+- Free account: **40 renewable coins per day**.
+- Fugg play: **2 coins**.
+- Bêta play: **1 coin**.
+- Caca / `trash` play: **free**.
+- Durable purchased/gifted coins do not expire.
+- Renewable coins are spent before durable coins.
+- Lifetime raises the renewable allowance to **999 coins per day**; it is not mathematical infinity.
+- Lifetime Founder price: **€9.99 until 50 games**, then **€12.99**, with later gradual increases possible toward roughly €15.
+- Coin packs may be discounted; Lifetime is not normally discounted.
+- Successful MiniFugg games may also become separately sold premium standalone products.
+- A game that the player has purchased/owns may be allowed to run offline.
+- Offline local economy is deliberately untrusted and never enters official ladders/server economy.
 
-## 2. Play cost by status
-
-The current Core pricing contract is:
+## 2. Play cost by curation status
 
 | Status | Cost per play |
 | --- | ---: |
@@ -33,176 +29,169 @@ The current Core pricing contract is:
 | `beta` | **1 coin** |
 | `trash` / Caca | **0 coins** |
 
-A replay is another play and uses the same cost unless Core explicitly grants a free retry later.
+A replay is another play unless Core explicitly grants a free retry.
 
-Individual games must never decide their own MiniFugg coin price.
+Individual games never determine their MiniFugg price.
 
-This replaces the former invariant `1 coin = 1 play`.
+> Coins are arcade play tokens. Session price is determined centrally by curation status.
 
-The durable invariant is now:
+Coins are not a pay-to-win currency and must not buy gameplay power inside individual games.
 
-> **Coins are arcade play tokens. The session price is determined centrally by game curation status.**
+## 3. Online coin accounting
 
-Do not turn MiniFugg coins into a generic premium currency for skins, power, upgrades, levels or pay-to-win mechanics.
+Core/server keeps at least:
 
-## 3. Coin accounting
+1. `dailyCoins`: renewable allowance for the current day;
+2. `durableCoins`: purchased, gifted or otherwise permanent coins.
 
-Core must keep at least two internal balances:
-
-1. `dailyCoins`: renewable allowance for the current day.
-2. `durableCoins`: purchased, gifted or permanent bonus coins.
-
-The daily allowance depends on account entitlement:
+Allowances:
 
 - free account: **40 daily coins**;
 - Lifetime account: **999 daily coins**.
 
-The player-facing default balance is:
+Player-facing balance:
 
 `displayedCoins = dailyCoins + durableCoins`
 
-The normal UI must **not** split these into two currencies. A player should simply see a coin icon and one number.
+The default UI shows one coin total, not two currencies.
 
-When a paid play is started:
+Spend order:
 
-1. determine the Core status cost for the game;
-2. consume renewable daily coins first;
-3. if the renewable portion is insufficient, consume the remainder from durable coins;
-4. if the combined balance is insufficient, present the out-of-coins / purchase flow;
-5. Caca games with a 0-coin cost never debit the balance.
+1. determine game cost from Core curation status;
+2. spend renewable daily coins first;
+3. spend durable coins for any remainder;
+4. if total is insufficient, open the out-of-coins/purchase flow;
+5. free Caca games do not debit the wallet.
 
-At the daily refresh, `dailyCoins` returns to the account's current daily allowance. `durableCoins` is unchanged.
+At daily refresh, `dailyCoins` returns to the account allowance and `durableCoins` is unchanged.
 
-Example for a free account: a player with 500 durable coins begins a refreshed day with a displayed total of 540. Paid plays consume from the 40 renewable coins first, then from the durable balance. If 480 durable coins remain at the next daily refresh, the displayed total becomes 520.
+## 4. Server authority
 
-Example for a Lifetime account: with no durable balance, a refreshed day begins at 999 coins. Plays debit that visible balance normally; the next daily refresh restores the renewable portion to 999.
+For connected play, the backend is the source of truth for:
 
-## 4. Balance UI
+- daily allowance and refresh;
+- durable balance;
+- debits;
+- purchases;
+- entitlements;
+- official rewards;
+- official leaderboard eligibility.
 
-The default coin counter shows only the combined total.
+The client may cache/display state but may not authoritatively declare its wallet balance.
 
-For players it should remain visible during the full-screen cover discovery flow so the player always understands whether the current game is affordable.
+Never accept a reconnect message equivalent to “my local wallet now contains X coins”.
 
-The player may inspect its composition without cluttering the main interface:
+## 5. Paid/owned game offline access
 
-- desktop: hover/focus/click detail;
-- touch: tap or equivalent compact detail interaction.
+If a player **owns a game**, MiniFugg may allow that owned game to launch offline.
 
-The detail may explain the renewable daily share, durable share and next refresh. This is explanatory UI, not two separate player-facing currencies.
+This is intentionally different from trying to make the shared online arcade economy authoritative while disconnected.
 
-Lifetime users display their real remaining coin count. **Do not use `∞` for Lifetime.**
+Offline rules:
 
-## 5. Discovery behavior at zero coins
+- the game is playable normally;
+- local saves/progression may exist;
+- local coins or other local values may be altered by the owner and that is acceptable;
+- **no offline run is submitted to an official ladder**;
+- **no offline run grants an official server reward**;
+- local wallet values are never merged upward into the server wallet;
+- reconnecting returns to the server-authoritative account/economy state.
 
-Running out of coins must not turn MiniFugg into a dead-end paywall.
+A locally cached signed entitlement/license may prove that the game was previously purchased/owned. It should make legitimate offline use robust without pretending to be unbreakable DRM.
 
-The discovery algorithm changes weighting instead. The exact cover-navigation contract is in `docs/DISCOVERY_NAVIGATION.md`.
+If a determined owner cracks their own offline client, the security impact should be limited to their local experience.
 
-Current target:
+## 6. Lifetime vs owned standalone games
 
-- while balance > 0: mostly Fugg, around 1 Bêta in 10, Caca normally absent from the standard weighted rotation;
-- at balance = 0: around half the discovery slots become free Caca games, while the other half continue exposing Fugg/Bêta covers.
+Lifetime is a MiniFugg platform entitlement that raises the renewable online daily allowance to **999 coins/day**.
 
-This preserves catalog discovery while always leaving something playable for free.
+It must not be casually conflated with ownership of every separately sold standalone game unless the product policy explicitly grants that entitlement.
 
-A Lifetime account is theoretically able to reach zero after consuming its 999 renewable coins plus any durable balance; if that happens, the normal zero-coin discovery behavior applies until refresh or additional durable coins are available.
+A separately purchased game may have offline access because it is owned. MiniFugg Lifetime remains governed by its own catalog/coin entitlement rules.
 
-## 6. Arcade design language
+## 7. Balance UI
 
-Monetization must be integrated into MiniFugg's fiction and visual language.
+The main coin counter shows the combined online balance.
 
-Prefer concepts such as:
+Players may inspect renewable/durable composition in secondary detail UI, but the main experience should remain one understandable arcade balance.
+
+Lifetime users see their real remaining count. Do **not** display `∞`.
+
+## 8. Zero-coin discovery
+
+Running out of coins must not create a dead-end paywall.
+
+Current target weighting:
+
+- balance > 0: mostly Fugg, around 1 Bêta in 10, Caca normally absent from standard weighted rotation;
+- balance = 0: roughly half of discovery opportunities may become free Caca games while Fugg/Bêta covers remain discoverable.
+
+Exact discovery behavior belongs in `docs/DISCOVERY_NAVIGATION.md`.
+
+## 9. Arcade design language
+
+Prefer:
 
 - `INSERT COIN`;
-- coin insertion / arcade-machine feedback;
-- a visibly huge 999-coin daily allowance for Lifetime owners rather than mathematical infinity;
-- physical/arcade metaphors for finding a stray or stuck coin;
-- a short metallic `clang` synchronized with launching a paid game.
+- physical coin feedback;
+- metallic launch sound;
+- visibly huge `999` allowance for Lifetime rather than infinity;
+- occasional “coin already stuck in the machine” surprises.
 
-The play transition may visually feel like opening a game box / sleeve after the coin is accepted.
+Avoid SaaS-subscription aesthetics and generic mobile gem-store language.
 
-Avoid presenting MiniFugg like a SaaS subscription page or a generic mobile-game gem store.
+## 10. Bonus coins
 
-Lifetime owners should still see and spend coins through the same arcade ritual. Their advantage is a 999-coin renewable daily allowance, not an infinite state.
+MiniFugg may occasionally grant small durable bonuses or a contextual free play.
 
-## 7. Free bonus coins
+These should feel like arcade-world surprises, not a second progression economy. Individual games never implement their own MiniFugg wallet.
 
-MiniFugg may occasionally award small numbers of free durable coins or grant a free play through contextual surprises.
-
-A canonical example is discovering a coin already stuck/left in the machine just before starting a game.
-
-These rewards should:
-
-- feel like small arcade-world surprises rather than a second progression system;
-- remain simple and understandable;
-- not create gameplay advantages;
-- not require games to implement their own economy;
-- keep the daily allowance meaningful.
-
-## 8. Commercial offers
+## 11. Commercial offers
 
 ### Free
 
-- €0
+- €0;
 - full catalog discovery;
-- 40 renewable coins per day;
-- Fugg plays cost 2 coins;
-- Bêta plays cost 1 coin;
-- Caca plays are free;
-- eligible for occasional bonus coins.
+- 40 renewable coins/day;
+- Fugg = 2 coins;
+- Bêta = 1 coin;
+- Caca = free.
 
 ### Coin pack
 
-Reference offer: approximately 500 durable coins for approximately €7–8.
-
-Exact pack size/pricing may be tuned, but the commercial role is stable:
-
-- finite, durable play credit;
-- can be discounted;
-- can participate in Steam/store sales and temporary promotions;
-- may serve as a lower-commitment purchase while making Lifetime visibly attractive by comparison.
+Reference offer: approximately **500 durable coins for €7–8**. Exact tuning may change. Coin packs may participate in temporary promotions.
 
 ### Lifetime
 
-One-time purchase that raises the account's renewable daily allowance to **999 coins per day** for the MiniFugg catalog, current and future.
+One-time MiniFugg platform purchase:
 
-Lifetime is intentionally finite in accounting terms. The player continues to see, insert and spend coins normally; 999/day is simply high enough to behave as effectively unrestricted for normal use while preserving the platform's coin language and accounting model.
-
-Pricing policy:
-
-- €9.99 Founder price until 50 games;
+- 999 renewable coins/day;
+- Founder price €9.99 until 50 games;
 - €12.99 from 50 games;
-- later catalog milestones may raise the price gradually toward roughly €15;
-- do not run normal percentage-off promotions on Lifetime;
-- communicate clearly that the current price is an early-buyer price and increases as the catalog grows.
+- later gradual increases may approach roughly €15;
+- no routine percentage-off discounting.
 
-The price history should be credible: do not use fake countdowns or recurring artificial urgency.
+The credible proposition is “buying earlier is cheaper as the catalog grows”, not fake countdown urgency.
 
-## 9. Standalone games, OST and merch
+## 12. Standalone games, OST and merch
 
-MiniFugg also acts as a discovery/incubation platform.
+MiniFugg can incubate games that later receive larger standalone editions sold separately. A standalone can add substantial content, progression, production value or modes while the compact MiniFugg version remains in the platform catalog.
 
-When a game performs unusually well, it may receive a more developed standalone edition sold separately. The MiniFugg version remains available in the catalog; the standalone can add substantial modes, content, progression, art/audio production or other scope that does not belong in the compact MiniFugg version.
+MiniFugg Lifetime does not automatically include every future separately sold standalone product.
 
-A MiniFugg Lifetime purchase does **not** automatically include separate standalone products.
+OST releases, soundtrack collections, print-on-demand and universe merchandise are valid extensions when they do not distort game balance.
 
-Other valid revenue extensions include OST releases, soundtrack collections, print-on-demand merchandise, character/game-universe merchandise and other fan products that do not distort game balance.
+## 13. Architecture ownership
 
-## 10. Architecture and ownership
+Economy belongs to Core/backend, not games.
 
-The economy belongs to **MiniFugg Core**, not to individual games.
+Games must not:
 
-Games should only request/start a session through Core and should not:
+- maintain MiniFugg wallet truth;
+- decide curation pricing;
+- implement store purchase flows;
+- distinguish renewable vs durable wallet internals;
+- import Steam/App Store/Google Play billing SDKs;
+- submit offline scores to official ladders.
 
-- maintain their own coin balance;
-- decide their own curation-price mapping;
-- implement purchase flows;
-- distinguish purchased vs daily coins;
-- import storefront SDKs;
-- gate local content with MiniFugg coins.
-
-Core/store adapters are responsible for web, Steam, mobile-store or other platform-specific purchase implementations while preserving the same player-facing economic semantics.
-
-For online accounts, the server is the source of truth for daily allowance, durable balance, debits and refreshes. Lifetime is represented as an account entitlement that changes the daily renewable allowance from 40 to 999.
-
-For offline-capable Lifetime builds, Core may maintain a local 999/day allowance and reconcile when connectivity returns. This offline quota is a convenience feature for a paying user, not a high-security DRM boundary; do not make legitimate offline play fragile merely to prevent determined local tampering.
+Core/store adapters preserve the same player-facing semantics across web, mobile and desktop distribution.

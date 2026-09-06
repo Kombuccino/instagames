@@ -43,6 +43,7 @@ button { color: inherit; }
 .game-surface {
   position: absolute;
   inset: 0;
+  isolation: isolate;
 }
 
 .game-placeholder {

@@ -7,11 +7,12 @@ import {
   LINEFUGG_BOUNCE_BPM,
   LINEFUGG_SHORT_LOOP_BEATS,
   LINEFUGG_VECTOR_BPM,
+  LINEFUGG_VECTOR_LOOP_BEATS,
 } from './lineFuggShortLoops'
 
 export const musicCatalog = {
   ...coreCatalog,
-  version: 11,
+  version: 12,
   compositions: [
     ...coreCatalog.compositions,
     {
@@ -21,11 +22,11 @@ export const musicCatalog = {
       name: 'Vector Rush — Three Lines',
       status: 'selected',
       createdAt: '2026-09-06',
-      summary: 'Boucle courte et sèche pour tracer vite : kick net, caisse claire vectorielle, curseur en doubles croches, basse syncopée et petit trait ascendant. L’ancienne impulsion aiguë trois lignes a été retirée du mix canonique.',
-      concept: ['three-line board', 'precise electro grid', 'fast cursor hats', 'short-session loop', 'geometric tension'],
+      summary: 'Version longue de 48 mesures (~1 min 16) qui conserve exactement les cinq pistes et l’énergie du Vector Rush approuvé. Les variations viennent uniquement des retraits/reprises de kick et clap, de micro-variantes de basse et de petits jeux du trait ascendant.',
+      concept: ['three-line board', 'precise electro grid', 'fast cursor hats', '76-second long-form loop', 'rhythmic drop-and-return', 'geometric tension'],
       key: 'E minor',
       meter: '4/4',
-      loopBeats: LINEFUGG_SHORT_LOOP_BEATS,
+      loopBeats: LINEFUGG_VECTOR_LOOP_BEATS,
       midiExports: ['MF-MUS-0008_VectorRush_ThreeLines.mid'],
       stages: [{ label: 'VECTOR', bpm: LINEFUGG_VECTOR_BPM, variant: 'A', activeTracks: [...lineFuggVectorTrackIds] }],
       variants: { A: lineFuggVectorRush() },

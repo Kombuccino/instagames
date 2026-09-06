@@ -80,6 +80,16 @@ The standard Phaser scale policy is a fixed logical width/height with aspect-pre
 
 Phaser is also the target runtime for advanced animated Fugg covers. Static covers do not need a game engine: Core can display them as normal raster art.
 
+### 4.1 Shared Phaser host pattern
+
+LineFugg is the first canonical implementation of the shared 2D host boundary.
+
+`src/core/runtime/PhaserGameHost.tsx` is intentionally small. Core/React owns the mount node and passes lifecycle state; the host owns creation/destruction of `Phaser.Game`, fixed logical dimensions, `Phaser.Scale.FIT`, centered output, pause/resume from `active`, and scene restart from `restartToken`.
+
+The game-specific Phaser `Scene` owns all gameplay rendering, hit-testing, pointer coordinates, animations/feedback and scene listeners in logical units. It reports outward only through the existing MiniFugg session contract (`session.setScore`, `session.finish`).
+
+Do not move game-world UI back into DOM/CSS merely for responsive layout. Do not grow the host into a speculative engine framework: add shared capabilities only when another real migrated game demonstrates the same need.
+
 ## 5. Three.js is the standard 3D runtime
 
 Use Three.js only when the game is intentionally 3D.
@@ -117,9 +127,13 @@ The engine owns only the scene and game-specific interaction.
 
 Gameplay logic should consume actions such as:
 
-- `left`, `right`, `up`, `down`;
-- `primary`, `secondary`;
-- `pause`.
+- `left`
+- `right`
+- `up`
+- `down`
+- `primary`
+- `secondary`
+- `pause`
 
 Core/runtime adapters map available hardware to those actions:
 

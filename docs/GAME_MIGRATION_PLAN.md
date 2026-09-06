@@ -27,14 +27,14 @@ All current covers are also considered **A METTRE A JOUR** until their cover mig
 
 | Priority | Game | Current state | Target | Main migration reason |
 | ---: | --- | --- | --- | --- |
-| 1 | HARI les dents pourries | legacy DOM/CSS | Phaser 2D | canonical test for cross-screen geometry instability |
+| 1 | LineFugg | legacy DOM/CSS | Phaser 2D | deliberately simple pilot for proving the canonical viewport, scaling and input recipe before harder games |
 | 2 | Les Brochettes de Vlad | legacy DOM/CSS | Phaser 2D | sprite-count/performance pressure + major visual polish pass |
 | 3 | Train Fighter | legacy DOM/CSS | Phaser 2D | sprite-heavy scrolling/action game; imported raster assets ready to exploit |
 | 4 | TetraMindFck | legacy DOM/CSS | Phaser 2D | mobile/desktop geometry drift + current legacy cover/parallax pilot |
 | 5 | Shoot the Shooter | legacy DOM/CSS | Phaser 2D | timing/hit-testing/input consistency across screen sizes |
 | 6 | DebthOfLife | legacy DOM/CSS | Phaser 2D | runner architecture naturally fits an engine scene/camera |
 | 7 | CrazyPapers | legacy DOM/CSS | Phaser 2D | visually document-heavy but benefits from one standard runtime |
-| 8 | LineFugg | legacy DOM/CSS | Phaser 2D | mechanically simple; migrate after the shared patterns are proven |
+| 8 | HARI les dents pourries | legacy DOM/CSS | Phaser 2D | beta-quality prototype; migrate after the shared engine recipe is proven elsewhere |
 
 This order is a recommended implementation sequence, not a statement about game quality.
 

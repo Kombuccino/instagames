@@ -96,9 +96,10 @@ export function metroSunsetEntry(): Track[] {
     add(bass, start + 2, 1.12, root + 7, 38)
 
     // Tiny low pulses and brushes complete the groove without competing with
-    // the rail impacts. They are intentionally much lighter than game drums.
-    add(lowPulse, start, .2, root - 12, bar % 4 === 0 ? 44 : 36)
-    add(lowPulse, start + 2, .16, root - 12, 30)
+    // the rail impacts. Keep the pulse at the normal bass root rather than an
+    // extra octave down: 46–55 Hz made some laptop chassis/speakers resonate.
+    add(lowPulse, start, .2, root, bar % 4 === 0 ? 41 : 34)
+    add(lowPulse, start + 2, .16, root, 28)
     add(brush, start + 1, .15, 38, section === 3 ? 34 : 28)
     add(brush, start + 3, .15, 38, section === 3 ? 32 : 25)
 
@@ -137,7 +138,7 @@ export function metroSunsetEntry(): Track[] {
 
   return [
     track('ENTRY_RAIL_TATANG', 'noise', .105, rail),
-    track('ENTRY_LOW_PULSE', 'triangle', .048, lowPulse),
+    track('ENTRY_LOW_PULSE', 'triangle', .044, lowPulse),
     track('ENTRY_BRUSH_SWISH', 'noise', .052, brush),
     track('ENTRY_FAST_SHIMMER', 'noise', .052, shimmer),
     track('ENTRY_WARM_BASS', 'triangle', .088, bass),

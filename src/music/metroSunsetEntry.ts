@@ -43,28 +43,39 @@ function add(notes: Note[], start: number, duration: number, midi: number, veloc
 
 export const metroSunsetEntryTrackIds = [
   'ENTRY_RAIL_TATANG',
+  'ENTRY_LOW_PULSE',
+  'ENTRY_BRUSH_SWISH',
+  'ENTRY_FAST_SHIMMER',
   'ENTRY_WARM_BASS',
   'ENTRY_SUNSET_CHORDS',
   'ENTRY_WINDOW_KEYS',
-  'ENTRY_BRUSH_SWISH',
 ] as const
+
+function isRailGap(localBeat: number) {
+  const phase = ((localBeat % ENTRY_METRO_BEATS_PER_RAIL_CYCLE) + ENTRY_METRO_BEATS_PER_RAIL_CYCLE) % ENTRY_METRO_BEATS_PER_RAIL_CYCLE
+  return [1.75, 2, 3.75, 4, 5.75, 6].some((beat) => Math.abs(phase - beat) < .01)
+}
 
 export function metroSunsetEntry(): Track[] {
   const rail: Note[] = []
+  const lowPulse: Note[] = []
+  const brush: Note[] = []
+  const shimmer: Note[] = []
   const bass: Note[] = []
   const chords: Note[] = []
   const keys: Note[] = []
-  const brush: Note[] = []
 
   // The CSS carriage animation is exactly 5.2s. At 92.307692... BPM that is
   // exactly eight musical beats. These events reproduce the three visual
   // ta-tang pairs at 23/24.5%, 48/49.5% and 73/74.5% of every carriage cycle.
+  // The second hit is deliberately stronger: the train itself is the signature
+  // backbeat of the piece, not decorative Foley sitting behind the music.
   const railCycles = ENTRY_METRO_LOOP_BEATS / ENTRY_METRO_BEATS_PER_RAIL_CYCLE
   for (let cycle = 0; cycle < railCycles; cycle += 1) {
     const cycleStart = cycle * ENTRY_METRO_BEATS_PER_RAIL_CYCLE
     RAIL_PAIR_BEATS.forEach((offset, index) => {
       const secondHit = index % 2 === 1
-      add(rail, cycleStart + offset, secondHit ? .12 : .07, secondHit ? 39 : 37, secondHit ? 72 : 54)
+      add(rail, cycleStart + offset, secondHit ? .13 : .075, secondHit ? 39 : 37, secondHit ? 82 : 60)
     })
   }
 
@@ -74,39 +85,63 @@ export function metroSunsetEntry(): Track[] {
     const root = BASS_ROOTS[bar % BASS_ROOTS.length]
     const section = Math.floor(bar / 4)
 
+    // Warm sunset harmony stays deliberately wide and quiet.
     chord.forEach((midi, index) => {
-      add(chords, start, 3.72, midi, 28 + index * 2 + (section === 3 ? 3 : 0))
+      add(chords, start, 3.7, midi, 25 + index * 2 + (section === 3 ? 2 : 0))
     })
 
-    add(bass, start, 1.52, root, bar % 4 === 0 ? 58 : 52)
-    add(bass, start + 2, 1.3, root + 7, 44)
+    // Broad bass breaths reinforce the same half-note grid approached by the
+    // ta-tang pairs, making the rail impacts feel structurally musical.
+    add(bass, start, 1.42, root, bar % 4 === 0 ? 52 : 47)
+    add(bass, start + 2, 1.12, root + 7, 38)
 
-    if (bar >= 2) {
-      const brushVelocity = section === 3 ? 34 : section === 1 ? 30 : 26
-      add(brush, start + .5, .18, 38, brushVelocity)
-      add(brush, start + 2.5, .18, 38, brushVelocity - 3)
+    // Tiny low pulses and brushes complete the groove without competing with
+    // the rail impacts. They are intentionally much lighter than game drums.
+    add(lowPulse, start, .2, root - 12, bar % 4 === 0 ? 44 : 36)
+    add(lowPulse, start + 2, .16, root - 12, 30)
+    add(brush, start + 1, .15, 38, section === 3 ? 34 : 28)
+    add(brush, start + 3, .15, 38, section === 3 ? 32 : 25)
+
+    // A quick light 1/16 texture can run much faster than the carriage while
+    // remaining almost weightless. Leave tiny holes around the actual rail
+    // joints so every ta-tang stays legible in the full rhythm.
+    const step = bar < 2 ? .5 : .25
+    for (let offset = 0; offset < 4 - .001; offset += step) {
+      const absoluteBeat = start + offset
+      if (isRailGap(absoluteBeat)) continue
+      const sixteenth = Math.round(offset * 4)
+      const accent = sixteenth % 4 === 2
+      const velocity = bar < 2 ? (accent ? 29 : 23) : accent ? 35 : sixteenth % 2 === 0 ? 27 : 20
+      add(shimmer, absoluteBeat, .055, 42, velocity + (section === 3 ? 3 : 0))
     }
   }
 
-  const phrases = [
-    { bar: 4, notes: [66, 69, 73, 71, 69, 66] },
-    { bar: 6, notes: [64, 66, 69, 71, 69, 66] },
-    { bar: 12, notes: [66, 69, 73, 76, 73, 71] },
-    { bar: 14, notes: [64, 66, 69, 71, 69, 66] },
-  ] as const
-  const offsets = [.5, 1.5, 2.65, 4.5, 5.5, 6.65] as const
-  phrases.forEach((phrase, phraseIndex) => {
-    const start = phrase.bar * 4
-    phrase.notes.forEach((midi, index) => {
-      add(keys, start + offsets[index], index === 2 || index === 5 ? .72 : .55, midi, phraseIndex >= 2 ? 40 : 35)
+  // Bright D-major-pentatonic answer to the relaxed harmony. This replaces the
+  // old long square-wave window melody with short, repeatable little glints.
+  // It should feel cheerful and slightly mischievous, never sentimental.
+  const phraseStarts = [2, 6, 10, 14] as const
+  const phraseA = [78, 81, 83, 81, 78] as const // F# A B A F#
+  const phraseB = [76, 78, 81, 78, 74] as const // E F# A F# D
+  const offsetsA = [.75, 1.25, 2, 2.75, 3.35] as const
+  const offsetsB = [4.5, 5.15, 5.75, 6.5, 7.35] as const
+
+  phraseStarts.forEach((bar, phraseIndex) => {
+    const start = bar * 4
+    phraseA.forEach((midi, index) => {
+      add(keys, start + offsetsA[index], index === 2 ? .3 : .2, midi, phraseIndex === 3 ? 43 : 37)
+    })
+    phraseB.forEach((midi, index) => {
+      add(keys, start + offsetsB[index], index === 2 ? .28 : .18, midi, phraseIndex === 3 ? 41 : 35)
     })
   })
 
   return [
-    track('ENTRY_RAIL_TATANG', 'noise', .115, rail),
-    track('ENTRY_WARM_BASS', 'triangle', .105, bass),
-    track('ENTRY_SUNSET_CHORDS', 'triangle', .047, chords),
-    track('ENTRY_WINDOW_KEYS', 'square', .022, keys),
-    track('ENTRY_BRUSH_SWISH', 'noise', .055, brush),
+    track('ENTRY_RAIL_TATANG', 'noise', .105, rail),
+    track('ENTRY_LOW_PULSE', 'triangle', .048, lowPulse),
+    track('ENTRY_BRUSH_SWISH', 'noise', .052, brush),
+    track('ENTRY_FAST_SHIMMER', 'noise', .052, shimmer),
+    track('ENTRY_WARM_BASS', 'triangle', .088, bass),
+    track('ENTRY_SUNSET_CHORDS', 'triangle', .039, chords),
+    track('ENTRY_WINDOW_KEYS', 'triangle', .029, keys),
   ]
 }

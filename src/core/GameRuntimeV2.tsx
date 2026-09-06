@@ -12,10 +12,10 @@ import {
   updateMyProfile,
 } from './platformApi'
 import type { GameComment, GameSocialStats } from './social'
-import type { FeedPreference, GameFinishPayload, GameLeaderboardPeriod, InstagameDefinition } from './types'
-import { readWelcomeBestScore, recordWelcomeBestScore } from './FuggWelcome'
+import type { GameFinishPayload, GameLeaderboardPeriod, InstagameDefinition } from './types'
 import { PlatformCoverShell, formatSocialCount, type PlatformPanel } from './PlatformCoverShell'
 import { gameCoinCost, useCoreCoinBalance } from './platformEconomy'
+import { readWelcomeBestScore, recordWelcomeBestScore } from './welcomeProgress'
 
 type GameRuntimeProps = {
   game: InstagameDefinition
@@ -23,8 +23,6 @@ type GameRuntimeProps = {
   seed: number
   active: boolean
   mounted: boolean
-  feedPreference: FeedPreference
-  onFeedPreferenceChange: (value: FeedPreference) => void
 }
 
 type RuntimePhase = 'cover' | 'launching' | 'playing'
@@ -197,12 +195,6 @@ export function GameRuntimeV2({ game, catalog, seed, active, mounted }: GameRunt
     finish,
   }), [finish])
 
-  const invokeLegacyWelcomePlay = useCallback(() => {
-    const root = rootRef.current
-    const trigger = root?.querySelector<HTMLButtonElement>('.mf-fugg-welcome-play, .mf-status-welcome-play')
-    trigger?.click()
-  }, [])
-
   const recordPlayOnce = useCallback(async () => {
     if (playRecordedRef.current) return
     playRecordedRef.current = true
@@ -219,7 +211,6 @@ export function GameRuntimeV2({ game, catalog, seed, active, mounted }: GameRunt
     setLaunchError('')
     setPanel(null)
     setPhase('launching')
-    invokeLegacyWelcomePlay()
     void recordPlayOnce()
 
     if (launchTimerRef.current !== null) window.clearTimeout(launchTimerRef.current)
@@ -227,7 +218,7 @@ export function GameRuntimeV2({ game, catalog, seed, active, mounted }: GameRunt
       launchTimerRef.current = null
       setPhase('playing')
     }, 340)
-  }, [active, cost, invokeLegacyWelcomePlay, phase, recordPlayOnce, spend])
+  }, [active, cost, phase, recordPlayOnce, spend])
 
   const closeGame = useCallback(() => {
     if (launchTimerRef.current !== null) {

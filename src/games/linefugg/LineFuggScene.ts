@@ -10,9 +10,9 @@ const MAX_LINES = 3
 const MAX_LINE_CELLS = 5
 const GAME_ID = 'linefugg'
 
-const BOARD_X = 10
-const BOARD_Y = 144
-const BOARD_SIZE = 370
+const BOARD_X = 54
+const BOARD_Y = 188
+const BOARD_SIZE = 282
 const CELL_SIZE = BOARD_SIZE / GRID_SIZE
 
 const HISTORY_Y = 526
@@ -25,7 +25,6 @@ const ASSET_ROOT = '/assets/imported/linefugg'
 
 const ASSETS = {
   background: ['linefugg-orbital-bg', `${ASSET_ROOT}/backgrounds/orbital-stage-bg-v3.png`],
-  upperOrnament: ['linefugg-orbital-upper', `${ASSET_ROOT}/props/orbital-upper-ornament-v3.png`],
   boardFrame: ['linefugg-orbital-board-frame', `${ASSET_ROOT}/ui/orbital-board-frame-v4.png`],
   cellNeutral: ['linefugg-orbital-cell-neutral', `${ASSET_ROOT}/ui/orbital-cell-neutral-v2.png`],
   cellMultiply: ['linefugg-orbital-cell-multiply', `${ASSET_ROOT}/ui/orbital-cell-multiply-v3.png`],
@@ -258,7 +257,6 @@ export class LineFuggScene extends Phaser.Scene {
   private indicatorGraphics!: Phaser.GameObjects.Graphics
   private controlPulseGraphics!: Phaser.GameObjects.Graphics
 
-  private upperOrnament!: Phaser.GameObjects.Image
   private boardFrame!: Phaser.GameObjects.Image
   private cellSprites: Phaser.GameObjects.Image[] = []
   private cellTexts: Phaser.GameObjects.Text[] = []
@@ -337,23 +335,6 @@ export class LineFuggScene extends Phaser.Scene {
       .setDepth(1)
     shade.setBlendMode(Phaser.BlendModes.MULTIPLY)
 
-    const [upperKey] = ASSETS.upperOrnament
-    this.upperOrnament = this.add.image(195, 76, upperKey)
-      .setDisplaySize(320, 207)
-      .setAlpha(0.88)
-      .setDepth(2)
-
-    this.tweens.add({
-      targets: this.upperOrnament,
-      y: 80,
-      scaleX: this.upperOrnament.scaleX * 1.012,
-      scaleY: this.upperOrnament.scaleY * 1.012,
-      duration: 5200,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut',
-    })
-
     this.ambientGraphics = this.add.graphics().setDepth(3)
   }
 
@@ -398,7 +379,7 @@ export class LineFuggScene extends Phaser.Scene {
         cell.label,
         {
           fontFamily: 'Georgia, "Times New Roman", serif',
-          fontSize: '22px',
+          fontSize: '20px',
           fontStyle: 'bold',
           color,
           shadow: {

@@ -10,8 +10,6 @@ const LINEFUGG_TRACK_LABELS: Record<string, string> = {
   LF9_RIM_CLAP: 'Rim-clap de validation',
   LF9_SHAKER_TICK: 'Ticks de contretemps',
   LF9_WARM_BASS: 'Basse de calcul',
-  LF9_CALC_PLUCK: 'Question chiffrée',
-  LF9_THREE_COLOR_HOOK: 'Réponse trois couleurs',
 }
 
 export function musicTrackLabel(id: string, fallback = id) {

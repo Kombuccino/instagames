@@ -117,6 +117,11 @@ One primary and one secondary ambient motion is usually enough.
 
 Short ambience/music may vary by scene and hand off smoothly to cover/game audio. Entry scenes must not become long unskippable sequences.
 
+All entry audio uses the global Core manager described in `AUDIO_SYSTEM.md`.
+The scene requests its track and owns only its handle. Core retains blocked intent,
+unlocks on normal player gestures and owns all foreground/background retries.
+Do not add a Home-specific context or listener/retry system.
+
 ## 10. Runtime production choices
 
 Core UI/login/discovery remains React/HTML/CSS.

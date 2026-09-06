@@ -95,40 +95,9 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
     const music = createPlatformEntryMusic(sceneStartedAtRef.current)
     musicRef.current = music
 
-    const retryMusic = () => {
-      void music.start()
-    }
-    const retryWhenVisible = () => {
-      if (!document.hidden) retryMusic()
-    }
-
-    /*
-     * A Ctrl+F5 destroys the old AudioContext. Browsers may suspend the fresh
-     * context until the document is fully shown or receives a trusted gesture,
-     * so retry at those lifecycle boundaries as well as on the initial mount.
-     * This does not attempt to bypass browser autoplay policy; it simply makes
-     * every permitted start opportunity deterministic.
-     */
-    retryMusic()
-    const delayedRetry = window.setTimeout(retryMusic, 240)
-    window.addEventListener('pageshow', retryMusic)
-    window.addEventListener('focus', retryMusic)
-    document.addEventListener('visibilitychange', retryWhenVisible)
-    document.addEventListener('pointerdown', retryMusic, true)
-    document.addEventListener('keydown', retryMusic, true)
-    document.addEventListener('touchstart', retryMusic, true)
-    document.addEventListener('wheel', retryMusic, true)
-
+    void music.start()
     return () => {
       if (timerRef.current !== null) window.clearTimeout(timerRef.current)
-      window.clearTimeout(delayedRetry)
-      window.removeEventListener('pageshow', retryMusic)
-      window.removeEventListener('focus', retryMusic)
-      document.removeEventListener('visibilitychange', retryWhenVisible)
-      document.removeEventListener('pointerdown', retryMusic, true)
-      document.removeEventListener('keydown', retryMusic, true)
-      document.removeEventListener('touchstart', retryMusic, true)
-      document.removeEventListener('wheel', retryMusic, true)
       music.stop()
       if (musicRef.current === music) musicRef.current = null
     }
@@ -136,7 +105,6 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLElement>) => {
     if (enteringRef.current || !event.isPrimary) return
-    void musicRef.current?.start()
     pointerRef.current = { id: event.pointerId, x: event.clientX, y: event.clientY }
     event.currentTarget.setPointerCapture(event.pointerId)
   }
@@ -161,7 +129,6 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
 
   const handleWheel = (event: ReactWheelEvent<HTMLElement>) => {
     if (enteringRef.current || event.deltaY < 24) return
-    void musicRef.current?.start()
     event.preventDefault()
     triggerEntry()
   }
@@ -169,7 +136,6 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
     if (enteringRef.current) return
     if (event.key !== 'Enter' && event.key !== ' ' && event.key !== 'ArrowUp') return
-    void musicRef.current?.start()
     event.preventDefault()
     triggerEntry()
   }

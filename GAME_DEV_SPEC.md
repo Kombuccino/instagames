@@ -2,6 +2,11 @@
 
 Version 2.0 — canonical engine/runtime contract.
 
+Audio runtime contract: `docs/AUDIO_SYSTEM.md`. All games/covers consume the shared
+Core audio facade. Never allocate or control a local AudioContext; disable Phaser
+audio with `audio: { noAudio: true }`. Preserve requested playback through browser
+interruptions and clean up the client's managed music/SFX on scene shutdown.
+
 Read with `AGENTS.md`, `docs/GAME_ENGINE_ARCHITECTURE.md`, `docs/GAME_LAYOUT_SYSTEM.md`, `docs/INPUT_GESTURES.md`, `docs/ORIENTATION_LAYOUT.md` and `docs/GAME_MIGRATION_PLAN.md`. For approved gameplay-art implementation also read `docs/GAME_ART_PRODUCTION_PIPELINE.md`; for image transport/import read `docs/ASSET_PIPELINE.md`.
 
 ## 1. Product goal

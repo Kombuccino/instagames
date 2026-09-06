@@ -616,15 +616,18 @@ Once the DA is stable, three workstreams can begin in parallel:
 
 ---
 
-# 14. Audio is currently the next major shared infrastructure problem
+# 14. Audio is now shared Core infrastructure
 
-At the time this handoff was created, the repository does **not** yet contain a canonical `docs/AUDIO_SYSTEM.md` or a global `AudioManager` implementation.
+The global implementation now lives in `src/audio/coreAudioManager.ts` and the
+canonical contract is `docs/AUDIO_SYSTEM.md`. Validation and real-iPhone follow-up
+are recorded in `docs/AUDIO_VALIDATION.md`.
 
-This is an active transition topic and likely the next Core infrastructure task.
+The historical motivation below explains the migration. Do not recreate the old
+independent contexts; Home, shared players, SFX and Audio Lab now consume Core.
 
 ## 14.1 Why audio needs centralization
 
-Current code has evolved through multiple systems, including:
+Before the migration, code had evolved through multiple independent systems:
 
 - `src/audio/sfxEngine.ts`;
 - `src/audio/symbolicMusicPlayer.ts`;
@@ -647,7 +650,7 @@ MiniFugg should have one **Core-owned global audio manager** for the application
 
 Target conceptual graph:
 
-`AudioContext → MASTER → MUSIC / SFX / UI / AMBIENCE buses`
+`sources → MUSIC / SFX / UI / AMBIENCE buses → MASTER → AudioContext.destination`
 
 Important intended rules:
 
@@ -661,7 +664,7 @@ Important intended rules:
 - do not promise impossible autoplay after hard refresh on iOS/Safari/Chrome mobile;
 - background/foreground and interrupted/suspended contexts must recover gracefully.
 
-Once a real `docs/AUDIO_SYSTEM.md` is added, treat that document as the authority and update this handoff if needed.
+`docs/AUDIO_SYSTEM.md` is now the runtime authority.
 
 `docs/MUSIC_LAB.md` documents the music authoring/lab side of the current system.
 
@@ -684,7 +687,7 @@ The likely target is:
 
 - visual/animated home scene → Phaser;
 - login/account/form UI → React Core;
-- audio → future Core AudioManager;
+- audio → shared Core AudioManager;
 - phone/discovery UI → live Core UI, not a baked fake screenshot.
 
 The audio manager should ideally be stabilized before doing the full Phaser home rewrite so the new home starts on the correct shared audio architecture.
@@ -964,7 +967,7 @@ This is not exhaustive, but it is a practical orientation map.
 - `docs/MUSIC_LAB.md`
 - `src/audio/`
 - `src/music/`
-- future canonical `docs/AUDIO_SYSTEM.md` once the global Core audio manager lands.
+- canonical `docs/AUDIO_SYSTEM.md` for the shared Core audio manager.
 
 ## Backend/deployment
 
@@ -1030,7 +1033,9 @@ These are current directional priorities, not immutable backlog tickets. Re-chec
 
 ## Priority A — global Core AudioManager
 
-Current audio architecture is fragmented and has browser/iOS lifecycle issues. The next shared infrastructure target is one Core-owned audio system with reliable first-gesture unlock/resume behavior, buses and clean fades/crossfades.
+The shared Core audio system is implemented: one context, retained requests,
+gesture unlock attempts, buses and fades/crossfades. Run the real-iPhone checklist
+in `docs/AUDIO_SYSTEM.md` before treating the device-specific behavior as verified.
 
 When implemented, create/update `docs/AUDIO_SYSTEM.md` and make all games consume it rather than creating local AudioContexts.
 
@@ -1127,7 +1132,7 @@ MiniFugg Core (React/TypeScript)
 ├── 3D visual runtime (Three.js)
 │   └── low-poly/blockout games
 │
-├── Core audio system (target: one global manager)
+├── Core audio system (one global manager; docs/AUDIO_SYSTEM.md)
 │   ├── music
 │   ├── SFX
 │   ├── UI

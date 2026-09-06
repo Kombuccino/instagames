@@ -1,3 +1,4 @@
+import { rememberAudioSource } from '../audio/coreAudioManager'
 type SourceNode = OscillatorNode | AudioBufferSourceNode
 
 type LineFuggDrumInput = {
@@ -26,13 +27,8 @@ function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value))
 }
 
-function remember(node: SourceNode, sources?: SourceNode[]) {
-  if (!sources) return
-  sources.push(node)
-  node.addEventListener('ended', () => {
-    const index = sources.indexOf(node)
-    if (index >= 0) sources.splice(index, 1)
-  }, { once: true })
+function remember(node: SourceNode, sources: SourceNode[] | undefined, nodes: AudioNode[]) {
+  rememberAudioSource(sources ?? [], node, nodes)
 }
 
 function noiseSource(context: BaseAudioContext, noise: AudioBuffer) {
@@ -57,7 +53,7 @@ function scheduleKick(input: LineFuggDrumInput, bounce: boolean) {
   body.connect(bodyGain).connect(output)
   body.start(start)
   body.stop(start + duration + .02)
-  remember(body, sources)
+  remember(body, sources, [bodyGain])
 
   const attack = noiseSource(context, noise)
   const high = context.createBiquadFilter()
@@ -72,7 +68,7 @@ function scheduleKick(input: LineFuggDrumInput, bounce: boolean) {
   attack.connect(high).connect(low).connect(gain).connect(output)
   attack.start(start)
   attack.stop(start + .035)
-  remember(attack, sources)
+  remember(attack, sources, [high, low, gain])
 }
 
 function scheduleSnap(input: LineFuggDrumInput) {
@@ -94,7 +90,7 @@ function scheduleSnap(input: LineFuggDrumInput) {
   source.connect(high).connect(band).connect(gain).connect(output)
   source.start(start)
   source.stop(start + duration + .02)
-  remember(source, sources)
+  remember(source, sources, [high, band, gain])
 
   const body = context.createOscillator()
   const bodyGain = context.createGain()
@@ -106,7 +102,7 @@ function scheduleSnap(input: LineFuggDrumInput) {
   body.connect(bodyGain).connect(output)
   body.start(start)
   body.stop(start + Math.min(.1, duration) + .02)
-  remember(body, sources)
+  remember(body, sources, [bodyGain])
 }
 
 function scheduleRimClap(input: LineFuggDrumInput) {
@@ -124,7 +120,7 @@ function scheduleRimClap(input: LineFuggDrumInput) {
   rim.connect(rimGain).connect(output)
   rim.start(start)
   rim.stop(start + .065)
-  remember(rim, sources)
+  remember(rim, sources, [rimGain])
 
   ;[0, .018].forEach((delay, index) => {
     const source = noiseSource(context, noise)
@@ -140,7 +136,7 @@ function scheduleRimClap(input: LineFuggDrumInput) {
     source.connect(high).connect(low).connect(gain).connect(output)
     source.start(start + delay)
     source.stop(start + delay + duration + .02)
-    remember(source, sources)
+    remember(source, sources, [high, low, gain])
   })
 }
 
@@ -162,7 +158,7 @@ function scheduleHat(input: LineFuggDrumInput, shaker: boolean) {
   source.connect(high).connect(band).connect(gain).connect(output)
   source.start(start)
   source.stop(start + duration + .02)
-  remember(source, sources)
+  remember(source, sources, [high, band, gain])
 }
 
 export function isLineFuggDrumTrack(trackId: string) {

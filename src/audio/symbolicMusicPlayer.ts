@@ -1,3 +1,5 @@
+import { coreAudio, rememberAudioSource, type AudioVoice, type MusicHandle } from './coreAudioManager'
+
 export type SymbolicNote = readonly [startBeat: number, durationBeats: number, midi: number, velocity: number]
 export type SymbolicWave = 'square' | 'triangle' | 'sawtooth' | 'noise'
 
@@ -32,22 +34,22 @@ export type SymbolicCustomNoteInput = {
   track: SymbolicTrack
   note: SymbolicNote
   start: number
+  beatSeconds: number
   durationScale: number
   sources: SourceNode[]
 }
 
 export type SymbolicCustomNoteScheduler = (input: SymbolicCustomNoteInput) => boolean
 
-type SymbolicMusicPlayerOptions = {
+export type SymbolicMusicPlayerOptions = {
   composition: SymbolicComposition
   stageIndex?: number
+  getStageIndex?: () => number
+  initialBeat?: () => number
+  filters?: readonly { type: BiquadFilterType, frequency: number, Q?: number }[]
   gain?: number
   customNoteScheduler?: SymbolicCustomNoteScheduler
 }
-
-let sharedContext: AudioContext | null = null
-let sharedMaster: GainNode | null = null
-let sharedNoise: AudioBuffer | null = null
 
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value))
@@ -68,42 +70,6 @@ function createNoiseBuffer(context: AudioContext) {
   }
 
   return buffer
-}
-
-async function ensureSharedAudio() {
-  if (typeof window === 'undefined') return null
-
-  if (!sharedContext) {
-    const context = new AudioContext({ latencyHint: 'interactive' })
-    const master = context.createGain()
-    const compressor = context.createDynamicsCompressor()
-
-    master.gain.value = .72
-    compressor.threshold.value = -15
-    compressor.knee.value = 8
-    compressor.ratio.value = 5
-    compressor.attack.value = .004
-    compressor.release.value = .12
-
-    master.connect(compressor).connect(context.destination)
-    sharedContext = context
-    sharedMaster = master
-    sharedNoise = createNoiseBuffer(context)
-  }
-
-  if (sharedContext.state === 'suspended') {
-    try { await sharedContext.resume() } catch { /* Browser still waiting for a user gesture. */ }
-  }
-
-  return sharedContext
-}
-
-function rememberSource(sources: SourceNode[], node: SourceNode) {
-  sources.push(node)
-  node.addEventListener('ended', () => {
-    const index = sources.indexOf(node)
-    if (index >= 0) sources.splice(index, 1)
-  }, { once: true })
 }
 
 function scheduleTone(
@@ -137,7 +103,7 @@ function scheduleTone(
   oscillator.connect(gain).connect(output)
   oscillator.start(start)
   oscillator.stop(end + .02)
-  rememberSource(sources, oscillator)
+  rememberAudioSource(sources, oscillator, [gain])
 }
 
 function scheduleNoise(
@@ -174,126 +140,97 @@ function scheduleNoise(
   source.connect(filter).connect(gain).connect(output)
   source.start(start)
   source.stop(start + duration + .02)
-  rememberSource(sources, source)
+  rememberAudioSource(sources, source, [filter, gain])
 }
 
 export class SymbolicMusicPlayer {
-  private readonly composition: SymbolicComposition
-  private readonly stageIndex: number
-  private readonly gain: number
-  private readonly customNoteScheduler?: SymbolicCustomNoteScheduler
+  private voice: AudioVoice | null = null
+  private output: AudioNode | null = null
+  private noise: AudioBuffer | null = null
+  private timer: ReturnType<typeof setTimeout> | null = null
+  private beat = 0
+  private nextBeat = 0
+  private nextStart = 0
+  private segments: { time: number, beat: number, seconds: number }[] = []
+  private initialized = false
+  private stageIndex = 0
+  readonly handle: MusicHandle
 
-  private output: GainNode | null = null
-  private timer: number | null = null
-  private sources: SourceNode[] = []
-  private nextOrigin = 0
-  private requested = false
-  private playing = false
-  private destroyed = false
-
-  constructor(options: SymbolicMusicPlayerOptions) {
-    this.composition = options.composition
-    this.stageIndex = options.stageIndex ?? 0
-    this.gain = clamp(options.gain ?? 1, 0, 1.5)
-    this.customNoteScheduler = options.customNoteScheduler
+  constructor(private readonly options: SymbolicMusicPlayerOptions) {
+    this.handle = coreAudio.createMusic(options.composition.id, {
+      start: (voice) => {
+        this.voice = voice
+        this.output = voice.output
+        for (const settings of [...options.filters ?? []].reverse()) {
+          const filter = voice.context.createBiquadFilter()
+          filter.type = settings.type
+          filter.frequency.value = settings.frequency
+          filter.Q.value = settings.Q ?? .25
+          filter.connect(this.output)
+          voice.own(filter)
+          this.output = filter
+        }
+        this.noise ??= createNoiseBuffer(voice.context)
+        if (!this.initialized) {
+          this.beat = options.initialBeat?.() ?? 0
+          this.stageIndex = options.getStageIndex?.() ?? options.stageIndex ?? 0
+        }
+        this.initialized = true
+        this.nextBeat = this.beat
+        this.nextStart = voice.context.currentTime + .035
+        this.segments = []
+        this.schedule()
+      },
+      pause: () => {
+        if (this.timer !== null) clearTimeout(this.timer)
+        this.timer = null
+        const now = this.voice?.context.currentTime ?? 0
+        const segment = this.segments.filter((part) => part.time <= now).at(-1)
+        if (segment) this.beat = (segment.beat + (now - segment.time) / segment.seconds) % options.composition.loopBeats
+        this.voice = null
+      },
+      reset: () => { this.beat = 0; this.initialized = false; this.segments = [] },
+    }, options.gain ?? 1)
   }
+  start() { return this.handle.start() }
+  resume() { return this.handle.resume() }
+  pause() { this.handle.pause() }
+  stop(seconds?: number) { this.handle.stop(seconds) }
+  destroy() { this.handle.destroy() }
 
-  async start() {
-    if (this.destroyed) return false
-    this.requested = true
-    if (this.playing) return true
-
-    const context = await ensureSharedAudio()
-    if (!context || context.state !== 'running' || !sharedMaster || !sharedNoise) return false
-
-    if (!this.output) {
-      this.output = context.createGain()
-      this.output.gain.value = this.gain
-      this.output.connect(sharedMaster)
+  private schedule() {
+    const voice = this.voice
+    if (!voice || voice.context.state !== 'running' || !this.noise) return
+    const { context, sources } = voice
+    const output = this.output ?? voice.output
+    const composition = this.options.composition
+    // Schedule a quarter beat at a time with 150ms lookahead, never a whole long loop.
+    if (this.nextStart < context.currentTime) this.nextStart = context.currentTime + .025
+    while (this.nextStart < context.currentTime + .15) {
+      if (Math.abs(this.nextBeat % 4) < .00001) this.stageIndex = this.options.getStageIndex?.() ?? this.options.stageIndex ?? 0
+      const stage = composition.stages[clamp(this.stageIndex, 0, composition.stages.length - 1)]
+      if (!stage) return
+      const beatSeconds = 60 / stage.bpm
+      const endBeat = Math.min(composition.loopBeats, this.nextBeat + .25)
+      const origin = this.nextStart
+      this.segments.push({ time: origin, beat: this.nextBeat, seconds: beatSeconds })
+      while (this.segments.length > 2 && this.segments[1].time <= context.currentTime) this.segments.shift()
+      for (const track of composition.variants[stage.variant] ?? []) {
+        if (!stage.activeTracks.includes(track.id)) continue
+        for (const note of track.notes) {
+          if (note[0] < this.nextBeat || note[0] >= endBeat) continue
+          const start = origin + (note[0] - this.nextBeat) * beatSeconds
+          const handled = this.options.customNoteScheduler?.({ context, output, noise: this.noise,
+            track, note, start, beatSeconds, durationScale: 1, sources }) ?? false
+          if (!handled) {
+            if (track.wave === 'noise') scheduleNoise(context, output, this.noise, track, note, start, beatSeconds, sources)
+            else scheduleTone(context, output, track, note, start, beatSeconds, sources)
+          }
+        }
+      }
+      this.nextStart += (endBeat - this.nextBeat) * beatSeconds
+      this.nextBeat = endBeat >= composition.loopBeats ? 0 : endBeat
     }
-
-    this.playing = true
-    this.nextOrigin = context.currentTime + .035
-    this.scheduleLoop(context)
-    return true
-  }
-
-  async resume() {
-    if (!this.requested || this.destroyed) return false
-    return this.start()
-  }
-
-  pause() {
-    if (!this.playing) return
-    this.clearScheduledPlayback()
-    this.playing = false
-  }
-
-  stop() {
-    this.requested = false
-    this.pause()
-  }
-
-  destroy() {
-    if (this.destroyed) return
-    this.stop()
-    this.output?.disconnect()
-    this.output = null
-    this.destroyed = true
-  }
-
-  private clearScheduledPlayback() {
-    if (this.timer !== null) window.clearTimeout(this.timer)
-    this.timer = null
-
-    this.sources.slice().forEach((source) => {
-      try { source.stop() } catch { /* Source already ended. */ }
-    })
-    this.sources = []
-    this.nextOrigin = 0
-  }
-
-  private scheduleLoop(context: AudioContext) {
-    if (!this.playing || !this.output || !sharedNoise) return
-
-    const stage = this.composition.stages[this.stageIndex] ?? this.composition.stages[0]
-    if (!stage) return
-
-    const tracks = this.composition.variants[stage.variant] ?? []
-    const activeTracks = new Set(stage.activeTracks)
-    const beatSeconds = 60 / stage.bpm
-    const origin = this.nextOrigin
-
-    tracks.forEach((track) => {
-      if (!activeTracks.has(track.id)) return
-
-      track.notes.forEach((note) => {
-        const start = origin + note[0] * beatSeconds
-        const handled = this.customNoteScheduler?.({
-          context,
-          output: this.output!,
-          noise: sharedNoise!,
-          track,
-          note,
-          start,
-          durationScale: 1,
-          sources: this.sources,
-        }) ?? false
-
-        if (handled) return
-        if (track.wave === 'noise') scheduleNoise(context, this.output!, sharedNoise!, track, note, start, beatSeconds, this.sources)
-        else scheduleTone(context, this.output!, track, note, start, beatSeconds, this.sources)
-      })
-    })
-
-    const loopSeconds = this.composition.loopBeats * beatSeconds
-    this.nextOrigin = origin + loopSeconds
-    const scheduleAheadSeconds = .28
-    const delayMs = Math.max(25, (this.nextOrigin - context.currentTime - scheduleAheadSeconds) * 1000)
-
-    this.timer = window.setTimeout(() => {
-      this.timer = null
-      this.scheduleLoop(context)
-    }, delayMs)
+    this.timer = setTimeout(() => this.schedule(), 35)
   }
 }

@@ -1,3 +1,5 @@
+import { SymbolicMusicPlayer } from '../audio/symbolicMusicPlayer'
+import { rememberAudioSource } from '../audio/coreAudioManager'
 import { isAudioLabEnhancedDrumTrack, scheduleAudioLabEnhancedDrum } from './audioLabDrumSynth'
 import {
   ENTRY_METRO_BEATS_PER_RAIL_CYCLE,
@@ -12,34 +14,12 @@ type Wave = 'square' | 'triangle' | 'sawtooth' | 'noise'
 type Track = { id: string, name: string, wave: Wave, gain: number, notes: Note[] }
 type SourceNode = OscillatorNode | AudioBufferSourceNode
 
-const CHUNK_BEATS = 4
-const START_AHEAD_SECONDS = .045
-
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value))
 }
 
 function hz(note: number) {
   return 440 * Math.pow(2, (note - 69) / 12)
-}
-
-function makeNoiseBuffer(context: AudioContext) {
-  const buffer = context.createBuffer(1, Math.floor(context.sampleRate * .5), context.sampleRate)
-  const data = buffer.getChannelData(0)
-  let previous = 0
-  for (let index = 0; index < data.length; index += 1) {
-    previous = previous * .58 + (Math.random() * 2 - 1) * .42
-    data[index] = previous
-  }
-  return buffer
-}
-
-function rememberSource(sources: SourceNode[], node: SourceNode) {
-  sources.push(node)
-  node.addEventListener('ended', () => {
-    const index = sources.indexOf(node)
-    if (index >= 0) sources.splice(index, 1)
-  }, { once: true })
 }
 
 function scheduleTone(
@@ -71,7 +51,7 @@ function scheduleTone(
   oscillator.connect(gain).connect(output)
   oscillator.start(start)
   oscillator.stop(end + .02)
-  rememberSource(sources, oscillator)
+  rememberAudioSource(sources, oscillator, [gain])
 }
 
 function scheduleNoise(
@@ -104,7 +84,7 @@ function scheduleNoise(
   source.connect(high).connect(low).connect(gain).connect(output)
   source.start(start)
   source.stop(start + duration + .02)
-  rememberSource(sources, source)
+  rememberAudioSource(sources, source, [high, low, gain])
 }
 
 export type PlatformEntryMusicController = {
@@ -115,134 +95,27 @@ export type PlatformEntryMusicController = {
 
 export function createPlatformEntryMusic(sceneStartedAtMs: number): PlatformEntryMusicController {
   const tracks = metroSunsetEntry() as Track[]
-  const beatSeconds = 60 / ENTRY_METRO_BPM
-  let context: AudioContext | null = null
-  let master: GainNode | null = null
-  let noise: AudioBuffer | null = null
-  let timer: number | null = null
-  let playing = false
-  let nextBeat = 0
-  let nextStart = 0
-  const sources: SourceNode[] = []
-
-  const sceneBeatNow = () => {
-    const elapsedSeconds = Math.max(0, (performance.now() - sceneStartedAtMs) / 1000)
-    const absoluteBeat = elapsedSeconds / ENTRY_METRO_RAIL_CYCLE_SECONDS * ENTRY_METRO_BEATS_PER_RAIL_CYCLE
-    return absoluteBeat % ENTRY_METRO_LOOP_BEATS
-  }
-
-  const ensureContext = () => {
-    if (context && context.state !== 'closed' && master && noise) return context
-
-    context = new AudioContext()
-    noise = makeNoiseBuffer(context)
-
-    master = context.createGain()
-    const highpass = context.createBiquadFilter()
-    const lowpass = context.createBiquadFilter()
-    const compressor = context.createDynamicsCompressor()
-
-    // Conservative production headroom. The rail joint and bass can coincide,
-    // so keep the scene comfortably below digital full scale before compression.
-    // A gentle 58Hz high-pass avoids wasting laptop-speaker excursion on rumble.
-    master.gain.value = .34
-    highpass.type = 'highpass'
-    highpass.frequency.value = 58
-    highpass.Q.value = .55
-    lowpass.type = 'lowpass'
-    lowpass.frequency.value = 10800
-    lowpass.Q.value = .18
-    compressor.threshold.value = -20
-    compressor.knee.value = 10
-    compressor.ratio.value = 7
-    compressor.attack.value = .004
-    compressor.release.value = .2
-    master.connect(highpass).connect(lowpass).connect(compressor).connect(context.destination)
-    return context
-  }
-
-  const scheduleChunk = () => {
-    if (!context || !master || !noise || !playing || context.state !== 'running') return
-
-    const chunkStart = nextBeat
-    const chunkEnd = Math.min(ENTRY_METRO_LOOP_BEATS, chunkStart + CHUNK_BEATS)
-    const chunkBeats = Math.max(.05, chunkEnd - chunkStart)
-    const chunkSeconds = chunkBeats * beatSeconds
-
-    tracks.forEach((track) => {
-      track.notes.forEach((note) => {
-        if (note[0] < chunkStart || note[0] >= chunkEnd) return
-        const localNote: Note = [note[0] - chunkStart, note[1], note[2], note[3]]
-
-        if (isAudioLabEnhancedDrumTrack(track.id)) {
-          scheduleAudioLabEnhancedDrum({
-            context: context!,
-            output: master!,
-            noise: noise!,
-            trackId: track.id,
-            midi: localNote[2],
-            velocity: localNote[3],
-            trackGain: track.gain,
-            start: nextStart + localNote[0] * beatSeconds,
-            durationScale: 1,
-            sources,
-          })
-        } else if (track.wave === 'noise') {
-          scheduleNoise(context!, master!, noise!, track, localNote, nextStart, beatSeconds, sources)
-        } else {
-          scheduleTone(context!, master!, track, localNote, nextStart, beatSeconds, sources)
-        }
-      })
-    })
-
-    nextBeat = chunkEnd >= ENTRY_METRO_LOOP_BEATS - .0001 ? 0 : chunkEnd
-    nextStart += chunkSeconds
-    timer = window.setTimeout(scheduleChunk, Math.max(80, (chunkSeconds - .14) * 1000))
-  }
-
-  const start = async () => {
-    const audioContext = ensureContext()
-    if (playing && audioContext.state === 'running') return true
-
-    try {
-      if (audioContext.state === 'suspended') await audioContext.resume()
-    } catch {
-      return false
-    }
-    if (audioContext.state !== 'running') return false
-    // Mount autoplay and a near-simultaneous first gesture can both be waiting
-    // on resume(). Only the first successful path is allowed to schedule music.
-    if (playing) return true
-
-    playing = true
-    nextBeat = sceneBeatNow()
-    nextStart = audioContext.currentTime + START_AHEAD_SECONDS
-    scheduleChunk()
-    return true
-  }
-
-  const fadeOut = (seconds = .75) => {
-    if (!context || !master || context.state === 'closed') return
-    const now = context.currentTime
-    const current = Math.max(.0001, master.gain.value)
-    master.gain.cancelScheduledValues(now)
-    master.gain.setValueAtTime(current, now)
-    master.gain.exponentialRampToValueAtTime(.0001, now + Math.max(.08, seconds))
-  }
-
-  const stop = () => {
-    playing = false
-    if (timer !== null) window.clearTimeout(timer)
-    timer = null
-    sources.slice().forEach((source) => {
-      try { source.stop() } catch { /* already ended */ }
-    })
-    sources.length = 0
-    if (context && context.state !== 'closed') void context.close()
-    context = null
-    master = null
-    noise = null
-  }
-
-  return { start, fadeOut, stop }
+  const player = new SymbolicMusicPlayer({
+    composition: {
+      id: 'entry-metro-sunset', loopBeats: ENTRY_METRO_LOOP_BEATS,
+      stages: [{ label: 'Entry', bpm: ENTRY_METRO_BPM, variant: 'entry', activeTracks: tracks.map(t => t.id) }],
+      variants: { entry: tracks },
+    },
+    gain: .47,
+    filters: [{ type: 'highpass', frequency: 58, Q: .55 }, { type: 'lowpass', frequency: 10800, Q: .18 }],
+    initialBeat: () => ((performance.now() - sceneStartedAtMs) / 1000
+      / ENTRY_METRO_RAIL_CYCLE_SECONDS * ENTRY_METRO_BEATS_PER_RAIL_CYCLE) % ENTRY_METRO_LOOP_BEATS,
+    customNoteScheduler: ({ context, output, noise, track, note, start, sources }) => {
+      if (isAudioLabEnhancedDrumTrack(track.id)) {
+        scheduleAudioLabEnhancedDrum({ context, output, noise, trackId: track.id, midi: note[2],
+          velocity: note[3], trackGain: track.gain, start, durationScale: 1, sources })
+      } else {
+        const local: Note = [0, note[1], note[2], note[3]]
+        if (track.wave === 'noise') scheduleNoise(context, output, noise, track as Track, local, start, 60 / ENTRY_METRO_BPM, sources)
+        else scheduleTone(context, output, track as Track, local, start, 60 / ENTRY_METRO_BPM, sources)
+      }
+      return true
+    },
+  })
+  return { start: () => player.start(), fadeOut: (seconds = .75) => player.stop(seconds), stop: () => player.destroy() }
 }

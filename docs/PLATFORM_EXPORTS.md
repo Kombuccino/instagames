@@ -8,6 +8,8 @@ MiniFugg keeps one web-first game codebase and wraps it for distribution. Games 
 - 2D gameplay / advanced animated covers: Phaser 4.
 - 3D gameplay: Three.js.
 - Build tooling: Vite.
+- Audio: the session-wide MiniFugg Core manager (`AUDIO_SYSTEM.md`) in every shell.
+  Store wrappers and Phaser/Three instances do not allocate another audio context.
 
 The browser build remains the canonical implementation. Distribution shells host the same Core/game runtime rather than forking game logic.
 

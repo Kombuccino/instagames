@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { gameSfxPalettes, sfxCatalog, type SfxDefinition } from '../audio/sfxCatalog'
-import { playGameSfx, previewSfxById } from '../audio/sfxEngine'
+import { playGameSfx, previewSfxById, stopGameSfx } from '../audio/sfxEngine'
 import {
   isDefaultSfxTuning,
   makeSfxConfigBlock,
@@ -35,6 +35,7 @@ async function copyText(value: string) {
 function previewOptions(tuning: SfxLabTuning) {
   const normalized = normalizeSfxTuning(tuning)
   return {
+    owner: 'audio-lab-preview',
     transform: {
       gain: normalized.volumePercent / 100,
       duration: normalized.durationPercent / 100,
@@ -108,6 +109,7 @@ function SoundCard({
 }
 
 export function SoundDesignLab() {
+  useEffect(() => () => stopGameSfx('audio-lab-preview'), [])
   const [tunings, setTunings] = useState<TuningMap>(() => Object.fromEntries(
     sfxCatalog.sounds.map((sound) => [sound.id, readSfxLabTuning(sound.id)]),
   ))

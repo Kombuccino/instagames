@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react'
+import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
+import { SymbolicMusicPlayer } from '../audio/symbolicMusicPlayer'
+import { rememberAudioSource } from '../audio/coreAudioManager'
 import { musicCatalog as source } from './catalog'
 
 type Wave = 'square' | 'triangle' | 'sawtooth' | 'noise'
@@ -25,7 +27,6 @@ type Options = {
 
 const musicCatalog = source as unknown as Catalog
 const TETRA_IDS = ['MF-MUS-0001', 'MF-MUS-0002'] as const
-const BEATS_PER_BAR = 4
 
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value))
@@ -33,17 +34,6 @@ function clamp(value: number, min: number, max: number) {
 
 function hz(note: number) {
   return 440 * Math.pow(2, (note - 69) / 12)
-}
-
-function noiseBuffer(context: AudioContext) {
-  const buffer = context.createBuffer(1, Math.floor(context.sampleRate * .5), context.sampleRate)
-  const data = buffer.getChannelData(0)
-  let previous = 0
-  for (let index = 0; index < data.length; index += 1) {
-    previous = previous * .6 + (Math.random() * 2 - 1) * .4
-    data[index] = previous
-  }
-  return buffer
 }
 
 function scheduleTone(
@@ -73,7 +63,7 @@ function scheduleTone(
   oscillator.connect(gain).connect(output)
   oscillator.start(start)
   oscillator.stop(end + .025)
-  sources.push(oscillator)
+  rememberAudioSource(sources, oscillator, [gain])
 }
 
 function scheduleNoise(
@@ -111,7 +101,7 @@ function scheduleNoise(
   sourceNode.connect(filter).connect(gain).connect(output)
   sourceNode.start(start)
   sourceNode.stop(start + duration + .02)
-  sources.push(sourceNode)
+  rememberAudioSource(sources, sourceNode, [filter, gain])
 }
 
 function levelFromRoot(root: HTMLElement | null) {
@@ -122,109 +112,12 @@ function levelFromRoot(root: HTMLElement | null) {
 
 export function useTetraMindFckMusic({ rootRef, armed, playing, seed, restartToken }: Options) {
   const [level, setLevel] = useState(1)
-  const contextRef = useRef<AudioContext | null>(null)
-  const outputRef = useRef<GainNode | null>(null)
-  const noiseRef = useRef<AudioBuffer | null>(null)
-  const sourcesRef = useRef<SourceNode[]>([])
-  const timerRef = useRef<number | null>(null)
-  const nextStartRef = useRef(0)
-  const barRef = useRef(0)
-  const levelRef = useRef(1)
-  const armedRef = useRef(armed)
-  const playingRef = useRef(playing)
-
-  const compositions = useMemo(() => TETRA_IDS
-    .map((id) => musicCatalog.compositions.find((item) => item.id === id))
-    .filter((item): item is Composition => Boolean(item)), [])
-
+  const levelRef = useRef(level)
+  levelRef.current = level
   const composition = useMemo(() => {
-    if (compositions.length === 0) return null
-    const index = Math.abs((seed ^ Math.imul(restartToken + 1, 0x45d9f3b)) | 0) % compositions.length
-    return compositions[index]
-  }, [compositions, restartToken, seed])
-
-  useEffect(() => { armedRef.current = armed }, [armed])
-  useEffect(() => { playingRef.current = playing }, [playing])
-  useEffect(() => { levelRef.current = level }, [level])
-
-  const stopSources = useCallback(() => {
-    if (timerRef.current !== null) window.clearTimeout(timerRef.current)
-    timerRef.current = null
-    sourcesRef.current.forEach((node) => {
-      try { node.stop() } catch { /* already stopped */ }
-    })
-    sourcesRef.current = []
-  }, [])
-
-  const ensureAudio = useCallback(async () => {
-    if (!contextRef.current) {
-      const context = new AudioContext({ latencyHint: 'interactive' })
-      const output = context.createGain()
-      const lowpass = context.createBiquadFilter()
-      const compressor = context.createDynamicsCompressor()
-      output.gain.value = .58
-      lowpass.type = 'lowpass'
-      lowpass.frequency.value = 8200
-      lowpass.Q.value = .25
-      compressor.threshold.value = -17
-      compressor.knee.value = 10
-      compressor.ratio.value = 4
-      compressor.attack.value = .008
-      compressor.release.value = .16
-      output.connect(lowpass).connect(compressor).connect(context.destination)
-      contextRef.current = context
-      outputRef.current = output
-      noiseRef.current = noiseBuffer(context)
-    }
-    if (contextRef.current.state === 'suspended') {
-      try { await contextRef.current.resume() } catch { /* browser still waiting for a gesture */ }
-    }
-    return contextRef.current
-  }, [])
-
-  const scheduleBarRef = useRef<() => void>(() => undefined)
-  scheduleBarRef.current = () => {
-    const context = contextRef.current
-    const output = outputRef.current
-    const noise = noiseRef.current
-    if (!context || !output || !noise || !composition || !playingRef.current || context.state !== 'running') return
-
-    const stageIndex = clamp(levelRef.current - 1, 0, composition.stages.length - 1)
-    const stage = composition.stages[stageIndex]
-    const tracks = composition.variants[stage.variant] ?? []
-    const enabled = new Set(stage.activeTracks)
-    const beatSeconds = 60 / stage.bpm
-    const barSeconds = BEATS_PER_BAR * beatSeconds
-    const barsInLoop = Math.max(1, Math.round(composition.loopBeats / BEATS_PER_BAR))
-    const barIndex = barRef.current % barsInLoop
-    const barBeat = barIndex * BEATS_PER_BAR
-    const endBeat = barBeat + BEATS_PER_BAR
-    const origin = nextStartRef.current || context.currentTime + .045
-
-    tracks.filter((track) => enabled.has(track.id)).forEach((track) => {
-      track.notes.forEach((note) => {
-        const noteBeat = note[0]
-        if (noteBeat < barBeat || noteBeat >= endBeat) return
-        const localBeat = noteBeat - barBeat
-        if (track.wave === 'noise') scheduleNoise(context, output, noise, track, note, localBeat, origin, beatSeconds, sourcesRef.current)
-        else scheduleTone(context, output, track, note, localBeat, origin, beatSeconds, sourcesRef.current)
-      })
-    })
-
-    barRef.current = (barIndex + 1) % barsInLoop
-    nextStartRef.current = origin + barSeconds
-    timerRef.current = window.setTimeout(() => scheduleBarRef.current(), Math.max(90, (barSeconds - .12) * 1000))
-  }
-
-  const startPlayback = useCallback(async () => {
-    if (!composition || !playingRef.current) return
-    const context = await ensureAudio()
-    if (context.state !== 'running') return
-    stopSources()
-    nextStartRef.current = context.currentTime + .05
-    scheduleBarRef.current()
-  }, [composition, ensureAudio, stopSources])
-
+    const choices = TETRA_IDS.map(id => musicCatalog.compositions.find(c => c.id === id)).filter((c): c is Composition => Boolean(c))
+    return choices[Math.abs((seed ^ Math.imul(restartToken + 1, 0x45d9f3b)) | 0) % choices.length] ?? null
+  }, [seed, restartToken])
   useEffect(() => {
     const root = rootRef.current
     if (!root) return
@@ -233,43 +126,26 @@ export function useTetraMindFckMusic({ rootRef, armed, playing, seed, restartTok
     const observer = new MutationObserver(sync)
     observer.observe(root, { subtree: true, childList: true, characterData: true })
     return () => observer.disconnect()
-  }, [restartToken, rootRef])
-
+  }, [rootRef, restartToken])
+  const playerRef = useRef<SymbolicMusicPlayer | null>(null)
   useEffect(() => {
-    const unlock = () => {
-      if (!armedRef.current) return
-      void ensureAudio().then(() => {
-        if (playingRef.current && timerRef.current === null) void startPlayback()
-      })
-    }
-    window.addEventListener('pointerdown', unlock, true)
-    window.addEventListener('pointerup', unlock, true)
-    window.addEventListener('keydown', unlock, true)
-    window.addEventListener('wheel', unlock, { capture: true, passive: true })
-    return () => {
-      window.removeEventListener('pointerdown', unlock, true)
-      window.removeEventListener('pointerup', unlock, true)
-      window.removeEventListener('keydown', unlock, true)
-      window.removeEventListener('wheel', unlock, true)
-    }
-  }, [ensureAudio, startPlayback])
-
+    if (!composition) return
+    const player = new SymbolicMusicPlayer({
+      composition, gain: .8,
+      filters: [{ type: 'lowpass', frequency: 8200, Q: .25 }],
+      getStageIndex: () => levelRef.current - 1,
+      customNoteScheduler: ({ context, output, noise, track, note, start, beatSeconds, sources }) => {
+        if (track.wave === 'noise') scheduleNoise(context, output, noise, track as Track, note as Note, 0, start, beatSeconds, sources)
+        else scheduleTone(context, output, track as Track, note as Note, 0, start, beatSeconds, sources)
+        return true
+      },
+    })
+    playerRef.current = player
+    return () => { player.destroy(); if (playerRef.current === player) playerRef.current = null }
+  }, [composition])
   useEffect(() => {
-    barRef.current = 0
-    nextStartRef.current = 0
-    stopSources()
-    if (!playing) {
-      if (contextRef.current?.state === 'running') void contextRef.current.suspend()
-      return
-    }
-    void startPlayback()
-  }, [composition, playing, restartToken, startPlayback, stopSources])
-
-  useEffect(() => () => {
-    stopSources()
-    if (contextRef.current) void contextRef.current.close()
-    contextRef.current = null
-  }, [stopSources])
-
+    if (armed && playing) void playerRef.current?.start()
+    else playerRef.current?.pause()
+  }, [armed, playing, composition])
   return { compositionId: composition?.id ?? null, level }
 }

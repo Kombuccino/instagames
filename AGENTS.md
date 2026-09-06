@@ -11,6 +11,7 @@ For any game work, read the latest `main` versions of:
 - `AGENTS.md`
 - `GAME_DEV_SPEC.md`
 - `docs/GAME_ENGINE_ARCHITECTURE.md`
+- `docs/AUDIO_SYSTEM.md`
 - `docs/GAME_MIGRATION_PLAN.md`
 - `docs/GAME_LAYOUT_SYSTEM.md`
 - `docs/INPUT_GESTURES.md`
@@ -174,3 +175,17 @@ Platform-specific APIs belong behind Core adapters. Packaging technology may evo
 ## 14. Security
 
 Never put secrets/private keys/store credentials in client code or the repository. Treat the browser/app client as attacker-controlled for shared economy and competition. Validate authoritative actions server-side.
+
+## 15. Core owns all realtime audio
+
+Read `docs/AUDIO_SYSTEM.md` before audio/game/cover/entry work. Use the shared
+`src/audio/index.ts` facade and managed music handles. Never create, suspend or
+close an `AudioContext` in a game, cover, screen or hook. Phaser hosts must use
+`audio: { noAudio: true }`; Three.js must also consume Core audio.
+
+Keep requested playback separate from browser-permitted playback. Normal trusted
+gestures unlock Core globally; do not add local retry listeners or an Enable Audio
+screen. Explicit pause/stop must survive foreground and subsequent gestures.
+Create music handles inside lifecycle setup, destroy them during cleanup, stop
+owned SFX and cancel delayed callbacks. Preserve catalog data and use fades.
+Only offline file rendering may create an `OfflineAudioContext` outside Core.

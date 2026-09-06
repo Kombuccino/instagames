@@ -2,6 +2,11 @@
 
 This is the source-of-truth workflow for AI-created MiniFugg music **and procedural sound design**.
 
+Runtime context, routing, autoplay and lifecycle are governed by `AUDIO_SYSTEM.md`.
+The Lab, game players, Home, SFX and microphone analyser now share Core audio.
+Pause in the Lab pauses its managed transport, not the global context. File export
+alone uses OfflineAudioContext; catalogs, proposals and tuning formats are unchanged.
+
 ## Goal
 
 Audio stays symbolic, editable and lightweight whenever possible.
@@ -204,7 +209,9 @@ Longer reactive pieces should also have a musical form rather than one short fla
 
 If the game's mechanical cadence becomes too fast to map literally to musical BPM, group several game ticks into one beat and increase rhythmic subdivision only where it remains readable instead of driving the whole composition into unusable tempos.
 
-The game engine should own live tempo and layer activation. Do not render the only production source to a fixed WAV when the music is meant to react to gameplay.
+Gameplay supplies semantic intensity; the Core music adapter applies tempo and
+layer activation on musical boundaries. Do not render the only production source
+to a fixed WAV when the music is meant to react to gameplay.
 
 For long-form symbolic arrangements, the Audio Lab should schedule playback in short chunks/bars rather than pre-scheduling an entire multi-minute loop at once. This keeps auditioning practical on phones and lets local mix changes affect upcoming material quickly.
 

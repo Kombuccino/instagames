@@ -152,14 +152,10 @@ async function renderAudioLab(input: AudioLabExportInput) {
   const context = new OfflineAudioContext(1, frameCount, SAMPLE_RATE)
 
   const master = context.createGain()
-  const compressor = context.createDynamicsCompressor()
-  master.gain.setValueAtTime(.72, 0)
-  master.gain.setValueAtTime(.72, musicalSeconds)
+  master.gain.setValueAtTime(.8 * .72, 0)
+  master.gain.setValueAtTime(.8 * .72, musicalSeconds)
   master.gain.exponentialRampToValueAtTime(.0001, Math.min(renderSeconds, musicalSeconds + .25))
-  compressor.threshold.value = -15
-  compressor.knee.value = 8
-  compressor.ratio.value = 5
-  master.connect(compressor).connect(context.destination)
+  master.connect(context.destination)
 
   const noise = makeNoiseBuffer(context)
   const enabled = new Set(input.stage.activeTracks)

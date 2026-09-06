@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { coreAudio } from '../audio/coreAudioManager'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import './voiceIdeaRecorder.css'
 
 type Stage = { label: string, bpm: number, variant: string }
@@ -85,8 +86,13 @@ export function VoiceIdeaRecorder({ composition, stage, isPlaying, paused, playh
   const startBeatRef = useRef(0)
   const countTimerRef = useRef<number | null>(null)
   const recordTimerRef = useRef<number | null>(null)
-  const analyserContextRef = useRef<AudioContext | null>(null)
+  const analyserNodesRef = useRef<AudioNode[]>([])
   const analyserRafRef = useRef<number | null>(null)
+  const previewCleanupRef = useRef<(() => void) | null>(null)
+  const attachPreview = useCallback((element: HTMLAudioElement | null) => {
+    previewCleanupRef.current?.()
+    previewCleanupRef.current = element ? coreAudio.connectMediaPreview(element) : null
+  }, [])
 
   const supported = typeof navigator !== 'undefined'
     && Boolean(navigator.mediaDevices?.getUserMedia)
@@ -99,8 +105,8 @@ export function VoiceIdeaRecorder({ composition, stage, isPlaying, paused, playh
   const cleanupAnalyser = () => {
     if (analyserRafRef.current !== null) cancelAnimationFrame(analyserRafRef.current)
     analyserRafRef.current = null
-    if (analyserContextRef.current) void analyserContextRef.current.close()
-    analyserContextRef.current = null
+    analyserNodesRef.current.forEach(node => node.disconnect())
+    analyserNodesRef.current = []
   }
 
   const stopStream = () => {
@@ -128,13 +134,13 @@ export function VoiceIdeaRecorder({ composition, stage, isPlaying, paused, playh
 
   const startMeter = (stream: MediaStream) => {
     cleanupAnalyser()
-    const context = new AudioContext({ latencyHint: 'interactive' })
+    const context = coreAudio.getContext()
     const analyser = context.createAnalyser()
     analyser.fftSize = 512
     analyser.smoothingTimeConstant = .72
     const source = context.createMediaStreamSource(stream)
     source.connect(analyser)
-    analyserContextRef.current = context
+    analyserNodesRef.current = [source, analyser]
     const data = new Uint8Array(analyser.fftSize)
 
     const sample = () => {
@@ -192,6 +198,7 @@ export function VoiceIdeaRecorder({ composition, stage, isPlaying, paused, playh
   const startIdea = async () => {
     if (!supported || status !== 'idle') return
     setError('')
+    void coreAudio.unlock()
     setStatus('permission')
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -323,7 +330,7 @@ export function VoiceIdeaRecorder({ composition, stage, isPlaying, paused, playh
           {take ? (
             <div className="mf-voice-take">
               <div className="mf-voice-take__meta"><b>PRISE MICRO SÉPARÉE</b><span>beat {take.startBeat.toFixed(2)} · {formatTime(startTime)} · {take.durationSeconds.toFixed(2)}s</span></div>
-              <audio controls preload="metadata" src={take.url} />
+              <audio ref={attachPreview} controls preload="metadata" src={take.url} />
               <div className="mf-voice-take__actions">
                 <button type="button" onClick={exportAudio}>⇩ EXPORTER L’AUDIO</button>
                 <button type="button" onClick={() => void copyMetadata()}>{copied ? '✓ INFOS COPIÉES' : '⧉ COPIER LES INFOS'}</button>

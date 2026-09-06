@@ -1,0 +1,75 @@
+.mf-entry-scene,
+.mf-entry-scene__stage {
+  transition: background-color 1ms linear 706ms;
+}
+
+.mf-entry-scene.is-entering,
+.mf-entry-scene.is-entering .mf-entry-scene__stage {
+  background-color: transparent;
+}
+
+/*
+ * Once the flash reaches full strength, the metro must already be gone.
+ * GameFeed is mounted underneath the fixed entry layer, so the flash can
+ * dissolve directly onto the first cover instead of exposing one last frame
+ * of carriage artwork.
+ */
+.mf-entry-scene__city,
+.mf-entry-scene__carriage {
+  transition: opacity 70ms linear 700ms;
+}
+
+.mf-entry-scene.is-entering .mf-entry-scene__city,
+.mf-entry-scene.is-entering .mf-entry-scene__carriage {
+  opacity: 0;
+}
+
+.mf-entry-scene.is-entering .mf-entry-scene__hand-group {
+  animation: mf-entry-hand-deliver-seamless 860ms cubic-bezier(.14,.84,.17,1) forwards;
+}
+
+@keyframes mf-entry-hand-deliver-seamless {
+  0% {
+    opacity: 1;
+    transform: translate3d(15%,20%,0) scale(.91) rotate(-1.6deg);
+  }
+  38% {
+    opacity: 1;
+    transform: translate3d(11.5%,13%,0) scale(1.32) rotate(-1.15deg);
+  }
+  64% {
+    opacity: 1;
+    transform: translate3d(7.5%,5.5%,0) scale(2.08) rotate(-.65deg);
+  }
+  78% {
+    opacity: 1;
+    transform: translate3d(5.9%,2.5%,0) scale(2.55) rotate(-.22deg);
+  }
+  82% {
+    opacity: 1;
+    transform: translate3d(5.9%,2.5%,0) scale(2.61) rotate(-.08deg);
+  }
+  84% {
+    opacity: .18;
+    transform: translate3d(5.9%,2.5%,0) scale(2.65) rotate(0deg);
+  }
+  86%, 100% {
+    opacity: 0;
+    transform: translate3d(5.9%,2.5%,0) scale(2.76) rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mf-entry-scene.is-entering,
+  .mf-entry-scene.is-entering .mf-entry-scene__stage {
+    background-color: transparent;
+    transition: none;
+  }
+
+  .mf-entry-scene.is-entering .mf-entry-scene__city,
+  .mf-entry-scene.is-entering .mf-entry-scene__carriage,
+  .mf-entry-scene.is-entering .mf-entry-scene__hand-group {
+    opacity: 0;
+    transition: none;
+  }
+}

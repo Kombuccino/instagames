@@ -39,7 +39,10 @@ Do not place the general concept archive inside the production `Fugg` root merel
 
 - Platform UI, entry scenes, system boards -> `Platform`
 - logo, mascot, wordmark and identity studies -> `Branding`
+- canonical approved MiniFugg logo masters/references -> `Branding/Logo - Canonical`
 - game-specific visual research -> `Games/<game-id>/` when useful
+
+The `Branding/Logo - Canonical` folder is reserved for assets explicitly registered by `docs/BRAND_ASSETS.md`. Rejected/exploratory wordmarks must remain outside that canonical folder so they cannot be mistaken for the current brand reference.
 
 Create deeper subfolders only when the archive becomes large enough to justify them.
 

@@ -66,6 +66,27 @@ button { color: inherit; }
   font-size: 13px;
 }
 
+/* Temporary platform-wide migration marker. All current covers are flagged until
+   the first per-game cover migration lands and this becomes registry-driven. */
+.mf-cover-shell::after {
+  content: 'A METTRE A JOUR';
+  position: absolute;
+  z-index: 50;
+  top: max(58px, calc(env(safe-area-inset-top) + 44px));
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 8px;
+  border: 1px solid rgba(255, 255, 255, .7);
+  background: rgba(8, 8, 10, .82);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: .14em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
 @media (min-width: 760px) {
   body { background: #020203; }
   #root { display: grid; place-items: center; }

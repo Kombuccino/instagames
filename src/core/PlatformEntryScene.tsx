@@ -126,9 +126,11 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
     >
       <div className="mf-entry-scene__stage">
         <div className="mf-entry-scene__city" aria-hidden="true">
-          <div className="mf-entry-scene__city-track">
-            <img src={CITY_ART} alt="" draggable={false} />
-            <img src={CITY_ART} alt="" draggable={false} />
+          <div className="mf-entry-scene__city-plane">
+            <div className="mf-entry-scene__city-track">
+              <img src={CITY_ART} alt="" draggable={false} />
+              <img src={CITY_ART} alt="" draggable={false} />
+            </div>
           </div>
         </div>
 

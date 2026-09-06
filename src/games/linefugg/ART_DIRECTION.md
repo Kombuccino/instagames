@@ -3,6 +3,17 @@
 Status: canonical gameplay art direction approved 2026-09-06.
 Cover status remains A METTRE A JOUR. Do not use this document as permission to redesign the cover yet.
 
+## Continuity contract — 2026-09-07
+
+Follow [the unified creation notice](../../../docs/GAME_CREATION_PIPELINE.md) and [the current game status](GAME_STATUS.md) before each production pass. This document carries the retained choices; do not ask the user to repeat the DA when creating assets, animations or, once authorized, covers.
+
+- Approved direction: **Orbital Accounting**, recorded 2026-09-06. The [reference master](../../../public/assets/imported/linefugg/concepts/orbital-stage-master-v1.png) is a visual reference, not a runtime background.
+- Source conversation: [Game : LineFugg](https://chatgpt.com/c/6a96d2e6-ad54-83eb-9d9e-c74fe69d955d), project MiniFugg. Preserve the explicit rules and reference above when interpreting exploratory conversation variants.
+- Preserve: celestial brass instrument, ink-blue depth, parchment calculations, clear numbers, three colored lines and restrained mechanical movement. Existing canonical music choices below remain acquired.
+- Rejected: generic sci-fi/neon HUD, interchangeable generated mobile-game finish, distorted ornamental strips, duplicated or misaligned controls and decoration that shrinks or obscures gameplay. The user's 2026-09-07 instruction against generic “ChatGPT style” reinforces these constraints; it does not ban the specifically approved violet line or node glow.
+- Agent autonomy: prepare asset decomposition, align geometry, select supported engine techniques and tune restrained feedback within this direction. Record significant compromises; ask only for unresolved GD or DA decisions. Do not reopen the whole visual exploration.
+- Still to resolve in implementation: usable board width, legible formula/result areas, clean indicator anchors and separately animatable environment pieces. The authored target below and the current 282-unit playable grid differ; measure and validate the blockout before producing replacement art.
+
 ## Core concept
 
 LineFugg is presented as a celestial calculation instrument: an ornate brass astrolabe / observatory console suspended in a deep ink-blue star field. The tone is elegant, tactile, mysterious and mechanical rather than generic sci-fi neon.

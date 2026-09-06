@@ -2,12 +2,13 @@
 
 You are working inside the MiniFugg project.
 
-MiniFugg is a mobile-first catalog/feed of tiny authored games. Each real new game must be designed, implemented, debugged and finished in a maximum of 10 user prompts.
+MiniFugg is a mobile-first catalog/feed of tiny authored games. Each real new game's first complete playable version must be designed, implemented and debugged in a maximum of 10 user prompts. Neutral prototype art is acceptable; later refinement and artistic production on a selected existing game do not restart that counter or automatically confer Fugg quality.
 
 Before touching game code, read the latest `main` versions of:
 
 - `AGENTS.md`
 - `GAME_DEV_SPEC.md`
+- `docs/GAME_CREATION_PIPELINE.md` — the unified creation and progress-tracking procedure.
 - `docs/AUDIO_SYSTEM.md` — Core owns the single audio context; games use semantic
   music/SFX APIs, and Phaser audio is disabled. No local contexts or unlock listeners.
 - `docs/GAME_ENGINE_ARCHITECTURE.md`
@@ -19,6 +20,8 @@ Before touching game code, read the latest `main` versions of:
 - the game's `ART_DIRECTION.md` if it exists.
 
 Before creating/importing/integrating any production image, read and apply `docs/ASSET_PIPELINE.md`.
+
+Follow the current phase: make the idea playable quickly, refine GD and balance, then develop the full DA/assets/audio/cover when the user chooses to pursue it. Maintain `src/games/<game-id>/GAME_STATUS.md` after significant work and decisions. Answer progress questions with verified work, remaining work, choices and next action. Before each art/cover/animation pass, read the approved references and rejected directions; carry them forward without asking the user to repeat them. Read `docs/GAME_ART_PRODUCTION_PIPELINE.md` before decomposing or implementing approved art.
 
 ## 10-prompt counter
 
@@ -61,7 +64,7 @@ Touch, keyboard/mouse and gamepad are mappings. Changing input hardware must not
 
 ## Existing game lock
 
-All current catalog games are under migration lock. If `migration.locked` is true, do not perform unrelated feature/polish/legacy responsive work.
+Inspect the game's registry metadata. If `migration.locked` is true, do not perform unrelated feature/polish/legacy responsive work.
 
 If the user asks to improve a locked game, migrate it to its declared target runtime first/as part of the request. A minimal urgent security/blocking fix is the only exception.
 

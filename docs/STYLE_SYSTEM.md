@@ -14,7 +14,7 @@ If no art direction has been chosen yet, use a deliberately neutral prototype: f
 
 ## 2. Visual + orientation preflight
 
-When a new game does not already imply a clear art direction or orientation, expose a compact QCM. Infer answers that are obvious and only ask what is useful.
+Follow [GAME_CREATION_PIPELINE.md](GAME_CREATION_PIPELINE.md). For the initial prototype, infer orientation from the mechanic and use neutral temporary art; do not require a visual questionnaire. When the user chooses to develop the DA, recover existing decisions and approved references first. Use the questions below only for unresolved choices; do not reopen a settled direction for covers, animations or subsequent assets.
 
 Q0 — Orientation
 A. portrait
@@ -64,7 +64,7 @@ B. kit with custom palette/characters
 C. mix at most two kits
 D. fully custom
 
-Do not force all questions when the user already answered them implicitly. Prompt 1 should still move the game forward. If answers are missing, build gameplay with neutral temporary art and present only the useful choices in the same response.
+Do not force all questions when the user already answered them implicitly. Prompt 1 should produce playable progress. Defer optional visual choices to the DA phase and make a reasoned recommendation when presenting alternatives.
 
 ## 3. Canonical composition rule for graphics
 

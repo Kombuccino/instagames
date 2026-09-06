@@ -10,6 +10,7 @@ For any game work, read the latest `main` versions of:
 
 - `AGENTS.md`
 - `GAME_DEV_SPEC.md`
+- `docs/GAME_CREATION_PIPELINE.md` — unified creation stages, quality gates and handoff/status procedure.
 - `docs/GAME_ENGINE_ARCHITECTURE.md`
 - `docs/AUDIO_SYSTEM.md`
 - `docs/GAME_MIGRATION_PLAN.md`
@@ -19,6 +20,8 @@ For any game work, read the latest `main` versions of:
 - the game's `ART_DIRECTION.md` when present.
 
 For any approved game-DA implementation, asset decomposition or final gameplay-art pass, also read `docs/GAME_ART_PRODUCTION_PIPELINE.md`.
+
+For each substantial game pass, read/update `src/games/<id>/GAME_STATUS.md` (create it if missing). Before art, cover, animation or audio work, recover the approved references, decisions and rejected directions from the game's `ART_DIRECTION.md`, asset manifest and linked discussions. Do not ask the user to repeat settled choices or substitute generic generated art. Follow the continuity and visual acceptance checks in `docs/GAME_CREATION_PIPELINE.md`.
 
 For Core/platform work also read the relevant platform documents, especially `docs/PLATFORM_UI_BASELINE.md`, `docs/PLATFORM_VISUAL_VALIDATION.md`, `docs/DISCOVERY_NAVIGATION.md`, `docs/PLATFORM_ECONOMY.md`, `docs/PLATFORM_EXPORTS.md` and `docs/PLATFORM_ART_DIRECTION.md`.
 
@@ -75,7 +78,7 @@ Do not expand the legacy CSS parallax/FuggWelcome system. Existing TetraMindFck 
 
 ## 6. New game 10-prompt rule
 
-A real new game must be created and finished in a maximum of 10 user prompts.
+A real new game's first complete playable version must be created and finished in a maximum of 10 user prompts. Neutral prototype art is acceptable. Later GD refinement and full artistic production on a game the user chooses to pursue follow `docs/GAME_CREATION_PIPELINE.md`; they do not restart the initial counter or automatically confer Fugg quality.
 
 When the user explicitly begins a new game, show in every game-development response:
 

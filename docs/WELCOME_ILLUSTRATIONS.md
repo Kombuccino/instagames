@@ -2,6 +2,8 @@
 
 This document defines production covers and their animation boundary.
 
+Before a cover pass, follow [GAME_CREATION_PIPELINE.md](GAME_CREATION_PIPELINE.md): recover the game's approved artistic references, rejected directions and motion/audio intent from `ART_DIRECTION.md` and `GAME_STATUS.md`. Carry those decisions into the cover and its animation without asking the user to repeat them. Check fidelity to actual gameplay and the anti-generic visual criteria before accepting generated layers. Keep progress and remaining choices in the game's status file.
+
 ## Current migration status
 
 TetraMindFck's layered cover variants are current and run in the shared Phaser cover scene. Other catalog covers remain **A METTRE A JOUR** until their registry state is `current`.

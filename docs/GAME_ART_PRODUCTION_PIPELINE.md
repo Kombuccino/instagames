@@ -2,6 +2,8 @@
 
 This document is the canonical procedure for turning an approved game-art direction / gameplay mockup into production-ready MiniFugg assets and runtime rendering.
 
+For the complete creation sequence, decision continuity, visual acceptance and progress tracking, start with [GAME_CREATION_PIPELINE.md](GAME_CREATION_PIPELINE.md). Before each gameplay/cover/animation pass, recover the game's approved `ART_DIRECTION.md` references, rejected directions and asset contracts. Generation must carry these decisions forward; the user should not have to repeat them.
+
 Read it together with `docs/ASSET_PIPELINE.md`. `ASSET_PIPELINE.md` defines how image bytes move from private Drive into the repository; this document defines what those image files should be and how to decompose an approved visual reference into a real game.
 
 ## 1. An approved DA image is a reference, not automatically a runtime asset

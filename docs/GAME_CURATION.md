@@ -2,6 +2,8 @@
 
 Every game can be assigned a developer-selected `status` in `src/core/gameRegistry.tsx`.
 
+The creation phases and quality gates live in [GAME_CREATION_PIPELINE.md](GAME_CREATION_PIPELINE.md); actual progress is tracked in each game's `GAME_STATUS.md`. A prototype is a development maturity, not a new registry enum. New published experiments can use the existing `trash` circuit/direct link until a dedicated prototype status exists. Do not silently reclassify existing games. Community breakout visibility does not by itself validate Fugg production quality.
+
 ```ts
 status: 'fugg' | 'beta' | 'trash'
 ```

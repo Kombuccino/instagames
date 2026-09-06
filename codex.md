@@ -24,7 +24,7 @@ The user is not expected to hand-code or manually maintain these games. The work
 
 This creates several non-negotiable product goals:
 
-1. **Creating a new game must remain extremely fast and simple.** A real new game is expected to be created and finished in at most 10 user prompts. See `AGENTS.md`, `GAME_DEV_SPEC.md` and `PROJECT_GAME_PROMPT.md`.
+1. **Creating a new game must remain extremely fast and simple.** A first complete playable version is expected in at most 10 user prompts, with neutral art permitted. Selected games then receive GD refinement and full artistic production. Start with [the unified creation notice](docs/GAME_CREATION_PIPELINE.md), which defines phases, continuity of approved choices and per-game `GAME_STATUS.md` tracking (2026-09-07). See also `AGENTS.md`, `GAME_DEV_SPEC.md` and `PROJECT_GAME_PROMPT.md`.
 2. **The platform must not become an unmaintainable zoo of technologies.** We deliberately standardize runtimes and shared boundaries.
 3. **A game must look and feel essentially the same on phone, tablet, browser desktop and future packaged builds.** Different controls are expected; different game geometry is not.
 4. **The visual bar must be much higher than a generic “HTML5 mini-game”.** The user accepts simple mechanics, pixel art, paper art, low-poly/blockout, retro styles, etc., but wants authored character, emotion, polish, sound, motion and a strong bridge between cover art and gameplay.
@@ -522,7 +522,7 @@ Covers should be developed from the same approved game universe so the cover-to-
 
 # 13. Recommended creation pipeline for a Fugg
 
-The project is converging on the following practical pipeline.
+The canonical operational notice is now [GAME_CREATION_PIPELINE.md](docs/GAME_CREATION_PIPELINE.md) (2026-09-07). It adds explicit GD/beta refinement, artistic decision continuity, visual rejection criteria and per-game tracking. Use it for current work; the outline below is historical context and does not override that procedure.
 
 ## Phase 0 — mechanic / prototype
 
@@ -861,7 +861,7 @@ Read `docs/PLATFORM_EXPORTS.md` and `docs/GAME_MIGRATION_PLAN.md`.
 
 # 22. New-game 10-prompt rule
 
-A real new game is expected to be built and finished in a maximum of **10 user prompts**.
+A real new game's first complete playable version is expected in a maximum of **10 user prompts**. Later refinement and artistic production of a selected existing game follow [GAME_CREATION_PIPELINE.md](docs/GAME_CREATION_PIPELINE.md) without restarting the counter. A finished initial sequence does not automatically mean Fugg quality.
 
 When a new game creation sequence starts, responses should show:
 

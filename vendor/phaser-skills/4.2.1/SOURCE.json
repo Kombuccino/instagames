@@ -1,0 +1,10 @@
+{
+  "package": "phaser",
+  "sourceRepository": "https://github.com/phaserjs/phaser",
+  "sourceTag": "v4.2.1",
+  "sourceCommit": "41be1e462bc600064e498cba370bfa8c5c055a22",
+  "runtimeVersion": "4.2.1",
+  "license": "MIT",
+  "generatedBy": "scripts/vendor-phaser-skills.mjs",
+  "note": "Vendored upstream AI-agent skills. MiniFugg project rules remain authoritative over generic Phaser guidance."
+}

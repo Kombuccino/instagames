@@ -26,36 +26,42 @@
 
 .mf-entry-scene__city {
   position: absolute;
-  inset: -3% -7% -2%;
+  inset: -4% -10% -3%;
   overflow: hidden;
   background: linear-gradient(180deg, #a8c9ed 0 20%, #efbd83 55%, #bd9274 100%);
+  perspective: 1600px;
+  perspective-origin: 100% 44%;
   transition: opacity 420ms ease 120ms;
 }
 
 /*
- * The carriage recedes towards the upper-right of the authored artwork.
- * Project the scrolling panorama onto the same shallow perspective plane:
- * the near left side reads larger while the far right side compresses.
+ * The authored carriage has a strong vanishing point to the upper-right:
+ * the large foreground window is on the left and every following window
+ * recedes towards the right. The panorama therefore lives on one real 3D
+ * plane whose far/right edge is deliberately smaller and whose near/left
+ * edge grows towards the viewer. This is intentionally pronounced enough
+ * to read immediately through the transparent window cut-outs.
  */
 .mf-entry-scene__city-plane {
   position: absolute;
-  left: -9%;
-  top: -4%;
-  width: 121%;
-  height: 59%;
+  left: -30%;
+  top: -8%;
+  width: 170%;
+  height: 70%;
   overflow: hidden;
-  transform-origin: 50% 50%;
-  transform: perspective(1050px) rotateY(18deg) scaleX(1.055) scaleY(1.04);
+  transform-origin: 100% 50%;
+  transform: rotateY(40deg) scale(.72, .86);
+  backface-visibility: hidden;
   will-change: transform;
 }
 
 .mf-entry-scene__city-track {
   position: absolute;
-  top: -7%;
-  left: -4%;
+  top: -10%;
+  left: -7%;
   display: flex;
   width: max-content;
-  height: 114%;
+  height: 124%;
   will-change: transform;
   animation: mf-entry-city-loop 27s linear infinite;
 }

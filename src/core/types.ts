@@ -4,6 +4,8 @@ export type GameLeaderboardPeriod = 'daily' | 'weekly' | 'global'
 export type GameLeaderboardSort = 'desc' | 'asc'
 export type GameOrientation = 'portrait' | 'landscape' | 'both'
 export type GameCurationStatus = 'fugg' | 'beta' | 'trash'
+/** Persisted discovery preference kept for profile/API backward compatibility. */
+export type FeedPreference = 'fugg' | 'beta' | 'all'
 
 export type GameWelcomeLayerRole = 'background' | 'midground' | 'foreground' | 'overlay'
 export type GameWelcomeMotionType = 'none' | 'float' | 'vibrate' | 'breathe' | 'drift' | 'sway'

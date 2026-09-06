@@ -2,7 +2,7 @@
 
 Version 2.0 — canonical engine/runtime contract.
 
-Read with `AGENTS.md`, `docs/GAME_ENGINE_ARCHITECTURE.md`, `docs/GAME_LAYOUT_SYSTEM.md`, `docs/INPUT_GESTURES.md`, `docs/ORIENTATION_LAYOUT.md` and `docs/GAME_MIGRATION_PLAN.md`.
+Read with `AGENTS.md`, `docs/GAME_ENGINE_ARCHITECTURE.md`, `docs/GAME_LAYOUT_SYSTEM.md`, `docs/INPUT_GESTURES.md`, `docs/ORIENTATION_LAYOUT.md` and `docs/GAME_MIGRATION_PLAN.md`. For approved gameplay-art implementation also read `docs/GAME_ART_PRODUCTION_PIPELINE.md`; for image transport/import read `docs/ASSET_PIPELINE.md`.
 
 ## 1. Product goal
 
@@ -98,11 +98,18 @@ Every game should have an `ART_DIRECTION.md` once its visual direction is establ
 
 Production images must use `docs/ASSET_PIPELINE.md`.
 
-A finished Fugg must not rely on generic CSS geometry as a substitute for promised authored art. Engine primitives are appropriate for procedural effects, debug geometry and deliberately geometric styles.
+When implementing an approved DA/mockup, first perform the production decomposition in `docs/GAME_ART_PRODUCTION_PIPELINE.md`. A flattened concept image is a visual reference unless it contains only genuinely static decoration. It must not be used as a convenience background when it already contains fake grid, score, controls, paths or other live state.
+
+Every visible function has one owner: authored asset, engine-owned dynamic layer, or Core. Mutable gameplay state is never baked beneath a second live copy.
+
+A finished Fugg must not rely on generic CSS/engine geometry as a substitute for promised authored art. Engine primitives are appropriate for procedural effects, dynamic geometry, debug geometry and deliberately geometric styles.
 
 Visual quality should include, as appropriate:
 
 - authored sprite/shape language;
+- production layer decomposition;
+- reusable structural surfaces;
+- explicit control/component state families;
 - secondary animation;
 - impact/interaction feedback;
 - transitions;
@@ -191,6 +198,8 @@ A game is technically current when:
 - lifecycle cleanup is correct;
 - Core close/score/restart behavior works;
 - production assets follow the pipeline;
+- approved art has been decomposed into clean runtime layers rather than a duplicated flattened mockup;
+- representative gameplay states have been visually checked;
 - old production renderer is deleted after cutover;
 - build/typecheck pass.
 

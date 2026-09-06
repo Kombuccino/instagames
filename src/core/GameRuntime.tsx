@@ -1,9 +1,8 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { getSavedNickname } from './leaderboard'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { getSavedNickname, saveNickname, type LeaderboardEntry } from './leaderboard'
 import {
   addGameComment,
   getGameSocialStats,
-  getMyProfile,
   listGameComments,
   listLeaderboard,
   recordGamePlay,
@@ -11,11 +10,12 @@ import {
   setGameLove,
   submitRunScore,
   updateMyProfile,
-  type PlatformProfile,
 } from './platformApi'
 import type { GameComment, GameSocialStats } from './social'
 import type { GameFinishPayload, GameLeaderboardPeriod, InstagameDefinition } from './types'
-import type { LeaderboardEntry } from './leaderboard'
+import { PlatformCoverShell, formatSocialCount, type PlatformPanel } from './PlatformCoverShell'
+import { gameCoinCost, useCoreCoinBalance } from './platformEconomy'
+import { readWelcomeBestScore, recordWelcomeBestScore } from './welcomeProgress'
 
 type GameRuntimeProps = {
   game: InstagameDefinition
@@ -25,9 +25,8 @@ type GameRuntimeProps = {
   mounted: boolean
 }
 
-type OpenSheet = 'help' | 'leaderboard' | 'comments' | 'creator' | 'profile' | null
-
-type IconName = 'rules' | 'heart' | 'comment' | 'bookmark' | 'profile' | 'close'
+type RuntimePhase = 'cover' | 'launching' | 'playing'
+type LeaderboardOrigin = 'info' | 'game-over' | null
 
 const EMPTY_SOCIAL: GameSocialStats = {
   plays: 0,
@@ -48,12 +47,6 @@ function formatScore(value: number) {
   return value.toFixed(2).replace(/0+$/, '').replace(/\.$/, '')
 }
 
-function formatCount(value: number) {
-  if (value < 1_000) return String(value)
-  if (value < 1_000_000) return `${(value / 1_000).toFixed(value < 10_000 ? 1 : 0).replace('.0', '')}k`
-  return `${(value / 1_000_000).toFixed(value < 10_000_000 ? 1 : 0).replace('.0', '')}m`
-}
-
 function utcDayId() {
   return new Date().toISOString().slice(0, 10)
 }
@@ -70,9 +63,7 @@ function isoWeekId(date = new Date()) {
 function periodsFor(game: InstagameDefinition): GameLeaderboardPeriod[] {
   const config = game.features?.leaderboard
   if (!config || !config.enabled) return []
-  if (config.periods?.length) return config.periods
-  if (config.scope) return [config.scope]
-  return ['global']
+  return config.periods?.length ? config.periods : ['global']
 }
 
 function boardIdFor(period: GameLeaderboardPeriod) {
@@ -82,345 +73,325 @@ function boardIdFor(period: GameLeaderboardPeriod) {
 }
 
 function periodLabel(period: GameLeaderboardPeriod) {
-  if (period === 'daily') return 'Jour'
-  if (period === 'weekly') return 'Semaine'
-  return 'Global'
+  if (period === 'daily') return 'DAY'
+  if (period === 'weekly') return 'WEEK'
+  return 'GLOBAL'
 }
 
-function CoreIcon({ name, filled = false }: { name: IconName, filled?: boolean }) {
-  let content: ReactNode
-
-  if (name === 'heart') {
-    content = <path d="M12 20.3s-7.2-4.4-9.5-8.6C.5 8 2.1 4.5 5.8 4.1c2.1-.2 4.1.8 5.2 2.5 1.1-1.7 3.1-2.7 5.2-2.5 3.7.4 5.3 3.9 3.3 7.6-2.3 4.2-9.5 8.6-9.5 8.6Z" />
-  } else if (name === 'comment') {
-    content = <path d="M20.5 11.4a8.4 8.4 0 0 1-8.7 8.1 9.4 9.4 0 0 1-3.2-.6L4 20l1.4-3.7a7.7 7.7 0 0 1-1.9-5.1A8.4 8.4 0 0 1 12.2 3a8.4 8.4 0 0 1 8.3 8.4Z" />
-  } else if (name === 'bookmark') {
-    content = <path d="M6.4 3.2h11.2c.8 0 1.4.6 1.4 1.4v16.2l-7-4.5-7 4.5V4.6c0-.8.6-1.4 1.4-1.4Z" />
-  } else if (name === 'profile') {
-    content = <><circle cx="12" cy="8" r="3.3" /><path d="M5.2 20c.7-4 3-6 6.8-6s6.1 2 6.8 6" /></>
-  } else if (name === 'rules') {
-    content = <><circle cx="12" cy="12" r="9" /><path d="M12 10.5v6" /><circle cx="12" cy="7.4" r=".7" className="icon-dot" /></>
-  } else {
-    content = <><path d="M5 5l14 14" /><path d="M19 5 5 19" /></>
-  }
-
+function CloseIcon() {
   return (
-    <svg className="core-icon" viewBox="0 0 24 24" aria-hidden="true" fill={filled ? 'currentColor' : 'none'}>
-      {content}
+    <svg className="mf-platform-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none">
+      <path d="M5 5l14 14" /><path d="M19 5 5 19" />
     </svg>
   )
 }
 
 export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntimeProps) {
-  const [score, setScore] = useState(0)
+  const rootRef = useRef<HTMLElement>(null)
+  const launchTimerRef = useRef<number | null>(null)
+  const playRecordedRef = useRef(false)
+  const [phase, setPhase] = useState<RuntimePhase>('cover')
+  const [panel, setPanel] = useState<PlatformPanel>(null)
+  const [gameMountKey, setGameMountKey] = useState(0)
   const [restartToken, setRestartToken] = useState(0)
+  const [score, setScore] = useState(0)
   const [finished, setFinished] = useState<GameFinishPayload | null>(null)
-  const [sheet, setSheet] = useState<OpenSheet>(null)
-  const [nickname, setNickname] = useState(() => getSavedNickname())
-  const [submitted, setSubmitted] = useState(false)
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
-  const [loadingLeaderboard, setLoadingLeaderboard] = useState(false)
+  const [bestScore, setBestScore] = useState(() => readWelcomeBestScore(game.id))
   const [social, setSocial] = useState<GameSocialStats>(EMPTY_SOCIAL)
   const [comments, setComments] = useState<GameComment[]>([])
+  const [nickname, setNickname] = useState(() => getSavedNickname())
   const [commentText, setCommentText] = useState('')
-  const [profile, setProfile] = useState<PlatformProfile | null>(null)
-  const [profileHandle, setProfileHandle] = useState('')
-  const [profileDisplayName, setProfileDisplayName] = useState('')
-  const [profileBio, setProfileBio] = useState('')
-  const [savingProfile, setSavingProfile] = useState(false)
-  const [profileMessage, setProfileMessage] = useState('')
-  const playRecorded = useRef(false)
-
-  const Game = game.component
-  const orientation = game.orientation ?? 'portrait'
-  const leaderboardConfig = game.features?.leaderboard || false
-  const leaderboardEnabled = Boolean(leaderboardConfig && leaderboardConfig.enabled)
+  const [launchError, setLaunchError] = useState('')
+  const [leaderboardOpen, setLeaderboardOpen] = useState(false)
+  const [leaderboardOrigin, setLeaderboardOrigin] = useState<LeaderboardOrigin>(null)
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [loadingLeaderboard, setLoadingLeaderboard] = useState(false)
   const periods = useMemo(() => periodsFor(game), [game])
   const [leaderboardPeriod, setLeaderboardPeriod] = useState<GameLeaderboardPeriod>(periods[0] ?? 'global')
-  const leaderboardLimit = leaderboardConfig ? leaderboardConfig.limit ?? 10 : 10
+  const leaderboardConfig = game.features?.leaderboard || false
+  const leaderboardEnabled = Boolean(leaderboardConfig && leaderboardConfig.enabled)
+  const leaderboardLimit = leaderboardConfig ? leaderboardConfig.limit ?? 100 : 100
   const leaderboardSort = leaderboardConfig ? leaderboardConfig.sort ?? 'desc' : 'desc'
-  const selectedBoardId = finished?.boardId ?? boardIdFor(leaderboardPeriod)
-  const creatorGames = useMemo(
-    () => game.author ? catalog.filter((candidate) => candidate.author === game.author) : [],
-    [catalog, game.author],
-  )
-  const favoriteGames = useMemo(() => {
-    const ids = new Set(profile?.bookmarks.map((bookmark) => bookmark.gameId) ?? [])
-    return catalog.filter((candidate) => ids.has(candidate.id))
-  }, [catalog, profile])
-
-  const updateScore = useCallback((value: number) => setScore(normalizeScore(value)), [])
-  const finish = useCallback((payload: GameFinishPayload) => {
-    const next = { ...payload, score: normalizeScore(payload.score) }
-    setScore(next.score)
-    setFinished(next)
-    setSubmitted(false)
-  }, [])
-  const session = useMemo(() => ({ setScore: updateScore, finish }), [finish, updateScore])
+  const selectedBoardId = boardIdFor(leaderboardPeriod)
+  const orientation = game.orientation ?? 'portrait'
+  const cost = gameCoinCost(game.status)
+  const { balance: coins, spend } = useCoreCoinBalance()
+  const Game = game.component
 
   const refreshSocial = useCallback(async () => {
     setSocial(await getGameSocialStats(game.id))
   }, [game.id])
 
-  const refreshLeaderboard = useCallback(async () => {
-    if (!leaderboardEnabled) return
-    setLoadingLeaderboard(true)
-    const entries = await listLeaderboard(game.id, selectedBoardId, leaderboardLimit, leaderboardSort)
-    setLeaderboard(entries)
-    setLoadingLeaderboard(false)
-  }, [game.id, leaderboardEnabled, leaderboardLimit, leaderboardSort, selectedBoardId])
-
   const refreshComments = useCallback(async () => {
     setComments(await listGameComments(game.id, 50))
   }, [game.id])
 
-  const refreshProfile = useCallback(async () => {
-    const next = await getMyProfile()
-    setProfile(next)
-    setProfileHandle(next.handle ?? '')
-    setProfileDisplayName(next.displayName ?? '')
-    setProfileBio(next.bio ?? '')
-    setProfileMessage('')
-  }, [])
+  const refreshLeaderboard = useCallback(async () => {
+    if (!leaderboardEnabled) {
+      setLeaderboard([])
+      return
+    }
+    setLoadingLeaderboard(true)
+    setLeaderboard(await listLeaderboard(game.id, selectedBoardId, leaderboardLimit, leaderboardSort))
+    setLoadingLeaderboard(false)
+  }, [game.id, leaderboardEnabled, leaderboardLimit, leaderboardSort, selectedBoardId])
 
   useEffect(() => {
-    setScore(0)
+    setPhase('cover')
+    setPanel(null)
+    setLeaderboardOpen(false)
+    setLeaderboardOrigin(null)
     setFinished(null)
-    setSubmitted(false)
-    setSheet(null)
+    setScore(0)
+    setLaunchError('')
     setSocial(EMPTY_SOCIAL)
     setComments([])
-    setCommentText('')
-    playRecorded.current = false
-    const nextPeriods = periodsFor(game)
-    setLeaderboardPeriod(nextPeriods[0] ?? 'global')
+    setBestScore(readWelcomeBestScore(game.id))
+    setLeaderboardPeriod(periodsFor(game)[0] ?? 'global')
+    playRecordedRef.current = false
     void refreshSocial()
   }, [game.id, refreshSocial, seed])
 
   useEffect(() => {
-    if (!active || !mounted || playRecorded.current) return
-    playRecorded.current = true
-    void recordGamePlay(game.id).then(setSocial)
-  }, [active, game.id, mounted])
+    if (!active) {
+      setPanel(null)
+      setLeaderboardOpen(false)
+      setLeaderboardOrigin(null)
+      setLaunchError('')
+    }
+  }, [active])
 
   useEffect(() => {
-    if (sheet === 'leaderboard') void refreshLeaderboard()
-    if (sheet === 'comments') void refreshComments()
-    if (sheet === 'profile') void refreshProfile()
-  }, [refreshComments, refreshLeaderboard, refreshProfile, sheet])
+    if (panel === 'comments') void refreshComments()
+  }, [panel, refreshComments])
 
-  const replay = () => {
-    setScore(0)
+  useEffect(() => {
+    if (leaderboardOpen) void refreshLeaderboard()
+  }, [leaderboardOpen, refreshLeaderboard])
+
+  useEffect(() => () => {
+    if (launchTimerRef.current !== null) window.clearTimeout(launchTimerRef.current)
+  }, [])
+
+  const finish = useCallback((payload: GameFinishPayload) => {
+    const next = { ...payload, score: normalizeScore(payload.score) }
+    setScore(next.score)
+    setFinished(next)
+    setBestScore(recordWelcomeBestScore(game.id, next.score))
+
+    const cleanNickname = nickname.trim().slice(0, 20)
+    if (leaderboardEnabled && cleanNickname) {
+      void submitRunScore({
+        gameId: game.id,
+        nickname: cleanNickname,
+        score: next.score,
+        periods,
+        boardId: next.boardId,
+        metadata: next.metadata,
+      })
+    }
+  }, [game.id, leaderboardEnabled, nickname, periods])
+
+  const session = useMemo(() => ({
+    setScore: (value: number) => setScore(normalizeScore(value)),
+    finish,
+  }), [finish])
+
+  const recordPlayOnce = useCallback(async () => {
+    if (playRecordedRef.current) return
+    playRecordedRef.current = true
+    setSocial(await recordGamePlay(game.id))
+  }, [game.id])
+
+  const play = useCallback(() => {
+    if (!active || phase !== 'cover') return
+    if (!spend(cost)) {
+      setLaunchError(cost > 1 ? `NOT ENOUGH COINS · NEED ${cost}` : 'NOT ENOUGH COINS')
+      return
+    }
+
+    setLaunchError('')
+    setPanel(null)
+    setPhase('launching')
+    void recordPlayOnce()
+
+    if (launchTimerRef.current !== null) window.clearTimeout(launchTimerRef.current)
+    launchTimerRef.current = window.setTimeout(() => {
+      launchTimerRef.current = null
+      setPhase('playing')
+    }, 340)
+  }, [active, cost, phase, recordPlayOnce, spend])
+
+  const closeGame = useCallback(() => {
+    if (launchTimerRef.current !== null) {
+      window.clearTimeout(launchTimerRef.current)
+      launchTimerRef.current = null
+    }
     setFinished(null)
-    setSubmitted(false)
-    setSheet(null)
+    setScore(0)
+    setPanel(null)
+    setLeaderboardOpen(false)
+    setLeaderboardOrigin(null)
+    setPhase('cover')
+    setGameMountKey((value) => value + 1)
     setRestartToken((value) => value + 1)
-  }
+    playRecordedRef.current = false
+  }, [])
 
-  const submitFinishedScore = async () => {
-    if (!finished || !leaderboardEnabled || submitted || !nickname.trim()) return
-    const entry = await submitRunScore({
-      gameId: game.id,
-      nickname,
-      score: finished.score,
-      periods,
-      boardId: finished.boardId,
-      metadata: finished.metadata,
-    })
-    if (!entry) return
-    setNickname(entry.nickname)
-    setSubmitted(true)
-    await refreshLeaderboard()
-  }
+  const replay = useCallback(() => {
+    if (!spend(cost)) {
+      setPhase('cover')
+      setFinished(null)
+      setLaunchError(cost > 1 ? `NOT ENOUGH COINS · NEED ${cost}` : 'NOT ENOUGH COINS')
+      setGameMountKey((value) => value + 1)
+      return
+    }
+    setFinished(null)
+    setScore(0)
+    setLeaderboardOpen(false)
+    setLeaderboardOrigin(null)
+    setRestartToken((value) => value + 1)
+    playRecordedRef.current = false
+    void recordPlayOnce()
+  }, [cost, recordPlayOnce, spend])
 
-  const toggleLove = async () => setSocial(await setGameLove(game.id, !social.loved))
-  const toggleBookmark = async () => setSocial(await setGameBookmark(game.id, !social.bookmarked))
+  const toggleLove = useCallback(async () => {
+    setSocial(await setGameLove(game.id, !social.loved))
+  }, [game.id, social.loved])
 
-  const postComment = async () => {
-    const comment = await addGameComment(game.id, nickname, commentText)
+  const toggleBookmark = useCallback(async () => {
+    setSocial(await setGameBookmark(game.id, !social.bookmarked))
+  }, [game.id, social.bookmarked])
+
+  const postComment = useCallback(async () => {
+    const cleanNickname = nickname.trim().slice(0, 20)
+    const cleanComment = commentText.trim().slice(0, 500)
+    if (!cleanNickname || !cleanComment) return
+    saveNickname(cleanNickname)
+    void updateMyProfile({ displayName: cleanNickname })
+    const comment = await addGameComment(game.id, cleanNickname, cleanComment)
     if (!comment) return
     setCommentText('')
     setComments((current) => [comment, ...current])
     await refreshSocial()
-  }
+  }, [commentText, game.id, nickname, refreshSocial])
 
-  const saveProfile = async () => {
-    setSavingProfile(true)
-    setProfileMessage('')
-    const saved = await updateMyProfile({
-      handle: profileHandle || null,
-      displayName: profileDisplayName || null,
-      bio: profileBio || null,
-    })
-    setSavingProfile(false)
-    if (!saved) {
-      setProfileMessage('Handle invalide ou déjà utilisé.')
-      return
+  const changeGame = useCallback(() => {
+    const slot = rootRef.current?.closest<HTMLElement>('.game-slot')
+    const next = slot?.nextElementSibling as HTMLElement | null
+    if (next) next.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [])
+
+  const share = useCallback(async () => {
+    if (typeof window === 'undefined') return
+    const url = new URL(window.location.href)
+    url.searchParams.set('game', game.id)
+    const payload = { title: `${game.title} · MiniFugg`, text: game.description, url: url.toString() }
+    try {
+      if (navigator.share) {
+        await navigator.share(payload)
+        return
+      }
+      if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(payload.url)
+    } catch {
+      // Cancelled/unsupported share should not disturb the cover.
     }
-    const next = { ...saved, bookmarks: saved.bookmarks.length ? saved.bookmarks : profile?.bookmarks ?? [] }
-    setProfile(next)
-    setProfileHandle(next.handle ?? '')
-    setProfileDisplayName(next.displayName ?? '')
-    setProfileBio(next.bio ?? '')
-    setProfileMessage('Profil enregistré.')
-  }
+  }, [game.description, game.id, game.title])
 
-  const loveEnabled = game.features?.love !== false
-  const commentsEnabled = game.features?.comments !== false
-  const bookmarkEnabled = game.features?.bookmark !== false
+  const openLeaderboard = useCallback((origin: Exclude<LeaderboardOrigin, null>) => {
+    setLeaderboardOrigin(origin)
+    setPanel(null)
+    setLeaderboardOpen(true)
+  }, [])
+
+  const closeLeaderboard = useCallback(() => {
+    setLeaderboardOpen(false)
+    if (leaderboardOrigin === 'info') setPanel('info')
+    setLeaderboardOrigin(null)
+  }, [leaderboardOrigin])
 
   return (
-    <article className={`game-card game-orientation-${orientation}`} data-preferred-orientation={orientation} aria-label={game.title}>
+    <article ref={rootRef} className={`game-card game-orientation-${orientation}`} data-preferred-orientation={orientation} data-phase={phase} aria-label={game.title}>
       <div className="game-surface">
         {mounted ? (
-          <Game active={active && !finished} seed={seed} restartToken={restartToken} session={session} />
+          <Game key={`${game.id}:${seed}:${gameMountKey}`} active={active && phase !== 'cover'} seed={seed} restartToken={restartToken} session={session} />
         ) : (
           <div className="game-placeholder" aria-hidden="true" />
         )}
       </div>
 
-      <header className="game-topbar">
-        <div className="game-identity">
-          <div className="game-heading">
-            <strong>{game.title}</strong>
-            {game.author && <button type="button" className="creator-link" onClick={() => setSheet('creator')}>@{game.author}</button>}
-          </div>
-          <div className="game-subline">
-            <span>{game.description}</span><b>·</b><span>{formatCount(social.plays)} plays</span>
-          </div>
-        </div>
-
-        <nav className="game-actions" aria-label="Actions du jeu">
-          {game.instructions && game.features?.help !== false && (
-            <button type="button" onClick={() => setSheet('help')} aria-label="Règles du jeu"><CoreIcon name="rules" /><small>Règles</small></button>
-          )}
-          {loveEnabled && (
-            <button type="button" className={social.loved ? 'is-active' : ''} onClick={() => void toggleLove()} aria-label="Aimer"><CoreIcon name="heart" filled={social.loved} /><small>{formatCount(social.loves)}</small></button>
-          )}
-          {commentsEnabled && (
-            <button type="button" onClick={() => setSheet('comments')} aria-label="Commentaires"><CoreIcon name="comment" /><small>{formatCount(social.comments)}</small></button>
-          )}
-          {bookmarkEnabled && (
-            <button type="button" className={social.bookmarked ? 'is-active' : ''} onClick={() => void toggleBookmark()} aria-label="Mettre en favori"><CoreIcon name="bookmark" filled={social.bookmarked} /><small>{social.bookmarked ? 'Sauvé' : 'Garder'}</small></button>
-          )}
-          <button type="button" onClick={() => setSheet('profile')} aria-label="Mon profil"><CoreIcon name="profile" /><small>Profil</small></button>
-        </nav>
-      </header>
-
-      <button type="button" className="score-chip" onClick={() => leaderboardEnabled && setSheet('leaderboard')} aria-label={leaderboardEnabled ? `Score ${score}, ouvrir le classement` : `Score ${score}`}>
-        <span>score</span><strong>{formatScore(score)}</strong>
-      </button>
-
-      {sheet && (
-        <div className="platform-sheet-backdrop" onPointerDown={() => setSheet(null)}>
-          <section className="platform-sheet" onPointerDown={(event) => event.stopPropagation()} role="dialog" aria-modal="true">
-            <div className="platform-sheet-head">
-              <div>
-                <small>{sheet === 'profile' ? 'MiniFugg' : game.title}</small>
-                <strong>
-                  {sheet === 'help' && 'Comment jouer'}
-                  {sheet === 'leaderboard' && 'Classement'}
-                  {sheet === 'comments' && 'Commentaires'}
-                  {sheet === 'creator' && `@${game.author}`}
-                  {sheet === 'profile' && 'Mon profil'}
-                </strong>
-              </div>
-              <button type="button" onClick={() => setSheet(null)} aria-label="Fermer"><CoreIcon name="close" /></button>
-            </div>
-
-            {sheet === 'help' && game.instructions && (
-              <div className="platform-help">
-                <p>{game.instructions.goal}</p>
-                <ol>{game.instructions.rules.map((rule) => <li key={rule}>{rule}</li>)}</ol>
-                {game.instructions.controls?.length ? <div className="platform-controls">{game.instructions.controls.map((control) => <span key={control}>{control}</span>)}</div> : null}
-              </div>
-            )}
-
-            {sheet === 'leaderboard' && (
-              <div className="platform-leaderboard">
-                {periods.length > 1 && (
-                  <div className="platform-tabs">
-                    {periods.map((period) => <button type="button" className={leaderboardPeriod === period ? 'is-active' : ''} onClick={() => setLeaderboardPeriod(period)} key={period}>{periodLabel(period)}</button>)}
-                  </div>
-                )}
-                <div className="platform-board-label"><span>{periodLabel(leaderboardPeriod)} · {selectedBoardId}</span><button type="button" onClick={() => void refreshLeaderboard()}>Actualiser</button></div>
-                {loadingLeaderboard ? <p className="platform-muted">Chargement…</p> : leaderboard.length === 0 ? <p className="platform-muted">Aucun score pour le moment.</p> : (
-                  <ol>{leaderboard.map((entry, index) => <li key={entry.id}><span><b>{index + 1}</b>{entry.nickname}</span><strong>{formatScore(entry.score)}</strong></li>)}</ol>
-                )}
-              </div>
-            )}
-
-            {sheet === 'comments' && (
-              <div className="platform-comments">
-                <div className="platform-comment-form">
-                  <input value={nickname} onChange={(event) => setNickname(event.target.value.slice(0, 20))} placeholder="Pseudo" maxLength={20} />
-                  <textarea value={commentText} onChange={(event) => setCommentText(event.target.value.slice(0, 500))} placeholder="Ton commentaire…" maxLength={500} rows={3} />
-                  <button type="button" onClick={() => void postComment()} disabled={!nickname.trim() || !commentText.trim()}>Commenter</button>
-                </div>
-                <div className="platform-comment-list">
-                  {comments.length === 0 ? <p className="platform-muted">Aucun commentaire.</p> : comments.map((comment) => (
-                    <article key={comment.id}><div><strong>@{comment.nickname}</strong><time>{new Date(comment.createdAt).toLocaleDateString()}</time></div><p>{comment.body}</p></article>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {sheet === 'creator' && (
-              <div className="platform-creator">
-                <p>{creatorGames.length} jeu{creatorGames.length > 1 ? 'x' : ''} publié{creatorGames.length > 1 ? 's' : ''} par @{game.author}.</p>
-                <div className="platform-creator-games">{creatorGames.map((creatorGame) => <article key={creatorGame.id}><strong>{creatorGame.title}</strong><span>{creatorGame.description}</span></article>)}</div>
-              </div>
-            )}
-
-            {sheet === 'profile' && (
-              <div className="platform-profile">
-                <div className="platform-profile-summary">
-                  <div className="platform-profile-avatar" aria-hidden="true">{(profileDisplayName || profileHandle || '?').slice(0, 1).toUpperCase()}</div>
-                  <div>
-                    <strong>{profileDisplayName || (profileHandle ? `@${profileHandle}` : 'Profil visiteur')}</strong>
-                    <span>{profile?.kind === 'user' ? 'Compte MiniFugg' : 'Identité anonyme persistante'}</span>
-                  </div>
-                </div>
-
-                <div className="platform-profile-form">
-                  <label><span>Handle</span><input value={profileHandle} onChange={(event) => setProfileHandle(event.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 30))} placeholder="minifugger" minLength={3} maxLength={30} /></label>
-                  <label><span>Nom affiché</span><input value={profileDisplayName} onChange={(event) => setProfileDisplayName(event.target.value.slice(0, 50))} placeholder="Ton nom" maxLength={50} /></label>
-                  <label className="is-wide"><span>Bio</span><textarea value={profileBio} onChange={(event) => setProfileBio(event.target.value.slice(0, 280))} placeholder="Quelques mots…" maxLength={280} rows={3} /></label>
-                  <button type="button" onClick={() => void saveProfile()} disabled={savingProfile || (profileHandle.length > 0 && profileHandle.length < 3)}>{savingProfile ? 'Enregistrement…' : 'Enregistrer'}</button>
-                </div>
-                {profileMessage && <p className="platform-profile-message">{profileMessage}</p>}
-
-                <div className="platform-profile-favorites">
-                  <div className="platform-profile-section-title"><strong>Favoris</strong><span>{favoriteGames.length}</span></div>
-                  {favoriteGames.length === 0 ? <p className="platform-muted">Aucun jeu favori pour le moment.</p> : (
-                    <div className="platform-profile-game-list">{favoriteGames.map((favorite) => <article key={favorite.id}><strong>{favorite.title}</strong><span>{favorite.description}</span></article>)}</div>
-                  )}
-                </div>
-              </div>
-            )}
-          </section>
+      {(phase === 'cover' || phase === 'launching') && (
+        <div className={phase === 'launching' ? 'mf-cover-transition is-launching' : 'mf-cover-transition'}>
+          <PlatformCoverShell
+            game={game}
+            catalog={catalog}
+            seed={seed}
+            coins={coins}
+            cost={cost}
+            social={social}
+            comments={comments}
+            bestScore={bestScore}
+            panel={panel}
+            nickname={nickname}
+            commentText={commentText}
+            launchError={launchError}
+            onPanel={setPanel}
+            onClosePanel={() => setPanel(null)}
+            onToggleLove={() => void toggleLove()}
+            onToggleBookmark={() => void toggleBookmark()}
+            onPlay={play}
+            onChangeGame={changeGame}
+            onShare={() => void share()}
+            onNicknameChange={setNickname}
+            onCommentTextChange={setCommentText}
+            onPostComment={() => void postComment()}
+            onOpenLeaderboard={() => openLeaderboard('info')}
+            onSelectCover={() => {}}
+          />
         </div>
       )}
 
-      {finished && (
-        <div className="platform-finish" role="dialog" aria-modal="true" aria-label="Partie terminée">
-          <section className="platform-finish-card">
-            <small>{game.title}</small><span>Score final</span><strong>{formatScore(finished.score)}</strong>
-            {leaderboardEnabled && (
-              <div className="platform-score-submit">
-                <input value={nickname} onChange={(event) => setNickname(event.target.value.slice(0, 20))} placeholder="Ton pseudo" maxLength={20} autoCapitalize="off" autoComplete="nickname" disabled={submitted} aria-label="Pseudo" />
-                <button type="button" onClick={() => void submitFinishedScore()} disabled={!nickname.trim() || submitted}>{submitted ? 'Enregistré' : 'Enregistrer'}</button>
-              </div>
-            )}
-            <div className="platform-finish-actions">
-              {leaderboardEnabled && <button type="button" onClick={() => setSheet('leaderboard')}>Classement</button>}
-              <button type="button" className="is-primary" onClick={replay}>Rejouer</button>
+      {phase === 'playing' && !finished && (
+        <button type="button" className="mf-game-close-box" onClick={closeGame} aria-label="Return to cover"><CloseIcon /></button>
+      )}
+
+      {leaderboardOpen && (
+        <section className="mf-runtime-panel mf-leaderboard-panel mf-ui-screen" role="dialog" aria-modal="true" aria-label="Leaderboard">
+          <header className="mf-runtime-panel-head mf-ui-panel-header">
+            <div><small className="mf-ui-meta">{game.title}</small><strong className="mf-ui-h2">LEADERBOARD</strong></div>
+            <button className="mf-ui-icon-action" type="button" onClick={closeLeaderboard} aria-label="Back"><CloseIcon /></button>
+          </header>
+          {periods.length > 1 && (
+            <div className="mf-leaderboard-tabs mf-ui-tabs">
+              {periods.map((period) => <button key={period} type="button" className={`mf-ui-tab mf-ui-label${leaderboardPeriod === period ? ' is-active' : ''}`} onClick={() => setLeaderboardPeriod(period)}>{periodLabel(period)}</button>)}
             </div>
+          )}
+          <div className="mf-leaderboard-list mf-ui-scroll">
+            {loadingLeaderboard ? <p className="mf-ui-body">LOADING…</p> : leaderboard.length ? (
+              <ol className="mf-ui-list">{leaderboard.map((entry, index) => {
+                const isCurrent = Boolean(nickname.trim()) && entry.nickname.toLowerCase() === nickname.trim().toLowerCase()
+                return <li className={`mf-ui-list-row${isCurrent ? ' is-current' : ''}`} key={entry.id}><span><b>{index + 1}</b><span className="mf-ui-player-name mf-ui-label">{entry.nickname}</span></span><strong>{formatScore(entry.score)}</strong></li>
+              })}</ol>
+            ) : <p className="mf-ui-body">NO SCORE YET.</p>}
+          </div>
+        </section>
+      )}
+
+      {finished && phase === 'playing' && (
+        <div className="mf-run-finished" role="dialog" aria-modal="true" aria-label="Run finished">
+          <section className="mf-ui-panel">
+            <small className="mf-ui-h3">{game.title}</small>
+            <span className="mf-ui-meta">FINAL SCORE</span>
+            <strong className="mf-ui-display">{formatScore(finished.score)}</strong>
+            <div className="mf-run-finished-actions">
+              {leaderboardEnabled && <button className="mf-ui-action mf-ui-label" type="button" onClick={() => openLeaderboard('game-over')}>LEADERBOARD</button>}
+              <button type="button" className="is-primary mf-ui-action mf-ui-label" onClick={replay}>{cost ? `INSERT COIN x${cost} · REPLAY` : 'REPLAY FREE'}</button>
+              <button className="mf-ui-action mf-ui-label" type="button" onClick={closeGame}>RAGE QUIT</button>
+            </div>
+            {cost > 0 && <p className="mf-ui-meta">{formatSocialCount(coins)} coins left</p>}
           </section>
         </div>
       )}
-
-      <div className="swipe-hint" aria-hidden="true"><span>↑</span>swipe</div>
     </article>
   )
 }

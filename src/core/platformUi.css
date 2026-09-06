@@ -102,6 +102,7 @@
 .mf-leaderboard-tabs button,
 .mf-comment-meta strong,
 .mf-creator-card strong,
+.mf-game-info-head > p strong,
 .mf-leaderboard-list li span,
 .mf-run-finished-actions button {
   color: var(--mf-ui-text);
@@ -147,12 +148,32 @@
 .mf-ui-player-name,
 .mf-comment-meta strong,
 .mf-creator-card strong,
+.mf-game-info-head > p strong,
 .mf-leaderboard-list li span {
   overflow: hidden;
   min-width: 0;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Shared icon language                                                       */
+/* -------------------------------------------------------------------------- */
+
+.mf-platform-icon {
+  width: 28px;
+  height: 28px;
+  overflow: visible;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mf-platform-icon-replyHeart { width: 15px; height: 15px; stroke-width: 1.6; }
+.mf-platform-icon-more { width: 19px; height: 19px; }
+.mf-platform-icon-chevron { width: 15px; height: 15px; stroke-width: 2; }
+.mf-platform-icon-send { width: 22px; height: 22px; }
 
 /* -------------------------------------------------------------------------- */
 /* Screens, panels, scrolling                                                 */
@@ -171,9 +192,7 @@
   background: var(--mf-ui-surface);
 }
 
-.mf-ui-panel-header {
-  color: var(--mf-ui-text);
-}
+.mf-ui-panel-header { color: var(--mf-ui-text); }
 
 .mf-ui-scroll,
 .mf-panel-scroll,

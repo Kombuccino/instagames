@@ -11,26 +11,42 @@ const MAX_LINE_CELLS = 5
 const GAME_ID = 'linefugg'
 
 const BOARD_X = 10
-const BOARD_Y = 140
+const BOARD_Y = 144
 const BOARD_SIZE = 370
 const CELL_SIZE = BOARD_SIZE / GRID_SIZE
 
-const HISTORY_Y = 523
-const HISTORY_ROW_HEIGHT = 40
+const HISTORY_Y = 526
+const HISTORY_ROW_HEIGHT = 48
 const HISTORY_ROW_GAP = 4
-const TOTAL_Y = 680
-const CONTROL_Y = 765
+const TOTAL_Y = 704
+const CONTROL_Y = 790
 
-const MASTER_ASSET_KEY = 'linefugg-orbital-stage-master'
-const MASTER_ASSET_URL = '/assets/imported/linefugg/backgrounds/orbital-stage-master-v1.png'
+const ASSET_ROOT = '/assets/imported/linefugg'
+
+const ASSETS = {
+  background: ['linefugg-orbital-bg', `${ASSET_ROOT}/backgrounds/orbital-stage-bg-v3.png`],
+  upperOrnament: ['linefugg-orbital-upper', `${ASSET_ROOT}/props/orbital-upper-ornament-v3.png`],
+  boardFrame: ['linefugg-orbital-board-frame', `${ASSET_ROOT}/ui/orbital-board-frame-v4.png`],
+  cellNeutral: ['linefugg-orbital-cell-neutral', `${ASSET_ROOT}/ui/orbital-cell-neutral-v2.png`],
+  cellMultiply: ['linefugg-orbital-cell-multiply', `${ASSET_ROOT}/ui/orbital-cell-multiply-v3.png`],
+  cellDivide: ['linefugg-orbital-cell-divide', `${ASSET_ROOT}/ui/orbital-cell-divide-v3.png`],
+  calcRow: ['linefugg-orbital-calc-row', `${ASSET_ROOT}/ui/orbital-calc-row-v3.png`],
+  totalPlate: ['linefugg-orbital-total', `${ASSET_ROOT}/ui/orbital-total-plate-v3.png`],
+  controlDock: ['linefugg-orbital-dock', `${ASSET_ROOT}/ui/orbital-control-dock-v4.png`],
+  indicatorRed: ['linefugg-orbital-indicator-red', `${ASSET_ROOT}/ui/orbital-indicator-red-v4.png`],
+  indicatorViolet: ['linefugg-orbital-indicator-violet', `${ASSET_ROOT}/ui/orbital-indicator-violet-v4.png`],
+  indicatorGold: ['linefugg-orbital-indicator-gold', `${ASSET_ROOT}/ui/orbital-indicator-gold-v4.png`],
+  undoDisabled: ['linefugg-orbital-undo-disabled', `${ASSET_ROOT}/ui/orbital-undo-disabled-v4.png`],
+  undoIdle: ['linefugg-orbital-undo-idle', `${ASSET_ROOT}/ui/orbital-undo-idle-v4.png`],
+  undoPressed: ['linefugg-orbital-undo-pressed', `${ASSET_ROOT}/ui/orbital-undo-pressed-v4.png`],
+  validateDisabled: ['linefugg-orbital-validate-disabled', `${ASSET_ROOT}/ui/orbital-validate-disabled-v4.png`],
+  validateReady: ['linefugg-orbital-validate-ready', `${ASSET_ROOT}/ui/orbital-validate-ready-v4.png`],
+  validatePressed: ['linefugg-orbital-validate-pressed', `${ASSET_ROOT}/ui/orbital-validate-pressed-v4.png`],
+} as const
 
 const INK_NAVY = 0x061424
-const DEEP_NAVY = 0x0a1b30
-const ENAMEL = 0x081a2c
-const BRASS_DARK = 0x3a2414
 const BRASS = 0xb77928
 const BRASS_LIGHT = 0xd9a24a
-const PARCHMENT = 0xe8d2a4
 const PARCHMENT_LIGHT = 0xf3e3bd
 const EMERALD = 0x1f9d57
 const ERROR = 0xff5b3d
@@ -75,7 +91,7 @@ type DragState = {
 }
 
 type HistoryRow = {
-  background: Phaser.GameObjects.Rectangle
+  background: Phaser.GameObjects.Image
   marker: Phaser.GameObjects.Arc
   arrow: Phaser.GameObjects.Text
   formula: Phaser.GameObjects.Text
@@ -230,19 +246,21 @@ export class LineFuggScene extends Phaser.Scene {
   private board: Cell[] = []
   private lines: PlayedLine[] = []
   private drag: DragState | null = null
-  private message = '3 traits · 5 cases maximum'
   private finished = false
   private validating = false
+  private undoPressed = false
+  private validatePressed = false
 
-  private boardGraphics!: Phaser.GameObjects.Graphics
+  private boardOverlayGraphics!: Phaser.GameObjects.Graphics
   private lineGraphics!: Phaser.GameObjects.Graphics
   private energyGraphics!: Phaser.GameObjects.Graphics
   private ambientGraphics!: Phaser.GameObjects.Graphics
   private indicatorGraphics!: Phaser.GameObjects.Graphics
-  private controlGraphics!: Phaser.GameObjects.Graphics
   private controlPulseGraphics!: Phaser.GameObjects.Graphics
 
-  private messageText!: Phaser.GameObjects.Text
+  private upperOrnament!: Phaser.GameObjects.Image
+  private boardFrame!: Phaser.GameObjects.Image
+  private cellSprites: Phaser.GameObjects.Image[] = []
   private cellTexts: Phaser.GameObjects.Text[] = []
   private ambientStars: AmbientStar[] = []
 
@@ -253,10 +271,9 @@ export class LineFuggScene extends Phaser.Scene {
   private historyRows: HistoryRow[] = []
   private totalText!: Phaser.GameObjects.Text
 
-  private undoButton!: Phaser.GameObjects.Arc
-  private undoText!: Phaser.GameObjects.Text
-  private validateButton!: Phaser.GameObjects.Arc
-  private validateText!: Phaser.GameObjects.Text
+  private indicatorSprites: Phaser.GameObjects.Image[] = []
+  private undoButton!: Phaser.GameObjects.Image
+  private validateButton!: Phaser.GameObjects.Image
 
   constructor(bridge: LineFuggSceneBridge) {
     super({ key: LINEFUGG_SCENE_KEY })
@@ -264,13 +281,12 @@ export class LineFuggScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image(MASTER_ASSET_KEY, MASTER_ASSET_URL)
+    Object.values(ASSETS).forEach(([key, url]) => this.load.image(key, url))
   }
 
   create() {
     this.resetRunState()
     this.createBackground()
-    this.createStatus()
     this.createBoardObjects()
     this.createLiveValue()
     this.createHistory()
@@ -284,6 +300,7 @@ export class LineFuggScene extends Phaser.Scene {
     this.renderAmbient(time)
     this.renderEnergy(time)
     this.renderControlPulse(time)
+    this.animateIndicators(time)
   }
 
   private resetRunState() {
@@ -291,73 +308,88 @@ export class LineFuggScene extends Phaser.Scene {
     this.board = createBoard(hashString(`${GAME_ID}:${this.dayId}`))
     this.lines = []
     this.drag = null
-    this.message = '3 traits · 5 cases maximum'
     this.finished = false
     this.validating = false
+    this.undoPressed = false
+    this.validatePressed = false
+    this.cellSprites = []
     this.cellTexts = []
     this.historyRows = []
+    this.indicatorSprites = []
 
     const random = mulberry32(hashString(`linefugg-stars:${this.bridge.seed}:${this.dayId}`))
-    this.ambientStars = Array.from({ length: 34 }, () => ({
+    this.ambientStars = Array.from({ length: 30 }, () => ({
       x: random() * STAGE_WIDTH,
       y: random() * STAGE_HEIGHT,
-      radius: 0.45 + random() * 1.15,
+      radius: 0.45 + random() * 1.05,
       phase: random() * Math.PI * 2,
       speed: 0.00055 + random() * 0.0011,
     }))
   }
 
   private createBackground() {
-    const master = this.add.image(STAGE_WIDTH / 2, STAGE_HEIGHT / 2, MASTER_ASSET_KEY).setDepth(0)
-    const coverScale = Math.max(STAGE_WIDTH / master.width, STAGE_HEIGHT / master.height)
-    master.setScale(coverScale).setAlpha(0.88)
+    const [backgroundKey] = ASSETS.background
+    const background = this.add.image(STAGE_WIDTH / 2, STAGE_HEIGHT / 2, backgroundKey).setDepth(0)
+    const coverScale = Math.max(STAGE_WIDTH / background.width, STAGE_HEIGHT / background.height)
+    background.setScale(coverScale)
 
-    const shade = this.add.graphics().setDepth(1)
-    shade.fillStyle(INK_NAVY, 0.28)
-    shade.fillRect(0, 0, STAGE_WIDTH, STAGE_HEIGHT)
+    const shade = this.add.rectangle(STAGE_WIDTH / 2, STAGE_HEIGHT / 2, STAGE_WIDTH, STAGE_HEIGHT, INK_NAVY, 0.16)
+      .setDepth(1)
+    shade.setBlendMode(Phaser.BlendModes.MULTIPLY)
 
-    // Hide the baked close icon from the concept plate; Core owns this affordance.
-    shade.fillStyle(INK_NAVY, 0.96)
-    shade.fillRoundedRect(-3, -3, 72, 96, 18)
+    const [upperKey] = ASSETS.upperOrnament
+    this.upperOrnament = this.add.image(195, 76, upperKey)
+      .setDisplaySize(320, 207)
+      .setAlpha(0.88)
+      .setDepth(2)
 
-    // Completely occlude baked gameplay. Only the validated celestial/brass decor remains visible.
-    shade.fillStyle(INK_NAVY, 0.985)
-    shade.fillRoundedRect(BOARD_X - 7, BOARD_Y - 8, BOARD_SIZE + 14, BOARD_SIZE + 16, 10)
-    shade.fillRoundedRect(7, BOARD_Y + BOARD_SIZE - 2, 376, 166, 12)
-    shade.fillRoundedRect(86, TOTAL_Y - 27, 218, 55, 14)
-    shade.fillRoundedRect(5, 713, 380, 116, 20)
+    this.tweens.add({
+      targets: this.upperOrnament,
+      y: 80,
+      scaleX: this.upperOrnament.scaleX * 1.012,
+      scaleY: this.upperOrnament.scaleY * 1.012,
+      duration: 5200,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    })
 
-    this.ambientGraphics = this.add.graphics().setDepth(2)
+    this.ambientGraphics = this.add.graphics().setDepth(3)
   }
 
-  private createStatus() {
-    const plate = this.add.rectangle(195, 113, 286, 31, DEEP_NAVY, 0.92)
-      .setStrokeStyle(1, BRASS_LIGHT, 0.54)
-      .setDepth(12)
-
-    plate.setAlpha(0.92)
-
-    this.messageText = this.add.text(195, 113, this.message, {
-      fontFamily: 'Georgia, "Times New Roman", serif',
-      fontSize: '13px',
-      fontStyle: 'bold',
-      color: '#f3e3bd',
-      align: 'center',
-    }).setOrigin(0.5).setDepth(13)
+  private cellTextureKey(cell: Cell) {
+    if (cell.kind === 'multiply') return ASSETS.cellMultiply[0]
+    if (cell.kind === 'divide') return ASSETS.cellDivide[0]
+    return ASSETS.cellNeutral[0]
   }
 
   private createBoardObjects() {
-    this.boardGraphics = this.add.graphics().setDepth(20)
-    this.lineGraphics = this.add.graphics().setDepth(24)
-    this.energyGraphics = this.add.graphics().setDepth(26)
+    this.cellSprites = this.board.map((cell, index) => {
+      const row = Math.floor(index / GRID_SIZE)
+      const col = index % GRID_SIZE
+      return this.add.image(
+        BOARD_X + (col + 0.5) * CELL_SIZE,
+        BOARD_Y + (row + 0.5) * CELL_SIZE,
+        this.cellTextureKey(cell),
+      ).setDisplaySize(CELL_SIZE - 2.4, CELL_SIZE - 2.4).setDepth(10)
+    })
+
+    const [frameKey] = ASSETS.boardFrame
+    this.boardFrame = this.add.image(BOARD_X + BOARD_SIZE / 2, BOARD_Y + BOARD_SIZE / 2, frameKey)
+      .setDisplaySize(382, 382)
+      .setDepth(14)
+
+    this.boardOverlayGraphics = this.add.graphics().setDepth(18)
+    this.lineGraphics = this.add.graphics().setDepth(20)
+    this.energyGraphics = this.add.graphics().setDepth(22)
 
     this.cellTexts = this.board.map((cell, index) => {
       const row = Math.floor(index / GRID_SIZE)
       const col = index % GRID_SIZE
       const color = cell.kind === 'multiply'
-        ? '#ffe0ad'
+        ? '#fff0c5'
         : cell.kind === 'divide'
-          ? '#f1ddff'
+          ? '#f7eaff'
           : '#f3e3bd'
 
       return this.add.text(
@@ -377,7 +409,7 @@ export class LineFuggScene extends Phaser.Scene {
             fill: true,
           },
         },
-      ).setOrigin(0.5).setDepth(32)
+      ).setOrigin(0.5).setDepth(30)
     })
   }
 
@@ -391,89 +423,94 @@ export class LineFuggScene extends Phaser.Scene {
     }).setOrigin(0.5)
 
     this.liveContainer = this.add.container(0, 0, [this.liveBackground, this.liveText])
-      .setDepth(50)
+      .setDepth(60)
       .setVisible(false)
   }
 
   private createHistory() {
+    const [rowKey] = ASSETS.calcRow
+
     for (let index = 0; index < MAX_LINES; index += 1) {
-      const y = HISTORY_Y + index * (HISTORY_ROW_HEIGHT + HISTORY_ROW_GAP)
-      const background = this.add.rectangle(12, y, 366, HISTORY_ROW_HEIGHT, PARCHMENT, 0.78)
-        .setOrigin(0)
-        .setStrokeStyle(2, BRASS, 0.84)
-        .setDepth(10)
+      const y = HISTORY_Y + HISTORY_ROW_HEIGHT / 2 + index * (HISTORY_ROW_HEIGHT + HISTORY_ROW_GAP)
+      const background = this.add.image(195, y, rowKey)
+        .setDisplaySize(360, HISTORY_ROW_HEIGHT)
+        .setDepth(40)
 
-      const marker = this.add.circle(28, y + HISTORY_ROW_HEIGHT / 2, 7, LINE_COLORS[index], 0.18)
+      const marker = this.add.circle(29, y, 6.5, LINE_COLORS[index], 0.16)
         .setStrokeStyle(2, LINE_COLORS[index], 0.42)
-        .setDepth(11)
+        .setDepth(42)
 
-      const arrow = this.add.text(43, y + HISTORY_ROW_HEIGHT / 2, '→', {
+      const arrow = this.add.text(43, y, '→', {
         fontFamily: 'Georgia, "Times New Roman", serif',
-        fontSize: '18px',
+        fontSize: '17px',
         fontStyle: 'bold',
         color: LINE_COLOR_STRINGS[index],
-      }).setOrigin(0.5).setDepth(12)
+      }).setOrigin(0.5).setDepth(42)
 
-      const formula = this.add.text(58, y + HISTORY_ROW_HEIGHT / 2, '', {
+      const formula = this.add.text(57, y, '', {
         fontFamily: 'Georgia, "Times New Roman", serif',
         fontSize: '14px',
         fontStyle: 'bold',
         color: '#251a10',
-      }).setOrigin(0, 0.5).setDepth(12)
+      }).setOrigin(0, 0.5).setDepth(42)
 
-      const score = this.add.text(366, y + HISTORY_ROW_HEIGHT / 2, '', {
+      const score = this.add.text(365, y, '', {
         fontFamily: 'Georgia, "Times New Roman", serif',
         fontSize: '16px',
         fontStyle: 'bold',
         color: '#1c140d',
-      }).setOrigin(1, 0.5).setDepth(12)
+      }).setOrigin(1, 0.5).setDepth(42)
 
       this.historyRows.push({ background, marker, arrow, formula, score })
     }
 
-    this.add.rectangle(195, TOTAL_Y, 204, 46, DEEP_NAVY, 0.98)
-      .setStrokeStyle(2, BRASS_LIGHT, 0.94)
-      .setDepth(10)
+    const [totalKey] = ASSETS.totalPlate
+    this.add.image(195, TOTAL_Y, totalKey)
+      .setDisplaySize(214, 43)
+      .setDepth(40)
 
     this.totalText = this.add.text(195, TOTAL_Y, 'Σ 0', {
       fontFamily: 'Georgia, "Times New Roman", serif',
-      fontSize: '27px',
+      fontSize: '25px',
       fontStyle: 'bold',
       color: '#f3e3bd',
-    }).setOrigin(0.5).setDepth(12)
+    }).setOrigin(0.5).setDepth(42)
   }
 
   private createControls() {
-    this.controlGraphics = this.add.graphics().setDepth(10)
-    this.indicatorGraphics = this.add.graphics().setDepth(11)
-    this.controlPulseGraphics = this.add.graphics().setDepth(12)
+    const [dockKey] = ASSETS.controlDock
+    this.add.image(195, CONTROL_Y + 4, dockKey)
+      .setDisplaySize(250, 65)
+      .setAlpha(0.92)
+      .setDepth(44)
 
-    this.undoButton = this.add.circle(54, CONTROL_Y, 35, 0x17140f, 0.98)
-      .setStrokeStyle(4, BRASS_LIGHT, 0.96)
-      .setDepth(13)
+    const indicatorKeys = [ASSETS.indicatorRed[0], ASSETS.indicatorViolet[0], ASSETS.indicatorGold[0]]
+    const centers = [156, 195, 234]
+    this.indicatorSprites = indicatorKeys.map((key, index) => this.add.image(centers[index], 777, key)
+      .setDisplaySize(39, 39)
+      .setAlpha(0.34)
+      .setDepth(46))
+
+    this.indicatorGraphics = this.add.graphics().setDepth(47)
+    this.controlPulseGraphics = this.add.graphics().setDepth(47)
+
+    this.undoButton = this.add.image(54, CONTROL_Y, ASSETS.undoDisabled[0])
+      .setDisplaySize(76, 76)
+      .setDepth(48)
       .setInteractive({ useHandCursor: true })
 
-    this.undoText = this.add.text(54, CONTROL_Y - 1, '↶', {
-      fontFamily: 'Georgia, "Times New Roman", serif',
-      fontSize: '37px',
-      fontStyle: 'bold',
-      color: '#f3e3bd',
-    }).setOrigin(0.5).setDepth(14)
-
-    this.validateButton = this.add.circle(336, CONTROL_Y, 35, 0x17202a, 0.98)
-      .setStrokeStyle(4, BRASS_LIGHT, 0.78)
-      .setDepth(13)
+    this.validateButton = this.add.image(336, CONTROL_Y, ASSETS.validateDisabled[0])
+      .setDisplaySize(76, 76)
+      .setDepth(48)
       .setInteractive({ useHandCursor: true })
 
-    this.validateText = this.add.text(336, CONTROL_Y - 1, '✓', {
-      fontFamily: 'Arial, sans-serif',
-      fontSize: '35px',
-      fontStyle: 'bold',
-      color: '#a49b84',
-    }).setOrigin(0.5).setDepth(14)
+    this.undoButton.on('pointerdown', this.handleUndoDown, this)
+    this.undoButton.on('pointerup', this.handleUndoUp, this)
+    this.undoButton.on('pointerout', this.handleUndoOut, this)
 
-    this.undoButton.on('pointerup', this.handleUndoPointer, this)
-    this.validateButton.on('pointerup', this.handleValidatePointer, this)
+    this.validateButton.on('pointerdown', this.handleValidateDown, this)
+    this.validateButton.on('pointerup', this.handleValidateUp, this)
+    this.validateButton.on('pointerout', this.handleValidateOut, this)
   }
 
   private registerInput() {
@@ -491,23 +528,65 @@ export class LineFuggScene extends Phaser.Scene {
     this.input.off('pointerup', this.handlePointerUp, this)
     this.input.off('pointerupoutside', this.handlePointerUp, this)
     this.game.events.off('pause', this.handleGamePause, this)
-    this.undoButton?.off('pointerup', this.handleUndoPointer, this)
-    this.validateButton?.off('pointerup', this.handleValidatePointer, this)
+
+    this.undoButton?.off('pointerdown', this.handleUndoDown, this)
+    this.undoButton?.off('pointerup', this.handleUndoUp, this)
+    this.undoButton?.off('pointerout', this.handleUndoOut, this)
+    this.validateButton?.off('pointerdown', this.handleValidateDown, this)
+    this.validateButton?.off('pointerup', this.handleValidateUp, this)
+    this.validateButton?.off('pointerout', this.handleValidateOut, this)
   }
 
   private handleGamePause() {
     if (!this.drag) return
     this.drag = null
-    this.message = this.remainingMessage()
     this.refreshPresentation()
   }
 
-  private handleUndoPointer() {
-    this.undo()
+  private undoEnabled() {
+    return !this.finished && !this.validating && !this.drag && this.lines.length > 0
   }
 
-  private handleValidatePointer() {
-    this.validateRun()
+  private validateEnabled() {
+    return !this.finished && !this.validating && !this.drag && this.lines.length === MAX_LINES
+  }
+
+  private handleUndoDown() {
+    if (!this.undoEnabled()) return
+    this.undoPressed = true
+    this.renderControls()
+  }
+
+  private handleUndoUp() {
+    const shouldUndo = this.undoPressed && this.undoEnabled()
+    this.undoPressed = false
+    if (shouldUndo) this.undo()
+    else this.renderControls()
+  }
+
+  private handleUndoOut() {
+    if (!this.undoPressed) return
+    this.undoPressed = false
+    this.renderControls()
+  }
+
+  private handleValidateDown() {
+    if (!this.validateEnabled()) return
+    this.validatePressed = true
+    this.renderControls()
+  }
+
+  private handleValidateUp() {
+    const shouldValidate = this.validatePressed && this.validateEnabled()
+    this.validatePressed = false
+    if (shouldValidate) this.validateRun()
+    else this.renderControls()
+  }
+
+  private handleValidateOut() {
+    if (!this.validatePressed) return
+    this.validatePressed = false
+    this.renderControls()
   }
 
   private handlePointerDown(pointer: Phaser.Input.Pointer) {
@@ -521,7 +600,6 @@ export class LineFuggScene extends Phaser.Scene {
     if (!start) return
 
     this.drag = this.buildDrag(pointer.id, start, null, world.x, world.y)
-    this.message = 'Glisse en ligne droite · 5 cases max'
     this.refreshPresentation()
   }
 
@@ -531,15 +609,6 @@ export class LineFuggScene extends Phaser.Scene {
     const world = this.pointerWorld(pointer)
     const end = this.snapEnd(this.drag.start, world.x, world.y)
     this.drag = this.buildDrag(pointer.id, this.drag.start, end, world.x, world.y)
-
-    if (end && !this.drag.valid) {
-      this.message = 'Une seule case de croisement maximum'
-    } else if (end) {
-      this.message = `${this.drag.cells.length} case${this.drag.cells.length > 1 ? 's' : ''}`
-    } else {
-      this.message = 'Glisse en ligne droite · 5 cases max'
-    }
-
     this.refreshPresentation()
   }
 
@@ -548,7 +617,6 @@ export class LineFuggScene extends Phaser.Scene {
 
     if (pointer.wasCanceled) {
       this.drag = null
-      this.message = this.remainingMessage()
       this.refreshPresentation()
       return
     }
@@ -558,15 +626,7 @@ export class LineFuggScene extends Phaser.Scene {
     const finalDrag = this.buildDrag(pointer.id, this.drag.start, end, world.x, world.y)
     this.drag = null
 
-    if (!end || finalDrag.cells.length < 2) {
-      this.message = 'Il faut au moins 2 cases'
-      this.flashInvalid()
-      this.refreshPresentation()
-      return
-    }
-
-    if (!finalDrag.valid) {
-      this.message = 'Refusé · un seul croisement par ligne'
+    if (!end || finalDrag.cells.length < 2 || !finalDrag.valid) {
       this.flashInvalid()
       this.refreshPresentation()
       return
@@ -581,33 +641,32 @@ export class LineFuggScene extends Phaser.Scene {
 
     this.lines.push(playedLine)
     this.bridge.session.setScore(this.totalScore())
-    this.message = this.remainingMessage()
     this.refreshPresentation()
     this.pulseNewLine(this.lines.length - 1)
   }
 
   private undo() {
-    if (this.finished || this.validating || this.drag || this.lines.length === 0) return
+    if (!this.undoEnabled()) return
 
     this.lines.pop()
     this.bridge.session.setScore(this.totalScore())
-    this.message = 'Dernier trait annulé'
     this.refreshPresentation()
   }
 
   private validateRun() {
-    if (this.finished || this.validating || this.drag || this.lines.length !== MAX_LINES) return
+    if (!this.validateEnabled()) return
 
     this.validating = true
-    this.message = 'Calcul validé'
+    this.validatePressed = false
     this.refreshPresentation()
 
     const total = this.totalScore()
     this.bridge.session.setScore(total)
 
     this.tweens.add({
-      targets: [this.validateButton, this.validateText],
-      scale: 1.12,
+      targets: this.validateButton,
+      scaleX: this.validateButton.scaleX * 1.12,
+      scaleY: this.validateButton.scaleY * 1.12,
       duration: 130,
       yoyo: true,
       ease: 'Sine.easeOut',
@@ -625,7 +684,7 @@ export class LineFuggScene extends Phaser.Scene {
           gridSize: GRID_SIZE,
           lineLimit: MAX_LINE_CELLS,
           runtimeSeed: this.bridge.seed,
-          artDirection: 'orbital-accounting-v1',
+          artDirection: 'orbital-accounting-modular-v2',
         },
       })
       this.scene.pause()
@@ -636,20 +695,19 @@ export class LineFuggScene extends Phaser.Scene {
     const row = this.historyRows[index]
     if (!row) return
 
-    row.background.setScale(0.985, 0.92)
+    row.background.setScale(row.background.scaleX * 0.985, row.background.scaleY * 0.92)
     this.tweens.add({
       targets: row.background,
-      scaleX: 1,
-      scaleY: 1,
+      scaleX: 360 / row.background.width,
+      scaleY: HISTORY_ROW_HEIGHT / row.background.height,
       duration: 180,
       ease: 'Back.easeOut',
     })
 
-    this.cellTexts.forEach((text) => text.setScale(1))
     for (const point of this.lines[index]?.cells ?? []) {
       const text = this.cellTexts[point.row * GRID_SIZE + point.col]
       if (!text) continue
-      text.setScale(1.12)
+      text.setScale(1.11)
       this.tweens.add({
         targets: text,
         scale: 1,
@@ -660,14 +718,20 @@ export class LineFuggScene extends Phaser.Scene {
   }
 
   private flashInvalid() {
-    this.cameras.main.shake(90, 0.0024)
-    const flare = this.add.rectangle(195, BOARD_Y + BOARD_SIZE / 2, BOARD_SIZE, BOARD_SIZE, ERROR, 0.09)
-      .setDepth(45)
+    this.cameras.main.shake(90, 0.0022)
+    const flare = this.add.circle(
+      this.drag?.pointerX ?? (BOARD_X + BOARD_SIZE / 2),
+      this.drag?.pointerY ?? (BOARD_Y + BOARD_SIZE / 2),
+      28,
+      ERROR,
+      0.22,
+    ).setStrokeStyle(3, ERROR, 0.8).setDepth(62)
 
     this.tweens.add({
       targets: flare,
       alpha: 0,
-      duration: 150,
+      scale: 1.5,
+      duration: 170,
       onComplete: () => flare.destroy(),
     })
   }
@@ -728,26 +792,19 @@ export class LineFuggScene extends Phaser.Scene {
     }
   }
 
-  private remainingMessage() {
-    const remaining = MAX_LINES - this.lines.length
-    if (remaining <= 0) return '3/3 · ajuste avec ↶ ou valide ✓'
-    return `${remaining} trait${remaining > 1 ? 's' : ''} restant${remaining > 1 ? 's' : ''}`
-  }
-
   private totalScore() {
     return roundScore(this.lines.reduce((sum, line) => sum + line.score, 0))
   }
 
   private refreshPresentation() {
-    this.messageText.setText(this.message)
-    this.renderBoard()
+    this.renderBoardOverlays()
     this.renderLines()
     this.renderLiveValue()
     this.renderHistory()
     this.renderControls()
   }
 
-  private renderBoard() {
+  private renderBoardOverlays() {
     const usedCounts = new Map<string, number>()
     for (const line of this.lines) {
       for (const point of line.cells) {
@@ -761,57 +818,31 @@ export class LineFuggScene extends Phaser.Scene {
       ? LINE_COLORS[Math.min(this.lines.length, MAX_LINES - 1)]
       : ERROR
 
-    this.boardGraphics.clear()
+    this.boardOverlayGraphics.clear()
 
-    this.boardGraphics.fillStyle(BRASS_DARK, 0.98)
-    this.boardGraphics.fillRoundedRect(BOARD_X - 7, BOARD_Y - 7, BOARD_SIZE + 14, BOARD_SIZE + 14, 11)
-    this.boardGraphics.fillStyle(BRASS_LIGHT, 0.96)
-    this.boardGraphics.fillRoundedRect(BOARD_X - 4, BOARD_Y - 4, BOARD_SIZE + 8, BOARD_SIZE + 8, 8)
-    this.boardGraphics.fillStyle(ENAMEL, 1)
-    this.boardGraphics.fillRect(BOARD_X, BOARD_Y, BOARD_SIZE, BOARD_SIZE)
-
-    this.board.forEach((cell, index) => {
+    this.board.forEach((_cell, index) => {
       const row = Math.floor(index / GRID_SIZE)
       const col = index % GRID_SIZE
       const x = BOARD_X + col * CELL_SIZE
       const y = BOARD_Y + row * CELL_SIZE
-      const point = { row, col }
-      const key = pointKey(point)
+      const key = `${row}:${col}`
       const useCount = usedCounts.get(key) ?? 0
 
-      let fill = ENAMEL
-      let alpha = 0.985
-      if (cell.kind === 'multiply') {
-        fill = 0x7e310f
-        alpha = 0.97
-      } else if (cell.kind === 'divide') {
-        fill = 0x32175b
-        alpha = 0.97
-      } else if (cell.value < 0) {
-        fill = 0x0d2134
-      }
-
-      this.boardGraphics.fillStyle(fill, alpha)
-      this.boardGraphics.fillRoundedRect(x + 1.6, y + 1.6, CELL_SIZE - 3.2, CELL_SIZE - 3.2, 5)
-
-      this.boardGraphics.lineStyle(1.2, BRASS_LIGHT, 0.58)
-      this.boardGraphics.strokeRoundedRect(x + 1.7, y + 1.7, CELL_SIZE - 3.4, CELL_SIZE - 3.4, 5)
-
       if (useCount > 0) {
-        this.boardGraphics.fillStyle(0xffffff, 0.055 + Math.min(useCount, 2) * 0.025)
-        this.boardGraphics.fillRoundedRect(x + 4, y + 4, CELL_SIZE - 8, CELL_SIZE - 8, 7)
+        this.boardOverlayGraphics.fillStyle(0xffffff, 0.055 + Math.min(useCount, 2) * 0.025)
+        this.boardOverlayGraphics.fillRoundedRect(x + 5, y + 5, CELL_SIZE - 10, CELL_SIZE - 10, 7)
       }
 
       if (useCount > 1) {
-        this.boardGraphics.lineStyle(2, BRASS_LIGHT, 0.85)
-        this.boardGraphics.strokeCircle(x + CELL_SIZE / 2, y + CELL_SIZE / 2, CELL_SIZE * 0.34)
+        this.boardOverlayGraphics.lineStyle(2, BRASS_LIGHT, 0.88)
+        this.boardOverlayGraphics.strokeCircle(x + CELL_SIZE / 2, y + CELL_SIZE / 2, CELL_SIZE * 0.34)
       }
 
       if (preview.has(key)) {
-        this.boardGraphics.fillStyle(previewColor, this.drag?.valid ? 0.15 : 0.20)
-        this.boardGraphics.fillRoundedRect(x + 3, y + 3, CELL_SIZE - 6, CELL_SIZE - 6, 7)
-        this.boardGraphics.lineStyle(2, previewColor, 0.72)
-        this.boardGraphics.strokeCircle(x + CELL_SIZE / 2, y + CELL_SIZE / 2, CELL_SIZE * 0.31)
+        this.boardOverlayGraphics.fillStyle(previewColor, this.drag?.valid ? 0.14 : 0.20)
+        this.boardOverlayGraphics.fillRoundedRect(x + 4, y + 4, CELL_SIZE - 8, CELL_SIZE - 8, 7)
+        this.boardOverlayGraphics.lineStyle(2, previewColor, 0.76)
+        this.boardOverlayGraphics.strokeCircle(x + CELL_SIZE / 2, y + CELL_SIZE / 2, CELL_SIZE * 0.31)
       }
     })
   }
@@ -848,31 +879,31 @@ export class LineFuggScene extends Phaser.Scene {
     const baseX = arrowTipX - ux * arrowLength
     const baseY = arrowTipY - uy * arrowLength
 
-    this.lineGraphics.lineStyle(16, color, 0.11 * alpha)
+    this.lineGraphics.lineStyle(16, color, 0.10 * alpha)
     this.lineGraphics.beginPath()
     this.lineGraphics.moveTo(start.x, start.y)
     this.lineGraphics.lineTo(end.x, end.y)
     this.lineGraphics.strokePath()
 
-    this.lineGraphics.lineStyle(9, color, 0.30 * alpha)
+    this.lineGraphics.lineStyle(8, color, 0.30 * alpha)
     this.lineGraphics.beginPath()
     this.lineGraphics.moveTo(start.x, start.y)
     this.lineGraphics.lineTo(end.x, end.y)
     this.lineGraphics.strokePath()
 
-    this.lineGraphics.lineStyle(4, color, 0.96 * alpha)
+    this.lineGraphics.lineStyle(4, color, 0.98 * alpha)
     this.lineGraphics.beginPath()
     this.lineGraphics.moveTo(start.x, start.y)
     this.lineGraphics.lineTo(end.x, end.y)
     this.lineGraphics.strokePath()
 
-    this.lineGraphics.lineStyle(1.4, 0xffffff, 0.74 * alpha)
+    this.lineGraphics.lineStyle(1.3, 0xffffff, 0.72 * alpha)
     this.lineGraphics.beginPath()
     this.lineGraphics.moveTo(start.x, start.y)
     this.lineGraphics.lineTo(end.x, end.y)
     this.lineGraphics.strokePath()
 
-    this.lineGraphics.fillStyle(color, 0.96 * alpha)
+    this.lineGraphics.fillStyle(color, 0.98 * alpha)
     this.lineGraphics.fillTriangle(
       arrowTipX,
       arrowTipY,
@@ -889,11 +920,11 @@ export class LineFuggScene extends Phaser.Scene {
   private drawNode(x: number, y: number, color: number, alpha: number) {
     this.lineGraphics.fillStyle(color, 0.12 * alpha)
     this.lineGraphics.fillCircle(x, y, 18)
-    this.lineGraphics.fillStyle(color, 0.30 * alpha)
+    this.lineGraphics.fillStyle(color, 0.32 * alpha)
     this.lineGraphics.fillCircle(x, y, 12)
-    this.lineGraphics.fillStyle(color, 0.95 * alpha)
+    this.lineGraphics.fillStyle(color, 0.96 * alpha)
     this.lineGraphics.fillCircle(x, y, 7)
-    this.lineGraphics.fillStyle(0xffffff, 0.92 * alpha)
+    this.lineGraphics.fillStyle(0xffffff, 0.94 * alpha)
     this.lineGraphics.fillCircle(x, y, 3.2)
   }
 
@@ -925,11 +956,10 @@ export class LineFuggScene extends Phaser.Scene {
       const line = this.lines[index]
       const active = Boolean(line)
 
-      row.background.setFillStyle(active ? PARCHMENT_LIGHT : PARCHMENT, active ? 0.97 : 0.48)
-      row.background.setStrokeStyle(2, active ? BRASS_LIGHT : BRASS, active ? 0.96 : 0.42)
-      row.marker.setFillStyle(LINE_COLORS[index], active ? 0.88 : 0.12)
-      row.marker.setStrokeStyle(2, LINE_COLORS[index], active ? 0.95 : 0.34)
-      row.arrow.setAlpha(active ? 1 : 0.22)
+      row.background.setAlpha(active ? 1 : 0.34)
+      row.marker.setFillStyle(LINE_COLORS[index], active ? 0.92 : 0.08)
+      row.marker.setStrokeStyle(2, LINE_COLORS[index], active ? 0.98 : 0.28)
+      row.arrow.setAlpha(active ? 1 : 0.16)
 
       if (!line) {
         row.formula.setText('')
@@ -945,28 +975,23 @@ export class LineFuggScene extends Phaser.Scene {
   }
 
   private renderControls() {
-    const undoEnabled = !this.finished && !this.validating && !this.drag && this.lines.length > 0
-    const validateEnabled = !this.finished && !this.validating && !this.drag && this.lines.length === MAX_LINES
+    const undoEnabled = this.undoEnabled()
+    const validateEnabled = this.validateEnabled()
 
-    this.controlGraphics.clear()
-    this.controlGraphics.fillStyle(BRASS_DARK, 0.96)
-    this.controlGraphics.fillRoundedRect(104, 724, 182, 88, 18)
-    this.controlGraphics.lineStyle(2, BRASS_LIGHT, 0.76)
-    this.controlGraphics.strokeRoundedRect(104, 724, 182, 88, 18)
+    const undoTexture = !undoEnabled
+      ? ASSETS.undoDisabled[0]
+      : this.undoPressed
+        ? ASSETS.undoPressed[0]
+        : ASSETS.undoIdle[0]
 
-    this.undoButton
-      .setFillStyle(0x17140f, undoEnabled ? 0.98 : 0.78)
-      .setStrokeStyle(4, BRASS_LIGHT, undoEnabled ? 0.96 : 0.36)
-      .setAlpha(undoEnabled ? 1 : 0.55)
-    this.undoText.setAlpha(undoEnabled ? 1 : 0.38)
+    const validateTexture = !validateEnabled
+      ? ASSETS.validateDisabled[0]
+      : this.validatePressed
+        ? ASSETS.validatePressed[0]
+        : ASSETS.validateReady[0]
 
-    this.validateButton
-      .setFillStyle(validateEnabled ? EMERALD : 0x17202a, 0.98)
-      .setStrokeStyle(4, validateEnabled ? 0xf3d77e : BRASS_LIGHT, validateEnabled ? 1 : 0.44)
-      .setAlpha(this.finished ? 0.7 : 1)
-    this.validateText
-      .setColor(validateEnabled ? '#fff0b4' : '#8f8978')
-      .setAlpha(validateEnabled ? 1 : 0.62)
+    this.undoButton.setTexture(undoTexture).setDisplaySize(76, 76)
+    this.validateButton.setTexture(validateTexture).setDisplaySize(76, 76)
 
     this.renderIndicators()
   }
@@ -974,36 +999,25 @@ export class LineFuggScene extends Phaser.Scene {
   private renderIndicators() {
     this.indicatorGraphics.clear()
 
-    const centers = [132, 195, 258]
+    const centers = [156, 195, 234]
     for (let index = 0; index < MAX_LINES; index += 1) {
       const centerX = centers[index]
       const color = LINE_COLORS[index]
       const line = this.lines[index]
-      const lit = line?.cells.length ?? (this.drag && this.lines.length === index ? this.drag.cells.length : 0)
-      const active = Boolean(line) || Boolean(this.drag && this.lines.length === index)
+      const previewLine = this.drag && this.lines.length === index ? this.drag : null
+      const lit = line?.cells.length ?? previewLine?.cells.length ?? 0
+      const active = Boolean(line || previewLine)
 
-      this.indicatorGraphics.fillStyle(BRASS_DARK, 0.98)
-      this.indicatorGraphics.fillCircle(centerX, 755, 18)
-      this.indicatorGraphics.lineStyle(2, BRASS_LIGHT, 0.82)
-      this.indicatorGraphics.strokeCircle(centerX, 755, 18)
-
-      this.indicatorGraphics.fillStyle(color, active ? 0.18 : 0.06)
-      this.indicatorGraphics.fillCircle(centerX, 755, 13)
-      this.indicatorGraphics.fillStyle(color, active ? 0.82 : 0.18)
-      this.indicatorGraphics.fillCircle(centerX, 755, active ? 7.5 : 5)
-      if (active) {
-        this.indicatorGraphics.fillStyle(0xffffff, 0.78)
-        this.indicatorGraphics.fillCircle(centerX - 2.2, 752.5, 2.1)
-      }
+      this.indicatorSprites[index]?.setAlpha(active ? 1 : 0.30)
 
       for (let pip = 0; pip < MAX_LINE_CELLS; pip += 1) {
-        const pipX = centerX - 12 + pip * 6
+        const pipX = centerX - 10 + pip * 5
         const isLit = pip < lit
-        this.indicatorGraphics.fillStyle(isLit ? color : 0x5b4b36, isLit ? 1 : 0.62)
-        this.indicatorGraphics.fillCircle(pipX, 787, 2.5)
+        this.indicatorGraphics.fillStyle(isLit ? color : 0x725c38, isLit ? 1 : 0.42)
+        this.indicatorGraphics.fillCircle(pipX, 811, 2.15)
         if (isLit) {
-          this.indicatorGraphics.lineStyle(1, 0xffffff, 0.46)
-          this.indicatorGraphics.strokeCircle(pipX, 787, 2.5)
+          this.indicatorGraphics.lineStyle(1, 0xffffff, 0.45)
+          this.indicatorGraphics.strokeCircle(pipX, 811, 2.15)
         }
       }
     }
@@ -1014,13 +1028,13 @@ export class LineFuggScene extends Phaser.Scene {
 
     const orbitAlpha = 0.10 + (Math.sin(time * 0.00035) + 1) * 0.025
     this.ambientGraphics.lineStyle(1, BRASS_LIGHT, orbitAlpha)
-    this.ambientGraphics.strokeEllipse(195, 58, 264, 74)
-    this.ambientGraphics.strokeEllipse(195, 58, 194, 50)
-    this.ambientGraphics.strokeCircle(195, 58, 26)
+    this.ambientGraphics.strokeEllipse(195, 58, 270, 78)
+    this.ambientGraphics.strokeEllipse(195, 58, 205, 54)
+    this.ambientGraphics.strokeCircle(195, 58, 29)
 
     for (const star of this.ambientStars) {
-      if (star.y > BOARD_Y - 12 && star.y < 828) continue
-      const alpha = 0.18 + (Math.sin(star.phase + time * star.speed) + 1) * 0.24
+      if (star.y > 126 && star.y < 824) continue
+      const alpha = 0.16 + (Math.sin(star.phase + time * star.speed) + 1) * 0.22
       this.ambientGraphics.fillStyle(PARCHMENT_LIGHT, alpha)
       this.ambientGraphics.fillCircle(star.x, star.y, star.radius)
     }
@@ -1039,7 +1053,7 @@ export class LineFuggScene extends Phaser.Scene {
 
       this.energyGraphics.fillStyle(color, 0.12)
       this.energyGraphics.fillCircle(x, y, 10)
-      this.energyGraphics.fillStyle(color, 0.42)
+      this.energyGraphics.fillStyle(color, 0.45)
       this.energyGraphics.fillCircle(x, y, 5)
       this.energyGraphics.fillStyle(0xffffff, 0.9)
       this.energyGraphics.fillCircle(x, y, 1.8)
@@ -1049,12 +1063,22 @@ export class LineFuggScene extends Phaser.Scene {
   private renderControlPulse(time: number) {
     this.controlPulseGraphics.clear()
 
-    if (this.lines.length !== MAX_LINES || this.finished) return
+    if (!this.validateEnabled()) return
 
-    const pulse = 0.18 + (Math.sin(time * 0.005) + 1) * 0.10
+    const pulse = 0.16 + (Math.sin(time * 0.005) + 1) * 0.09
     this.controlPulseGraphics.lineStyle(3, EMERALD, pulse)
-    this.controlPulseGraphics.strokeCircle(336, CONTROL_Y, 41)
+    this.controlPulseGraphics.strokeCircle(336, CONTROL_Y, 42)
     this.controlPulseGraphics.lineStyle(1, 0xffe69b, pulse * 0.8)
-    this.controlPulseGraphics.strokeCircle(336, CONTROL_Y, 45)
+    this.controlPulseGraphics.strokeCircle(336, CONTROL_Y, 46)
+  }
+
+  private animateIndicators(time: number) {
+    const activeIndex = this.drag ? this.lines.length : -1
+    this.indicatorSprites.forEach((sprite, index) => {
+      const pulse = index === activeIndex ? 1 + (Math.sin(time * 0.008) + 1) * 0.025 : 1
+      const targetWidth = 39 * pulse
+      const targetHeight = 39 * pulse
+      sprite.setDisplaySize(targetWidth, targetHeight)
+    })
   }
 }

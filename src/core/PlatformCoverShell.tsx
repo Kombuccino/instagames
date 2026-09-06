@@ -33,7 +33,7 @@ type Props = {
 }
 
 type IconName = 'info' | 'heart' | 'comment' | 'bookmark' | 'share' | 'close' | 'chevron' | 'send' | 'replyHeart' | 'more'
-type CommentRole = 'free' | 'creator' | 'lifetime'
+type CommentRole = 'free' | 'creator' | '999'
 type CommentThread = {
   id: string
   nickname: string
@@ -75,24 +75,9 @@ function PixelCoin({ small = false }: { small?: boolean }) {
   return <span className={`mf-pixel-coin${small ? ' is-small' : ''}`} aria-hidden="true"><i /><b /></span>
 }
 
-const CORE_KNOWN_COVERS = {
-  tetramindfck: [
-    { id: 'pulp-euro', label: 'Pulp européen', image: '/assets/imported/tetramindfck/welcome/variants/v1-pulp-euro.webp', unlockScore: 0 },
-    { id: 'micro-euro', label: 'Micro Europe 90s', image: '/assets/imported/tetramindfck/welcome/variants/v2-micro-euro.webp', unlockScore: 5_000 },
-    { id: 'graphic-poster', label: 'Affiche graphique', image: '/assets/imported/tetramindfck/welcome/variants/v3-graphic-poster.webp', unlockScore: 15_000 },
-  ],
-} satisfies Partial<Record<string, NonNullable<InstagameDefinition['welcome']>['variants']>>
-
 function coverVariants(game: InstagameDefinition) {
   if (game.welcome?.variants?.length) return game.welcome.variants
-  const known = CORE_KNOWN_COVERS[game.id as keyof typeof CORE_KNOWN_COVERS]
-  if (known?.length) return known
-  return [
-    { id: 'current', label: 'Current cover', image: '', unlockScore: 0 },
-    { id: 'locked-1', label: 'Locked edition', image: '', unlockScore: 5_000 },
-    { id: 'locked-2', label: 'Locked edition', image: '', unlockScore: 15_000 },
-    { id: 'locked-3', label: 'Locked edition', image: '', unlockScore: 30_000 },
-  ]
+  return [{ id: 'current', label: 'Current cover', image: '', unlockScore: 0 }]
 }
 
 function seededActiveVariant(game: InstagameDefinition, seed: number, bestScore: number) {
@@ -104,7 +89,7 @@ function seededActiveVariant(game: InstagameDefinition, seed: number, bestScore:
 
 function fallbackComments(author?: string): CommentThread[] {
   return [
-    { id: 'mock-1', nickname: 'NovaPixel', body: 'This game is an absolute brain melt (in the best way). Can’t stop chasing a higher score!', age: '2d', likes: 24, role: 'lifetime' },
+    { id: 'mock-1', nickname: 'NovaPixel', body: 'This game is an absolute brain melt (in the best way). Can’t stop chasing a higher score!', age: '2d', likes: 24, role: '999' },
     {
       id: 'mock-2', nickname: 'bricks&coffee', body: 'The core idea is genius. Fresh take on a classic.', age: '1d', likes: 12, role: 'free',
       replies: [{ id: 'mock-2-r1', nickname: author || 'MiniFugg', body: 'So happy you’re enjoying it! More twists coming soon 👀', age: '1d', likes: 28, role: 'creator' }],
@@ -113,7 +98,7 @@ function fallbackComments(author?: string): CommentThread[] {
       id: 'mock-3', nickname: 'TetrisFan87', body: 'Any tips for getting past 1k? Always choke there…', age: '2d', likes: 6, role: 'free',
       replies: [{ id: 'mock-3-r1', nickname: author || 'MiniFugg', body: 'Try to keep a 2-line buffer and watch for the rare pieces. Practice mode is on the list.', age: '1d', likes: 14, role: 'creator' }],
     },
-    { id: 'mock-4', nickname: 'indiepop', body: 'Stunning cover art. Instantly hooked.', age: '3d', likes: 31, role: 'lifetime' },
+    { id: 'mock-4', nickname: 'indiepop', body: 'Stunning cover art. Instantly hooked.', age: '3d', likes: 31, role: '999' },
   ]
 }
 
@@ -130,7 +115,7 @@ function realComments(comments: GameComment[], author?: string): CommentThread[]
 
 function Avatar({ nickname, role }: { nickname: string, role: CommentRole }) {
   const initial = (nickname.trim()[0] || '?').toUpperCase()
-  return <span className={`mf-comment-avatar is-${role}`} aria-hidden="true"><span>{role === 'creator' ? '◆' : role === 'lifetime' ? '✦' : initial}</span></span>
+  return <span className={`mf-ui-avatar is-${role}`} aria-hidden="true"><span>{role === 'creator' ? '◆' : role === '999' ? '✦' : initial}</span></span>
 }
 
 function CommentCard({ thread, depth = 0, reportedId, onReport }: { thread: CommentThread, depth?: number, reportedId: string, onReport: (id: string) => void }) {
@@ -139,14 +124,14 @@ function CommentCard({ thread, depth = 0, reportedId, onReport }: { thread: Comm
       <Avatar nickname={thread.nickname} role={thread.role} />
       <div className="mf-comment-main">
         <div className="mf-comment-meta">
-          <strong>{thread.nickname}</strong>
-          {thread.role === 'creator' && <span className="mf-badge is-creator">Creator</span>}
-          {thread.role === 'lifetime' && <span className="mf-badge is-999"><PixelCoin small />999</span>}
-          <time>{thread.age}</time>
-          <button className="mf-comment-more" type="button" onClick={() => onReport(thread.id)} aria-label="Comment menu"><Icon name="more" /></button>
+          <strong className="mf-ui-player-name mf-ui-label">{thread.nickname}</strong>
+          {thread.role === 'creator' && <span className="mf-ui-badge is-creator">Creator</span>}
+          {thread.role === '999' && <span className="mf-ui-badge is-999"><PixelCoin small />999</span>}
+          <time className="mf-ui-meta">{thread.age}</time>
+          <button className="mf-comment-more mf-ui-icon-action" type="button" onClick={() => onReport(thread.id)} aria-label="Comment menu"><Icon name="more" /></button>
         </div>
-        <p>{thread.body}</p>
-        <div className="mf-comment-actions"><button type="button"><Icon name="comment" />Reply</button><button type="button" className="mf-comment-like"><Icon name="replyHeart" />{thread.likes || ''}</button>{reportedId === thread.id && <span>Report</span>}</div>
+        <p className="mf-ui-body">{thread.body}</p>
+        <div className="mf-comment-actions mf-ui-micro"><button type="button"><Icon name="comment" />Reply</button><button type="button" className="mf-comment-like"><Icon name="replyHeart" />{thread.likes || ''}</button>{reportedId === thread.id && <span>Report</span>}</div>
       </div>
       {thread.replies?.length ? <div className="mf-comment-replies">{thread.replies.map((reply) => <CommentCard key={reply.id} thread={reply} depth={depth + 1} reportedId={reportedId} onReport={onReport} />)}</div> : null}
     </div>
@@ -177,6 +162,7 @@ export function PlatformCoverShell(props: Props) {
     if (event.target instanceof Element && event.target.closest('button, a, input, textarea')) return
     gesture.current = { pointerId: event.pointerId, x: event.clientX, y: event.clientY }
   }
+
   const endGesture = (event: ReactPointerEvent<HTMLDivElement>) => {
     const start = gesture.current
     gesture.current = null
@@ -217,21 +203,21 @@ export function PlatformCoverShell(props: Props) {
           {game.status !== 'trash' && <span className={`mf-insert-coins is-${cost}`} aria-hidden="true">{Array.from({ length: cost }, (_, index) => <PixelCoin key={index} />)}</span>}
           <b>&gt;&gt;</b>
         </button>
-        {launchError && <p className="mf-launch-error">{launchError}</p>}
+        {launchError && <p className="mf-launch-error mf-ui-meta">{launchError}</p>}
       </div>
 
       {panel && (
-        <section className="mf-platform-panel" role="dialog" aria-modal="true" aria-label={panel === 'info' ? 'Game information' : 'Comments'}>
-          <header className="mf-panel-tabs">
-            <button type="button" className={panel === 'info' ? 'is-active' : ''} onClick={() => onPanel('info')}>INFO</button>
-            <button type="button" className={panel === 'comments' ? 'is-active' : ''} onClick={() => onPanel('comments')}>COMMENTS</button>
-            <button type="button" className="mf-panel-close" onClick={onClosePanel} aria-label="Close"><Icon name="close" /></button>
+        <section className="mf-platform-panel mf-ui-screen" role="dialog" aria-modal="true" aria-label={panel === 'info' ? 'Game information' : 'Comments'}>
+          <header className="mf-panel-tabs mf-ui-tabs">
+            <button type="button" className={`mf-ui-tab mf-ui-label${panel === 'info' ? ' is-active' : ''}`} onClick={() => onPanel('info')}>INFO</button>
+            <button type="button" className={`mf-ui-tab mf-ui-label${panel === 'comments' ? ' is-active' : ''}`} onClick={() => onPanel('comments')}>COMMENTS</button>
+            <button type="button" className="mf-panel-close mf-ui-icon-action" onClick={onClosePanel} aria-label="Close"><Icon name="close" /></button>
           </header>
 
           {panel === 'info' ? (
-            <div className="mf-panel-scroll mf-info-panel">
+            <div className="mf-panel-scroll mf-info-panel mf-ui-scroll">
               <section className="mf-cover-selection">
-                <h2>COVER SELECTION</h2>
+                <h2 className="mf-ui-h3">COVER SELECTION</h2>
                 <div className="mf-cover-grid">
                   {variants.map((variant) => {
                     const unlocked = bestScore >= (variant.unlockScore ?? 0)
@@ -239,7 +225,7 @@ export function PlatformCoverShell(props: Props) {
                     return (
                       <button key={variant.id} type="button" className={`${activeVariant ? 'is-active' : ''}${unlocked ? '' : ' is-locked'}`} onClick={() => selectCover(variant.id, unlocked)} disabled={!unlocked}>
                         {variant.image ? <img src={variant.image} alt="" /> : <span className="mf-cover-fallback">{game.title.slice(0, 2).toUpperCase()}</span>}
-                        {activeVariant && <em>ACTIVE</em>}
+                        {activeVariant && <em className="mf-ui-micro">ACTIVE</em>}
                         {!unlocked && <span className="mf-cover-lock">▣</span>}
                       </button>
                     )
@@ -248,47 +234,47 @@ export function PlatformCoverShell(props: Props) {
               </section>
 
               <section className="mf-game-info-head">
-                <h1>{game.title}</h1>
-                <p>by <strong>{game.author || 'MiniFugg'}</strong></p>
-                <p className="mf-info-description">{game.description}</p>
-                <p className="mf-info-version">Version 0.1 <span>•</span> Last update Sep 6, 2026</p>
+                <h1 className="mf-ui-h1">{game.title}</h1>
+                <p className="mf-ui-meta">by <strong className="mf-ui-player-name mf-ui-label">{game.author || 'MiniFugg'}</strong></p>
+                <p className="mf-info-description mf-ui-body">{game.description}</p>
+                <p className="mf-info-version mf-ui-meta">Version 0.1 <span>•</span> Last update Sep 6, 2026</p>
               </section>
 
               <section className="mf-high-score">
-                <div><span>🏆</span><p>HIGH SCORE<small>Your best score</small><strong>{formatSocialCount(bestScore)}</strong></p></div>
-                <button type="button" onClick={onOpenLeaderboard}>View leaderboard <Icon name="chevron" /></button>
+                <div><span>🏆</span><p className="mf-ui-h3">HIGH SCORE<small className="mf-ui-meta">Your best score</small><strong>{formatSocialCount(bestScore)}</strong></p></div>
+                <button className="mf-ui-action mf-ui-label" type="button" onClick={onOpenLeaderboard}>View leaderboard <Icon name="chevron" /></button>
               </section>
 
               <section className="mf-how-to-play">
-                <h2>HOW TO PLAY</h2>
-                {game.instructions ? <ol>{game.instructions.rules.slice(0, 6).map((rule, index) => <li key={rule}><span>{index + 1}</span>{rule}</li>)}</ol> : <p>Open the game, learn by playing, then chase a better score.</p>}
+                <h2 className="mf-ui-h3">HOW TO PLAY</h2>
+                {game.instructions ? <ol>{game.instructions.rules.slice(0, 6).map((rule, index) => <li className="mf-ui-body" key={rule}><span>{index + 1}</span>{rule}</li>)}</ol> : <p className="mf-ui-body">Open the game, learn by playing, then chase a better score.</p>}
               </section>
 
               <section className="mf-creator-section">
-                <h2>CREATOR</h2>
-                <div className="mf-creator-card"><Avatar nickname={game.author || 'MiniFugg'} role="creator" /><div><strong>{game.author || 'MiniFugg'}</strong><p>Small games. Big thoughts. Tiny experiments built to be played immediately.</p><span>{creatorGames.length} game{creatorGames.length === 1 ? '' : 's'}</span></div></div>
-                <h3>MORE GAMES BY {game.author || 'MINIFUGG'}</h3>
+                <h2 className="mf-ui-h3">CREATOR</h2>
+                <div className="mf-creator-card"><Avatar nickname={game.author || 'MiniFugg'} role="creator" /><div><strong className="mf-ui-player-name mf-ui-label">{game.author || 'MiniFugg'}</strong><p className="mf-ui-body">Small games. Big thoughts. Tiny experiments built to be played immediately.</p><span className="mf-ui-meta">{creatorGames.length} game{creatorGames.length === 1 ? '' : 's'}</span></div></div>
+                <h3 className="mf-ui-h3">MORE GAMES BY {game.author || 'MINIFUGG'}</h3>
                 <div className="mf-creator-grid">
                   {creatorGames.slice(0, creatorLimit).map((creatorGame) => (
                     <article key={creatorGame.id}>
                       {creatorGame.welcome?.variants?.[0]?.image ? <img src={creatorGame.welcome.variants[0].image} alt="" /> : <div className="mf-creator-cover-fallback">{creatorGame.title.slice(0, 2).toUpperCase()}</div>}
-                      <strong>{creatorGame.title}</strong>
+                      <strong className="mf-ui-label">{creatorGame.title}</strong>
                     </article>
                   ))}
                 </div>
-                {creatorLimit < creatorGames.length && <button className="mf-show-more" type="button" onClick={() => setCreatorLimit((value) => value + 20)}>SHOW 20 MORE</button>}
+                {creatorLimit < creatorGames.length && <button className="mf-show-more mf-ui-action mf-ui-label" type="button" onClick={() => setCreatorLimit((value) => value + 20)}>SHOW 20 MORE</button>}
               </section>
             </div>
           ) : (
             <div className="mf-comments-panel">
-              <div className="mf-comments-scroll">
+              <div className="mf-comments-scroll mf-ui-scroll">
                 {threads.map((thread) => <CommentCard key={thread.id} thread={thread} reportedId={reportedId} onReport={(id) => setReportedId((current) => current === id ? '' : id)} />)}
               </div>
               <div className="mf-comment-composer">
                 <Avatar nickname={nickname || 'Player'} role="free" />
                 <input className="mf-comment-nickname" value={nickname} onChange={(event) => onNicknameChange(event.target.value.slice(0, 20))} aria-label="Nickname" maxLength={20} />
-                <textarea value={commentText} onChange={(event) => onCommentTextChange(event.target.value.slice(0, 500))} placeholder="Write a comment…" rows={1} maxLength={500} />
-                <button type="button" onClick={onPostComment} disabled={!nickname.trim() || !commentText.trim()} aria-label="Post comment"><Icon name="send" /></button>
+                <textarea className="mf-ui-field" value={commentText} onChange={(event) => onCommentTextChange(event.target.value.slice(0, 500))} placeholder="Write a comment…" rows={1} maxLength={500} />
+                <button className="mf-ui-icon-action" type="button" onClick={onPostComment} disabled={!nickname.trim() || !commentText.trim()} aria-label="Post comment"><Icon name="send" /></button>
               </div>
             </div>
           )}

@@ -53,10 +53,12 @@ Only the following may change by environment:
 - render pixel density / device pixel ratio;
 - control presentation/mapping (touch vs keyboard/mouse/gamepad);
 - optional Core sidecars outside the canonical stage;
-- decorative overscan outside the canonical stage;
+- decorative overscan outside the canonical stage **but still inside the Core-owned game surface/slot**;
 - safe-area padding outside/around the canonical stage when required by device chrome.
 
 The game mechanic must remain complete without sidecars or overscan.
+
+A game must never paint its own decorative overscan into the browser/window gutters outside the game surface. Those gutters and any future sidecars are Core-owned. If Core caps the desktop game feed/surface, the game stays inside that cap; black or platform-owned space outside it is intentional.
 
 ## 5. Desktop/tablet extra space
 
@@ -71,6 +73,8 @@ On wide screens, Core may use left/right space for optional:
 - discovery/community context.
 
 Do not enlarge the game non-uniformly just to consume every desktop pixel. Do not move canonical controls into sidebars.
+
+The game's own backdrop may fill or overscan its **game surface** so the authored stage does not look like a narrow object floating inside its slot, but it must stop at the game-surface boundary. It must not turn a portrait Fugg into a browser-wide experience on desktop. For decorative backdrops, `cover` + crop is preferred when preserving visual scale matters: narrow screens may lose non-critical left/right decoration rather than shrinking the backdrop with `contain`. Gameplay geometry still uses the fixed logical stage and uniform FIT.
 
 ## 6. Phaser implementation
 

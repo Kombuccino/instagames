@@ -11,7 +11,7 @@ import {
 
 export const musicCatalog = {
   ...coreCatalog,
-  version: 10,
+  version: 11,
   compositions: [
     ...coreCatalog.compositions,
     {
@@ -37,8 +37,8 @@ export const musicCatalog = {
       name: 'Quick Sum Bounce',
       status: 'candidate',
       createdAt: '2026-09-06',
-      summary: 'Alternative joueuse réécrite autour d’une progression Am–F–C–G / Am–F–Dm–E : le kick, le rim-clap et la basse rebondissante restent, tandis qu’une question et une réponse mélodiques alternent sans superposition ni notes étrangères aux accords.',
-      concept: ['quick mental calculation', 'syncopated bounce', 'two-bar call and response', 'playful not childish', 'short-session loop'],
+      summary: 'Alternative joueuse réduite à son meilleur noyau : kick rond, rim-clap, ticks de contretemps et basse rebondissante sur Am–F–C–G / Am–F–Dm–E. Les deux voix mélodiques rejetées ont été retirées du mix canonique.',
+      concept: ['quick mental calculation', 'syncopated four-track groove', 'percussion and bass only', 'playful not childish', 'short-session loop'],
       key: 'A minor',
       meter: '4/4',
       loopBeats: LINEFUGG_SHORT_LOOP_BEATS,

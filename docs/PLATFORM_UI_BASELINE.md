@@ -25,7 +25,7 @@ Do not substitute another generated board because it also contains a low-poly sc
 
 Some functional cover details were explicitly refined and validated after the canonical board. Those later decisions remain valid and must be merged into the canonical visual language without redesigning that language:
 
-- authored cover fills the entire viewport;
+- authored cover fills the entire canonical central viewport;
 - coin balance at top-right;
 - left action rail directly over artwork with no permanent icon backgrounds;
 - actions: Info, Like, Comments, Bookmark, Share;
@@ -36,6 +36,16 @@ Some functional cover details were explicitly refined and validated after the ca
 - Like / Bookmark may have restrained active states.
 
 If the old concept board and a later explicit user validation conflict on one of these functional details, keep the later explicit decision **while preserving the canonical board's typography, density, spacing, panel treatment and overall restraint**.
+
+## Canonical central viewport — mandatory sizing invariant
+
+The mobile composition is the complete reference MiniFugg experience.
+
+On phone, tablet, browser, Electron desktop/Steam or other wrappers, the **central canonical composition keeps the same internal geometry**. It may be uniformly larger or smaller, but Core must not move its layers/buttons/game merely because the screen is wider.
+
+On wide screens, leftover left/right space may be used for optional Core sidecars such as leaderboard, comments, creator/profile context or session stats. These sidecars are additive. Removing them must reveal the same complete central mobile experience.
+
+The same invariant applies to game stages and advanced animated covers. See `docs/GAME_ENGINE_ARCHITECTURE.md` and `docs/GAME_LAYOUT_SYSTEM.md`.
 
 ## Canonical Side Panel / Gameplay language
 
@@ -64,7 +74,8 @@ Do not:
 - invent a new generic dark gaming dashboard for every component;
 - add neon cyan outlines, heavy glow, glassmorphism, oversized pills or arcade UI merely because MiniFugg contains games;
 - redesign typography, iconography, panels, cover art and interaction model simultaneously when only one component is being studied;
-- reinterpret the canonical reference from memory when the exact image is available.
+- reinterpret the canonical reference from memory when the exact image is available;
+- create a separate desktop composition by moving the canonical mobile controls/layers into new positions.
 
 ## Next Info / Comments study
 
@@ -75,6 +86,7 @@ The next study must:
 3. merge only the already validated cover controls listed above;
 4. refine panel opening/closing, Info content hierarchy, Comments state and transitions;
 5. preserve the cover as the dominant visual object;
-6. avoid App Store, social-dashboard and gaming-dashboard conventions.
+6. avoid App Store, social-dashboard and gaming-dashboard conventions;
+7. treat desktop side space as optional additive sidecar space rather than reflowing the mobile center.
 
 Until the user explicitly validates a new derivative, the canonical board remains the source of truth.

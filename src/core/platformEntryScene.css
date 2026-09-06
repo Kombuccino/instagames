@@ -26,19 +26,36 @@
 
 .mf-entry-scene__city {
   position: absolute;
-  inset: 0;
+  inset: -3% -7% -2%;
   overflow: hidden;
   background: linear-gradient(180deg, #a8c9ed 0 20%, #efbd83 55%, #bd9274 100%);
   transition: opacity 420ms ease 120ms;
 }
 
+/*
+ * The carriage recedes towards the upper-right of the authored artwork.
+ * Project the scrolling panorama onto the same shallow perspective plane:
+ * the near left side reads larger while the far right side compresses.
+ */
+.mf-entry-scene__city-plane {
+  position: absolute;
+  left: -9%;
+  top: -4%;
+  width: 121%;
+  height: 59%;
+  overflow: hidden;
+  transform-origin: 50% 50%;
+  transform: perspective(1050px) rotateY(18deg) scaleX(1.055) scaleY(1.04);
+  will-change: transform;
+}
+
 .mf-entry-scene__city-track {
   position: absolute;
-  top: -1%;
-  left: 0;
+  top: -7%;
+  left: -4%;
   display: flex;
   width: max-content;
-  height: 51%;
+  height: 114%;
   will-change: transform;
   animation: mf-entry-city-loop 27s linear infinite;
 }
@@ -49,6 +66,7 @@
   width: auto;
   height: 100%;
   max-width: none;
+  image-rendering: auto;
   -webkit-user-drag: none;
 }
 
@@ -63,16 +81,23 @@
 .mf-entry-scene__wagon,
 .mf-entry-scene__arm {
   position: absolute;
-  inset: 0;
   display: block;
-  width: 100%;
-  height: 100%;
   object-fit: fill;
+  image-rendering: auto;
   -webkit-user-drag: none;
 }
 
+/*
+ * Small overscan prevents the transparent source canvas from exposing a seam
+ * when the carriage shifts. The source aspect ratio is preserved closely.
+ */
 .mf-entry-scene__wagon {
   z-index: 2;
+  left: -6px;
+  top: -11px;
+  width: calc(100% + 12px);
+  height: calc(100% + 22px);
+  filter: none;
   transition: opacity 420ms ease 100ms, transform 680ms cubic-bezier(.2,.76,.18,1);
 }
 
@@ -82,11 +107,14 @@
   z-index: 3;
   transform-origin: 47% 76%;
   will-change: transform;
-  animation: mf-entry-hand-breathe 3.9s ease-in-out infinite;
+  animation: mf-entry-hand-breathe 4.15s ease-in-out infinite;
 }
 
 .mf-entry-scene__arm {
   z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   transition: opacity 360ms ease 130ms, transform 680ms cubic-bezier(.2,.76,.18,1);
 }
 
@@ -212,21 +240,23 @@
   to { transform: translate3d(-50%,0,0); }
 }
 
+/* Integer-pixel translation keeps the raster noticeably crisper than tiny rotations/sub-pixel moves. */
 @keyframes mf-entry-carriage-motion {
-  0%, 100% { transform: translate3d(0,0,0) rotate(0deg); }
-  17% { transform: translate3d(.5px,-1.1px,0) rotate(.045deg); }
-  34% { transform: translate3d(-.7px,.7px,0) rotate(-.04deg); }
-  51% { transform: translate3d(.6px,-.4px,0) rotate(.035deg); }
-  65% { transform: translate3d(-.25px,.8px,0) rotate(-.025deg); }
-  78% { transform: translate3d(.35px,-.65px,0) rotate(.03deg); }
-  82% { transform: translate3d(-1.6px,1.8px,0) rotate(-.12deg); }
-  83.5% { transform: translate3d(1.2px,-1px,0) rotate(.09deg); }
-  85% { transform: translate3d(-.2px,.25px,0) rotate(-.015deg); }
+  0%, 100% { transform: translate3d(0,0,0); }
+  17% { transform: translate3d(0,-1px,0); }
+  34% { transform: translate3d(-1px,1px,0); }
+  51% { transform: translate3d(1px,0,0); }
+  65% { transform: translate3d(0,1px,0); }
+  78% { transform: translate3d(0,-1px,0); }
+  82% { transform: translate3d(-2px,2px,0); }
+  83.5% { transform: translate3d(1px,-1px,0); }
+  85% { transform: translate3d(0,0,0); }
 }
 
+/* The arm now sits lower and about 9% smaller while keeping phone + DOM locked together. */
 @keyframes mf-entry-hand-breathe {
-  0%, 100% { transform: translate3d(0,0,0) rotate(0deg); }
-  50% { transform: translate3d(.6px,-1.25px,0) rotate(.055deg); }
+  0%, 100% { transform: translate3d(6px,42px,0) scale(.91); }
+  50% { transform: translate3d(6px,44px,0) scale(.91); }
 }
 
 @keyframes mf-entry-tap-pulse {
@@ -245,12 +275,23 @@
   }
 }
 
+@media (max-height: 720px) {
+  @keyframes mf-entry-hand-breathe {
+    0%, 100% { transform: translate3d(5px,32px,0) scale(.91); }
+    50% { transform: translate3d(5px,34px,0) scale(.91); }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .mf-entry-scene__city-track,
   .mf-entry-scene__carriage,
   .mf-entry-scene__hand-group,
   .mf-entry-scene__phone-ui strong {
     animation: none;
+  }
+
+  .mf-entry-scene__hand-group {
+    transform: translate3d(6px,42px,0) scale(.91);
   }
 
   .mf-entry-scene__stage,

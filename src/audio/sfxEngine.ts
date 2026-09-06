@@ -1,14 +1,15 @@
+import { coreAudio, AudioVoice, rememberAudioSource, type AudioBus } from './coreAudioManager'
 import { gameSfxPalettes, sfxCatalog, type SfxDefinition, type SfxEvent, type SfxTransform } from './sfxCatalog'
 
-type PlayOptions = {
+export type PlayOptions = {
+  bus?: AudioBus
+  owner?: string
   intensity?: number
   transform?: SfxTransform
   brightness?: number
   ignoreCooldown?: boolean
 }
 
-let context: AudioContext | null = null
-let output: GainNode | null = null
 let noise: AudioBuffer | null = null
 const lastPlayed = new Map<string, number>()
 
@@ -25,34 +26,6 @@ function noiseBuffer(audio: AudioContext) {
     data[index] = previous
   }
   return buffer
-}
-
-async function ensureAudio() {
-  if (!context) {
-    context = new AudioContext({ latencyHint: 'interactive' })
-    output = context.createGain()
-    const lowpass = context.createBiquadFilter()
-    const compressor = context.createDynamicsCompressor()
-
-    output.gain.value = .58
-    lowpass.type = 'lowpass'
-    lowpass.frequency.value = 9000
-    lowpass.Q.value = .18
-    compressor.threshold.value = -18
-    compressor.knee.value = 9
-    compressor.ratio.value = 3
-    compressor.attack.value = .004
-    compressor.release.value = .11
-
-    output.connect(lowpass).connect(compressor).connect(context.destination)
-    noise = noiseBuffer(context)
-  }
-
-  if (context.state === 'suspended') {
-    try { await context.resume() } catch { /* browser still waiting for a user gesture */ }
-  }
-
-  return context
 }
 
 function mergeTransform(base?: SfxTransform, extra?: SfxTransform): Required<SfxTransform> {
@@ -86,7 +59,7 @@ function brightnessFactor(brightness: number) {
 
 function scheduleTone(
   audio: AudioContext,
-  destination: AudioNode,
+  voice: AudioVoice,
   definition: SfxDefinition,
   step: Extract<SfxDefinition['steps'][number], { type: 'tone' }>,
   origin: number,
@@ -118,16 +91,17 @@ function scheduleTone(
   gain.gain.setValueAtTime(level, Math.max(start + .008, end - .018))
   gain.gain.exponentialRampToValueAtTime(.0001, end)
 
-  oscillator.connect(gain).connect(filter).connect(destination)
+  oscillator.connect(gain).connect(filter).connect(voice.output)
   oscillator.start(start)
   oscillator.stop(end + .02)
+  rememberAudioSource(voice.sources, oscillator, [gain, filter])
 
   void definition
 }
 
 function scheduleNoise(
   audio: AudioContext,
-  destination: AudioNode,
+  voice: AudioVoice,
   buffer: AudioBuffer,
   step: Extract<SfxDefinition['steps'][number], { type: 'noise' }>,
   origin: number,
@@ -151,32 +125,41 @@ function scheduleNoise(
   gain.gain.setValueAtTime(level, start)
   gain.gain.exponentialRampToValueAtTime(.0001, start + duration)
 
-  source.connect(filter).connect(gain).connect(destination)
+  source.connect(filter).connect(gain).connect(voice.output)
   source.start(start)
   source.stop(start + duration + .02)
+  rememberAudioSource(voice.sources, source, [filter, gain])
 }
 
-async function playDefinition(definition: SfxDefinition, options: PlayOptions = {}) {
-  if (!shouldPlay(definition, options.ignoreCooldown ?? false)) return false
-  const audio = await ensureAudio()
-  if (!output || !noise || audio.state !== 'running') return false
+export function stopGameSfx(owner: string) {
+  coreAudio.stopEffects(owner)
+}
 
+function playDefinition(definition: SfxDefinition, options: PlayOptions = {}) {
+  // Transients are dropped while blocked, never replayed as a burst on unlock.
+  void coreAudio.unlock()
+  const state = coreAudio.getSnapshot()
+  if (state.contextState !== 'running' || state.hidden || state.suspended) return Promise.resolve(false)
+  if (!shouldPlay(definition, options.ignoreCooldown ?? false)) return Promise.resolve(false)
+  const audio = coreAudio.getContext()
+  noise ??= noiseBuffer(audio)
   const intensity = clamp(options.intensity ?? 1, .45, 1.35)
   const transform = mergeTransform(undefined, options.transform)
   const brightness = clamp(options.brightness ?? 0, -100, 100)
-  const origin = audio.currentTime + .004
-
-  definition.steps.forEach((step) => {
-    if (step.type === 'tone') scheduleTone(audio, output!, definition, step, origin, intensity, transform, brightness)
-    else scheduleNoise(audio, output!, noise!, step, origin, intensity, transform, brightness)
-  })
-
-  return true
+  const origin = audio.currentTime + .006
+  const duration = Math.max(.1, ...definition.steps.map(step => step.at + step.duration * transform.duration)) + .05
+  return Promise.resolve(coreAudio.playEffect(options.bus ?? 'SFX', duration, voice => {
+    definition.steps.forEach(step => {
+      if (step.type === 'tone') scheduleTone(audio, voice, definition, step, origin, intensity, transform, brightness)
+      else scheduleNoise(audio, voice, noise!, step, origin, intensity, transform, brightness)
+    })
+  }, options.owner))
 }
 
-export async function unlockSfxAudio() {
-  const audio = await ensureAudio()
-  return audio.state === 'running'
+export function unlockSfxAudio() { return coreAudio.unlock() }
+
+export function playUi(key: string, options: PlayOptions = {}) {
+  return playMiniFuggSfx(key, { ...options, bus: 'UI' })
 }
 
 export function playMiniFuggSfx(key: string, options: PlayOptions = {}) {
@@ -194,6 +177,7 @@ export function playGameSfx(gameId: string, event: SfxEvent, options: PlayOption
 
   return playDefinition(definition, {
     ...options,
+    owner: options.owner ?? gameId,
     transform: mergeTransform(palette.accent, options.transform),
   })
 }

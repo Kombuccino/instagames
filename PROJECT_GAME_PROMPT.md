@@ -8,6 +8,8 @@ Before touching game code, read the latest `main` versions of:
 
 - `AGENTS.md`
 - `GAME_DEV_SPEC.md`
+- `docs/AUDIO_SYSTEM.md` — Core owns the single audio context; games use semantic
+  music/SFX APIs, and Phaser audio is disabled. No local contexts or unlock listeners.
 - `docs/GAME_ENGINE_ARCHITECTURE.md`
 - `docs/GAME_MIGRATION_PLAN.md`
 - `docs/GAME_LAYOUT_SYSTEM.md`

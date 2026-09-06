@@ -1,5 +1,5 @@
 import { useEffect, useRef, type RefObject } from 'react'
-import { playGameSfx, unlockSfxAudio } from '../../audio/sfxEngine'
+import { playGameSfx, stopGameSfx } from '../../audio/sfxEngine'
 
 const GAME_ID = 'tetramindfck'
 
@@ -32,6 +32,7 @@ export function useTetraMindFckSfx({ rootRef, armed, playing, runFinished, resta
   const failPlayedRef = useRef(false)
   const armedRef = useRef(armed)
   const playingRef = useRef(playing)
+  const bonusTimersRef = useRef(new Set<number>())
 
   useEffect(() => { armedRef.current = armed }, [armed])
   useEffect(() => { playingRef.current = playing }, [playing])
@@ -44,20 +45,14 @@ export function useTetraMindFckSfx({ rootRef, armed, playing, runFinished, resta
   }, [restartToken])
 
   useEffect(() => {
-    const unlock = () => {
-      if (armedRef.current) void unlockSfxAudio()
-    }
-    window.addEventListener('pointerdown', unlock, true)
-    window.addEventListener('pointerup', unlock, true)
-    window.addEventListener('keydown', unlock, true)
-    window.addEventListener('wheel', unlock, { capture: true, passive: true })
+    if (!playing) stopGameSfx(GAME_ID)
     return () => {
-      window.removeEventListener('pointerdown', unlock, true)
-      window.removeEventListener('pointerup', unlock, true)
-      window.removeEventListener('keydown', unlock, true)
-      window.removeEventListener('wheel', unlock, true)
+      playingRef.current = false
+      bonusTimersRef.current.forEach(timer => window.clearTimeout(timer))
+      bonusTimersRef.current.clear()
+      stopGameSfx(GAME_ID)
     }
-  }, [])
+  }, [playing])
 
   useEffect(() => {
     const root = rootRef.current
@@ -111,7 +106,11 @@ export function useTetraMindFckSfx({ rootRef, armed, playing, runFinished, resta
       if (newClearRows > 0) {
         void playGameSfx(GAME_ID, 'calculate', { intensity: Math.min(1.25, .82 + newClearRows * .12) })
         if (newClearRows >= 2 || hasBonusTile) {
-          window.setTimeout(() => { if (playingRef.current) void playGameSfx(GAME_ID, 'bonus') }, 135)
+          const timer = window.setTimeout(() => {
+            bonusTimersRef.current.delete(timer)
+            if (playingRef.current) void playGameSfx(GAME_ID, 'bonus')
+          }, 135)
+          bonusTimersRef.current.add(timer)
         }
       }
       if (hasBigImpact) void playGameSfx(GAME_ID, 'bigImpact', { intensity: 1.05 })

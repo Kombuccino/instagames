@@ -1,3 +1,4 @@
+import { coreAudio } from './audio/coreAudioManager'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
@@ -6,6 +7,8 @@ import './core/platformUi.css'
 import './core/orientation.css'
 import './core/gameLayout.css'
 import './core/platformGameLoop.css'
+
+coreAudio.install()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

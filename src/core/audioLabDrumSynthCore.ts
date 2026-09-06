@@ -1,3 +1,4 @@
+import { rememberAudioSource } from '../audio/coreAudioManager'
 type SourceNode = OscillatorNode | AudioBufferSourceNode
 
 type EnhancedDrumInput = {
@@ -37,13 +38,8 @@ function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value))
 }
 
-function remember(node: SourceNode, sources?: SourceNode[]) {
-  if (!sources) return
-  sources.push(node)
-  node.addEventListener('ended', () => {
-    const index = sources.indexOf(node)
-    if (index >= 0) sources.splice(index, 1)
-  }, { once: true })
+function remember(node: SourceNode, sources: SourceNode[] | undefined, nodes: AudioNode[]) {
+  rememberAudioSource(sources ?? [], node, nodes)
 }
 
 function makeNoiseSource(context: BaseAudioContext, noise: AudioBuffer) {
@@ -71,7 +67,7 @@ function scheduleKick(input: EnhancedDrumInput) {
   body.connect(bodyGain).connect(output)
   body.start(start)
   body.stop(start + duration + .02)
-  remember(body, sources)
+  remember(body, sources, [bodyGain])
 
   const click = makeNoiseSource(context, noise)
   const clickHigh = context.createBiquadFilter()
@@ -86,7 +82,7 @@ function scheduleKick(input: EnhancedDrumInput) {
   click.connect(clickHigh).connect(clickLow).connect(clickGain).connect(output)
   click.start(start)
   click.stop(start + .04)
-  remember(click, sources)
+  remember(click, sources, [clickHigh, clickLow, clickGain])
 }
 
 function scheduleSoftKick(input: EnhancedDrumInput) {
@@ -104,7 +100,7 @@ function scheduleSoftKick(input: EnhancedDrumInput) {
   body.connect(gain).connect(output)
   body.start(start)
   body.stop(start + duration + .02)
-  remember(body, sources)
+  remember(body, sources, [gain])
 }
 
 function scheduleSnare(input: EnhancedDrumInput) {
@@ -127,7 +123,7 @@ function scheduleSnare(input: EnhancedDrumInput) {
   noiseSource.connect(high).connect(body).connect(noiseGain).connect(output)
   noiseSource.start(start)
   noiseSource.stop(start + duration + .02)
-  remember(noiseSource, sources)
+  remember(noiseSource, sources, [high, body, noiseGain])
 
   const tone = context.createOscillator()
   const toneGain = context.createGain()
@@ -139,7 +135,7 @@ function scheduleSnare(input: EnhancedDrumInput) {
   tone.connect(toneGain).connect(output)
   tone.start(start)
   tone.stop(start + Math.min(.15, duration) + .02)
-  remember(tone, sources)
+  remember(tone, sources, [toneGain])
 }
 
 function scheduleBrushSnare(input: EnhancedDrumInput) {
@@ -160,7 +156,7 @@ function scheduleBrushSnare(input: EnhancedDrumInput) {
   source.connect(high).connect(low).connect(gain).connect(output)
   source.start(start)
   source.stop(start + duration + .02)
-  remember(source, sources)
+  remember(source, sources, [high, low, gain])
 }
 
 function scheduleHat(input: EnhancedDrumInput) {
@@ -186,7 +182,7 @@ function scheduleHat(input: EnhancedDrumInput) {
   source.connect(high).connect(band).connect(gain).connect(output)
   source.start(start)
   source.stop(start + duration + .02)
-  remember(source, sources)
+  remember(source, sources, [high, band, gain])
 }
 
 function scheduleShaker(input: EnhancedDrumInput) {
@@ -207,7 +203,7 @@ function scheduleShaker(input: EnhancedDrumInput) {
   source.connect(high).connect(band).connect(gain).connect(output)
   source.start(start)
   source.stop(start + duration + .02)
-  remember(source, sources)
+  remember(source, sources, [high, band, gain])
 }
 
 function scheduleTom(input: EnhancedDrumInput) {
@@ -228,7 +224,7 @@ function scheduleTom(input: EnhancedDrumInput) {
   oscillator.connect(gain).connect(output)
   oscillator.start(start)
   oscillator.stop(start + duration + .02)
-  remember(oscillator, sources)
+  remember(oscillator, sources, [gain])
 
   const attack = makeNoiseSource(context, noise)
   const filter = context.createBiquadFilter()
@@ -241,7 +237,7 @@ function scheduleTom(input: EnhancedDrumInput) {
   attack.connect(filter).connect(attackGain).connect(output)
   attack.start(start)
   attack.stop(start + .035)
-  remember(attack, sources)
+  remember(attack, sources, [filter, attackGain])
 }
 
 function scheduleExplosion(input: EnhancedDrumInput) {
@@ -260,7 +256,7 @@ function scheduleExplosion(input: EnhancedDrumInput) {
   boom.connect(boomGain).connect(output)
   boom.start(start)
   boom.stop(start + duration + .03)
-  remember(boom, sources)
+  remember(boom, sources, [boomGain])
 
   const blast = makeNoiseSource(context, noise)
   const low = context.createBiquadFilter()
@@ -275,7 +271,7 @@ function scheduleExplosion(input: EnhancedDrumInput) {
   blast.connect(high).connect(low).connect(blastGain).connect(output)
   blast.start(start)
   blast.stop(start + duration + .02)
-  remember(blast, sources)
+  remember(blast, sources, [high, low, blastGain])
 }
 
 function scheduleBubblePop(input: EnhancedDrumInput) {
@@ -294,7 +290,7 @@ function scheduleBubblePop(input: EnhancedDrumInput) {
   oscillator.connect(gain).connect(output)
   oscillator.start(start)
   oscillator.stop(start + duration + .02)
-  remember(oscillator, sources)
+  remember(oscillator, sources, [gain])
 }
 
 function scheduleRailJoint(input: EnhancedDrumInput) {
@@ -320,7 +316,7 @@ function scheduleRailJoint(input: EnhancedDrumInput) {
   strike.connect(high).connect(band).connect(low).connect(strikeGain).connect(output)
   strike.start(start)
   strike.stop(start + duration + .02)
-  remember(strike, sources)
+  remember(strike, sources, [high, band, low, strikeGain])
 
   const ring = context.createOscillator()
   const ringGain = context.createGain()
@@ -332,7 +328,7 @@ function scheduleRailJoint(input: EnhancedDrumInput) {
   ring.connect(ringGain).connect(output)
   ring.start(start)
   ring.stop(start + duration + .02)
-  remember(ring, sources)
+  remember(ring, sources, [ringGain])
 
   if (tang) {
     const body = context.createOscillator()
@@ -345,7 +341,7 @@ function scheduleRailJoint(input: EnhancedDrumInput) {
     body.connect(bodyGain).connect(output)
     body.start(start)
     body.stop(start + Math.min(.15, duration + .05))
-    remember(body, sources)
+    remember(body, sources, [bodyGain])
   }
 }
 

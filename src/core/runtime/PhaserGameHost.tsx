@@ -43,6 +43,7 @@ export function PhaserGameHost({
 
     const game = new Phaser.Game({
       type: Phaser.AUTO,
+      audio: { noAudio: true },
       parent,
       width: logicalViewport.width,
       height: logicalViewport.height,

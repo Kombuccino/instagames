@@ -145,6 +145,10 @@ A different control device may change visible controls or affordances. It must n
 
 ## 8. Runtime lifecycle
 
+Audio is Core-owned across React, Phaser and Three.js: read `AUDIO_SYSTEM.md`.
+Phaser hosts use `audio: { noAudio: true }`. Games request music/SFX through the
+shared facade and must not create, suspend or close local audio contexts.
+
 Every game still obeys `GameComponentProps` and the shared MiniFugg session contract.
 
 When `active` becomes false, expensive engine work and audio must pause. On unmount, destroy engine instances and release listeners/resources. `restartToken` restarts a run. Finished runs report through `session.finish(...)`.

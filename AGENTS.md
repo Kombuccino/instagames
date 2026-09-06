@@ -2,6 +2,8 @@
 
 This file is authoritative for any AI or developer modifying `Kombuccino/instagames`.
 
+For project history, product intent and the current DOM/CSS/Canvas → Phaser transition context, also read root `codex.md`. `codex.md` is an onboarding/handoff document; when it conflicts with a newer normative file, the normative file wins.
+
 ## 1. Read before editing
 
 For any game work, read the latest `main` versions of:

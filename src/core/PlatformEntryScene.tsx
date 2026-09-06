@@ -8,7 +8,9 @@ import {
   type WheelEvent as ReactWheelEvent,
 } from 'react'
 import { PerspectiveTextureCanvas } from './graphics/PerspectiveTextureCanvas'
+import { ProjectiveDomSurface } from './graphics/ProjectiveDomSurface'
 import './platformEntryScene.css'
+import './phoneProjectiveSurface.css'
 
 type PlatformEntrySceneProps = {
   onLaunch: () => void
@@ -29,6 +31,18 @@ const CITY_ART = `${ASSET_ROOT}/city-loop-sunset.png`
 const LOGO_ART = '/assets/imported/platform/logo/minifugg-logo-canonical-2026-09-06.png'
 const ARM_VARIANTS = Array.from({ length: 8 }, (_, index) => `${ASSET_ROOT}/arms/arm-${String(index + 1).padStart(2, '0')}.png`)
 const ARM_STORAGE_KEY = 'minifugg:entry-arm:v1'
+
+/*
+ * Measured against the locked 941x1672 arm artwork. Order is
+ * top-left, top-right, bottom-right, bottom-left, in stage fractions.
+ * The reusable ProjectiveDomSurface maps the live DOM onto this exact quad.
+ */
+const PHONE_SCREEN_QUAD = [
+  [0.3348, 0.2955],
+  [0.6111, 0.3020],
+  [0.5484, 0.6513],
+  [0.2678, 0.6376],
+] as const
 
 function chooseArm() {
   if (typeof window === 'undefined') return ARM_VARIANTS[0]
@@ -150,12 +164,16 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
 
         <div className="mf-entry-scene__hand-group" aria-hidden="true">
           <img className="mf-entry-scene__arm" src={arm} alt="" draggable={false} decoding="sync" fetchPriority="high" />
-          <div className="mf-entry-scene__phone-ui">
+          <ProjectiveDomSurface
+            className="mf-entry-scene__phone-projective"
+            planeClassName="mf-entry-scene__phone-ui"
+            quad={PHONE_SCREEN_QUAD}
+          >
             <div className="mf-entry-scene__phone-content">
               <img className="mf-entry-scene__phone-logo" src={LOGO_ART} alt="" draggable={false} />
               <strong>Tap to play</strong>
             </div>
-          </div>
+          </ProjectiveDomSurface>
         </div>
 
         <span className="mf-entry-scene__flash" aria-hidden="true" />

@@ -19,6 +19,11 @@ export default function App() {
   const [entered, setEntered] = useState(() => opensDirectlyOnAGame())
 
   if (opensMusicLab()) return <MusicLab />
-  if (!entered) return <PlatformEntryScene onLaunch={() => setEntered(true)} />
-  return <GameFeed games={gameRegistry} />
+
+  return (
+    <>
+      <GameFeed games={gameRegistry} />
+      {!entered && <PlatformEntryScene onLaunch={() => setEntered(true)} />}
+    </>
+  )
 }

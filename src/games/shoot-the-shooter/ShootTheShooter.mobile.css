@@ -1,0 +1,93 @@
+.sts-aim {
+  width: 46px;
+  height: 46px;
+  border-width: 2px;
+  box-shadow:
+    0 0 0 4px rgba(0,0,0,.34),
+    0 0 24px rgba(255,255,255,.28);
+}
+
+.sts-aim::before { width: 58px; }
+.sts-aim::after { height: 58px; }
+.sts-aim span { width: 8px; height: 8px; }
+
+.sts-hand {
+  top: auto;
+  bottom: 1px;
+  width: 78px;
+  height: 78px;
+  transform: translateX(-50%);
+  transition: left 110ms ease-out;
+}
+
+.sts-hand-emoji {
+  left: 50%;
+  top: 58%;
+  font-size: clamp(54px, 15vw, 70px);
+  transform: translate(-50%, -50%) rotate(-83deg) scaleX(-1);
+  transform-origin: 62% 58%;
+  animation: sts-hand-below-idle 1.7s ease-in-out infinite alternate;
+}
+
+.sts-hand.is-grabbing {
+  animation: none;
+}
+
+.sts-hand.is-grabbing .sts-hand-emoji {
+  animation: sts-hand-below-grab .68s cubic-bezier(.16,.82,.2,1) both;
+}
+
+.sts-grabbed {
+  animation: sts-glass-to-below-hand .68s cubic-bezier(.16,.78,.14,1) both;
+}
+
+@keyframes sts-hand-below-idle {
+  from { transform: translate(-50%, -46%) rotate(-86deg) scaleX(-1); }
+  to { transform: translate(-50%, -54%) rotate(-80deg) scaleX(-1); }
+}
+
+@keyframes sts-hand-below-grab {
+  0% { transform: translate(-50%, -48%) rotate(-83deg) scaleX(-1) scale(1); }
+  34% { transform: translate(-50%, -118%) rotate(-72deg) scaleX(-1) scale(1.04); }
+  56% { transform: translate(-50%, -132%) rotate(-68deg) scaleX(-1) scale(1.05); }
+  78% { transform: translate(-50%, -78%) rotate(-88deg) scaleX(-1) scale(1.08); }
+  100% { transform: translate(-50%, -50%) rotate(-91deg) scaleX(-1) scale(1); }
+}
+
+@keyframes sts-glass-to-below-hand {
+  0% { transform: translate(-50%, -50%) scale(.96) rotate(0deg); opacity: 1; }
+  38% { transform: translate(-50%, -12%) scale(1.02) rotate(-4deg); opacity: 1; }
+  58% { transform: translate(-50%, 2%) scale(1.08) rotate(-7deg); opacity: 1; }
+  100% { transform: translate(-50%, -78%) scale(2.9) rotate(-13deg); opacity: 0; }
+}
+
+@media (max-width: 430px) {
+  .sts-track {
+    min-height: 194px;
+  }
+
+  .sts-aim {
+    width: 48px;
+    height: 48px;
+  }
+
+  .sts-hand {
+    bottom: 0;
+    width: 72px;
+    height: 74px;
+  }
+
+  .sts-hand-emoji {
+    font-size: clamp(52px, 16vw, 66px);
+  }
+}
+
+@media (max-height: 710px) {
+  .sts-track {
+    min-height: 172px;
+  }
+
+  .sts-hand {
+    height: 68px;
+  }
+}

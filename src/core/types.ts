@@ -4,7 +4,6 @@ export type GameLeaderboardPeriod = 'daily' | 'weekly' | 'global'
 export type GameLeaderboardSort = 'desc' | 'asc'
 export type GameOrientation = 'portrait' | 'landscape' | 'both'
 export type GameCurationStatus = 'fugg' | 'beta' | 'trash'
-export type FeedPreference = 'fugg' | 'beta' | 'all'
 
 export type GameWelcomeLayerRole = 'background' | 'midground' | 'foreground' | 'overlay'
 export type GameWelcomeMotionType = 'none' | 'float' | 'vibrate' | 'breathe' | 'drift' | 'sway'
@@ -31,9 +30,8 @@ export type GameWelcomeLayerFx = {
 export type GameWelcomeLayer = {
   /** Repository-served raster asset. Production layers must come through the Drive asset pipeline. */
   image: string
-  /** Controls the movement depth. The role also defines sensible default stacking and motion. */
+  /** Controls movement depth and default stacking. */
   role: GameWelcomeLayerRole
-  /** Optional object-position override; keep matching layers aligned when possible. */
   objectPosition?: string
   /** Layer scale in percent. 100 means the authored canvas size. */
   scale?: number
@@ -55,12 +53,8 @@ export type GameWelcomeVariant = {
   label: string
   image: string
   unlockScore?: number
-  /** Optional object-position override for crop-safe responsive rendering. */
   objectPosition?: string
-  /**
-   * Real raster layers used for parallax. When present, these replace the flat poster at runtime.
-   * Do not fake important parallax objects with CSS geometry.
-   */
+  /** Real raster layers for parallax. Important visual objects must remain raster assets. */
   layers?: GameWelcomeLayer[]
 }
 
@@ -68,15 +62,12 @@ export type GameWelcomeConfig = {
   variants: GameWelcomeVariant[]
   /** Stable per-feed-slot rotation among unlocked covers. */
   selection?: 'seeded' | 'first'
-  /** Enables subtle image movement/light effects; never required for gameplay. */
   motion?: 'subtle' | 'none'
 }
 
 export type GameLeaderboardConfig = {
   enabled: true
   periods?: GameLeaderboardPeriod[]
-  /** Legacy single-period setting. Prefer periods. */
-  scope?: 'daily' | 'global'
   sort?: GameLeaderboardSort
   limit?: number
 }
@@ -120,11 +111,9 @@ export type InstagameDefinition = {
   title: string
   description: string
   author?: string
-  /** Developer-selected curation tier. Defaults to fugg for legacy games. */
-  status?: GameCurationStatus
-  /** Preferred gameplay orientation. Core remains responsive in both directions. */
-  orientation?: GameOrientation
-  /** Premium collectible intro art. Reserved for curated Fugg games. */
+  status: GameCurationStatus
+  orientation: GameOrientation
+  /** Core-owned discovery cover configuration. Games must not render their own cover/welcome UI. */
   welcome?: GameWelcomeConfig
   component: ComponentType<GameComponentProps>
   instructions?: GameInstructions

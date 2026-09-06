@@ -1,0 +1,425 @@
+:root {
+  --mf-ui-bg: #101416;
+  --mf-ui-surface: #111619;
+  --mf-ui-surface-raised: #171c1f;
+  --mf-ui-surface-soft: rgba(255, 255, 255, .035);
+  --mf-ui-text: #f7f7f4;
+  --mf-ui-text-muted: rgba(255, 255, 255, .58);
+  --mf-ui-text-faint: rgba(255, 255, 255, .42);
+  --mf-ui-line: rgba(255, 255, 255, .15);
+  --mf-ui-line-strong: rgba(255, 255, 255, .28);
+  --mf-ui-accent: #ff3b3b;
+  --mf-ui-coin: #ffcc26;
+  --mf-ui-coin-dark: #5d4a17;
+  --mf-ui-success: #79d6a0;
+  --mf-ui-danger: #ff625a;
+
+  --mf-ui-type-display: clamp(44px, 12vw, 64px);
+  --mf-ui-type-h1: 26px;
+  --mf-ui-type-h2: 17px;
+  --mf-ui-type-h3: 11px;
+  --mf-ui-type-body: 13px;
+  --mf-ui-type-label: 12px;
+  --mf-ui-type-meta: 10px;
+  --mf-ui-type-micro: 9px;
+
+  --mf-ui-weight-normal: 450;
+  --mf-ui-weight-medium: 600;
+  --mf-ui-weight-strong: 760;
+  --mf-ui-weight-heavy: 850;
+
+  --mf-ui-space-1: 4px;
+  --mf-ui-space-2: 8px;
+  --mf-ui-space-3: 12px;
+  --mf-ui-space-4: 16px;
+  --mf-ui-space-5: 24px;
+  --mf-ui-space-6: 32px;
+
+  --mf-ui-radius-xs: 4px;
+  --mf-ui-radius-sm: 8px;
+  --mf-ui-radius-pill: 999px;
+  --mf-ui-touch: 42px;
+
+  /* Temporary compatibility aliases while old Core selectors disappear. */
+  --mf-core-graphite: var(--mf-ui-bg);
+  --mf-core-panel: var(--mf-ui-surface);
+  --mf-core-line: var(--mf-ui-line);
+  --mf-core-muted: var(--mf-ui-text-muted);
+  --mf-core-red: var(--mf-ui-accent);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Typography roles                                                           */
+/* -------------------------------------------------------------------------- */
+
+.mf-ui-h1,
+.mf-game-info-head h1 {
+  margin: 0;
+  color: var(--mf-ui-text);
+  font-size: var(--mf-ui-type-h1);
+  font-weight: var(--mf-ui-weight-strong);
+  line-height: 1.02;
+  letter-spacing: -.035em;
+}
+
+.mf-ui-h2,
+.mf-runtime-panel-head strong {
+  margin: 0;
+  color: var(--mf-ui-text);
+  font-size: var(--mf-ui-type-h2);
+  font-weight: var(--mf-ui-weight-strong);
+  line-height: 1.15;
+  letter-spacing: .08em;
+}
+
+.mf-ui-h3,
+.mf-info-panel h2,
+.mf-creator-section h3,
+.mf-high-score p {
+  margin: 0;
+  color: var(--mf-ui-text);
+  font-size: var(--mf-ui-type-h3);
+  font-weight: var(--mf-ui-weight-strong);
+  line-height: 1.2;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.mf-ui-body,
+.mf-info-description,
+.mf-how-to-play li,
+.mf-how-to-play > p,
+.mf-creator-card p,
+.mf-comment-main p {
+  color: rgba(255, 255, 255, .84);
+  font-size: var(--mf-ui-type-body);
+  font-weight: var(--mf-ui-weight-normal);
+  line-height: 1.45;
+}
+
+.mf-ui-label,
+.mf-panel-tabs > button,
+.mf-leaderboard-tabs button,
+.mf-comment-meta strong,
+.mf-creator-card strong,
+.mf-leaderboard-list li span,
+.mf-run-finished-actions button {
+  color: var(--mf-ui-text);
+  font-size: var(--mf-ui-type-label);
+  font-weight: var(--mf-ui-weight-strong);
+  line-height: 1.2;
+}
+
+.mf-ui-meta,
+.mf-game-info-head > p:not(.mf-info-description),
+.mf-info-version,
+.mf-high-score p small,
+.mf-comment-meta time,
+.mf-creator-card div > span,
+.mf-runtime-panel-head small,
+.mf-run-finished small,
+.mf-run-finished > section > span,
+.mf-run-finished > section > p {
+  color: var(--mf-ui-text-muted);
+  font-size: var(--mf-ui-type-meta);
+  font-weight: var(--mf-ui-weight-normal);
+  line-height: 1.3;
+}
+
+.mf-ui-micro,
+.mf-comment-actions,
+.mf-comment-actions button,
+.mf-cover-grid button em {
+  font-size: var(--mf-ui-type-micro);
+  line-height: 1.2;
+}
+
+.mf-ui-display,
+.mf-run-finished > section > strong {
+  color: var(--mf-ui-text);
+  font-size: var(--mf-ui-type-display);
+  font-weight: var(--mf-ui-weight-strong);
+  line-height: .92;
+  letter-spacing: -.05em;
+}
+
+/* The same person always has the same small-UI name treatment. */
+.mf-ui-player-name,
+.mf-comment-meta strong,
+.mf-creator-card strong,
+.mf-leaderboard-list li span {
+  overflow: hidden;
+  min-width: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Screens, panels, scrolling                                                 */
+/* -------------------------------------------------------------------------- */
+
+.mf-ui-screen,
+.mf-platform-panel,
+.mf-runtime-panel {
+  color: var(--mf-ui-text);
+  background: var(--mf-ui-surface);
+}
+
+.mf-ui-panel {
+  border: 1px solid var(--mf-ui-line);
+  border-radius: var(--mf-ui-radius-sm);
+  background: var(--mf-ui-surface);
+}
+
+.mf-ui-panel-header {
+  color: var(--mf-ui-text);
+}
+
+.mf-ui-scroll,
+.mf-panel-scroll,
+.mf-comments-scroll,
+.mf-leaderboard-list {
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.mf-ui-scroll::-webkit-scrollbar,
+.mf-panel-scroll::-webkit-scrollbar,
+.mf-comments-scroll::-webkit-scrollbar,
+.mf-leaderboard-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Tabs                                                                        */
+/* -------------------------------------------------------------------------- */
+
+.mf-ui-tabs,
+.mf-panel-tabs,
+.mf-leaderboard-tabs {
+  color: var(--mf-ui-text);
+}
+
+.mf-ui-tab,
+.mf-panel-tabs > button,
+.mf-leaderboard-tabs button {
+  position: relative;
+  border: 0;
+  color: var(--mf-ui-text-muted);
+  background: transparent;
+  text-align: center;
+  cursor: pointer;
+}
+
+.mf-ui-tab.is-active,
+.mf-panel-tabs > button.is-active,
+.mf-leaderboard-tabs button.is-active {
+  color: var(--mf-ui-text);
+}
+
+.mf-ui-tab.is-active::after,
+.mf-panel-tabs > button.is-active::after,
+.mf-leaderboard-tabs button.is-active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 26px;
+  height: 2px;
+  transform: translateX(-50%);
+  background: var(--mf-ui-accent);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Player identity                                                            */
+/* -------------------------------------------------------------------------- */
+
+.mf-ui-avatar,
+.mf-comment-avatar {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border-radius: 50%;
+  color: #151719;
+  background: #eff0eb;
+  font-size: var(--mf-ui-type-h3);
+  font-weight: var(--mf-ui-weight-heavy);
+}
+
+.mf-ui-avatar.is-free,
+.mf-comment-avatar.is-free {
+  box-shadow: inset 0 0 0 7px #d9ddd8;
+}
+
+.mf-ui-avatar.is-creator,
+.mf-comment-avatar.is-creator {
+  color: #fff;
+  background: radial-gradient(circle at 50% 42%, #e34e35 0 35%, #0eb9ea 36% 62%, #101315 63%);
+  box-shadow: 0 0 0 2px #13bdf0;
+}
+
+.mf-ui-avatar.is-999,
+.mf-ui-avatar.is-lifetime,
+.mf-comment-avatar.is-lifetime {
+  color: #fff;
+  background: linear-gradient(135deg, #ec7970, #dfb4ff 48%, #17191b 49%);
+  box-shadow: 0 0 0 1px var(--mf-ui-line-strong);
+}
+
+.mf-ui-badge,
+.mf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 18px;
+  padding: 0 6px;
+  flex: 0 0 auto;
+  border-radius: var(--mf-ui-radius-pill);
+  font-size: 8px;
+  font-weight: var(--mf-ui-weight-heavy);
+  line-height: 1;
+}
+
+.mf-ui-badge.is-creator,
+.mf-badge.is-creator {
+  border: 1px solid rgba(255, 73, 57, .78);
+  color: #ff7563;
+  background: rgba(255, 64, 45, .06);
+}
+
+.mf-ui-badge.is-999,
+.mf-badge.is-999 {
+  border: 1px solid #b89d52;
+  color: #fff0a9;
+  background: var(--mf-ui-coin-dark);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Lists                                                                       */
+/* -------------------------------------------------------------------------- */
+
+.mf-ui-list,
+.mf-leaderboard-list ol {
+  display: grid;
+  gap: var(--mf-ui-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mf-ui-list-row,
+.mf-leaderboard-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mf-ui-space-3);
+  min-width: 0;
+  border: 0;
+}
+
+.mf-ui-list-row.is-current,
+.mf-leaderboard-list li.is-current {
+  outline: 1px solid var(--mf-ui-line-strong);
+  outline-offset: -1px;
+  border-radius: var(--mf-ui-radius-sm);
+  background: rgba(255, 255, 255, .065);
+}
+
+.mf-ui-list-row.is-pinned {
+  border: 1px solid var(--mf-ui-line-strong);
+  border-radius: var(--mf-ui-radius-sm);
+  background: var(--mf-ui-surface-raised);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Actions, icon actions and fields                                            */
+/* -------------------------------------------------------------------------- */
+
+.mf-ui-action,
+.mf-high-score > button,
+.mf-show-more,
+.mf-run-finished-actions button {
+  border: 1px solid var(--mf-ui-line-strong);
+  border-radius: var(--mf-ui-radius-sm);
+  color: var(--mf-ui-text);
+  background: transparent;
+  cursor: pointer;
+}
+
+.mf-ui-action:focus-visible,
+.mf-high-score > button:focus-visible,
+.mf-show-more:focus-visible,
+.mf-run-finished-actions button:focus-visible,
+.mf-ui-icon-action:focus-visible,
+.mf-panel-close:focus-visible,
+.mf-comment-more:focus-visible,
+.mf-runtime-panel-head > button:focus-visible {
+  outline: 2px solid var(--mf-ui-text);
+  outline-offset: 2px;
+}
+
+.mf-ui-action.is-primary,
+.mf-run-finished-actions button.is-primary {
+  border-color: var(--mf-ui-text);
+  color: var(--mf-ui-bg);
+  background: var(--mf-ui-text);
+}
+
+.mf-ui-icon-action,
+.mf-panel-close,
+.mf-comment-more,
+.mf-comment-composer > button,
+.mf-runtime-panel-head > button {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  color: var(--mf-ui-text);
+  background: transparent;
+  cursor: pointer;
+}
+
+.mf-ui-field,
+.mf-comment-composer textarea {
+  border: 1px solid var(--mf-ui-line-strong);
+  border-radius: var(--mf-ui-radius-sm);
+  outline: 0;
+  color: var(--mf-ui-text);
+  background: transparent;
+  font-size: var(--mf-ui-type-body);
+  line-height: 1.35;
+}
+
+.mf-ui-field::placeholder,
+.mf-comment-composer textarea::placeholder {
+  color: var(--mf-ui-text-faint);
+}
+
+.mf-ui-field:focus,
+.mf-comment-composer textarea:focus {
+  border-color: rgba(255, 255, 255, .42);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Shared small states                                                        */
+/* -------------------------------------------------------------------------- */
+
+.mf-launch-error {
+  color: #ffd2d2;
+  font-size: var(--mf-ui-type-meta);
+  font-weight: var(--mf-ui-weight-heavy);
+}
+
+.mf-comment-actions,
+.mf-comment-actions button {
+  color: var(--mf-ui-text-muted);
+}
+
+.mf-leaderboard-list > p {
+  color: var(--mf-ui-text-muted);
+  font-size: var(--mf-ui-type-body);
+  text-align: center;
+}

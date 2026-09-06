@@ -76,9 +76,11 @@ Reuse these primitives for the next migrations, extending the shared host only w
 
 Static covers may remain raster images rendered by React Core.
 
-A cover that needs authored motion/parallax/FX should move to the shared Phaser cover runtime instead of expanding the legacy `FuggWelcome` CSS/Canvas machinery.
+A cover that needs authored motion/parallax/FX should move to the shared Phaser cover runtime instead of expanding the retired `FuggWelcome` CSS/Canvas machinery.
 
-The existing Parallax Lab and legacy cover interpreter remain available only long enough to preserve/take measurements from current work. They are not the target architecture.
+TetraMindFck is the first current migration: its two layered variants use `PhaserCoverHost`, while its third static variant stays a Core raster. Only the active feed slot creates a Phaser instance; inactive copies use their static preview.
+
+The former Parallax Lab and legacy cover interpreter remain available in Git history. They are not the target architecture.
 
 ## Platform work that should happen alongside the game migrations
 

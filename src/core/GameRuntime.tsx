@@ -335,6 +335,7 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
           <PlatformCoverShell
             game={game}
             catalog={catalog}
+            active={active}
             seed={seed}
             coins={coins}
             cost={cost}

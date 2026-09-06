@@ -39,6 +39,19 @@
   -webkit-user-drag: none;
 }
 
+.mf-phaser-cover-host {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  background: #090908;
+  pointer-events: none;
+}
+
+.mf-phaser-cover-host canvas {
+  display: block;
+}
+
 /* Pixel coin is an authored MiniFugg object, not a generic UI primitive. */
 .mf-pixel-coin {
   position: relative;

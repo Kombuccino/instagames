@@ -9,6 +9,7 @@ export const TETRAMINDFCK_WELCOME: GameWelcomeConfig = {
       label: 'Pulp européen',
       image: '/assets/imported/tetramindfck/welcome/variants/v1-pulp-euro.webp',
       unlockScore: 0,
+      runtime: 'phaser-2d',
       layers: [
         {
           role: 'background',
@@ -65,6 +66,7 @@ export const TETRAMINDFCK_WELCOME: GameWelcomeConfig = {
       label: 'Micro Europe 90s',
       image: '/assets/imported/tetramindfck/welcome/variants/v2-micro-euro.webp',
       unlockScore: 5_000,
+      runtime: 'phaser-2d',
       layers: [
         {
           role: 'background',

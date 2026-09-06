@@ -4,7 +4,7 @@ This document defines production covers and their animation boundary.
 
 ## Current migration status
 
-**ALL CURRENT GAME COVERS: A METTRE A JOUR.**
+TetraMindFck's layered cover variants are current and run in the shared Phaser cover scene. Other catalog covers remain **A METTRE A JOUR** until their registry state is `current`.
 
 The registry tracks this with `migration.cover`. Until a game's cover state is `current`, the cover is considered transitional even when the current artwork itself is useful/beautiful.
 
@@ -36,11 +36,9 @@ Do not expand the legacy CSS/React parallax interpreter or add new custom Canvas
 
 ## 3. Existing legacy cover system
 
-The current `FuggWelcome`, `ParallaxLab`, `welcomeTuning` and layered TetraMindFck data are **migration references**, not the future production architecture.
+The retired `FuggWelcome`, `ParallaxLab` and `welcomeTuning` implementation remains available in Git history as migration reference. TetraMindFck's preserved layer data now drives the shared Phaser cover scene.
 
-They may remain temporarily so existing work can be inspected and translated. New cover capabilities should be implemented in the Phaser cover runtime instead.
-
-When the Phaser replacement is canonical, remove superseded legacy cover-rendering code rather than keeping two engines alive.
+New advanced cover capabilities should be implemented in the Phaser cover runtime.
 
 ## 4. Visual composition is canonical
 

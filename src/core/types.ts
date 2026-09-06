@@ -30,7 +30,7 @@ export type GameWelcomeMotion = {
   type: GameWelcomeMotionType
   /** Multiplier around 1.0. Higher values animate faster. */
   speed?: number
-  /** Legacy cover-interpreter intensity. New advanced animated covers target Phaser. */
+  /** Motion amplitude in logical cover pixels. */
   intensity?: number
   /** Direction in degrees for directional presets such as drift/float. */
   direction?: number
@@ -53,13 +53,13 @@ export type GameWelcomeLayer = {
   objectPosition?: string
   /** Layer scale in percent. 100 means the authored canvas size. */
   scale?: number
-  /** Legacy cover-interpreter translation values retained during migration. */
+  /** Translation within the canonical cover, in percentages of its logical size. */
   x?: number
   y?: number
   rotation?: number
   /** 0..100 */
   opacity?: number
-  /** Legacy cover-interpreter parallax amplitude retained during migration. */
+  /** Pointer parallax amplitude in logical cover pixels. */
   parallaxX?: number
   parallaxY?: number
   motion?: GameWelcomeMotion
@@ -72,7 +72,8 @@ export type GameWelcomeVariant = {
   image: string
   unlockScore?: number
   objectPosition?: string
-  /** Existing raster layers are preserved during migration; new advanced motion targets Phaser. */
+  /** Static covers stay in Core; advanced layered covers use the shared Phaser scene. */
+  runtime?: 'static' | 'phaser-2d'
   layers?: GameWelcomeLayer[]
 }
 

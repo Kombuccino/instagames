@@ -43,7 +43,7 @@ const PHASER_MIGRATION_CURRENT_COVER_PENDING: GameMigrationConfig = {
 
 // Temporary discovery covers let Core navigation be tested across the whole catalog.
 // They do not change curation status and are not collectible Fugg variants.
-// All current covers remain explicitly marked A METTRE A JOUR until migrated.
+// Placeholder covers remain explicitly marked A METTRE A JOUR until migrated.
 function placeholderWelcome(gameId: string): NonNullable<InstagameDefinition['welcome']> {
   return {
     variants: [{
@@ -192,7 +192,7 @@ export const gameRegistry: InstagameDefinition[] = [
     orientation: 'portrait',
     runtime: 'legacy-dom',
     logicalViewport: PORTRAIT_STAGE,
-    migration: PHASER_MIGRATION_REQUIRED,
+    migration: { ...PHASER_MIGRATION_REQUIRED, cover: 'current' },
     welcome: TETRAMINDFCK_WELCOME,
     component: TetraMindFck,
     instructions: {

@@ -9,6 +9,7 @@ import {
 } from 'react'
 import { PerspectiveTextureCanvas } from './graphics/PerspectiveTextureCanvas'
 import { ProjectiveDomSurface } from './graphics/ProjectiveDomSurface'
+import { createPlatformEntryMusic, type PlatformEntryMusicController } from './platformEntryMusic'
 import './platformEntryScene.css'
 import './phoneProjectiveSurface.css'
 
@@ -72,10 +73,13 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
   const enteringRef = useRef(false)
   const pointerRef = useRef<PointerStart | null>(null)
   const timerRef = useRef<number | null>(null)
+  const sceneStartedAtRef = useRef(typeof performance === 'undefined' ? 0 : performance.now())
+  const musicRef = useRef<PlatformEntryMusicController | null>(null)
 
   const triggerEntry = useCallback(() => {
     if (enteringRef.current) return
     enteringRef.current = true
+    musicRef.current?.fadeOut(ENTER_DURATION_MS / 1000)
     setEntering(true)
     timerRef.current = window.setTimeout(() => {
       timerRef.current = null
@@ -85,13 +89,24 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
 
   useEffect(() => {
     document.title = 'MiniFugg'
+    const music = createPlatformEntryMusic(sceneStartedAtRef.current)
+    musicRef.current = music
+
+    // Best-effort autoplay. Browsers that permit audio for this origin will
+    // start immediately. Otherwise the same controller is resumed on the first
+    // pointer/key/wheel gesture without losing the 5.2s carriage phase.
+    void music.start()
+
     return () => {
       if (timerRef.current !== null) window.clearTimeout(timerRef.current)
+      music.stop()
+      if (musicRef.current === music) musicRef.current = null
     }
   }, [])
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLElement>) => {
     if (enteringRef.current || !event.isPrimary) return
+    void musicRef.current?.start()
     pointerRef.current = { id: event.pointerId, x: event.clientX, y: event.clientY }
     event.currentTarget.setPointerCapture(event.pointerId)
   }
@@ -116,6 +131,7 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
 
   const handleWheel = (event: ReactWheelEvent<HTMLElement>) => {
     if (enteringRef.current || event.deltaY < 24) return
+    void musicRef.current?.start()
     event.preventDefault()
     triggerEntry()
   }
@@ -123,6 +139,7 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
     if (enteringRef.current) return
     if (event.key !== 'Enter' && event.key !== ' ' && event.key !== 'ArrowUp') return
+    void musicRef.current?.start()
     event.preventDefault()
     triggerEntry()
   }

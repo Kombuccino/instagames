@@ -37,8 +37,6 @@ Fuggy must preserve these recognizable traits:
 - simple silhouette that remains recognizable at small size;
 - modern, playful and slightly odd, but never creepy, sinister or aggressive.
 
-Do not add random horns, black animal ears, glowing vertical pupils, giant eye sockets, sharp teeth, monster jaws or other traits from rejected exploratory mascots.
-
 ## Palette
 
 Reference palette from the approved board:
@@ -72,27 +70,11 @@ When generating Fuggy from a new angle, use the canonical reference board as a m
 
 The approved reference board contains front, 3/4, side, back, opposite side, 3/4 back, pose and head studies. New scenes may change lighting, material treatment, pose and camera angle, but must keep the same underlying character geometry.
 
-## 3D master status — NONE APPROVED
+## 3D master status
 
 There is currently **no approved 3D master of Fuggy**.
 
-A first experimental low-poly base (`fuggy-canonical-base-v1`) was created on 2026-09-06 and was explicitly rejected by the user as visually unacceptable. It is not canonical, not a production base, not a proportional reference, and must never be reused as a starting point for Fuggy.
-
-The rejected files have been removed from the canonical reference area and renamed with the prefix `REJECTED-DO-NOT-USE-`. They are preserved only for archival/history purposes in:
-
-`MiniFugg - Graphic Archive / Branding / Mascot - Rejected Studies /`
-
-The canonical mascot folder contains a status folder named:
-
-`3D - NO APPROVED MODEL`
-
-Until a new 3D model is explicitly approved by the user:
-
-1. use the Affinity source, user-reference PNG and approved 360° board as the only geometry references;
-2. do not import or render the rejected v1 model in MiniFugg;
-3. do not derive proportions, topology, rigging or animations from the rejected v1 model;
-4. label any future 3D attempt as experimental until explicit user approval;
-5. never let an experimental model silently redefine Fuggy's identity.
+Until a 3D model is explicitly approved, the only geometry references are the Affinity source, the extracted user-reference PNG and the approved 360° board.
 
 When a final 3D model is explicitly approved:
 

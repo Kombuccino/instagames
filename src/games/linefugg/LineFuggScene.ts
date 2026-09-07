@@ -21,14 +21,15 @@ const BOARD_CENTER_Y = BOARD_Y + BOARD_SIZE / 2
 
 const HISTORY_Y = 520
 const HISTORY_ROW_HEIGHT = 49
-const TOTAL_Y = 704
-const CONTROL_Y = 778
-const CONTROL_BUTTON_SIZE = 84
-// Measured centers in the dock artwork, transformed with the SAME uniform scale.
-const DOCK_SCALE = 378 / 2172
-const INDICATOR_CENTERS = [790, 1086, 1386].map(x => 195 + (x - 1086) * DOCK_SCALE)
-const INDICATOR_Y = CONTROL_Y + (340 - 362) * DOCK_SCALE
-const PIP_Y = CONTROL_Y + (464 - 362) * DOCK_SCALE
+const TOTAL_Y = 698
+const CONTROL_Y = 776
+const CONTROL_BUTTON_SIZE = 72
+// Shared canonical lower-console geometry, matched to DA2.
+const INDICATOR_CENTERS = [137, 195, 253]
+const INDICATOR_Y = CONTROL_Y - 12
+const PIP_Y = CONTROL_Y + 15
+const UNDO_X = 63
+const VALIDATE_X = 327
 
 const ASSET_ROOT = '/assets/imported/linefugg'
 
@@ -37,11 +38,7 @@ const ASSETS = {
   armillary: ['linefugg-armillary', `${ASSET_ROOT}/props/orbital-armillary-key.png`],
   cellMultiply: ['linefugg-orbital-cell-multiply', `${ASSET_ROOT}/ui/orbital-cell-multiply-v3.png`],
   cellDivide: ['linefugg-orbital-cell-divide', `${ASSET_ROOT}/ui/orbital-cell-divide-v3.png`],
-  historyRow: ['linefugg-orbital-history-v5', `${ASSET_ROOT}/ui/orbital-history-row-v5.png`],
-  totalPlate: ['linefugg-orbital-total-v5', `${ASSET_ROOT}/ui/orbital-total-plate-v5.png`],
-  controlDock: ['linefugg-orbital-dock-v5', `${ASSET_ROOT}/ui/orbital-control-dock-v5.png`],
-  undoIdle: ['linefugg-orbital-undo-idle-v5', `${ASSET_ROOT}/ui/orbital-undo-idle-v5.png`],
-  validateReady: ['linefugg-orbital-validate-ready-v5', `${ASSET_ROOT}/ui/orbital-validate-ready-v5.png`],
+  console: ['linefugg-accounting-panels', '/assets/generated/linefugg/ui/accounting-panels.png'],
 } as const
 
 const INK_NAVY = 0x061424
@@ -240,6 +237,7 @@ export class LineFuggScene extends Phaser.Scene {
   private drag: DragState | null = null
   private finished = false
   private validating = false
+  private undoHovered = false
   private undoPressed = false
   private validatePressed = false
 
@@ -258,6 +256,8 @@ export class LineFuggScene extends Phaser.Scene {
   private liveText!: Phaser.GameObjects.Text
 
   private historyRows: HistoryRow[] = []
+  private undoIcon!: Phaser.GameObjects.Text
+  private validateIcon!: Phaser.GameObjects.Text
   private totalText!: Phaser.GameObjects.Text
 
   private undoButton!: Phaser.GameObjects.Image
@@ -274,8 +274,8 @@ export class LineFuggScene extends Phaser.Scene {
     boardId: this.dayId, board: this.board, boardBounds: { x: BOARD_X, y: BOARD_Y, size: BOARD_SIZE },
     lines: this.lines, total: this.totalScore(), drag: this.drag,
     validating: this.validating, finished: this.finished,
-    undoEnabled: this.undoEnabled(), validateEnabled: this.validateEnabled(),
-    controls: { undo: { x: 53, y: CONTROL_Y }, validate: { x: 337, y: CONTROL_Y } },
+    undoHovered: this.undoHovered, undoEnabled: this.undoEnabled(), validateEnabled: this.validateEnabled(),
+    controls: { undo: { x: UNDO_X, y: CONTROL_Y }, validate: { x: VALIDATE_X, y: CONTROL_Y } },
     reducedMotion: this.reducedMotion, paused: this.game.isPaused, effectTime: this.effectTime,
     textures: Object.values(ASSETS).map(([key]) => {
       const source = this.textures.get(key).getSourceImage()
@@ -337,6 +337,7 @@ export class LineFuggScene extends Phaser.Scene {
     this.drag = null
     this.finished = false
     this.validating = false
+    this.undoHovered = false
     this.undoPressed = false
     this.validatePressed = false
     this.cellTexts = []
@@ -447,7 +448,7 @@ export class LineFuggScene extends Phaser.Scene {
         cell.label,
         {
           fontFamily: 'Georgia, "Times New Roman", serif',
-          fontSize: '25px',
+          fontSize: '26px',
           resolution: 2,
           color,
           shadow: {
@@ -477,91 +478,88 @@ export class LineFuggScene extends Phaser.Scene {
   }
 
   private createHistory() {
-    const rowKey = ASSETS.historyRow[0]
-    const rowFrame = artFrame(this, rowKey, 'parchment', [15, 165, 2140, 370], 2172)
-    const source = this.textures.getFrame(rowKey, rowFrame)
-    const scale = 0.32
-    // One parchment ledger, with stable end ornaments; center stretches only.
-    this.add.nineslice(195, HISTORY_Y + 73.5, rowKey, rowFrame,
-      356 / scale, 151 / scale, source.width * 0.105, source.width * 0.105,
-      source.height * 0.16, source.height * 0.16).setScale(scale).setDepth(40)
-    const dividers = this.add.graphics().setDepth(41)
-    for (let i = 1; i < 3; i++) {
-      const y = HISTORY_Y + i * HISTORY_ROW_HEIGHT
-      dividers.lineStyle(0.7, 0x805328, 0.48).lineBetween(43, y, 347, y)
-    }
+    const key = ASSETS.console[0]
+    const panel = artFrame(this, key, 'ledger', [92, 8, 1354, 491], 1536)
+    this.add.image(195, HISTORY_Y + 73.5, key, panel).setDisplaySize(342, 153).setDepth(40)
     const cellKey = ASSETS.boardPanel[0]
     const chipFrame = artFrame(this, cellKey, 'ledger-chip', [158, 133, 139, 142], 1254)
     for (let index = 0; index < MAX_LINES; index++) {
       const y = HISTORY_Y + HISTORY_ROW_HEIGHT / 2 + index * HISTORY_ROW_HEIGHT
       const container = this.add.container(0, y).setDepth(42)
-      const arrow = this.add.text(47, 0, '→', {
-        fontFamily: 'Georgia, serif', fontSize: '25px', fontStyle: 'bold',
+      const arrow = this.add.text(48, 0, '➜', {
+        fontFamily: 'Georgia, serif', fontSize: '26px', fontStyle: 'bold',
         color: LINE_COLOR_STRINGS[index], stroke: '#5c341d', strokeThickness: 0.5, resolution: 2,
       }).setOrigin(0.5)
       const tiles: Phaser.GameObjects.Image[] = []
       const values: Phaser.GameObjects.Text[] = []
       for (let slot = 0; slot < MAX_LINE_CELLS; slot++) {
-        const x = 79 + slot * 33
-        const tile = this.add.image(x, 0, cellKey, chipFrame).setDisplaySize(30, 34).setVisible(false)
+        const x = 83 + slot * 34
+        const tile = this.add.image(x, 0, cellKey, chipFrame).setDisplaySize(31, 32).setVisible(false)
         const value = this.add.text(x, 0, '', {
-          fontFamily: 'Georgia, serif', fontSize: '17px', color: '#f5e6c1', resolution: 2,
+          fontFamily: 'Georgia, serif', fontSize: '18px', color: '#f5e6c1', resolution: 2,
         }).setOrigin(0.5)
         container.add([tile, value]); tiles.push(tile); values.push(value)
       }
-      const score = this.add.text(339, 0, '', {
-        fontFamily: 'Georgia, serif', fontSize: '23px', fontStyle: 'bold', color: '#21170d', resolution: 2,
+      const score = this.add.text(345, 0, '', {
+        fontFamily: 'Georgia, serif', fontSize: '22px', fontStyle: 'bold', color: '#21170d', resolution: 2,
       }).setOrigin(1, 0.5)
       container.add([arrow, score])
       this.historyRows.push({ container, arrow, tiles, values, score })
     }
-    const totalKey = ASSETS.totalPlate[0]
-    const totalFrame = artFrame(this, totalKey, 'total', [30, 48, 2114, 632], 2172)
-    const plate = this.textures.getFrame(totalKey, totalFrame)
-    const totalScale = 0.23
-    this.add.nineslice(195, TOTAL_Y, totalKey, totalFrame,
-      322 / totalScale, 62 / totalScale, plate.width * 0.14, plate.width * 0.14,
-      plate.height * 0.15, plate.height * 0.15).setScale(totalScale).setDepth(40)
-    this.totalText = this.add.text(195, TOTAL_Y, 'Σ  0', {
-      fontFamily: 'Georgia, serif', fontSize: '36px', color: '#f5e5b9', resolution: 2,
+    const totalFrame = artFrame(this, key, 'total', [80, 518, 1376, 176], 1536)
+    this.add.image(195, TOTAL_Y, key, totalFrame).setDisplaySize(342, 49).setDepth(40)
+    this.add.text(151, TOTAL_Y, 'Σ', {
+      fontFamily: 'Georgia, serif', fontSize: '34px', color: '#f5e5b9', resolution: 2,
+    }).setOrigin(0.5).setDepth(42)
+    this.totalText = this.add.text(226, TOTAL_Y, '0', {
+      fontFamily: 'Georgia, serif', fontSize: '34px', color: '#f5e5b9', resolution: 2,
     }).setOrigin(0.5).setDepth(42)
   }
 
   private createControls() {
-    const [dockKey] = ASSETS.controlDock
-    this.add.image(195, CONTROL_Y, dockKey)
-      .setDisplaySize(378, 126)
-      .setDepth(44)
-
+    const key = ASSETS.console[0]
+    const dock = artFrame(this, key, 'dock', [116, 724, 570, 249], 1536)
+    this.add.image(195, CONTROL_Y, key, dock).setDisplaySize(194, 72).setDepth(44)
     this.indicatorGraphics = this.add.graphics().setDepth(47)
     this.controlPulseGraphics = this.add.graphics().setDepth(47)
-
-    this.undoButton = this.add.image(53, CONTROL_Y, ASSETS.undoIdle[0])
-      .setDisplaySize(CONTROL_BUTTON_SIZE, CONTROL_BUTTON_SIZE)
-      .setDepth(48)
-      .setInteractive({ useHandCursor: true })
-
-    this.validateButton = this.add.image(337, CONTROL_Y, ASSETS.validateReady[0])
-      .setDisplaySize(CONTROL_BUTTON_SIZE, CONTROL_BUTTON_SIZE)
-      .setDepth(48)
-      .setInteractive({ useHandCursor: true })
-
+    const button = (x: number, name: string, rect: number[]) => {
+      const frame = artFrame(this, key, name, rect, 1536)
+      const source = this.textures.getFrame(key, frame)
+      const image = this.add.image(x, CONTROL_Y, key, frame)
+        .setDisplaySize(CONTROL_BUTTON_SIZE, CONTROL_BUTTON_SIZE).setDepth(48)
+        .setInteractive(new Phaser.Geom.Circle(source.width / 2, source.height / 2, Math.min(source.width, source.height) / 2), Phaser.Geom.Circle.Contains)
+      if (image.input) image.input.cursor = 'pointer'
+      const mask = this.make.graphics({ x: 0, y: 0 })
+      mask.fillStyle(0xffffff).fillCircle(x, CONTROL_Y, CONTROL_BUTTON_SIZE / 2)
+      image.setMask(mask.createGeometryMask())
+      this.events.once('shutdown', () => mask.destroy())
+      this.events.once('destroy', () => mask.destroy())
+      return image
+    }
+    this.undoButton = button(UNDO_X, 'undo', [761, 714, 274, 272])
+    this.validateButton = button(VALIDATE_X, 'validate', [1113, 714, 280, 274])
+    this.undoIcon = this.add.text(UNDO_X, CONTROL_Y - 1, '↶', {
+      fontFamily: 'Arial, sans-serif', fontSize: '51px', fontStyle: 'bold', color: '#fff0c8', resolution: 2,
+    }).setOrigin(0.5).setDepth(49)
+    this.validateIcon = this.add.text(VALIDATE_X, CONTROL_Y, '✔', {
+      fontFamily: 'Arial, sans-serif', fontSize: '37px', color: '#fff0c8', resolution: 2,
+    }).setOrigin(0.5).setDepth(49)
     if (this.renderer.type === Phaser.WEBGL) {
       this.validateButton.enableFilters()
       this.disabledFilter = this.validateButton.filters?.internal.addColorMatrix()
       this.disabledFilter?.colorMatrix.grayscale(1)
     }
-
+    this.undoButton.on('pointerover', this.handleUndoOver, this)
     this.undoButton.on('pointerdown', this.handleUndoDown, this)
     this.undoButton.on('pointerup', this.handleUndoUp, this)
     this.undoButton.on('pointerout', this.handleUndoOut, this)
-
     this.validateButton.on('pointerdown', this.handleValidateDown, this)
     this.validateButton.on('pointerup', this.handleValidateUp, this)
     this.validateButton.on('pointerout', this.handleValidateOut, this)
   }
 
   private registerInput() {
+    this.input.on('gameout', this.handleUndoOut, this)
     this.input.on('pointerdown', this.handlePointerDown, this)
     this.input.on('pointermove', this.handlePointerMove, this)
     this.input.on('pointerup', this.handlePointerUp, this)
@@ -572,6 +570,7 @@ export class LineFuggScene extends Phaser.Scene {
   }
 
   private handleShutdown() {
+    this.input?.off('gameout', this.handleUndoOut, this)
     this.events.off('destroy', this.handleShutdown, this)
     this.motionQuery?.removeEventListener('change', this.handleMotionChange)
     const debugWindow = window as Window & { render_game_to_text?: () => string }
@@ -582,6 +581,7 @@ export class LineFuggScene extends Phaser.Scene {
     this.input?.off('pointerupoutside', this.handlePointerUp, this)
     this.game.events.off('pause', this.handleGamePause, this)
 
+    this.undoButton?.off('pointerover', this.handleUndoOver, this)
     this.undoButton?.off('pointerdown', this.handleUndoDown, this)
     this.undoButton?.off('pointerup', this.handleUndoUp, this)
     this.undoButton?.off('pointerout', this.handleUndoOut, this)
@@ -604,6 +604,11 @@ export class LineFuggScene extends Phaser.Scene {
     return !this.finished && !this.validating && !this.drag && this.lines.length === MAX_LINES
   }
 
+  private handleUndoOver() {
+    this.undoHovered = true
+    this.renderControls()
+  }
+
   private handleUndoDown() {
     if (!this.undoEnabled()) return
     this.undoPressed = true
@@ -618,12 +623,16 @@ export class LineFuggScene extends Phaser.Scene {
   }
 
   private handleUndoOut() {
-    if (!this.undoPressed) return
+    this.undoHovered = false
     this.undoPressed = false
     this.renderControls()
   }
 
   private handleValidateDown() {
+    if (this.undoHovered && this.undoEnabled()) {
+      this.controlPulseGraphics.lineStyle(2, 0xffdf8e, 0.85)
+      this.controlPulseGraphics.strokeCircle(UNDO_X, CONTROL_Y, 38)
+    }
     if (!this.validateEnabled()) return
     this.validatePressed = true
     this.renderControls()
@@ -707,6 +716,10 @@ export class LineFuggScene extends Phaser.Scene {
   }
 
   private validateRun() {
+    if (this.undoHovered && this.undoEnabled()) {
+      this.controlPulseGraphics.lineStyle(2, 0xffdf8e, 0.85)
+      this.controlPulseGraphics.strokeCircle(UNDO_X, CONTROL_Y, 38)
+    }
     if (!this.validateEnabled()) return
 
     this.validating = true
@@ -1017,10 +1030,10 @@ export class LineFuggScene extends Phaser.Scene {
         fitText(value, 27)
       })
       row.score.setText(line ? `= ${formatScore(line.score)}` : '')
-      fitText(row.score, 100)
+      fitText(row.score, 94)
     })
-    this.totalText.setText(`Σ  ${formatScore(this.totalScore())}`)
-    fitText(this.totalText, 230)
+    this.totalText.setText(formatScore(this.totalScore()))
+    fitText(this.totalText, 112)
   }
 
   private renderControls() {
@@ -1028,21 +1041,19 @@ export class LineFuggScene extends Phaser.Scene {
     const validateEnabled = this.validateEnabled()
     this.disabledFilter?.setActive(!validateEnabled)
 
-    const undoTexture = ASSETS.undoIdle[0]
-    const validateTexture = ASSETS.validateReady[0]
 
     this.undoButton
-      .setTexture(undoTexture)
       .setDisplaySize(this.undoPressed ? CONTROL_BUTTON_SIZE - 6 : CONTROL_BUTTON_SIZE, this.undoPressed ? CONTROL_BUTTON_SIZE - 6 : CONTROL_BUTTON_SIZE)
-      .setTint(undoEnabled ? 0xffffff : 0x807569)
+      .setTint(undoEnabled ? this.undoHovered ? 0xffdd8b : 0xffffff : 0x807569)
       .setAlpha(undoEnabled ? 1 : 0.72)
 
     this.validateButton
-      .setTexture(validateTexture)
       .setDisplaySize(this.validatePressed ? CONTROL_BUTTON_SIZE - 6 : CONTROL_BUTTON_SIZE, this.validatePressed ? CONTROL_BUTTON_SIZE - 6 : CONTROL_BUTTON_SIZE)
       .setTint(validateEnabled ? 0xffffff : 0x675951)
       .setAlpha(validateEnabled ? 1 : 0.58)
 
+    this.undoIcon.setAlpha(undoEnabled ? 1 : 0.45).setAngle(this.undoHovered && undoEnabled ? -12 : 0)
+    this.validateIcon.setAlpha(validateEnabled ? 1 : 0.45)
     this.renderIndicators()
   }
 
@@ -1074,7 +1085,7 @@ export class LineFuggScene extends Phaser.Scene {
       this.indicatorGraphics.fillCircle(centerX - 1.6, INDICATOR_Y - 2.2, occupied ? 2 : 1.4)
 
       for (let pip = 0; pip < MAX_LINE_CELLS; pip += 1) {
-        const pipX = centerX + (pip - 2) * 45 * DOCK_SCALE
+        const pipX = centerX + (pip - 2) * 8
         const isLit = pip < lit
         this.indicatorGraphics.fillStyle(isLit ? color : 0x8b7147, isLit ? 1 : 0.48)
         this.indicatorGraphics.fillCircle(pipX, PIP_Y, 3.2)
@@ -1135,12 +1146,16 @@ export class LineFuggScene extends Phaser.Scene {
       this.controlPulseGraphics.strokeCircle(centerX, INDICATOR_Y, 16)
     }
 
+    if (this.undoHovered && this.undoEnabled()) {
+      this.controlPulseGraphics.lineStyle(2, 0xffdf8e, 0.85)
+      this.controlPulseGraphics.strokeCircle(UNDO_X, CONTROL_Y, 38)
+    }
     if (!this.validateEnabled()) return
 
     const pulse = 0.18 + (Math.sin(time * 0.005) + 1) * 0.10
     this.controlPulseGraphics.lineStyle(3, EMERALD, pulse)
-    this.controlPulseGraphics.strokeCircle(337, CONTROL_Y, 45)
+    this.controlPulseGraphics.strokeCircle(VALIDATE_X, CONTROL_Y, 37)
     this.controlPulseGraphics.lineStyle(1, 0xffe69b, pulse * 0.82)
-    this.controlPulseGraphics.strokeCircle(337, CONTROL_Y, 49)
+    this.controlPulseGraphics.strokeCircle(VALIDATE_X, CONTROL_Y, 40)
   }
 }

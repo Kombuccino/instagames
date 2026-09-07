@@ -49,3 +49,10 @@ La capture initiale montrait une grille trop petite, des bandes écrasées et de
 
 Décision transport : Codex génère directement dans le dépôt puis commit ; Drive sert au transfert depuis ChatGPT. Les images déjà synchronisées gardent leurs chemins. Les anciens assets remplacés ne sont plus chargés et restent conservés comme sources.
 
+
+## Reprise du bas selon DA2 — 7 septembre 2026
+
+Retour utilisateur : cartouche total trop ornementé, calculs peu lisibles et mauvaise disposition des commandes. Nouvelle référence LineFugg-DA2.png enregistrée dans ART_DIRECTION.md. Fond et grille conservés. Nouveau parchemin à trois rangées, total sobre avec sigma fixe, boutons rapprochés autour du panneau des trois indicateurs. Survol Annuler : teinte/contour dorés et rotation légère de la flèche quand l'action est disponible. Aucun changement de calcul ou d'équilibrage.
+
+Nouvel atlas produit directement dans public/assets/generated/linefugg/ui/accounting-panels.png. Estimation RGBA gameplay désormais 8,79 Mio, mêmes exclusions ; remplace la mesure précédente. Test tactile de la boucle réussi. Matrice complète des six formats et survol souris vérifiés ; build et smoke test réussis. Acceptation visuelle utilisateur toujours distincte.
+

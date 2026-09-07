@@ -78,6 +78,18 @@ try {
     await release(); await page.waitForTimeout(350)
     assert.equal((await state()).lines.length, 1)
     await capture('one')
+    if (!touch) {
+      const control = (await state()).controls.undo
+      const position = await pixel(control.x, control.y)
+      await page.mouse.move(position.x, position.y)
+      await page.waitForTimeout(100)
+      assert.equal((await state()).undoHovered, true)
+      await capture('undo-hover')
+      await page.mouse.move(0, 0)
+      await page.waitForTimeout(100)
+      assert.equal((await state()).undoHovered, false)
+      assert.equal((await state()).lines.length, 1, 'Hover never undoes a line')
+    }
     await trace({ row: 0, col: 0 }, { row: 0, col: 4 })
     assert.equal((await state()).lines.length, 1, 'Reject overlapping duplicate line')
     await trace({ row: 2, col: 1 }, { row: 6, col: 5 })

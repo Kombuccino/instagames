@@ -192,3 +192,9 @@ Raster/illustrated production assets follow `docs/ASSET_PIPELINE.md`: Codex-loca
 Important authored visual surfaces are real assets. Phaser primitives are appropriate for dynamic lines, node glows, particles, masks, hit feedback, pips, text and genuinely procedural celestial FX.
 
 See `ASSET_MANIFEST.md` for the concrete production inventory.
+
+## Lower console revision — DA2, 2026-09-07
+
+User supplied GFX/crea-chatgpt/game/LineFugg-DA2.png as the latest approved lower-console reference. Keep the existing environment and board. Replace the earlier score/ledger/control styling with thin brass borders, one three-row parchment, a restrained total plaque, and two circular controls flanking the centered indicators. Three indicators retain red/violet/gold colors and five cell-count pips each. Undo hover must be visible only when enabled and must never trigger an undo.
+
+Canonical lower geometry: ledger center (195,593.5), 342×153; total center (195,698), 342×49, fixed sigma and independent numeric value. Controls centers (63,776) and (327,776), diameter72. Indicator backing 194×72, centered (195,776); orb centers x137/195/253 at y764, pips y791. All uniformly scaled with the 390×844 stage.

@@ -38,3 +38,11 @@ Runtime uploads capped at longest edge 1024, controls256; cache reused on restar
 Six browser scenarios passed: small/standard/tall phone, tablet, desktop, reduced motion. Touch traces on phones; tests cover invalid overlap, three lines without auto-submit, sequential scoring, undo, explicit submit, replay and return to cover. Build and skill smoke test pass. Physical-device profiling and user acceptance of final art remain open. See GAME_STATUS.md.
 
 Cover remains A METTRE A JOUR. Validated gameplay and canonical music choices are preserved.
+
+## DA2 lower-console replacement — 2026-09-07
+
+Runtime now uses /assets/generated/linefugg/ui/accounting-panels.png instead of the five former history/total/dock/button textures. Generated locally using LineFugg-DA2.png as reference; original source preserved. Sheet is 1536×1024 RGB, with opaque brown outside components (no alpha). A preceding fake-checker export was rejected and never imported. Measured Phaser texture frames isolate ledger, total, dock and two blank circular buttons; geometric circle masks remove button surroundings. Symbols, scores, arrows, orbs and pips remain engine-owned. Panel corners retain the source's small bronze surround. No keyed filter is needed for this console.
+
+The atlas is uploaded at 1024 longest edge. Current gameplay texture RGBA estimate is 9,220,096 bytes (8.79 MiB), with the same exclusions noted above; this replaces the earlier 10.62 MiB estimate. See ART_DIRECTION.md's DA2 section for the authoritative lower coordinates, superseding earlier geometry. Old five UI source files are no longer loaded.
+
+DA2 reference preserved byte-for-byte at public/assets/generated/linefugg/references/lower-console-da2.png (reference only, never loaded at runtime). It is user-supplied art, not generated art; location groups this local production pass. Final six-format matrix, mouse hover enter/leave including canvas exit, touch play and build passed.

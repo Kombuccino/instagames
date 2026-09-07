@@ -8,6 +8,8 @@ Pour toute nouvelle demande MiniFugg, suivre [docs/ACTIONS.md](docs/ACTIONS.md) 
 
 Répondre en français naturel et concis : résultat d'abord, raison utile, pas de répétition. Annoncer brièvement ce qui est fait et pourquoi ; signaler les changements importants et les limites. Les détails restent dans les fichiers, sauf demande contraire. Voir la section Communication d'ACTIONS.md.
 
+Dans ce projet, une demande de **commit** signifie : créer le commit puis le pousser sur GitHub vers la branche distante correspondante, car le parcours de test courant se fait en ligne. Ne conserver le commit uniquement sur la machine que si l'utilisateur demande explicitement un **commit local** ou interdit le push.
+
 For project history, product intent and the current DOM/CSS/Canvas → Phaser transition context, also read root `codex.md`. `codex.md` is an onboarding/handoff document; when it conflicts with a newer normative file, the normative file wins.
 
 ## Art-direction brief routing — mandatory

@@ -1,5 +1,6 @@
 import type { GameFeatureConfig, GameLogicalViewport, GameMigrationConfig, InstagameDefinition } from './types'
 import { LineFugg } from '../games/linefugg/LineFugg'
+import { LINEFUGG_WELCOME } from '../games/linefugg/welcome'
 import { ShootTheShooter } from '../games/shoot-the-shooter/ShootTheShooter'
 import { VladsSkewers } from '../games/vlads-skewers/VladsSkewers'
 import { HariRottenTeeth } from '../games/hari-rotten-teeth/HariRottenTeeth'
@@ -34,11 +35,11 @@ const PHASER_MIGRATION_REQUIRED: GameMigrationConfig = {
   cover: 'update-required',
 }
 
-const PHASER_MIGRATION_CURRENT_COVER_PENDING: GameMigrationConfig = {
+const PHASER_MIGRATION_CURRENT: GameMigrationConfig = {
   state: 'current',
   targetRuntime: 'phaser-2d',
   locked: false,
-  cover: 'update-required',
+  cover: 'current',
 }
 
 // Temporary discovery covers let Core navigation be tested across the whole catalog.
@@ -93,8 +94,8 @@ export const gameRegistry: InstagameDefinition[] = [
     orientation: 'portrait',
     runtime: 'phaser-2d',
     logicalViewport: PORTRAIT_STAGE,
-    migration: PHASER_MIGRATION_CURRENT_COVER_PENDING,
-    welcome: placeholderWelcome('linefugg'),
+    migration: PHASER_MIGRATION_CURRENT,
+    welcome: LINEFUGG_WELCOME,
     component: LineFugg,
     instructions: {
       goal: 'Trace 3 lignes et fabrique le plus gros score possible.',
@@ -226,7 +227,7 @@ export const gameRegistry: InstagameDefinition[] = [
         'Cinq services existent : COMPTABILITÉ, ÉTAT CIVIL, URBANISME, RESSOURCES HUMAINES et AFFAIRES JURIDIQUES.',
         'Chaque service possède quatre familles de documents qui se débloquent progressivement.',
         'Un document peut être reconnu par son intitulé, sa couleur, sa mise en page, son contenu ou son symbole ; il garde toujours au moins un indice utile.',
-        'Quand toute la charge d’un niveau est réellement épuisée, tu es promu : la pile suivante est plus grosse, le courrier arrive plus vite et les indices diminuent.',
+        'Épuise chaque charge de travail, monte en grade et traite un maximum de documents avant que les piles envahissent le bureau.',
         'Des événements peuvent ajouter une liasse, faire passer un dossier urgent devant les autres ou dupliquer un dossier avec la photocopieuse folle.',
         'Un mauvais service fait revenir le dossier de la gauche avec un cachet rouge et ajoute du travail pendant que le supérieur t’engueule.',
         'À 24 dossiers en attente, le bureau est submergé et la partie se termine.',

@@ -1,49 +1,50 @@
 # Les Brochettes de Vlad — Suivi
 
-Mis à jour : 7 septembre 2026. Base inspectée : `62947acacd03ecb3ae487160c9a2faa246417990`. Contrat artistique repris dans `2eeca739178b8ff0cbe12158bec73b797e4ba0f8`.
+Mis à jour : 7 septembre 2026. Base initialement inspectée : `62947acacd03ecb3ae487160c9a2faa246417990` ; contrat artistique courant dans `ART_DIRECTION.md`.
 
-Phase : recadrage documentaire des quatre études de covers demandées. La DA gameplay pixel art est choisie ; les covers précédentes sont rejetées, aucune nouvelle cover n'est validée.
+Phase : production artistique / recherche de covers. La DA gameplay pixel art est choisie mais le jeu reste `legacy-dom` et verrouillé pour migration Phaser. La cover C graphique est validée ; A/B/D restent à explorer.
 
-Registre constaté : `status: fugg`, `runtime: legacy-dom`, stage 390 × 844, migration Phaser requise et verrouillée, cover `update-required` avec placeholder. Ce statut publié ne prouve pas une finition artistique. Aucun changement de registre, gameplay, code ou déploiement dans cette passe.
+Registre constaté : `status: fugg`, stage logique 390 × 844, migration Phaser requise, cover `update-required` avec placeholder. Aucun changement de registre, gameplay, runtime ou déploiement dans cette passe.
 
-Séquence initiale : boucle jouable historique, puis affinage et recherche artistique. Pas de redémarrage du compteur des dix prompts pour cette reprise.
+## Décisions acquises
 
-## Demande et décisions
+- Référence gameplay : `VLAD-DA-pixelisee.png`, rôle univers/matière uniquement, pas gabarit de cover.
+- Gameplay visuel : pixel art construit, aliments avec visages/bras/jambes dessinés en surimpression, progression joyeux → panique → morts/inertes une fois embrochés, main/bras vampiriques, clients spectateurs à droite, trois piques de miss à gauche, livraison automatique, FX de percement/combos jusqu'à ×5. Détails complets dans `ART_DIRECTION.md`.
+- Titre des covers par défaut : **`Vlad's Skewers`**. Le français est réservé à une édition française explicite.
+- Les covers doivent interpréter la fantaisie du jeu, pas recopier la scène gameplay. Les légumes anthropomorphes peuvent être totalement absents ; éviter la foule de personnages qui donne une impression Disney/cartoon familial.
+- Simplification demandée : une idée forte, peu d'objets, respiration, médium imprimé identifiable, rendu plus premier degré que le gameplay et crédible comme jaquette fin 80s/début 90s.
 
-Discussion : Les Brochettes de Vlad, messages du 7 septembre 2026. La demande de quatre covers à 14:15:20 UTC fournit `VLAD-DA-pixelisee.png` pour comprendre l'univers, **pas pour en copier le rendu**. À 14:26:30 UTC, l'utilisateur rejette les quatre images et demande la lecture du plugin GitHub, des skills et des fichiers MD.
+## Cover validée
 
-Le contrat des covers est `docs/DA_COVER.md` : A pulp européen/franco-belge ; B boîte de micro-ordinateur européen ; C affiche graphique/traditions éditoriales d'Europe de l'Est ; D réinterprétation culturelle. `WELCOME_ART_STYLES.md` détaille les médiums. Ne pas substituer les familles gameplay Pixel Dungeon/Paper Cut/Toybox à ces quatre intentions éditoriales.
+**C — affiche graphique / éditoriale** : validée explicitement par l'utilisateur le 7 septembre 2026 pour sa composition, ses contrastes, sa respiration et sa qualité de design.
 
-Les décisions gameplay récentes, la portée exacte de la référence, les rejets et les quatre micro-briefs proposés sont dans [ART_DIRECTION.md](ART_DIRECTION.md). Ne pas produire une nouvelle illustration à partir de la seule ancienne description d'emojis.
+Master exact : `vlad-cover-c-graphic-poster-approved-2026-09-07.png`, 941 × 1672 RGB PNG, SHA-256 local `582db78b3abd6d9724cb6261fa6c1563f3e5a4542ed5a3d639c982dabb5c1872`.
 
-Règles historiques à préserver ou réconcilier explicitement avant migration : objectif de clients par niveau = niveau + 2 ; types disponibles = 3 puis +1 tous les deux niveaux, maximum 7 ; recettes historiques = 2 puis +1 tous les deux niveaux, jusqu'à 6. Barème demandé : 2 ingrédients → 2 points ; 3 → 4 ; 4 → 6 ; 5 → 10 ; 6 → 15. La passe artistique suivante a demandé une bulle prévue pour cinq ingrédients et un bonus maximal ×5 ; trancher la limite des recettes dans le travail de GD/migration, pas par une cover. Livraison automatique et affichage persistant du meilleur multiplicateur sont des décisions utilisateur du 7 septembre, pas une preuve d'intégration dans le renderer legacy.
+Archive privée : `MiniFugg - Graphic Archive/Games/vlads-skewers/covers-validated/`, Drive fichier `1blXf0mUKernZn8eQpa8oWXEpFQTOehKM`, dossier `1o5SBto8zGF_fx7FaUTvn9wcEjBpaF7OZ`.
 
-## Réalisé et preuves
+Ne pas régénérer cette cover pour la « finaliser ». Une future production/animation doit préserver exactement ce master.
 
-- Lecture sur `main` : `ACTIONS.md`, `AGENTS.md`, `DA_CORE.md`, `DA_COVER.md`, `WELCOME_ART_STYLES.md`, `WELCOME_ILLUSTRATIONS.md`, sections DA/cover/suivi de `GAME_CREATION_PIPELINE.md`, skill `.agents/skills/phaser-minifugg/SKILL.md`, `ASSET_PIPELINE.md`, `GRAPHIC_ARCHIVE.md`, registre et ancienne DA de Vlad. Le manifeste LineFugg a été consulté comme exemple de diversité approuvée, sans utiliser son astronomie comme brief pour Vlad.
-- La référence utilisateur a été ouverte, mesurée et conservée intacte dans l'archive privée. Drive : `15_dlZaGY-MUEIPeQmYCW0ODSYc4xs3Et`, 2 479 148 octets. Rôle : univers gameplay, référence seulement, aucun import runtime.
-- Les quatre PNG rejetés ont été revus puis archivés sans modification dans `Games/vlads-skewers/covers-rejected/`, dossier `1dltj7yUcGScWUoiQwOKpkcIgz07cIrjL`. IDs, noms et tailles vérifiés par relecture Drive ; détails dans ART_DIRECTION.md. Les hash serveur n'ont pas été renvoyés par l'action metadata, donc aucune vérification cryptographique distante n'est revendiquée.
-- Quatre briefs réellement distincts sont proposés dans la DA : scène narrative de service ; gros plan d'illustration commerciale ; métaphore de la brochette-croc ; vue plongeante d'édition japonaise imprimée. Ce sont des propositions de travail, pas des choix utilisateur.
-- L'ancienne DA ne comportait pas les corrections du 7 septembre ; elles sont désormais transcrites avec leur portée. Pas de nouveau fichier de procédure globale ni de renderer parallèle.
+## Covers rejetées / enseignement
 
-## Reste
+Les deux premières et la quatrième du dernier lot sont rejetées : trop proches du gameplay, mêmes personnages, trop de légumes vivants à yeux/pattes, composition trop riche et trop explicative. Elles ont été archivées dans `Games/vlads-skewers/covers-rejected/`.
+
+Trois tentatives de relance ont ensuite produit à tort des planches 2×2 au lieu de masters individuels. Elles sont elles aussi rejetées et archivées dans `covers-rejected/round3-generator-boards/`. Ne pas utiliser ces planches comme références positives.
+
+Enseignement : une bonne cover Vlad n'a pas besoin de montrer la brochette, la recette, les clients et tous les ingrédients. La promesse peut passer par Vlad, la cuisine, une cloche, une main, une ombre, un signe de restaurant, une table ou une métaphore. La cover C prouve qu'une image plus simple et plus éditoriale fonctionne mieux.
+
+## État des lots
 
 | Lot | État | Critère de sortie |
 | --- | --- | --- |
-| Nouvelles études de covers A/B/C/D | À faire | Quatre images individuelles, idées/cadrages/médiums/hiérarchies distincts, titre exact, pas d'UI |
-| Sélection des covers | À faire | Choix utilisateur sur les nouvelles études ; aucune présélection automatique |
-| Masters et couches de production | À faire après choix | Originaux conservés, ratio/overlays vérifiés, décomposition fidèle selon la procédure |
-| Migration et DA gameplay Phaser | À faire / à vérifier dans la passe dédiée | Runtime canonique, règles réconciliées, géométrie validée et tests réels |
-| Import/runtime/déploiement des nouvelles covers | Non effectué | Assets vérifiés, branchement Core autorisé, état de publication distinct du déploiement |
+| DA gameplay pixel art | Validé artistiquement | Migration Phaser + assets/FX + tests encore à faire |
+| Cover C graphique | **Validé** | Master à préserver ; intégration Core non faite |
+| Cover A pulp européen | À refaire | Interprétation simple, premier degré, pas inventaire gameplay |
+| Cover B micro-ordinateur | À refaire | Vraie logique de jaquette/annonce de l'époque, peu d'éléments |
+| Cover D régionale | À refaire | Réinterprétation éditoriale crédible, pas pseudo-localisation |
+| Import/runtime covers | Non effectué | Après choix des masters, pipeline assets + branchement Core |
 
-L'outil de génération/édition d'images n'est pas exposé dans le tour de reprise documentaire ; aucune nouvelle génération n'a été exécutée. Le skill du dépôt explique la procédure mais ne rend pas un outil absent disponible. Ne pas qualifier les briefs ou les archives de nouvelles covers livrées.
+## Prochaine action
 
-Prochaine action : produire les quatre études à partir des micro-briefs ciblés avec un outil image disponible, puis contrôler leur diversité avant présentation. Ne joindre ni le lot rejeté ni toutes les anciennes planches au brief. Aucun besoin de redemander à l'utilisateur de réexpliquer l'univers.
+Produire A, B et D comme **trois masters portrait individuels**. C reste intacte. Si l'outil tente de fabriquer une planche comparative, rejeter cette sortie plutôt que la présenter comme cover.
 
-Travaux parallèles : autres chantiers MiniFugg présents ; aucune modification concurrente constatée sur la DA de Vlad durant cette passe. Relire `main` avant toute écriture suivante.
-
-## Vérifications et limites
-
-Passe documentaire et archivage uniquement. Aucun build, test de gameplay, profilage mobile, animation ou nouvelle intégration exécuté. Pas de nouvel asset de production ; pas de référence ajoutée au dossier synchronisé `Fugg`. Le manifeste de production de Vlad reste à créer lors d'une véritable décomposition d'assets.
-
-Enseignement : changer le médium d'une brochette centrale sur le même décor ne répond pas à une recherche éditoriale A/B/C/D. Le sens du jeu est invariant, son illustration de cover ne l'est pas. Les aliments déjà embrochés doivent rester inertes, y compris sur les jaquettes.
+Aucun build ou test gameplay n'était pertinent pour cette passe de recherche graphique. Aucun asset de cover n'a été importé dans `Fugg` ni branché au runtime.

@@ -10,7 +10,11 @@ Un prototype initial peut rester neutre. Une production artistique demandée ne 
 
 ## Explorer avant de décliner
 
-Si la DA n'est pas fixée, proposer normalement deux ou trois pistes réellement distinctes sur **le même jeu, le même cadrage et le même état fonctionnel**. Changer uniquement la palette d'un même dessin n'est pas une recherche suffisante.
+Si la DA n'est pas fixée, proposer normalement quatre ou cinq pistes réellement distinctes sur **le même jeu, le même cadrage et le même état fonctionnel**, sauf demande différente. Changer uniquement la palette d'un même dessin n'est pas une recherche suffisante.
+
+L'agent récupère ou produit les captures du jeu actuel, mesure les zones utiles et prépare dès les propositions le plan de couches, les états et les effets réalisables dans le moteur canonique. La référence de composition gouverne la géométrie ; la référence de style gouverne le traitement. Sans accès au jeu ou à une référence géométrique suffisante, signaler la limite avant de présenter une étude comme fidèle au jeu.
+
+Les études montrent uniquement le gameplay demandé : aucun titre de jeu, slogan, cartouche explicatif, logo ou annotation décorative ajouté par défaut. Les explications des variantes restent hors image ; seuls les textes et symboles fonctionnels requis appartiennent au visuel.
 
 Pour chaque piste, définir l'émotion, les silhouettes, la palette, la matière, le traitement des contours et des ombres, la typographie locale, le mouvement et la faisabilité de production. Préciser ce qui rend cette piste spécifique au jeu. Recommander une direction avec ses avantages et risques.
 

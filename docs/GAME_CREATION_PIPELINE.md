@@ -2,6 +2,8 @@
 
 Version 1 — 7 septembre 2026. Document vivant, destiné à ChatGPT, Codex et aux développeurs.
 
+Entrée commune pour chaque demande : [ACTIONS.md](ACTIONS.md), qui sélectionne les procédures et outils. Cette notice détaille le parcours du jeu ; elle ne remplace pas les briefs ciblés [DA_CORE](DA_CORE.md), [DA_GAME](DA_GAME.md) et [DA_COVER](DA_COVER.md).
+
 ## 1. But et autorité
 
 Passer rapidement d'une idée à un jeu que l'on peut essayer, améliorer son game design (GD), puis investir dans une direction artistique (DA), une réalisation et un son cohérents si l'utilisateur souhaite le poursuivre.
@@ -60,7 +62,7 @@ Une bêta peut rester simple visuellement et recevoir juste les sons utiles au c
 ## 5. Préparer et choisir la DA
 
 1. Partir du jeu jouable et de ses contraintes. Construire ou ajuster un **blockout**, c'est-à-dire la composition fonctionnelle avec des formes simples, dans le stage réel. Y réserver les zones de textes, cibles tactiles, contrôles, effets et UI Core.
-2. Proposer quelques directions distinctes si aucune n'est choisie, généralement deux ou trois. Présenter des visuels liés à la vraie mécanique, leur émotion, palette, matières, mouvement, relation au son et faisabilité de production. Faire une recommandation argumentée.
+2. Si aucune direction n'est choisie, suivre [DA_GAME.md](DA_GAME.md) : normalement quatre ou cinq pistes distinctes sur la même composition fonctionnelle. Préparer les couches et états pour le moteur dès cette recherche. Faire une recommandation brève.
 3. Vérifier la composition des propositions : compte exact d'objets importants, orientation, textes fonctionnels, place des contrôles, états vide/plein et pire cas. Les erreurs d'une image générée ne deviennent jamais des règles du jeu.
 4. Enregistrer le choix utilisateur et la référence exacte dans `ART_DIRECTION.md` : chemin de l'image, date, ce qui est approuvé, contraintes et écarts autorisés. Conserver la référence validée intacte.
 5. Traduire ce choix dans le blockout et vérifier son ergonomie avant une production importante. L'agent peut résoudre les détails techniques ; demander un choix seulement si l'on doit modifier une promesse artistique ou un compromis de GD important.
@@ -171,7 +173,7 @@ Planifier ces éléments avec la DA ; produire la cover définitive lorsque le g
 
 **Cover et entrée dans le jeu**
 
-1. Choisir une cover principale cohérente avec la DA et le vrai contenu jouable. Prévoir titre et zones des contrôles Core selon les règles des covers ; pas d'UI Core dessinée dans l'image.
+1. Suivre [DA_COVER.md](DA_COVER.md) : cohérence avec le sens du jeu, sans obligation de reprendre le médium, la palette ou la composition du gameplay. Une demande d'exploration autorise plusieurs études ; finir la principale concerne la production après sélection, pas une interdiction de comparer des pistes. Prévoir titre et zones des contrôles Core ; pas d'UI Core dessinée dans l'image.
 2. Pour une cover animée, produire les couches séparées et une image statique de repli ; utiliser le runtime Phaser partagé. Une cover statique peut rester un raster Core.
 3. Prévoir l'entrée/sortie du jeu : cohérence de palette, échelle, son et temps de chargement. Réutiliser le comportement Core ; une nouvelle capacité commune se développe comme chantier plateforme explicite.
 4. Tester sélection, interaction, état inactif, mouvement réduit et absence de double lecture audio. Les éditions alternatives et déblocages restent optionnels ; ne pas les multiplier avant de finir la principale.

@@ -2,6 +2,12 @@
 
 This file is authoritative for any AI or developer modifying `Kombuccino/instagames`.
 
+## Entrée commune et communication
+
+Pour toute nouvelle demande MiniFugg, suivre [docs/ACTIONS.md](docs/ACTIONS.md) : identifier l'intention, récupérer les décisions, choisir procédures et outils, vérifier puis transmettre. Ce point d'entrée s'applique aussi à ChatGPT. Ne pas demander à l'utilisateur de nommer les skills ou de préparer le brief. En cas de doute matériel non résolu par les sources, poser une question courte.
+
+Répondre en français naturel et concis : résultat d'abord, raison utile, pas de répétition. Annoncer brièvement ce qui est fait et pourquoi ; signaler les changements importants et les limites. Les détails restent dans les fichiers, sauf demande contraire. Voir la section Communication d'ACTIONS.md.
+
 For project history, product intent and the current DOM/CSS/Canvas → Phaser transition context, also read root `codex.md`. `codex.md` is an onboarding/handoff document; when it conflicts with a newer normative file, the normative file wins.
 
 ## Art-direction brief routing — mandatory

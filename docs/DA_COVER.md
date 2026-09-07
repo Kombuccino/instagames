@@ -72,6 +72,12 @@ Les covers avancées utilisent le runtime Phaser partagé ; ne pas reconstruire 
 
 ## Acceptation et sources
 
+Pour une recherche comparative, contrôler la diversité avant présentation : idée centrale, point de vue, médium et hiérarchie. Les familles guident l'exploration sans imposer de refaire une image approuvée pour satisfaire une étiquette. Finir la principale avant de multiplier les variantes concerne la production finale, pas les études demandées.
+
+Cas réussi : les [quatre masters LineFugg approuvés](../src/games/linefugg/ASSET_MANIFEST.md), décision conservée dans [GAME_STATUS.md](../src/games/linefugg/GAME_STATUS.md). Savant en action, instrument contemplé, affiche de trajectoires et aventure illustrée partagent un univers mais changent d'intention. Conserver ces originaux ; ne pas recopier leur astronomie sur les autres jeux. La densité et les motifs communs sont acceptables quand le regard reste guidé. Ne pas imposer le style gameplay à la cover ; ne pas imposer non plus une rupture artificielle si l'utilisateur valide une parenté.
+
+Après validation, sauvegarder l'image exacte et la portée du choix avant toute préparation technique. La décomposition conserve le master ; elle ne justifie pas une nouvelle génération globale.
+
 Vérifier à taille téléphone : sujet juste, titre lisible, parti pris identifiable, fond spécifique, absence de finition générique, overlays compatibles et décomposition exploitable. Une patine ne suffit pas à rendre une image personnelle.
 
 Catalogue détaillé des médiums : `WELCOME_ART_STYLES.md`. Contrat runtime : `WELCOME_ILLUSTRATIONS.md`. Transport et archive : `ASSET_PIPELINE.md` et `DA_CORE.md`. Les anciennes instructions de CTA du catalogue ne s'appliquent plus.

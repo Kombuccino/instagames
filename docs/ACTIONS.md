@@ -1,0 +1,58 @@
+# MiniFugg — Point d'entrée ChatGPT / Codex
+
+Ce fichier organise le travail ; les documents liés portent les règles détaillées. À chaque nouvelle demande, identifier l'intention, le jeu ou la surface, puis suivre la route utile. Les instructions explicites de l'utilisateur priment. Ne pas transformer une question ou une idée à discuter en chantier non demandé.
+
+## 1. Comprendre, retrouver, annoncer
+
+Lire la version actuelle sur `main` de ce fichier et des [règles du projet](../AGENTS.md) au démarrage ; à chaque demande suivante, réévaluer la route et actualiser les sources si elles ont changé. Pour un simple échange, aucune lecture ni cérémonie inutile.
+
+Pour un jeu, retrouver son entrée dans [le registre](../src/core/gameRegistry.tsx), puis `src/games/<id>/GAME_STATUS.md`, `ART_DIRECTION.md` et `ASSET_MANIFEST.md` lorsqu'ils existent. Ouvrir les images pertinentes et consulter les discussions liées pour récupérer les corrections non transcrites. Une affirmation ancienne de l'agent n'est pas une validation utilisateur ni une preuve de livraison.
+
+Annoncer en une ou deux phrases le travail choisi, la procédure utilisée et pourquoi. Si deux interprétations changent réellement le livrable ou si les procédures se contredisent sans décision permettant de trancher, expliquer le doute et poser une question courte. Choisir soi-même les détails techniques courants ; ne pas demander de recopier un brief.
+
+## 2. Choisir la route
+
+| Demande naturelle | Lire et appliquer | Résultat attendu |
+| --- | --- | --- |
+| Créer un jeu, améliorer les règles, poursuivre une bêta | [Création et suivi](GAME_CREATION_PIPELINE.md), [spécification](../GAME_DEV_SPEC.md) | Prototype jouable, puis affinage ; compteur de dix prompts selon les règles existantes |
+| Faire la DA du jeu | [DA commune](DA_CORE.md), [DA gameplay](DA_GAME.md) | Quatre ou cinq pistes si aucune direction n'est choisie, sur le vrai jeu et sa géométrie |
+| Faire des covers / jaquettes | [DA commune](DA_CORE.md), [DA covers](DA_COVER.md) | Interprétations éditoriales distinctes, fidèles au sens du jeu ; pas forcément à son rendu |
+| Intégrer une DA, animer, ajouter des FX | [Production artistique](GAME_ART_PRODUCTION_PIPELINE.md), [assets](ASSET_PIPELINE.md), DA de la surface | Assets séparés, états, interactions et comparaison au master |
+| Créer / corriger une interface ou une entrée MiniFugg | [DA UI](DA_UI.md) ou [DA Welcome](DA_WELCOME.md), [DA commune](DA_CORE.md), [validation plateforme](PLATFORM_VISUAL_VALIDATION.md) | Réutilisation des références et composants canoniques |
+| Coder, migrer ou corriger le gameplay / les contrôles | [Architecture](GAME_ENGINE_ARCHITECTURE.md), [migration](GAME_MIGRATION_PLAN.md), [layout](GAME_LAYOUT_SYSTEM.md), [gestes](INPUT_GESTURES.md), [orientation](ORIENTATION_LAYOUT.md) | Correction dans le moteur canonique, vérifiée sur les états et écrans utiles |
+| Musique ou sons | [Core Audio](AUDIO_SYSTEM.md), [Music Lab](MUSIC_LAB.md), [validation audio](AUDIO_VALIDATION.md) | Références et pistes acquises conservées, écoute et cycle de vie vérifiés |
+| Passer en Fugg, livrer, faire le bilan | [Création : revue finale et bilan](GAME_CREATION_PIPELINE.md), [curation](GAME_CURATION.md) ; [exports](PLATFORM_EXPORTS.md) si packaging | Qualité vérifiée, acceptation utilisateur et état de livraison explicites |
+| Où en est le jeu ? | Sa fiche `GAME_STATUS.md` et preuves actuelles | Fait, reste et prochaine action, sans modifier le jeu |
+
+Pour plusieurs besoins, enchaîner les routes nécessaires dans leur ordre de dépendance. Les documents référencés renvoient aux styles et contrats spécialisés ; ne pas charger tous les catalogues dans chaque tâche.
+
+## 3. Choisir les outils disponibles
+
+- **Codex local :** lire le dépôt, inspecter le code, lancer le jeu et prendre les captures utiles. Utiliser les skills disponibles correspondant à la tâche : `imagegen` pour produire/éditer des images, `develop-web-game` pour la boucle de tests. Pour Phaser, lire obligatoirement [phaser-minifugg](../.agents/skills/phaser-minifugg/SKILL.md), puis les seules références officielles pertinentes.
+- **ChatGPT :** utiliser le connecteur GitHub pour les mêmes sources sur `main`, les discussions et images accessibles, puis les outils de génération, navigateur et Drive disponibles. Un skill présent dans le dépôt reste lisible comme procédure même sans mécanisme d'activation natif ; il ne crée pas d'outil absent.
+- **Images :** appliquer [ASSET_PIPELINE](ASSET_PIPELINE.md) et [l'archive graphique](GRAPHIC_ARCHIVE.md). Génération locale Codex et transfert depuis ChatGPT ont des routes distinctes. Ne pas imposer Drive à Codex local.
+- Vérifier les accès avant de les déclarer absents. S'il manque une référence ou un moyen indispensable, nommer exactement le manque ; avancer sur le reste sans prétendre avoir exécuté une étape inaccessible.
+
+## 4. Contrôler avant de présenter ou livrer
+
+Avant une recherche de DA gameplay, capturer le jeu réel et fixer la composition fonctionnelle. Préparer dès l'étude les couches, zones recadrables, états et mouvements ; ne pas imposer ces contraintes de plateau à une cover. L'agent rassemble le contexte ; le générateur ne reçoit que le brief ciblé et les références dont le rôle est explicite.
+
+Avant présentation, vérifier : bonne référence, contenu demandé, textes autorisés, lisibilité et faisabilité. Comparer aussi les propositions entre elles : idée, cadrage, médium, hiérarchie. Des étiquettes de styles différentes ne suffisent pas ; des motifs communs ne rendent pas automatiquement les images identiques. Corriger les erreurs manifestes sans faire porter ce contrôle à l'utilisateur. En cas d'échecs répétés, diagnostiquer le brief ou l'outil plutôt que régénérer indéfiniment.
+
+Après validation, conserver les originaux et noter la portée du choix. Ne pas régénérer une série approuvée pour la rendre « finale ». Avant intégration complète, vérifier un échantillon représentatif en jeu. Avant livraison, comparer aux références et tester les états, écrans et interactions utiles ; un build vert ne valide pas l'art.
+
+## 5. Transmettre et apprendre
+
+Après une décision ou une passe significative, actualiser la fiche et le document concernés : choix daté, référence exacte et rôle, refus, réalisé / reste, preuves, prochaine action. Séparer proposition, validation artistique, fichier sauvegardé, intégration et test. GitHub partage ces traces, pas automatiquement toute la mémoire des conversations.
+
+Avant d'écrire, vérifier le dernier `main` et les modifications en cours. Signaler dans le suivi les lots actifs quand plusieurs discussions travaillent en parallèle ; ne pas écraser un travail concurrent. Livrer les changements autorisés sur `main`, vérifier la publication Git et distinguer celle-ci du déploiement de l'application.
+
+En fin de réalisation, noter brièvement ce qui a réussi, échoué et pourquoi. Garder les détails dans le jeu ; corriger la procédure existante seulement si l'enseignement est général. Ne pas fabriquer une nouvelle procédure concurrente à chaque incident.
+
+## 6. Communication
+
+Français naturel, direct et chaleureux. Commencer par le résultat ou la décision. Par défaut : un à trois courts paragraphes, ou quelques points si plus lisibles ; développer seulement à la demande ou si une décision l'exige. Éviter répétitions, longs préambules, emphase systématique, flatterie, conclusions récapitulatives et offres « si tu veux » lorsque le travail est déjà demandé.
+
+Pendant le travail : dire brièvement ce qui est fait et pourquoi, puis signaler les découvertes ou changements de direction importants. À la fin : résultat, vérification utile et éventuel reste. Donner une recommandation et sa raison, pas toutes les possibilités. La concision ne doit masquer ni blocage ni compromis important. Appliquer ce style sans rappeler constamment cette consigne.
+
+Préférence utilisateur du 7 septembre 2026, cohérente avec le style « Concise » décrit par [Anthropic](https://support.anthropic.com/en/articles/10181068-configuring-and-using-styles) : réponses plus courtes et plus directes. Ce réglage appartient au projet, pas aux paramètres globaux du compte.

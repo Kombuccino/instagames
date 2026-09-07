@@ -14,6 +14,8 @@ Original prompt: Mettre à jour LineFugg pour rendre les GFX conformes à la DA 
 
 2026-09-07 — Feu Vlad repris après retour utilisateur : atlas raster remplacé par huit grandes flammes pixel-art à masses pleines, six foyers/salle/grille redimensionnés, étincelles allongées beaucoup plus denses au premier et troisième plan, fumée renforcée. Recettes et pile bornées à cinq ingrédients sans toucher au barème. QA visuelle et navigateur en cours avant publication.
 
+2026-09-08 — Passe Vlad demandée : main/poignée refaites en sprite authored cohérent, overscan desktop séparé pour supprimer la duplication du fond, champ de chute élargi, tige/main/bras rendus traversables. Empalement transformé en entrée progressive avec descente souple de la pile, grosses gouttes persistantes et callouts longs empilables. Appliques, braises, alignement des clients et présentation de commande recalés. Build et matrice navigateur téléphone/bureau réussis, scoring ×5 inchangé à 50 ; revue web utilisateur ouverte.
+
 Suivi produit canonique : src/games/linefugg/GAME_STATUS.md.
 
 2026-09-07 : comparaison du master à la capture utilisateur et au renderer. Priorités : place de la grille, panneaux non déformés, calculs lisibles, indicateurs alignés, décomposition du mécanisme céleste et effets bornés. Références Phaser 4.2.1 consultées via phaser-minifugg ; leur publication est gérée dans une autre tâche. Assets générés depuis le master, import privé Drive en cours. Aucun changement de règles prévu.

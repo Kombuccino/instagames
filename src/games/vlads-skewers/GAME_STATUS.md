@@ -1,8 +1,8 @@
 # Les Brochettes de Vlad — Suivi
 
-Mis à jour : 7 septembre 2026. Base initiale : `62947acacd03ecb3ae487160c9a2faa246417990`. Contrat réconcilié : `ART_DIRECTION.md`.
+Mis à jour : 8 septembre 2026. Base initiale : `62947acacd03ecb3ae487160c9a2faa246417990`. Contrat réconcilié : `ART_DIRECTION.md`.
 
-Phase gameplay : migration Phaser 4 et troisième passe corrective en validation. Les publications précédentes du 7 septembre ont reçu des retours négatifs précis et ne constituent pas des versions approuvées. La présente passe remplace le bras étiré et les flammes procédurales, recale le desktop sur la norme LineFugg et introduit les collisions physiques demandées avant une nouvelle revue web. Registre : `fugg`, stage 390 × 844, runtime `phaser-2d`, migration `current` déverrouillée. Phase cover : C validée et à préserver ; A/B/D encore à explorer ; intégration Core des covers non faite.
+Phase gameplay : migration Phaser 4 et passe corrective du 8 septembre validées localement, revue utilisateur web ouverte. Les publications précédentes ne constituent pas des versions approuvées. Registre : `fugg`, stage 390 × 844, runtime `phaser-2d`, migration `current` déverrouillée. Phase cover : C validée et à préserver ; A/B/D encore à explorer ; intégration Core des covers non faite.
 
 ## Gameplay livré
 
@@ -23,19 +23,22 @@ Phase gameplay : migration Phaser 4 et troisième passe corrective en validation
 - Cinq balcons fixes maximum ; seule la pile d'acteurs bouge et diminue réellement jusqu'au changement de niveau. Bave recalée par bouche.
 - HUD supérieur compacté, cartouche score agrandi/adaptatif et jauge d'impatience redessinée.
 - Chiffres de score remplacés par des glyphes raster authored assortis à la DA.
-- Hitboxes alimentaires calées légèrement dans la silhouette ; séparation aliment/aliment, rebonds muraux, gravité et collisions directionnelles avec la tige, la main et le bras. Seule la pointe empale.
+- Hitboxes alimentaires calées légèrement dans la silhouette ; séparation aliment/aliment, rebonds muraux et gravité. La tige, la main et le bras sont traversables ; seule la pointe empale.
+- Passe du 8 septembre : nouvelle main qui enveloppe réellement la poignée, tige/main/bras désormais traversables par les aliments, champ de chute élargi, entrée sur la pointe en 0,8 s et poussée souple de la pile. Gerbes agrandies et persistantes, paroles empilables avec fondu long.
+- Overscan desktop distinct du fond portrait, flammes d'appliques réduites/recalées, braises effilées recolorisées, portraits alignés par leur base et commande client enrichie d'une broche horizontale.
 
 ## Validation gameplay
 
-Le 7 septembre 2026 :
+Les 7 et 8 septembre 2026 :
 
 - build TypeScript/Vite réussi ;
 - tests Core Audio réussis ;
 - `scripts/test-vlads-skewers-browser.mjs` réussi sur téléphone tactile émulé et bureau souris ;
-- véritable empalement par la pointe avec contre-test extérieur au corps, poussée latérale par la tige sans empalement, portée haute et retour automatique du bras, roster 15, pile ×5 cuite, perte de pique, cuisson/charbon/cendre et disparition validés ;
+- véritable empalement par la pointe avec contre-test extérieur au corps, traversée libre de la tige/main sans poussée, portée haute et retour automatique du bras, roster 15, pile ×5 cuite, perte de pique, cuisson/charbon/cendre et disparition validés ;
 - clic hors main refusé et signal visuel vérifié ; dérive nulle après dépassement horizontal puis retour du pointeur au point de prise ; main visible et immobilisée aux butées haute/basse ;
 - contrôle souris relatif vérifié après sortie du canvas ; file 3→2→1 et plafonnement visuel à cinq clients vérifiés ;
-- score historique vérifié : brochette de 5 (base 10) × combo 5 = 50 ; l'empalement seul n'ajoute aucun point et la broche complète reste visible 1,65 s avant validation ;
+- score historique vérifié : brochette de 5 (base 10) × combo 5 = 50 ; l'empalement seul n'ajoute aucun point et la broche complète reste visible 2,35 s avant validation ;
+- insertion non instantanée vérifiée, chute élargie, overscan distinct, particules persistantes, ordre sur broche et alignement inférieur des quinze portraits contrôlés dans les captures téléphone/bureau ;
 - aucune erreur console ou ressource dans la matrice testée.
 
 Captures locales : `artifacts/vlads-skewers/`. Limite : émulation navigateur, pas un GPU/tactile physique.
@@ -50,7 +53,7 @@ A/B/D doivent être trois masters portrait individuels plus simples, éditoriaux
 
 ## Prochaines actions
 
-1. Publier la deuxième passe corrective et faire sa revue utilisateur sur le web ; ne considérer le gameplay approuvé qu'après cette revue.
+1. Publier la passe corrective du 8 septembre et faire sa revue utilisateur sur le web ; ne considérer le gameplay approuvé qu'après cette revue.
 2. Intégrer la cover C exacte au Core quand son asset de production est disponible localement, puis poursuivre A/B/D séparément.
 3. Valider gameplay et audio sur téléphone physique.
 

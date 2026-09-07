@@ -1,5 +1,9 @@
 Original prompt: Mettre à jour LineFugg pour rendre les GFX conformes à la DA approuvée, optimiser et utiliser Phaser pour une réalisation plus animée, en préservant le prototype, le GD et l'équilibrage validés.
 
+2026-09-07 — Vlad DA migration. Original prompt addition: intégrer la composition Vlad-DA1, les piques exactes de Vlad-DA-Piques à gauche, retrouver le pixel art de VLAD-DA-pixelisee, au moins 15 clients et une montée d'empalement jusqu'à ×5 BRUTALITY sans modifier le scoring. Compléments : corps d'aliments sans visage/membres intégrés, pièces séparées animées, interactions physiques, arc joie→compréhension→panique, grille cuisson→noir→cendre, poulet/tofu/poisson, marques de grille appétissantes, bave et sautillements gourmands. Références récupérées et décomposées ; fond, 15 clients, corps seuls, main/broche et UI générés. Migration Phaser et validation navigateur en cours.
+
+2026-09-07 — Vlad gameplay terminé : scène Phaser canonique, ancien DOM/CSS supprimé, rendu pixel sans antialiasing, assets décomposés, aliments à pièces faciales/corporelles séparées, interactions/émotions, cuisson appétissante puis charbon/cendre, 15 clients salivants, piques de vie à gauche, cinq paliers audio/visuels. Tests tactile téléphone + souris bureau réussis, score 5 aliments ×5 = 50 inchangé, console et ressources propres. Restent revue utilisateur, appareil physique et cover `update-required`.
+
 Suivi produit canonique : src/games/linefugg/GAME_STATUS.md.
 
 2026-09-07 : comparaison du master à la capture utilisateur et au renderer. Priorités : place de la grille, panneaux non déformés, calculs lisibles, indicateurs alignés, décomposition du mécanisme céleste et effets bornés. Références Phaser 4.2.1 consultées via phaser-minifugg ; leur publication est gérée dans une autre tâche. Assets générés depuis le master, import privé Drive en cours. Aucun changement de règles prévu.

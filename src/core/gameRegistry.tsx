@@ -141,9 +141,9 @@ export const gameRegistry: InstagameDefinition[] = [
     author: 'MiniFugg',
     status: 'fugg',
     orientation: 'portrait',
-    runtime: 'legacy-dom',
+    runtime: 'phaser-2d',
     logicalViewport: PORTRAIT_STAGE,
-    migration: PHASER_MIGRATION_REQUIRED,
+    migration: { ...PHASER_MIGRATION_CURRENT, cover: 'update-required' },
     welcome: placeholderWelcome('vlads-skewers'),
     component: VladsSkewers,
     instructions: {

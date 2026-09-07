@@ -1,85 +1,86 @@
 # Les Brochettes de Vlad — Direction artistique
 
-Mise à jour : 7 septembre 2026. Ce fichier conserve les décisions artistiques acquises pour le gameplay et les covers. Les procédures de référence sont `docs/ACTIONS.md`, `docs/DA_CORE.md`, `docs/DA_GAME.md` et `docs/DA_COVER.md`.
+Mise à jour : 7 septembre 2026. Ce fichier réconcilie les décisions acquises pour le gameplay et les covers. Les procédures de référence sont `docs/ACTIONS.md`, `docs/DA_CORE.md`, `docs/DA_GAME.md` et `docs/DA_COVER.md`.
 
 ## État des validations
 
-- **Gameplay :** DA pixel art construite validée comme direction à produire/migrer ; intégration Phaser non attestée par cette passe.
+- **Gameplay :** migration Phaser et production de la DA pixel art réalisées ; revue utilisateur web ouverte.
 - **Cover C :** validée explicitement par l'utilisateur le 7 septembre 2026 (« vraiment superbe », à conserver absolument).
 - **Covers A/B/D :** encore à explorer. Les versions trop proches du gameplay, trop riches ou trop « ChatGPT/mobile key art » sont rejetées.
 
-## Référence gameplay
+## Références gameplay approuvées
 
-Référence utilisateur : `VLAD-DA-pixelisee.png`, 853 × 1844, RGB PNG, 2 479 148 octets, SHA-256 local `27f4dcaa7102c3b3a88eedd6e3a4295ceb04e8abcb18b4c91c386b4b43043b69`.
+- `GFX/crea-chatgpt/game/Vlad-DA1.png` : autorité pour la composition — grand panneau en haut, champ de chute central, loges à droite, main/broche partant du grill et ampleur des impacts.
+- `GFX/crea-chatgpt/game/Vlad-DA-Piques.png` : autorité pour les trois piques de réserve dorées/rouges, placées à gauche ; une pique disparaît par client/brochette raté.
+- `GFX/crea-chatgpt/game/VLAD-DA-pixelisee.png` : autorité pour les pixels construits, silhouettes nettes, flammes sans blur, clients affamés/joyeux et aliments embrochés aux yeux en croix.
+- La capture de l'ancien jeu est une référence comportementale seulement, jamais une cible artistique.
 
-Archive privée : `MiniFugg - Graphic Archive/Games/vlads-skewers/gameplay-references/vlad-gameplay-pixel-user-reference-2026-09-07.png`, Drive `15_dlZaGY-MUEIPeQmYCW0ODSYc4xs3Et`.
+Master gameplay archivé : `MiniFugg - Graphic Archive/Games/vlads-skewers/gameplay-references/vlad-gameplay-pixel-user-reference-2026-09-07.png`, Drive `15_dlZaGY-MUEIPeQmYCW0ODSYc4xs3Et`. Source : 853 × 1844, RGB PNG, 2 479 148 octets, SHA-256 `27f4dcaa7102c3b3a88eedd6e3a4295ceb04e8abcb18b4c91c386b4b43043b69`.
 
 **Rôle : univers et matière du gameplay, pas gabarit de cover.** Ne pas reprendre automatiquement son cadrage, ses personnages, ses flammes, son UI ou sa composition dans les jaquettes.
 
-## Identité du jeu
+## Identité gameplay
 
-Street food infernale, vampire cuisinier, humour noir de dessin animé, barbecue très chaud, clients monstrueux ravis du spectacle. Les aliments restent de vrais aliments sur lesquels sont dessinés des petits bras/jambes en fils noirs, petites mains blanches et expressions simples : ce sont des surimpressions graphiques, pas une anatomie humaine modelée dans la nourriture.
+Street food infernale, vampire cuisinier, humour noir de dessin animé, barbecue très chaud, clients monstrueux ravis du spectacle. Pixel art franchement visible et cohérent en taille de pixel ; pierre, métal et bois par groupes de pixels ; masses sombres et contre-jours orange. Pas de rendu 3D plastique, de bloom permanent, de blur ou de filtres lissants.
 
-Ingrédients de recette existants uniquement : viande, tomate, poivron, oignon, champignon, courgette, aubergine. L'ail est un danger ; la goutte de sang est un bonus de ralenti distinct. Les projections sont du jus et de petits morceaux alimentaires colorés, jamais des organes réalistes.
+Le stage logique reste 390 × 844 et se met à l'échelle uniformément. Aucun titre du jeu, bouton pause ou panneau explicatif décoratif n'est dessiné dans le gameplay. Le score local est à droite et les trois piques de réserve à gauche. La pointe dorée est la seule zone d'empalement.
 
-En chute, les ingrédients sont d'abord joyeux puis paniquent progressivement. Une fois embrochés, **tous** ont yeux fermés/en croix, membres inertes et surface progressivement grillée. Ils ne restent jamais souriants sur la brochette.
+Le client actif occupe la loge du bas, dans la portée physique de la pointe. Lui seul affiche la commande. Les clients sont dans des ouvertures à droite et regardent le spectacle avec les mains/gestes. La banque contient au moins quinze personnages distincts, très affamés, joyeux, enthousiastes, capables de sautiller et de recevoir des gouttes de bave séparées.
 
-Vlad : main de vampire très travaillée, doigts longs, ongles sombres, peau pâle, manche noire/rouge et bijou. Le bras part du bas de l'écran et s'allonge avec le geste. La pique reste une brochette, pas une épée ou une autre arme.
+## Aliments et progression émotionnelle
 
-## Gameplay — langage visuel validé
+Ingrédients de recette : bœuf, tomate, poivron, oignon, champignon, courgette, aubergine, puis poulet, tofu et poisson dans les niveaux tardifs. L'ail reste un danger et la goutte de sang un bonus de patience/ralenti distinct.
 
-Pixel art franchement visible et cohérent en taille de pixel ; pierre, métal et bois par groupes de pixels ; silhouettes nettes ; masses sombres et contre-jours orange de barbecue. Pas de rendu 3D plastique, pas de bloom permanent. L'action et les aliments doivent gagner la bataille du contraste contre le décor.
+Les textures raster contiennent **uniquement les corps**. Yeux, bouche, bras, jambes, bave et marques de grille sont des objets Phaser séparés. Les petits bras/jambes sont des fils sombres terminés par de petites mains/pieds clairs, pas une anatomie humaine modelée dans la nourriture.
 
-Stage logique portrait 390 × 844, composition identique sur les écrans par mise à l'échelle uniforme. Aucun titre du jeu ou panneau explicatif décoratif dans le gameplay. Les ingrédients utilisent toute la largeur jouable, peuvent passer devant les clients et n'ont pas de traînée de chute. Leur physique peut les pousser latéralement sans les faire remonter.
+Pendant la chute : joie naïve → compréhension → inquiétude → panique et tentative désespérée. Les aliments peuvent tendre les bras, se tenir et se repousser, mais ne peuvent jamais échapper à Vlad ni à la grille. Les ingrédients embrochés ont des yeux `× ×`, une langue molle et des membres pendants qui suivent l'inertie de la broche.
 
-La portée maximale est donnée par la longueur du bras de Vlad : **aucune ligne pointillée**. Les clients sont dans des ouvertures à droite et regardent le spectacle avec les mains/gestes. Après service ils descendent d'une case ; une case vide se ferme par une grille de prison. Le client actif est celui du bas, sans contour jaune ; lui seul affiche une bulle BD avec une pique horizontale de gauche à droite traversant les ingrédients grillés demandés, prévue pour jusqu'à cinq ingrédients visibles.
+Toute cuisson passe d'abord par un état doré, appétissant, avec couleur chaude et marques de grille nettes. Un aliment raté continue ensuite à noircir, s'effondre en cendre et disparaît. Les projections restent du jus et de petits morceaux alimentaires colorés, jamais des organes réalistes.
 
-Le score local est à droite. Pas de bouton pause dessiné dans le jeu. Les trois piques de réserve sont à **gauche**, selon la référence utilisateur, et représentent les erreurs restantes : à chaque brochette ratée Vlad consomme une nouvelle pique.
+## Gameplay, score et FX
 
-Le panneau de niveau n'existe qu'au début du niveau et doit être assez grand : `LEVEL XX`, icônes des ingrédients disponibles, `XX customers`. Une information compacte indique ensuite combien de clients restent à servir sur l'objectif.
+La boucle et le scoring historique sont conservés : recette dans l'ordre, livraison au client, sang = patience/ralenti, ail/mauvais ingrédient/patience = client perdu, fin au troisième client perdu. Valeurs de base : 2/4/6/10/15 points pour 2/3/4/5/6 aliments. La chaîne rapide et le meilleur multiplicateur de la brochette continuent de multiplier la valeur à la livraison.
 
-La livraison est automatique lorsque la brochette est complète, avec transfert visible et gain de points lisible. Le meilleur multiplicateur de la brochette reste près de la main jusqu'à fin/annulation ou remplacement par un meilleur bonus ; maximum artistique validé ×5.
+Le vocabulaire disponible grandit tous les deux niveaux, de 3 à 10 aliments. La recette passe progressivement de 2 à 6 aliments. L'ouverture reste lisible et l'avalanche véritable arrive tard.
 
-### Percement et FX
+Le percement a du poids : squash/étirement, orientation d'entrée, petite phrase de fin de vie, membres qui retombent, gerbe de jus et fragments. La présentation monte en cinq paliers visuels et sonores — normal, ×2, ×3, ×4, ×5 `BRUTALITY!` — sans modifier le calcul de score. Toute valeur de score supérieure reste intacte même si l'intensité artistique est plafonnée à ×5.
 
-Le percement doit avoir du poids : anticipation très courte, squash/étirement, orientation d'entrée conservée, hit-stop bref possible, membres qui retombent et balancent ensuite. L'ingrédient peut afficher une petite phrase de fin de vie.
+Les particules partent vers le haut/les côtés, retombent sous gravité, suivent le ralenti, passent derrière les ingrédients actifs, sont plafonnées et nettoyées. Le climax ×5 peut afficher un grand titre gothique et déclencher une pluie spectaculaire ; il n'est jamais permanent.
 
-La gerbe de jus/fragments croît avec le combo : normal, ×2, ×3, ×4, ×5. Les particules partent d'abord vers le haut/les côtés puis retombent sous gravité, passent derrière les ingrédients actifs, suivent le ralenti, sont plafonnées et nettoyées.
-
-À ×5, un grand titre gothique type `BRUTALITY!`, `BLOODY BROCHETTE!` ou équivalent peut apparaître plus haut dans la zone de jeu et déclencher une pluie spectaculaire. Ce traitement est réservé au climax, pas présent en permanence. Plus une brochette grossit, plus la pique et la main se salissent/dégoulinent.
+Le panneau authored du haut pulse au changement de niveau sans couvrir le champ. Il montre le niveau, les aliments disponibles et l'objectif clients, puis conserve une progression compacte.
 
 ## Cover — titre et philosophie
 
 Titre de jaquette par défaut : **`Vlad's Skewers`**. Utiliser le français uniquement pour une édition française explicitement conçue comme telle.
 
-Les covers interprètent la **fantaisie** du jeu ; elles ne doivent pas prouver le gameplay. Elles peuvent être plus sérieuses, plus inquiétantes et plus premier degré que le jeu. Elles ne doivent pas faire l'inventaire des ingrédients, clients, bras, recettes et FX.
+Les covers interprètent la **fantaisie** du jeu ; elles ne doivent pas prouver le gameplay. Elles peuvent être plus sérieuses, plus inquiétantes et plus premier degré. Elles ne doivent pas faire l'inventaire des ingrédients, clients, bras, recettes et FX.
 
-Règle désormais importante : **ne pas considérer les aliments à yeux/pattes comme un motif obligatoire de cover**. Ils peuvent être absents. S'ils apparaissent, ils sont rares, choisis pour l'idée de l'image et non copiés comme une galerie de sprites. Éviter le sentiment Disney/cartoon familial créé par une foule de légumes souriants ou paniqués.
+Les aliments à yeux/pattes ne sont pas un motif obligatoire de cover. Ils peuvent être absents. S'ils apparaissent, ils sont rares et choisis pour l'idée de l'image. Éviter la foule qui crée un sentiment Disney/cartoon familial. Simplifier : une idée dominante, détails sélectifs, espace négatif, hiérarchie claire, impression/medium identifiable, vraie jaquette fin 80s/début 90s. Aucun UI, score, niveau, CTA, prix, bouton ou pseudo-interface dans le raster.
 
-Simplifier : une idée dominante, détails sélectifs, espace négatif, hiérarchie claire, impression/medium identifiable. Chercher une vraie jaquette de jeu ou affiche imprimée fin 80s/début 90s, pas une affiche contemporaine ultra-détaillée vieillie artificiellement. Aucun UI, score, niveau, CTA, prix, bouton ou pseudo-interface dans le raster.
-
-Les familles de travail restent celles de `DA_COVER.md` : A pulp européen/franco-belge ; B boîte micro-ordinateur européenne ; C affiche graphique/éditoriale d'Europe de l'Est ; D réinterprétation culturelle. Elles doivent changer réellement d'idée, de point de vue, de densité et de médium.
+Les familles restent celles de `DA_COVER.md` : A pulp européen/franco-belge ; B boîte micro-ordinateur européenne ; C affiche graphique/éditoriale d'Europe de l'Est ; D réinterprétation culturelle.
 
 ## Cover C — VALIDÉE
 
-Fichier exact : `vlad-cover-c-graphic-poster-approved-2026-09-07.png`, 941 × 1672 RGB PNG, 2 709 942 octets, SHA-256 local `582db78b3abd6d9724cb6261fa6c1563f3e5a4542ed5a3d639c982dabb5c1872`.
+Fichier exact : `vlad-cover-c-graphic-poster-approved-2026-09-07.png`, 941 × 1672 RGB PNG, 2 709 942 octets, SHA-256 `582db78b3abd6d9724cb6261fa6c1563f3e5a4542ed5a3d639c982dabb5c1872`.
 
 Archive : `MiniFugg - Graphic Archive/Games/vlads-skewers/covers-validated/`, Drive fichier `1blXf0mUKernZn8eQpa8oWXEpFQTOehKM`, dossier `1o5SBto8zGF_fx7FaUTvn9wcEjBpaF7OZ`.
 
-Ce qui est validé : composition très graphique ; grands aplats noir/rouge/crème ; contraste fort ; respiration et espace négatif ; qualité d'affiche imprimée ; silhouette dominante de Vlad ; château/plein lune comme signes synthétiques ; titre `Vlad's Skewers` intégré à la composition. Les petits aliments anthropomorphes présents dans cette image sont **acceptés dans cette cover précise**, mais ne deviennent pas une contrainte pour les autres covers.
+Sont validés : composition graphique, grands aplats noir/rouge/crème, contraste, respiration, qualité d'affiche imprimée, silhouette dominante de Vlad, château/pleine lune et titre intégré. Les petits aliments anthropomorphes présents sont acceptés dans cette cover précise seulement.
 
-Ne pas régénérer ou « améliorer » cette image pour la rendre finale. Préserver exactement ce master. Une future animation/décomposition doit partir de ce master et produire des couches séparées sans le remplacer.
+Ne pas régénérer ou « améliorer » ce master. Une future animation/décomposition doit partir de lui et produire des couches séparées sans le remplacer.
 
-## Covers A/B/D — nouvelle contrainte de recherche
+## Covers A/B/D — contrainte de recherche
 
-Les premières propositions étaient trop proches du gameplay : mêmes personnages, même foule d'aliments vivants, même grill infernal, trop de détails et trop d'explication. Elles sont rejetées.
+Les premières propositions sont rejetées : trop proches du gameplay, mêmes personnages, même foule d'aliments, grill infernal, trop de détails et d'explication. Pour A/B/D, partir d'une métaphore, ambiance ou objet éditorial unique. Abandonner la brochette comme sujet central et ne pas montrer systématiquement les légumes.
 
-Pour A/B/D, partir d'une métaphore, d'une ambiance ou d'un objet éditorial unique. **Abandonner la brochette comme sujet central** et ne pas montrer systématiquement les légumes. Une cover peut se contenter de Vlad, d'une cloche de service, d'une cuisine vide, d'un château, d'un signe de restaurant, d'une table après le service, d'une main vampirique, d'une ombre ou d'un détail alimentaire non anthropomorphe si cela suffit à raconter l'univers.
+A doit sentir l'illustration commerciale européenne faite à la main ; B une vraie boîte/annonce micro-ordinateur européenne de l'époque, sans pixel art ni UI fictive ; D une édition régionale précise sans pseudo-texte ni clichés touristiques. C reste la référence de force et de qualité, pas un template.
 
-A doit sentir l'illustration commerciale européenne faite à la main, avec une situation ou un personnage fort mais pas une scène exhaustive. B doit ressembler à une vraie boîte/annonce micro-ordinateur européenne de l'époque, avec structure et retenue, pas un rendu pixel ni une UI fictive. D doit repenser la hiérarchie selon une édition régionale précise, sans pseudo-texte ni clichés touristiques. C reste la référence de niveau de qualité et de force de composition, pas un template à copier.
+Les rejets sont archivés dans `MiniFugg - Graphic Archive/Games/vlads-skewers/covers-rejected/` (Drive `1dltj7yUcGScWUoiQwOKpkcIgz07cIrjL`). Les planches comparatives produites par erreur sont dans `round3-generator-boards/` (`1jzIFuR4-xUJC-vJpsobIBCnnarLE4EJf`) et ne sont pas des masters.
 
-## Archives des rejets
+## À éviter
 
-Les covers rejetées sont conservées dans `MiniFugg - Graphic Archive/Games/vlads-skewers/covers-rejected/` (Drive `1dltj7yUcGScWUoiQwOKpkcIgz07cIrjL`). Les planches comparatives produites par erreur sont archivées séparément dans `round3-generator-boards/` (`1jzIFuR4-xUJC-vJpsobIBCnnarLE4EJf`) et ne sont pas des masters.
-
-Le rejet des covers ne remet pas en cause la DA pixel art du gameplay ni la cover C validée.
+- néon violet/cyan générique, glassmorphism, bloom permanent ou pseudo-pixel art filtré ;
+- cacher la pointe dorée ou rendre une autre partie de la broche interactive ;
+- effets plein écran permanents, particules non plafonnées ou labels critiques minuscules ;
+- utiliser une référence aplatie comme fond avec score, vies, clients ou ingrédients déjà cuits ;
+- restaurer les covers rejetées ou altérer le master C validé.

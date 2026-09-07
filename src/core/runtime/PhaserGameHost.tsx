@@ -14,6 +14,8 @@ type PhaserGameHostProps = {
   className?: string
   /** Raster density only. The scene keeps its logical stage via camera zoom. */
   renderPixelRatio?: number
+  /** Crisp nearest-neighbour sampling for authored pixel-art games. */
+  pixelArt?: boolean
 }
 
 /**
@@ -32,6 +34,7 @@ export function PhaserGameHost({
   ariaLabel,
   className,
   renderPixelRatio = 1,
+  pixelArt = false,
 }: PhaserGameHostProps) {
   const mountRef = useRef<HTMLDivElement>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
@@ -65,8 +68,9 @@ export function PhaserGameHost({
         gamepad: true,
       },
       render: {
-        antialias: true,
-        roundPixels: false,
+        pixelArt,
+        antialias: !pixelArt,
+        roundPixels: pixelArt,
       },
       scene: [createScene()],
       callbacks: {
@@ -83,7 +87,7 @@ export function PhaserGameHost({
       gameRef.current = null
       game.destroy(true)
     }
-  }, [createScene, logicalViewport.height, logicalViewport.width, renderPixelRatio])
+  }, [createScene, logicalViewport.height, logicalViewport.width, pixelArt, renderPixelRatio])
 
   useEffect(() => {
     const game = gameRef.current

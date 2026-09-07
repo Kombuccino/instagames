@@ -226,10 +226,67 @@ const tetraSounds: SfxDefinition[] = [
   },
 ]
 
+const vladSounds: SfxDefinition[] = [
+  {
+    id: 'MF-SFX-0011', key: 'vlad.impale1', event: 'land', name: 'Vlad Prick', scope: 'game', gameId: 'vlads-skewers', gameTitle: 'Les Brochettes de Vlad', status: 'selected', createdAt: '2026-09-07',
+    summary: 'Premier empalement : pointe sèche et jus bref.', cooldownMs: 55,
+    steps: [
+      { type: 'noise', at: 0, duration: .045, filter: 'highpass', frequency: 1700, gain: .42 },
+      { type: 'tone', at: 0, duration: .07, fromHz: 180, toHz: 105, wave: 'triangle', gain: .55 },
+    ],
+  },
+  {
+    id: 'MF-SFX-0012', key: 'vlad.impale2', event: 'bonus', name: 'Vlad Double Squish', scope: 'game', gameId: 'vlads-skewers', gameTitle: 'Les Brochettes de Vlad', status: 'selected', createdAt: '2026-09-07',
+    summary: 'Deuxième impact plus humide, avec rebond aigu.', cooldownMs: 55,
+    steps: [
+      { type: 'noise', at: 0, duration: .075, filter: 'bandpass', frequency: 940, gain: .62 },
+      { type: 'tone', at: 0, duration: .09, fromHz: 170, toHz: 82, wave: 'triangle', gain: .68 },
+      { type: 'tone', at: .05, duration: .07, fromHz: 410, toHz: 580, wave: 'square', gain: .24 },
+    ],
+  },
+  {
+    id: 'MF-SFX-0013', key: 'vlad.impale3', event: 'bigImpact', name: 'Vlad Triple Crunch', scope: 'game', gameId: 'vlads-skewers', gameTitle: 'Les Brochettes de Vlad', status: 'selected', createdAt: '2026-09-07',
+    summary: 'Troisième impact avec craquement de grille et basse.', cooldownMs: 55,
+    steps: [
+      { type: 'noise', at: 0, duration: .11, filter: 'bandpass', frequency: 720, gain: .78 },
+      { type: 'tone', at: 0, duration: .14, fromHz: 145, toHz: 58, wave: 'sawtooth', gain: .72 },
+      { type: 'tone', at: .07, duration: .09, fromHz: 510, toHz: 690, wave: 'square', gain: .28 },
+    ],
+  },
+  {
+    id: 'MF-SFX-0014', key: 'vlad.impale4', event: 'bigImpact', name: 'Vlad Quad Slaughter', scope: 'game', gameId: 'vlads-skewers', gameTitle: 'Les Brochettes de Vlad', status: 'selected', createdAt: '2026-09-07',
+    summary: 'Quatrième impact très dense en deux coups.', cooldownMs: 55,
+    steps: [
+      { type: 'noise', at: 0, duration: .14, filter: 'lowpass', frequency: 920, gain: .9 },
+      { type: 'tone', at: 0, duration: .16, fromHz: 125, toHz: 48, wave: 'sawtooth', gain: .88 },
+      { type: 'noise', at: .08, duration: .08, filter: 'highpass', frequency: 1900, gain: .45 },
+      { type: 'tone', at: .1, duration: .1, fromHz: 330, toHz: 760, wave: 'square', gain: .34 },
+    ],
+  },
+  {
+    id: 'MF-SFX-0015', key: 'vlad.impale5', event: 'bigImpact', name: 'Vlad Brutality', scope: 'game', gameId: 'vlads-skewers', gameTitle: 'Les Brochettes de Vlad', status: 'selected', createdAt: '2026-09-07',
+    summary: 'Signature BRUTALITY : masse, déchirure et sirène montante.', cooldownMs: 55,
+    steps: [
+      { type: 'noise', at: 0, duration: .2, filter: 'lowpass', frequency: 1100, gain: 1 },
+      { type: 'tone', at: 0, duration: .22, fromHz: 105, toHz: 38, wave: 'sawtooth', gain: 1 },
+      { type: 'noise', at: .065, duration: .15, filter: 'highpass', frequency: 2300, gain: .55 },
+      { type: 'tone', at: .1, duration: .18, fromHz: 310, toHz: 940, wave: 'square', gain: .46 },
+    ],
+  },
+  {
+    id: 'MF-SFX-0016', key: 'vlad.sizzle', event: 'land', name: 'Vlad Sizzle', scope: 'game', gameId: 'vlads-skewers', gameTitle: 'Les Brochettes de Vlad', status: 'selected', createdAt: '2026-09-07',
+    summary: 'Crépitement sec pour la cuisson dorée et la grille.', cooldownMs: 120,
+    steps: [
+      { type: 'noise', at: 0, duration: .24, filter: 'highpass', frequency: 2600, gain: .52 },
+      { type: 'noise', at: .08, duration: .18, filter: 'bandpass', frequency: 1500, gain: .35 },
+    ],
+  },
+]
+
 export const sfxCatalog = {
   version: 1,
   rule: 'Never delete a MiniFugg sound identity. Archive or supersede it while keeping its MF-SFX id.',
-  sounds: [...commonSounds, ...tetraSounds] as readonly SfxDefinition[],
+  sounds: [...commonSounds, ...tetraSounds, ...vladSounds] as readonly SfxDefinition[],
 } as const
 
 export const gameSfxPalettes: Record<string, GameSfxPalette> = {
@@ -248,6 +305,19 @@ export const gameSfxPalettes: Record<string, GameSfxPalette> = {
       calculate: 'tetra.calculate',
       bonus: 'tetra.bonus',
       bigImpact: 'tetra.bigImpact',
+    },
+  },
+  'vlads-skewers': {
+    gameId: 'vlads-skewers',
+    gameTitle: 'Les Brochettes de Vlad',
+    accent: { transposeSemitones: -2, gain: .92, duration: .94 },
+    events: {
+      land: 'vlad.impale1',
+      levelUp: 'common.levelUp',
+      success: 'common.success',
+      fail: 'common.fail',
+      bonus: 'common.success',
+      bigImpact: 'vlad.impale5',
     },
   },
 }

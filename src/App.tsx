@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { GameFeed } from './core/GameFeed'
+import { LayoutLab } from './core/LayoutLab'
 import { MusicLab } from './core/MusicLab'
 import { PlatformEntryScene } from './core/PlatformEntryScene'
 import { gameRegistry } from './core/gameRegistry'
@@ -15,9 +16,16 @@ function opensMusicLab() {
   return query.get('usr') === 'moigod' && query.get('lab') === 'music'
 }
 
+function opensLayoutLab() {
+  if (typeof window === 'undefined') return false
+  const query = new URL(window.location.href).searchParams
+  return query.get('usr') === 'moigod' && query.get('lab') === 'layout'
+}
+
 export default function App() {
   const [entered, setEntered] = useState(() => opensDirectlyOnAGame())
 
+  if (opensLayoutLab()) return <LayoutLab />
   if (opensMusicLab()) return <MusicLab />
 
   return (

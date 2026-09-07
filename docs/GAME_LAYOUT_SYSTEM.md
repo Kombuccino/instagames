@@ -121,3 +121,7 @@ Expected result: screenshots of the canonical stage should align after uniform s
 ### Optional raster density
 
 PhaserGameHost accepts renderPixelRatio (default1, capped at2). This changes backing pixels only. A scene opting in must apply the same density as camera zoom and center on the canonical logical stage; pointer conversion must use that camera. LineFugg freezes density for the mounted session and tests touch at DPR2/3. Do not infer new gameplay dimensions from the backing canvas or reflow the stage.
+
+## 11. Asset-size reference and visual lab
+
+Use `docs/ASSET_SIZE_REFERENCE.md` to size raster deliveries from their actual logical display zone. The interactive reference is available at `/?usr=moigod&lab=layout`; it exposes the portrait and landscape templates, Core overlay zones, screen simulations and downloadable PNG guides.

@@ -2,7 +2,11 @@
 
 Mis à jour : 8 septembre 2026. Base initiale : `62947acacd03ecb3ae487160c9a2faa246417990`. Contrat réconcilié : `ART_DIRECTION.md`.
 
-Phase gameplay : migration Phaser 4 et passe corrective du 8 septembre validées localement, revue utilisateur web ouverte. Les publications précédentes ne constituent pas des versions approuvées. Registre : `fugg`, stage 390 × 844, runtime `phaser-2d`, migration `current` déverrouillée. Phase cover : C validée et à préserver ; A/B/D encore à explorer ; intégration Core des covers non faite.
+Phase gameplay : migration Phaser 4 fonctionnelle, mais présentation visuelle refusée par l'utilisateur le 8 septembre 2026. Les validations locales ci-dessous couvrent le fonctionnement et ne constituent pas une approbation artistique. Une reprise de composition est requise avant une nouvelle revue. Registre : `fugg`, stage 390 × 844, runtime `phaser-2d`, migration `current` déverrouillée. Phase cover : C validée et à préserver ; A/B/D encore à explorer ; intégration Core des covers non faite.
+
+Prompt de reprise préparé : `docs/prompts/VLAD_GAMEPLAY_RECOVERY.md`.
+
+Écarts visuels constatés : grand puits central vide, HUD surdimensionné et éclaté, flammes répétées trop dominantes, clients coupés sur la droite, messages d'impact superposés, bras/pique disproportionnés et mélange de tailles de pixels. Plusieurs textures sont aussi bien plus grandes que leur zone d'affichage.
 
 ## Gameplay livré
 
@@ -53,7 +57,7 @@ A/B/D doivent être trois masters portrait individuels plus simples, éditoriaux
 
 ## Prochaines actions
 
-1. Publier la passe corrective du 8 septembre et faire sa revue utilisateur sur le web ; ne considérer le gameplay approuvé qu'après cette revue.
+1. Reprendre la composition avec `docs/prompts/VLAD_GAMEPLAY_RECOVERY.md`, puis présenter une nouvelle capture 390 × 844 comparée aux références ; ne considérer le gameplay approuvé qu'après validation explicite de l'utilisateur.
 2. Intégrer la cover C exacte au Core quand son asset de production est disponible localement, puis poursuivre A/B/D séparément.
 3. Valider gameplay et audio sur téléphone physique.
 

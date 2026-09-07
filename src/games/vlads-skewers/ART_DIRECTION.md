@@ -4,7 +4,7 @@ Mise à jour : 7 septembre 2026. Ce fichier réconcilie les décisions acquises 
 
 ## État des validations
 
-- **Gameplay :** migration Phaser et production de la DA pixel art réalisées ; revue utilisateur web ouverte.
+- **Gameplay :** migration Phaser fonctionnelle, mais présentation visuelle actuelle refusée par l'utilisateur le 8 septembre 2026. Reprise de composition requise avant une nouvelle revue.
 - **Cover C :** validée explicitement par l'utilisateur le 7 septembre 2026 (« vraiment superbe », à conserver absolument).
 - **Covers A/B/D :** encore à explorer. Les versions trop proches du gameplay, trop riches ou trop « ChatGPT/mobile key art » sont rejetées.
 

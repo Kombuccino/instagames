@@ -30,6 +30,7 @@ try {
   for (const variant of LINEFUGG_WELCOME.variants) {
     assert.equal(variant.runtime, 'static')
     assert.equal(variant.unlockScore, 0)
+    assert.equal(variant.fit, 'contain')
     assert.ok(!variant.layers?.length)
   }
   await server.listen()
@@ -59,10 +60,20 @@ try {
     const click = async locator => format.hasTouch ? locator.tap() : locator.click()
     const assertArt = async expectedSrc => {
       await art.evaluate(image => image.decode())
-      const value = await art.evaluate(image => ({ src: image.getAttribute('src'), width: image.naturalWidth, height: image.naturalHeight }))
+      const value = await art.evaluate(image => {
+        const box = image.getBoundingClientRect()
+        const scale = Math.min(box.width / image.naturalWidth, box.height / image.naturalHeight)
+        return { src: image.getAttribute('src'), width: image.naturalWidth, height: image.naturalHeight,
+          fit: getComputedStyle(image).objectFit, overflow: getComputedStyle(image.parentElement).overflow,
+          paintedWidth: image.naturalWidth * scale, paintedHeight: image.naturalHeight * scale,
+          boxWidth: box.width, boxHeight: box.height }
+      })
       assert.ok(expected.includes(value.src), `Unexpected cover ${value.src}`)
       if (expectedSrc) assert.equal(value.src, expectedSrc)
       assert.deepEqual([value.width, value.height], [941, 1672])
+      assert.equal(value.fit, 'contain', 'Never crop a title baked into the approved master')
+      assert.equal(value.overflow, 'hidden', 'Decorative extension stays inside the cover slot')
+      assert.ok(value.paintedWidth <= value.boxWidth + .01 && value.paintedHeight <= value.boxHeight + .01)
       assert.equal(await shell.getAttribute('data-cover-migration'), 'current')
       assert.ok(!/METTRE/i.test(await shell.evaluate(element => getComputedStyle(element, '::after').content)))
       assert.equal(await shell.locator('canvas').count(), 0, 'Static covers must not create a Phaser cover canvas')
@@ -99,7 +110,8 @@ try {
     await pending.waitFor({ state: 'visible' })
     assert.equal(await pending.getAttribute('data-cover-migration'), 'update-required')
     assert.match(await pending.evaluate(element => getComputedStyle(element, '::after').content), /A METTRE A JOUR/)
-    report.scenarios.push({ name: format.name, passed: true, editions: 4, input: format.hasTouch ? 'touch' : 'mouse', launchAndReturn: true, otherBadgesPreserved: true })
+    assert.equal(await pending.locator('.mf-core-selected-cover > img').evaluate(image => getComputedStyle(image).objectFit), 'cover')
+    report.scenarios.push({ name: format.name, passed: true, editions: 4, input: format.hasTouch ? 'touch' : 'mouse', launchAndReturn: true, otherBadgesPreserved: true, fullFramePreserved: true })
     await context.close()
   }
   assert.deepEqual(report.errors, [])

@@ -58,3 +58,22 @@ Local validate-amber-source.png: 1254² RGB generated hover variant from the exi
 The previous atlas's plain green button is no longer used. Sigma and total are optically centered by measuring visible glyph alpha only when score changes, never per animation frame. Hover orange is enabled only after three lines; leaving the canvas clears it, and hover never submits. The active button's existing glass supplies the light rather than procedural rings over its frame.
 
 Final verification: all six browser scenarios passed, including amber hover/leave, no hover submission, undo restoring the authored disabled state, touch tracing and replay. Build/typecheck and skill smoke passed. Current source texture RGBA estimate 15,597,568 bytes (14.875 MiB), excluding CSS background, text and framebuffer/filter storage; supersedes prior lower estimates after restoring authored textures. User art acceptance and physical-device profiling remain open.
+
+## Four approved cover masters — 2026-09-07
+
+The user approved the four individual covers with « VOILA !!! CA C'est GENIAL !!!! » at 12:50:57 UTC, then requested their storage at 12:58:37 UTC. Preserve these exact images, not the earlier central-planets/astrolabe studies or comparative boards. Their editorial treatments follow docs/DA_COVER.md and are intentionally different from gameplay art.
+
+Production Drive: Fugg/linefugg/welcome/variants/ (folder 1raVfVGgBAKULJXtrxPWD2Nk9mlLXSQxW).
+Validated archive: MiniFugg - Graphic Archive/Games/linefugg/covers-validated/ (folder 1zeF2Sx-Ci0-vQCwh1QCCG1esUw9XTuvq).
+Repository destination: public/assets/imported/linefugg/welcome/variants/.
+
+| Edition | Exact filename | Recognizable subject |
+| --- | --- | --- |
+| A — Pulp / narrative | linefugg-cover-a-pulp-euro-approved-2026-09-07.png | Red-coated astronomer leaning over his chart with a pen |
+| B — European micro edition | linefugg-cover-b-micro-euro-approved-2026-09-07.png | Cartographer seen over the shoulder, compass and circular chart |
+| C — Graphic poster | linefugg-cover-c-graphic-poster-approved-2026-09-07.png | Red/blue/yellow paths over a numbered world; flat observatory silhouette |
+| D — Japanese edition | linefugg-cover-d-japanese-edition-approved-2026-09-07.png | Young illustrated astronomer on a balcony above clouds |
+
+All four originals are 941×1672 RGB PNGs, opaque, stored without resize, crop, recompression or regeneration. No optimized derivative or animation layers were produced. Source filenames, generation IDs, Drive/archive file IDs, byte lengths and expected SHA-256/Git blob hashes are recorded in [the import receipt](../../../ops/drive-asset-sync/imports/linefugg-covers-2026-09-07.json).
+
+This pass stores the approved artwork only. It does not select the default edition, add unlock thresholds, change the feed, replace the placeholder, or mark the runtime cover migration current. Verify the imported files against the receipt before adding consuming code. Future animation must preserve these masters and produce separate layers rather than substituting new compositions.

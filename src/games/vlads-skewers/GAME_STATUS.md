@@ -2,7 +2,7 @@
 
 Mis à jour : 7 septembre 2026. Base initiale : `62947acacd03ecb3ae487160c9a2faa246417990`. Contrat réconcilié : `ART_DIRECTION.md`.
 
-Phase gameplay : migration Phaser 4 et passe corrective de production artistique terminées, validation navigateur passée. La première publication web du 7 septembre a été rejetée visuellement par l'utilisateur (composition cassée, aliments minuscules et pièces procédurales inadéquates) ; elle ne constitue pas une version approuvée. Registre : `fugg`, stage 390 × 844, runtime `phaser-2d`, migration `current` déverrouillée. Phase cover : C validée et à préserver ; A/B/D encore à explorer ; intégration Core des covers non faite.
+Phase gameplay : migration Phaser 4 et deuxième passe corrective en validation. Les deux premières publications web du 7 septembre ont reçu des retours négatifs précis et ne constituent pas des versions approuvées. La présente passe corrige décor animé, contrôle hors cadre, cuisson, bras, membres, HUD, patience et file clients avant une nouvelle revue utilisateur. Registre : `fugg`, stage 390 × 844, runtime `phaser-2d`, migration `current` déverrouillée. Phase cover : C validée et à préserver ; A/B/D encore à explorer ; intégration Core des covers non faite.
 
 ## Gameplay livré
 
@@ -15,6 +15,11 @@ Phase gameplay : migration Phaser 4 et passe corrective de production artistique
 - Cinq paliers visuels et sonores jusqu'à ×5 `BRUTALITY!`, sans changement du scoring.
 - Trois piques de réserve à gauche ; une seule tombe par client/brochette raté.
 - Pointe visible, collision et pile partagent exactement le même axe ; le bras reste raccordé au bas du stage et revient automatiquement en bas au relâchement.
+- La pique/main reste à taille fixe ; seule la manche séparée rejoint le bas. Le déplacement devient relatif sous capture et continue hors canvas.
+- Brochette validée automatiquement au dernier ingrédient, sans livraison latérale. Chaque ingrédient embroché est immédiatement grillé.
+- Flammes pixel animées sur la grille et les six foyers du décor, braises de profondeur ; aliment raté enflammé avec fumée renforcée avant charbon/cendres.
+- Cinq balcons fixes maximum ; seule la pile d'acteurs bouge et diminue réellement jusqu'au changement de niveau. Bave recalée par bouche.
+- HUD supérieur compacté, cartouche score agrandi/adaptatif et jauge d'impatience redessinée.
 
 ## Validation gameplay
 
@@ -24,6 +29,7 @@ Le 7 septembre 2026 :
 - tests Core Audio réussis ;
 - `scripts/test-vlads-skewers-browser.mjs` réussi sur téléphone tactile émulé et bureau souris ;
 - véritable empalement par la pointe avec contre-test décalé de 18 px, retour automatique du bras, roster 15, pile ×5 cuite, perte de pique, cuisson/charbon/cendre et disparition validés ;
+- contrôle souris relatif vérifié après sortie du canvas ; file 3→2→1 et plafonnement visuel à cinq clients vérifiés ;
 - score historique vérifié : brochette de 5 (base 10) × combo 5 = 50 ; l'empalement seul n'ajoute aucun point ;
 - aucune erreur console ou ressource dans la matrice testée.
 
@@ -39,7 +45,7 @@ A/B/D doivent être trois masters portrait individuels plus simples, éditoriaux
 
 ## Prochaines actions
 
-1. Publier la passe corrective et faire sa revue utilisateur sur le web ; ne considérer le gameplay approuvé qu'après cette revue.
+1. Publier la deuxième passe corrective et faire sa revue utilisateur sur le web ; ne considérer le gameplay approuvé qu'après cette revue.
 2. Intégrer la cover C exacte au Core quand son asset de production est disponible localement, puis poursuivre A/B/D séparément.
 3. Valider gameplay et audio sur téléphone physique.
 

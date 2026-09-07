@@ -9,19 +9,20 @@ The three approved DA files under `GFX/crea-chatgpt/game/` are **REFERENCE ONLY*
 | `backgrounds/pixel-grill-arena.png` | permanent environment | full stage `390×844`; central safe fall field x `58..313`, y `118..690` | opaque | authored crisp flames; no baked HUD/clients/skewer | Phaser score, order, lives, clients, ingredients, FX | integrated |
 | `sprites/ingredient-bodies-v2.png` fixed 4×3 grid | gameplay characters | falling display ~`78×78`; stacked body ~`70×70` | real | 11 faceless/limbless foods + one empty cell; no state baked | Phaser eyes, mouths, arms, legs, cooked colour, grill marks, char/ash | integrated |
 | `sprites/character-parts-v3.png` fixed 4×4 grid | stateful character pieces | food facial/limb overlays and customer drool | real | 4 eye states, 4 mouths, authored arms/legs, drool, grill marks, ash and juice | Phaser animation/physics; drool frame used only by customers | integrated |
-| `sprites/customer-atlas.png` fixed 5×3 grid | animatable decoration / customers | right booth portrait ~`64×72` | real | 15 distinct hungry/joyful clients; idle/cheer through pose, hop and drool | Phaser order bubble, patience, queue state | integrated |
-| `ui/customer-booth-v2.png` | structural UI / customer booth | three right-side openings | real | authored red-stone booth, empty center for changing portraits | Phaser portraits, drool, hop, order bubble and patience | integrated |
+| `sprites/customer-atlas.png` fixed 5×3 grid | animatable decoration / customers | right balcony portrait ~`84×84` | real | 15 distinct hungry/joyful clients; idle/cheer through pose, hop and mouth-anchored drool | Phaser order bubble, patience, queue state | integrated |
 | `props/vlad-skewer-hand.png` | animatable prop | grip centered near x `195`, y `760`; usable tip offset measured in scene | real | held/impact shake; gold point is sole hit point | Phaser stack, limbs, multiplier | integrated |
 | `ui/life-skewer.png` | structural HUD prop | three vertical skewers at left x `25..48`, y `185..294` | real | full/lost; lost state created by fall/rotation, not separate baked score | Phaser life count | integrated |
 | `ui/component-atlas.png` manually cropped components | structural UI | order board, score plaque and speech bubble | real | irregular authored bounds preserved; values and states remain dynamic | Phaser texts, food icons and patience | integrated |
-| generated pixel particles | FX support | bounded play field | procedural texture | juice, chunks, sparks, embers and ash; strict pool caps | Phaser | integrated |
+| generated pixel flames / particles | FX support | lower grill, six authored fire sources and bounded play field | procedural pixel textures/graphics | stepped animated flames, juice, sparks, embers, stronger smoke and ash; strict pool caps | Phaser | integrated |
+| articulated ingredient limbs | dynamic gameplay | four independent appendages around each body | procedural pixel graphics | two segments, elbow/knee, small hand/foot; gesture sets for joy, realization, panic and death | Phaser | integrated |
+| desktop decorative overscan | permanent environment support | game surface outside the canonical 390×844 canvas | same opaque background, `cover` crop | static support behind the canonical stage; never owns gameplay geometry | Core surface + canonical Phaser canvas | integrated |
 
 Runtime texts and values stay dynamic: score, level, clients remaining, order icons, patience, impact word/cry, multiplier, `BRUTALITY!` and end state.
 
 ## Layer order
 
 1. Environment and crisp flames.
-2. Audience booths / clients.
+2. Fixed audience balconies, then independently animated clients.
 3. Persistent low-cost embers and old juice chunks.
 4. Falling ingredients and hazards.
 5. Skewer, stacked ingredient bodies and dangling limbs.
@@ -36,9 +37,12 @@ Runtime texts and values stay dynamic: score, level, clients remaining, order ic
 - Customer drool and food grill marks are separate, stateful overlays rather than baked pixels. Foods never receive drool.
 - Falling emotion reads joy → realization → worry → frantic last attempt; bodies first cook into appetizing marked food, then missed bodies burn black on the lower grate, ash and disappear.
 - Nearby falling characters can visually grab or repel one another without escaping the bounded fall/grill outcome.
-- Stack limbs lag and settle under movement; bodies remain locked to the skewer.
+- Stack limbs are articulated in two readable segments, lag and settle under movement; bodies remain locked to the skewer.
 - Three left life skewers match the approved gold/red spear family and disappear one per missed customer.
 - Normal→×5 impacts have five clearly different visual/audio intensities while scoring stays unchanged.
+- The skewer/hand remains fixed-size; only a separately drawn sleeve extension reaches the bottom. Pointer capture keeps relative control outside the canvas.
+- A complete recipe validates automatically; there is no delivery target or side gesture.
+- Customer architecture is fixed, at most five actors are visible, and mouth offsets own drool placement per portrait.
 
 ## Built-in ImageGen production prompt set — 2026-09-07
 
@@ -49,6 +53,5 @@ Runtime texts and values stay dynamic: score, level, clients remaining, order ic
 - UI components: “strict 2×2 atlas: gothic order panel, score plaque, empty speech bubble, empty red-stone booth; no values or characters, pure cyan key.”
 - Final food bodies: “strict 4×3 atlas: beef, pepper, mushroom, tomato / onion, zucchini, eggplant, garlic / chicken, tofu, salmon, empty; body silhouettes only, absolutely no face, limbs, drool, grill marks or cooked state, transparent background.”
 - Character parts: “strict 4×4 transparent atlas with expressions, mouths, arms/legs, customer drool, grill marks, ash and juice; crisp coarse pixel clusters.”
-- Customer booth: “single empty gothic red-stone serving booth on transparent background, matching the approved right-side architecture.”
 
-The built-in generator originals remain in Codex generation storage; production-ready assets are the repository paths in the table. Earlier sheets with baked faces/limbs or painted checkerboards were rejected before integration and are not production assets.
+The built-in generator originals remain in Codex generation storage; production-ready assets are the repository paths in the table. Earlier sheets with baked faces/limbs, painted checkerboards, or the rejected cage-like customer booth were removed from production.

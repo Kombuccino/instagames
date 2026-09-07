@@ -4,6 +4,7 @@ import { PhaserGameHost } from '../../core/runtime/PhaserGameHost'
 import { DEFAULT_LOGICAL_VIEWPORTS } from '../../core/runtime/gameRuntimePolicy'
 import { miniFuggAudio } from '../../audio'
 import { VLADS_SKEWERS_SCENE_KEY, VladsSkewersScene } from './VladsSkewersScene'
+import './VladsSkewers.css'
 
 const GAME_ID = 'vlads-skewers'
 
@@ -28,7 +29,11 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
   }), [renderPixelRatio, runSeed])
 
   return (
-    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#070405' }}>
+    <div className="vlad-skewers-game" style={{
+      position: 'absolute', inset: 0, overflow: 'hidden', backgroundColor: '#070405',
+      backgroundImage: 'url(/assets/generated/vlads-skewers/backgrounds/pixel-grill-arena.png)',
+      backgroundSize: 'cover', backgroundPosition: 'center bottom', imageRendering: 'pixelated',
+    }}>
       <PhaserGameHost
         active={active}
         restartToken={restartToken}
@@ -37,7 +42,7 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
         createScene={createScene}
         renderPixelRatio={renderPixelRatio}
         pixelArt
-        ariaLabel="Les Brochettes de Vlad. Maintiens et glisse pour déplacer la brochette, empale la commande dans l'ordre et apporte-la au client de droite."
+        ariaLabel="Les Brochettes de Vlad. Maintiens et glisse pour déplacer la brochette et empale la commande dans l'ordre. Une brochette complète est validée automatiquement."
       />
     </div>
   )

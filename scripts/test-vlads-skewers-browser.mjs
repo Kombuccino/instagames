@@ -56,7 +56,26 @@ try {
     assert.equal(initial.lives, 3)
     assert.equal(initial.score, 0)
     assert.equal(initial.customerRosterSize, 15)
+    assert.equal(initial.remainingCustomers, 3)
+    assert.equal(initial.visibleCustomers, 3)
     assert.equal(initial.skewer.stack.length, 0)
+
+    if (!touchSession) {
+      const box = await canvas.boundingBox()
+      assert.ok(box, 'Gameplay canvas must be visible for outside-canvas control probe')
+      const grip = await point(195, 820)
+      await page.mouse.move(grip.x, grip.y)
+      await page.mouse.down()
+      await page.mouse.move(box.x - 60, grip.y)
+      await advance(17)
+      const atLeftLimit = (await state()).skewer.x
+      await page.mouse.move(box.x - 10, grip.y)
+      await advance(17)
+      const movedRelativelyOutside = (await state()).skewer.x
+      assert.ok(movedRelativelyOutside > atLeftLimit + 20, 'Pointer movement outside the canvas must keep moving Vlad relatively')
+      await page.mouse.up()
+      await page.waitForTimeout(430)
+    }
 
     const probe = JSON.parse(await page.evaluate(() => window.vlad_test_action('tip-probe')))
     const probeId = probe.drops.find(drop => drop.kind === 'pepper')?.id
@@ -87,13 +106,16 @@ try {
     assert.equal(brutality.score, 0, 'Impalement presentation must not add score')
     await capture('brutality-x5')
 
-    await page.evaluate(() => window.vlad_test_action('serve'))
+    await advance(400)
     const served = await state()
     assert.equal(served.score, 50, 'Existing 5-food base 10 × combo 5 scoring must remain intact')
     assert.equal(served.served, 1)
+    assert.equal(served.remainingCustomers, 2, 'A completed skewer must validate automatically and remove one client')
+    assert.equal(served.visibleCustomers, 2)
 
     await page.evaluate(() => window.vlad_test_action('lose'))
     assert.equal((await state()).lives, 2)
+    assert.equal((await state()).remainingCustomers, 1)
     await page.waitForTimeout(180)
     await capture('one-life-lost')
 
@@ -109,6 +131,11 @@ try {
     await advance(700)
     await page.waitForTimeout(260)
     assert.ok(!(await state()).drops.some(drop => drop.id === grillingId), 'Overcooked food must ash and disappear')
+
+    const fullQueue = JSON.parse(await page.evaluate(() => window.vlad_test_action('queue-six')))
+    assert.equal(fullQueue.remainingCustomers, 6)
+    assert.equal(fullQueue.visibleCustomers, 5, 'At most five waiting floors should be occupied')
+    await capture('five-customer-queue')
 
     report.scenarios.push({
       name: config.name,

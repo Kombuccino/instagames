@@ -25,7 +25,7 @@ Street food infernale, vampire cuisinier, humour noir de dessin animé, barbecue
 
 Le stage logique reste 390 × 844 et se met à l'échelle uniformément. Aucun titre du jeu, bouton pause ou panneau explicatif décoratif n'est dessiné dans le gameplay. Le score local est à droite et les trois piques de réserve à gauche. La pointe dorée est la seule zone d'empalement.
 
-Le client actif occupe la loge du bas, dans la portée physique de la pointe. Lui seul affiche la commande. Les clients sont dans des ouvertures à droite et regardent le spectacle avec les mains/gestes. La banque contient au moins quinze personnages distincts, très affamés, joyeux, enthousiastes, capables de sautiller et de recevoir des gouttes de bave séparées.
+Le client actif occupe le balcon du bas, dans la portée physique de la pointe. Lui seul affiche la commande. Les balcons/retraits architecturaux restent parfaitement fixes : seuls les clients bougent. Jusqu'à cinq clients en attente sont visibles, empilés depuis le bas ; toute la file du niveau existe dès son ouverture et la pile visible ne diminue qu'une fois passée sous cinq. Chaque client servi ou perdu disparaît sans remplacement. La banque contient au moins quinze personnages distincts, très affamés, joyeux, enthousiastes, capables de sautiller et de recevoir des gouttes de bave séparées précisément au bord de la bouche, jamais aux oreilles.
 
 ## Aliments et progression émotionnelle
 
@@ -35,17 +35,19 @@ Les textures raster contiennent **uniquement les corps**. Yeux, bouche, bras, ja
 
 Pendant la chute : joie naïve → compréhension → inquiétude → panique et tentative désespérée. Les aliments peuvent tendre les bras, se tenir et se repousser, mais ne peuvent jamais échapper à Vlad ni à la grille. Les ingrédients embrochés ont des yeux `× ×`, une langue molle et des membres pendants qui suivent l'inertie de la broche.
 
-Toute cuisson passe d'abord par un état doré, appétissant, avec couleur chaude et marques de grille nettes. Un aliment raté continue ensuite à noircir, s'effondre en cendre et disparaît. Les projections restent du jus et de petits morceaux alimentaires colorés, jamais des organes réalistes.
+Tout aliment embroché devient immédiatement doré et appétissant, avec couleur chaude et marques de grille nettes. Un aliment raté s'enflamme au contact de la grande grille, fume davantage, noircit, s'effondre en cendre et disparaît. Les projections restent du jus et de petits morceaux alimentaires colorés, jamais des organes réalistes.
 
 ## Gameplay, score et FX
 
-La boucle et le scoring historique sont conservés : recette dans l'ordre, livraison au client, sang = patience/ralenti, ail/mauvais ingrédient/patience = client perdu, fin au troisième client perdu. Valeurs de base : 2/4/6/10/15 points pour 2/3/4/5/6 aliments. La chaîne rapide et le meilleur multiplicateur de la brochette continuent de multiplier la valeur à la livraison.
+La boucle et le scoring historique sont conservés : recette dans l'ordre, **validation automatique dès le dernier ingrédient embroché sans geste de livraison latérale**, sang = patience/ralenti, ail/mauvais ingrédient/patience = client perdu, fin au troisième client perdu. Valeurs de base : 2/4/6/10/15 points pour 2/3/4/5/6 aliments. La chaîne rapide et le meilleur multiplicateur de la brochette continuent de multiplier la valeur à la validation.
 
 Le vocabulaire disponible grandit tous les deux niveaux, de 3 à 10 aliments. La recette passe progressivement de 2 à 6 aliments. L'ouverture reste lisible et l'avalanche véritable arrive tard.
 
-Le percement a du poids : squash/étirement, orientation d'entrée, petite phrase de fin de vie, membres qui retombent, gerbe de jus et fragments. La collision est centrée sur le pixel visible de la pointe dorée, avec une tolérance courte uniquement autour de cette pointe. La main et le bras restent reliés au bas du stage même lorsque la pique monte très haut ; au relâchement, l'ensemble revient automatiquement en bas. La présentation monte en cinq paliers visuels et sonores — normal, ×2, ×3, ×4, ×5 `BRUTALITY!` — sans modifier le calcul de score. Toute valeur de score supérieure reste intacte même si l'intensité artistique est plafonnée à ×5.
+Le percement a du poids : squash/étirement, orientation d'entrée, petite phrase de fin de vie, membres articulés en deux segments qui retombent, gerbe de jus et fragments. La collision est centrée sur le pixel visible de la pointe dorée, avec une tolérance courte uniquement autour de cette pointe. La pique, la main et leur taille ne s'étirent jamais : seule la manche sous le poignet se prolonge jusqu'au bas du stage lorsque Vlad monte. Au relâchement, l'ensemble revient automatiquement en bas. Une capture du pointeur conserve un contrôle relatif continu après la sortie du canvas. La présentation monte en cinq paliers visuels et sonores — normal, ×2, ×3, ×4, ×5 `BRUTALITY!` — sans modifier le calcul de score. Toute valeur de score supérieure reste intacte même si l'intensité artistique est plafonnée à ×5.
 
 Les particules partent vers le haut/les côtés, retombent sous gravité, suivent le ralenti, passent derrière les ingrédients actifs, sont plafonnées et nettoyées. Le climax ×5 peut afficher un grand titre gothique et déclencher une pluie spectaculaire ; il n'est jamais permanent.
+
+Le décor comporte des flammes pixellisées animées sur la grille basse et sur les lanternes/torches visibles, ainsi que des braises dans la profondeur. Sur ordinateur, une extension décorative recadrée peut remplir une surface plus large autour du stage canonique sans déplacer le gameplay.
 
 Le panneau authored du haut pulse au changement de niveau sans couvrir le champ. Il montre le niveau, les aliments disponibles et l'objectif clients, puis conserve une progression compacte.
 

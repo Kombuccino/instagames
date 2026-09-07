@@ -1,0 +1,54 @@
+name: LineFugg static covers
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/linefugg-covers.yml'
+      - 'scripts/test-linefugg-covers.mjs'
+      - 'src/games/linefugg/welcome.ts'
+      - 'src/core/gameRegistry.tsx'
+      - 'src/core/PlatformCoverShell.tsx'
+      - 'src/core/platformCover.css'
+      - 'src/styles.css'
+      - 'public/assets/imported/linefugg/welcome/variants/**'
+  pull_request:
+    paths:
+      - '.github/workflows/linefugg-covers.yml'
+      - 'scripts/test-linefugg-covers.mjs'
+      - 'src/games/linefugg/welcome.ts'
+      - 'src/core/gameRegistry.tsx'
+      - 'src/core/PlatformCoverShell.tsx'
+      - 'src/core/platformCover.css'
+      - 'src/styles.css'
+      - 'public/assets/imported/linefugg/welcome/variants/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: linefugg-covers-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  covers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - run: node scripts/test-linefugg-covers.mjs
+      - name: Save screenshots and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linefugg-static-covers
+          path: artifacts/linefugg-covers/
+          if-no-files-found: warn
+          retention-days: 7

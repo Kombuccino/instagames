@@ -107,9 +107,22 @@ try {
       assert.equal(line.score, Math.round(expected * 100) / 100)
     }
     await capture('three')
+    if (!touch) {
+      const control = (await state()).controls.validate
+      const position = await pixel(control.x, control.y)
+      await page.mouse.move(position.x, position.y)
+      await page.waitForTimeout(120)
+      assert.equal((await state()).validateAppearance, 'amber')
+      assert.equal((await state()).finished, false, 'Hover is not submission')
+      await capture('validate-hover')
+      await page.mouse.move(0, 0)
+      await page.waitForTimeout(120)
+      assert.equal((await state()).validateAppearance, 'green')
+    }
     await clickControl('undo')
     assert.equal((await state()).lines.length, 2)
     assert.equal((await state()).validateEnabled, false)
+    assert.equal((await state()).validateAppearance, 'disabled')
     await trace({ row: 6, col: 0 }, { row: 6, col: 4 })
     const frameIntervals = await page.evaluate(() => new Promise(resolve => {
       const samples = []; let previous

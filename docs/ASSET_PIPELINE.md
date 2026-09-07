@@ -101,3 +101,7 @@ When an image enters MiniFugg **from ChatGPT through Drive**:
 The importer recursively traverses only descendants of the hard-locked `Fugg` folder. It validates decoded image type and size, rejects unsupported files/decompression bombs, sanitizes each path segment, detects normalized-path collisions, limits recursion, never executes uploaded content, and can write only below the hard-locked `public/assets/imported/` prefix in `Kombuccino/instagames` on `main`.
 
 The Drive folder remains private. The application never fetches assets from Google Drive at runtime.
+
+## Runtime backgrounds and transparency
+
+Prefer genuine alpha for isolated art, especially soft edges and glow; PNG and WebP can carry alpha. Opaque images also work in Phaser. If an asset needs its surrounding background removed, use a deliberately uniform key color with a supported local filter, or an appropriate measured geometry mask for a simple silhouette. Do not mistake a painted checkerboard for transparency. When only a clean interior region is consumed, exclude all background pixels through explicit source frames/masks and document that choice. The source image format alone does not guarantee transparency.

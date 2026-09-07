@@ -9,3 +9,7 @@ Suivi produit canonique : src/games/linefugg/GAME_STATUS.md.
 2026-09-07 — Reprise DA2 du bas demandée : nouveau seul atlas local, cadres sobres, total sigma fixe, boutons72 aux x63/327, indicateurs centrés et hover Undo testé séparément. Fond/grille inchangés. Test tactile passé ; revue multi-format en cours. Voir GAME_STATUS/ART_DIRECTION pour décision et géométrie.
 
 Final DA2 verification: six browser configurations passed, hover clears on canvas exit without undo, build/typecheck and skill smoke passed. Reference retained byte-for-byte in public/assets/generated/linefugg/references/lower-console-da2.png. User visual approval and physical-device check remain open.
+
+2026-09-07 — Retour de fidélité traité : réutilisation des états Valider illustrés, verre orange de survol masqué sur le cadre original, sprites de globes/billes, ornements du parchemin, vrais matériaux ×/÷ et centrage optique du total. Fond et règles conservés. QA tactile passée ; matrice finale et état orange en cours.
+
+Final illustrated QA: six configurations, amber hover/leave, disabled restoration, touch, replay all passed; build and smoke passed. Captures inspected: phone-three, phone-empty, desktop-validate-hover. Published with consuming code and local generated source images.

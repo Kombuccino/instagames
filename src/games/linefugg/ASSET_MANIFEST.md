@@ -46,3 +46,15 @@ Runtime now uses /assets/generated/linefugg/ui/accounting-panels.png instead of 
 The atlas is uploaded at 1024 longest edge. Current gameplay texture RGBA estimate is 9,220,096 bytes (8.79 MiB), with the same exclusions noted above; this replaces the earlier 10.62 MiB estimate. See ART_DIRECTION.md's DA2 section for the authoritative lower coordinates, superseding earlier geometry. Old five UI source files are no longer loaded.
 
 DA2 reference preserved byte-for-byte at public/assets/generated/linefugg/references/lower-console-da2.png (reference only, never loaded at runtime). It is user-supplied art, not generated art; location groups this local production pass. Final six-format matrix, mouse hover enter/leave including canvas exit, touch play and build passed.
+
+## Illustrated-state restoration — supersedes flat console states
+
+Restored runtime assets: orbital-validate-ready-v5.png and orbital-validate-disabled-v5.png (complete authored button, no substituted check glyph or grayscale approximation); orbital-history-row-v5.png supplies measured left/right ornaments for the three parchment rows. Ledger ×/÷ use the existing special-cell textures instead of tinting the navy tile.
+
+Local generated glass-indicators.png: 1254² opaque navy sheet with three illustrated glass orbs and three bead sources. Measured frames plus circular Phaser geometry masks remove surrounding pixels; 3 orbs and 15 stateful pips reuse this texture. Never repaint these as flat circles. Inactive beads dim the same illustrated source.
+
+Local validate-amber-source.png: 1254² RGB generated hover variant from the existing ready button. The generator painted a checker outside the silhouette: that region is NOT displayed. Only the clean central glass region [252,250,748,748] is used, clipped to a circle and laid over the original transparent ready button. This preserves the original metal frame and excludes all fake transparency. Preserve original sources. No color-key filter or full-screen effect is required for these components.
+
+The previous atlas's plain green button is no longer used. Sigma and total are optically centered by measuring visible glyph alpha only when score changes, never per animation frame. Hover orange is enabled only after three lines; leaving the canvas clears it, and hover never submits. The active button's existing glass supplies the light rather than procedural rings over its frame.
+
+Final verification: all six browser scenarios passed, including amber hover/leave, no hover submission, undo restoring the authored disabled state, touch tracing and replay. Build/typecheck and skill smoke passed. Current source texture RGBA estimate 15,597,568 bytes (14.875 MiB), excluding CSS background, text and framebuffer/filter storage; supersedes prior lower estimates after restoring authored textures. User art acceptance and physical-device profiling remain open.

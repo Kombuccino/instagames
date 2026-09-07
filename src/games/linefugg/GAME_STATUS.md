@@ -56,3 +56,8 @@ Retour utilisateur : cartouche total trop ornementé, calculs peu lisibles et ma
 
 Nouvel atlas produit directement dans public/assets/generated/linefugg/ui/accounting-panels.png. Estimation RGBA gameplay désormais 8,79 Mio, mêmes exclusions ; remplace la mesure précédente. Test tactile de la boucle réussi. Matrice complète des six formats et survol souris vérifiés ; build et smoke test réussis. Acceptation visuelle utilisateur toujours distincte.
 
+
+## Correction de fidélité illustrée
+
+Après retour utilisateur, restauration des boutons Valider illustrés actif/inactif ; ajout du verre orange au survol. Nouveaux globes et billes raster, décors latéraux du parchemin restaurés, chips × orange / ÷ violet avec leurs textures réelles. Total centré sur les pixels visibles. Les formes plates ne sont plus la représentation des indicateurs. Six configurations navigateur réussies, tactile et survol orange compris ; build/typecheck et smoke test réussis. Estimation textures gameplay : 14,875 Mio RGBA, hors fond CSS, textes et buffers, remplaçant la mesure précédente. Acceptation artistique utilisateur toujours ouverte.
+

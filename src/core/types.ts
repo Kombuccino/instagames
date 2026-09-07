@@ -72,6 +72,8 @@ export type GameWelcomeVariant = {
   image: string
   unlockScore?: number
   objectPosition?: string
+  /** Preserve an uncroppable flat master/title; Core fills the outside with decorative overscan. */
+  fit?: 'cover' | 'contain'
   /** Static covers stay in Core; advanced layered covers use the shared Phaser scene. */
   runtime?: 'static' | 'phaser-2d'
   layers?: GameWelcomeLayer[]

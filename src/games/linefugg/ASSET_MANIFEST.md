@@ -37,7 +37,7 @@ Runtime uploads capped at longest edge 1024, controls256; cache reused on restar
 
 Six browser scenarios passed: small/standard/tall phone, tablet, desktop, reduced motion. Touch traces on phones; tests cover invalid overlap, three lines without auto-submit, sequential scoring, undo, explicit submit, replay and return to cover. Build and skill smoke test pass. Physical-device profiling and user acceptance of final art remain open. See GAME_STATUS.md.
 
-Cover remains A METTRE A JOUR. Validated gameplay and canonical music choices are preserved.
+Cover is now current as a static collection; animation is deferred. Validated gameplay and canonical music choices are preserved.
 
 ## DA2 lower-console replacement — 2026-09-07
 
@@ -76,4 +76,12 @@ Repository destination: public/assets/imported/linefugg/welcome/variants/.
 
 All four originals are 941×1672 RGB PNGs, opaque, stored without resize, crop, recompression or regeneration. No optimized derivative or animation layers were produced. Source filenames, generation IDs, Drive/archive file IDs, byte lengths and expected SHA-256/Git blob hashes are recorded in [the import receipt](../../../ops/drive-asset-sync/imports/linefugg-covers-2026-09-07.json).
 
-This pass stores the approved artwork only. It does not select the default edition, add unlock thresholds, change the feed, replace the placeholder, or mark the runtime cover migration current. Verify the imported files against the receipt before adding consuming code. Future animation must preserve these masters and produce separate layers rather than substituting new compositions.
+The initial storage pass did not activate the covers. The later explicit integration request at 13:31:32 UTC authorizes the static cutover below; it does not authorize replacing or regenerating these masters. Future animation must preserve them and produce separate layers rather than substituting new compositions.
+
+## Active static cover collection — 2026-09-07
+
+[welcome.ts](welcome.ts) exports LINEFUGG_WELCOME, consumed by the LineFugg registry entry. All four original PNG paths above are active static variants in the existing Core Cover selection panel. No LineFugg unlock thresholds existed; all four remain available at score zero for this integration, without changing another game's unlock rules. Core's existing seed-based selection chooses a stable edition for each feed slot; the first edition supplies the creator/catalog thumbnail. No timed slideshow, animation layers or Phaser cover instance is added.
+
+The registry marks only LineFugg's cover migration current. The shared CSS already keys the migration marker to that metadata, so no global badge removal or game-specific CSS override is needed. The LineFugg placeholder is no longer referenced by the registry; its historical mirrored source is not an active alternate edition.
+
+Imported Git blob hashes were compared with the receipt and the four locally available originals before cutover. The reproducible browser check is scripts/test-linefugg-covers.mjs; it additionally checks PNG SHA-256/dimensions, all four selections, still rendering, marker removal, launch/return and unchanged pending-game markers. See GAME_STATUS.md for execution results. No gameplay, Core column sizing, image bytes or music changed.

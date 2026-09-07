@@ -1,7 +1,7 @@
 # LineFugg — Art Direction
 
 Status: canonical gameplay art direction approved 2026-09-06.
-Cover status remains A METTRE A JOUR. Do not use this document as permission to redesign the cover yet.
+Cover status: current static collection, integrated 2026-09-07 after explicit user request. Preserve the four approved originals identified in ASSET_MANIFEST.md; animation is deferred, not a reason to retain the migration badge. Cover art follows DA_COVER.md, independently from the gameplay medium below.
 
 ## Continuity contract — 2026-09-07
 
@@ -202,3 +202,11 @@ Canonical lower geometry: ledger center (195,593.5), 342×153; total center (195
 ## Fidélité illustrée — correction du 7 septembre 2026
 
 Retour utilisateur prioritaire : les cadres sobres de la passe DA2 ne justifient pas de supprimer les décors, ni de remplacer le verre illustré par des cercles vectoriels. Préserver la matière, les gravures, les ornements et les états existants. Valider utilise les PNG illustrés actif/inactif existants ; orange uniquement au survol quand disponible. Les globes et billes utilisent des sprites de verre, pas des disques procéduraux. Les chips × et ÷ emploient leurs véritables textures orange/violette. Le total se centre selon les pixels des glyphes, indépendamment des métriques asymétriques de la police. Le fond, la grille et les règles restent acquis.
+
+## Covers approuvées et intégrées — 7 septembre 2026
+
+La validation utilisateur de 12:50:57 UTC porte sur les quatre images exactes : savant rouge qui trace, cartographe de dos avec compas, affiche des trois routes, jeune astronome en édition japonaise. La demande de 13:31:32 UTC autorise leur remplacement du placeholder et le retrait de A METTRE A JOUR. Elles sont maintenant déclarées en statique dans welcome.ts ; les identifiants, fichiers et empreintes sont conservés dans ASSET_MANIFEST.md et le reçu d'import.
+
+Ne pas régénérer ces images pour les rapprocher du gameplay ou d'une étiquette de style. Préserver titre et composition entière : le mode statique contain protège les titres imprimés sur téléphone long ; seul le fond diffus extérieur est cover-crop dans la colonne Core. Ce choix de présentation ne change ni les pixels des masters, ni la règle du fond décoratif gameplay, ni le stage 390×844.
+
+Aucune animation cover n'est demandée pour cette livraison. Une future décomposition devra conserver les masters et produire des couches séparées dans le runtime partagé. Le médium, l'intention et le cadrage de chaque édition restent distincts ; très peu de texte hors titre, anglais par défaut et japonais pour l'édition localisée.

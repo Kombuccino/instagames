@@ -191,14 +191,18 @@ export class VladsSkewersScene extends Phaser.Scene {
   private previousSkewerX = 195
   private previousSkewerY = 820
   private capturedPointerId: number | null = null
-  private lastPointerClientX = 0
-  private lastPointerClientY = 0
+  private dragStartClientX = 0
+  private dragStartClientY = 0
+  private dragStartSkewerX = 195
+  private dragStartSkewerY = 820
+  private handHintActive = false
   private inputCanvas?: HTMLCanvasElement
   private ambientTick = 0
 
   private background!: Phaser.GameObjects.Image
   private skewer!: Phaser.GameObjects.Image
   private arm!: Phaser.GameObjects.Image
+  private handHint!: Phaser.GameObjects.Graphics
   private tipGlow!: Phaser.GameObjects.Graphics
   private scoreText!: Phaser.GameObjects.Text
   private scoreDigits: Phaser.GameObjects.Image[] = []
@@ -232,6 +236,7 @@ export class VladsSkewersScene extends Phaser.Scene {
     combo: this.combo,
     customerRosterSize: 15,
     skewer: { x: Math.round(this.skewerX), y: Math.round(this.skewerY), tipX: Math.round(this.skewerX), tipY: Math.round(this.skewerY - TIP_OFFSET), stack: this.stack.map(item => ({ kind: item.kind, cooked: item.visual.cooked })) },
+    input: { handOnly: true, handHint: this.handHintActive, gripX: Math.round(this.skewerX), gripY: Math.round(this.skewerY - 68) },
     activeCustomer: this.customers[0] ? { id: this.customers[0].id, name: this.customers[0].name, order: this.customers[0].order, patience: Number(this.customers[0].patience.toFixed(1)) } : null,
     drops: this.drops.slice(0, 40).map(drop => ({ id: drop.id, kind: drop.kind, x: Math.round(drop.x), y: Math.round(drop.y), vx: Math.round(drop.vx), speed: Math.round(drop.speed), state: drop.state, emotion: this.emotionFor(drop) })),
   })
@@ -322,6 +327,7 @@ export class VladsSkewersScene extends Phaser.Scene {
     this.dragging = false
     this.finished = false
     this.autoServeAt = null
+    this.handHintActive = false
     this.ambientTick = 0
     this.skewerX = 195
     this.skewerY = 820
@@ -353,7 +359,8 @@ export class VladsSkewersScene extends Phaser.Scene {
     this.buildAmbientFlames()
 
     this.buildHud()
-    this.arm = this.add.image(this.skewerX + 31, this.skewerY - 104, 'vlad-arm').setOrigin(.5, 0).setDisplaySize(264, 440).setDepth(46)
+    this.arm = this.add.image(this.skewerX + 31, this.skewerY - 92, 'vlad-arm').setOrigin(.5, 0).setDisplaySize(264, 440).setDepth(46)
+    this.handHint = this.add.graphics().setDepth(62).setVisible(false)
     this.skewer = this.add.image(this.skewerX, this.skewerY, 'vlad-skewer', 'shaft').setOrigin(.5, 1).setDisplaySize(30, 350).setDepth(45)
     this.tipGlow = this.add.graphics().setDepth(44)
     this.comboText = this.add.text(195, 525, '', {
@@ -468,16 +475,22 @@ export class VladsSkewersScene extends Phaser.Scene {
   private readonly handleDomPointerDown = (event: PointerEvent) => {
     if (this.finished) return
     const point = this.clientToWorld(event.clientX, event.clientY)
-    if (point.y < 560) return
     event.preventDefault()
+    if (!this.isPointOnHand(point)) {
+      this.handHintActive = true
+      return
+    }
     this.returnTween?.stop()
     this.returnTween = undefined
+    this.handHintActive = false
+    this.handHint.setVisible(false)
     this.capturedPointerId = event.pointerId
-    this.lastPointerClientX = event.clientX
-    this.lastPointerClientY = event.clientY
+    this.dragStartClientX = event.clientX
+    this.dragStartClientY = event.clientY
+    this.dragStartSkewerX = this.skewerX
+    this.dragStartSkewerY = this.skewerY
     try { this.inputCanvas?.setPointerCapture(event.pointerId) } catch { /* capture can fail after a cancelled touch */ }
     this.dragging = true
-    this.moveSkewer(point)
     this.previousTip.set(this.skewerX, this.skewerY - TIP_OFFSET)
   }
 
@@ -486,11 +499,9 @@ export class VladsSkewersScene extends Phaser.Scene {
     event.preventDefault()
     const bounds = this.inputCanvas?.getBoundingClientRect()
     if (!bounds) return
-    const deltaX = (event.clientX - this.lastPointerClientX) / bounds.width * W
-    const deltaY = (event.clientY - this.lastPointerClientY) / bounds.height * H
-    this.lastPointerClientX = event.clientX
-    this.lastPointerClientY = event.clientY
-    this.moveSkewer(new Phaser.Math.Vector2(this.skewerX + deltaX, this.skewerY + deltaY))
+    const deltaX = (event.clientX - this.dragStartClientX) / bounds.width * W
+    const deltaY = (event.clientY - this.dragStartClientY) / bounds.height * H
+    this.moveSkewer(new Phaser.Math.Vector2(this.dragStartSkewerX + deltaX, this.dragStartSkewerY + deltaY))
   }
 
   private readonly handleDomPointerUp = (event: PointerEvent) => {
@@ -514,6 +525,12 @@ export class VladsSkewersScene extends Phaser.Scene {
   private moveSkewer(point: Phaser.Math.Vector2) {
     this.skewerX = clamp(point.x, 54, 341)
     this.skewerY = clamp(point.y, 520, 832)
+  }
+
+  private isPointOnHand(point: Phaser.Math.Vector2) {
+    const dx = (point.x - this.skewerX) / 43
+    const dy = (point.y - (this.skewerY - 68)) / 50
+    return dx * dx + dy * dy <= 1
   }
 
   private simulate(dt: number) {
@@ -973,6 +990,7 @@ export class VladsSkewersScene extends Phaser.Scene {
     const tipY = this.skewerY - TIP_OFFSET
     this.skewer.setPosition(this.skewerX, this.skewerY - 35).setDisplaySize(30, 350)
     this.arm.setPosition(this.skewerX + 31, this.skewerY - 92)
+    this.drawHandHint()
     const velocity = (this.skewerX - this.previousSkewerX) / Math.max(dt, .001)
     this.previousSkewerX = this.skewerX
     this.previousSkewerY = this.skewerY
@@ -987,6 +1005,24 @@ export class VladsSkewersScene extends Phaser.Scene {
       this.drawInertStackLimbs(item, velocity, dt, index)
       if (item.visual.cooked) this.drawGrillMarks(item.visual)
     })
+  }
+
+  private drawHandHint() {
+    const hint = this.handHint
+    hint.clear()
+    if (!this.handHintActive || Math.floor(this.elapsed * 7) % 2 === 0) {
+      hint.setVisible(false)
+      this.arm.clearTint()
+      return
+    }
+    const x = Math.round(this.skewerX)
+    const y = Math.round(this.skewerY - 68)
+    this.arm.setTint(0xffd873)
+    hint.setVisible(true).lineStyle(3, 0xffd34d, 1)
+    hint.strokeRect(x - 39, y - 47, 18, 3).strokeRect(x - 39, y - 47, 3, 18)
+    hint.strokeRect(x + 21, y - 47, 18, 3).strokeRect(x + 36, y - 47, 3, 18)
+    hint.strokeRect(x - 39, y + 44, 18, 3).strokeRect(x - 39, y + 29, 3, 18)
+    hint.strokeRect(x + 21, y + 44, 18, 3).strokeRect(x + 36, y + 29, 3, 18)
   }
 
   private drawInertStackLimbs(item: StackFood, velocity: number, dt: number, index: number) {

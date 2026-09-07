@@ -16,6 +16,7 @@ Phase gameplay : migration Phaser 4 et troisième passe corrective en validation
 - Trois piques de réserve à gauche ; une seule tombe par client/brochette raté.
 - Pointe visible, collision et pile partagent exactement le même axe ; le bras reste raccordé au bas du stage et revient automatiquement en bas au relâchement.
 - Pique rigide séparée d'un nouveau bras authored très long : aucun étirement runtime, extension jusqu'au haut du champ et continuité sous le bas du stage. Le déplacement relatif continue hors canvas.
+- Prise limitée à la silhouette de la main. Le point saisi reste invariant même lorsque le pointeur dépasse une butée ; revenir au point initial restaure exactement la pose initiale. Un clic raté fait clignoter la main jusqu'à la première prise valide.
 - Brochette validée automatiquement au dernier ingrédient, sans livraison latérale. Chaque ingrédient embroché est immédiatement grillé.
 - Décor authored éteint sans flamme figée ; trois plans de boucles de feu pixel-art dessinées (foyers, salle arrière, grille), braises et fumée de profondeur. Aliment raté enflammé avant charbon/cendres.
 - Cinq balcons fixes maximum ; seule la pile d'acteurs bouge et diminue réellement jusqu'au changement de niveau. Bave recalée par bouche.
@@ -31,6 +32,7 @@ Le 7 septembre 2026 :
 - tests Core Audio réussis ;
 - `scripts/test-vlads-skewers-browser.mjs` réussi sur téléphone tactile émulé et bureau souris ;
 - véritable empalement par la pointe avec contre-test extérieur au corps, poussée latérale par la tige sans empalement, portée haute et retour automatique du bras, roster 15, pile ×5 cuite, perte de pique, cuisson/charbon/cendre et disparition validés ;
+- clic hors main refusé et signal visuel vérifié ; dérive nulle après dépassement horizontal puis retour du pointeur au point de prise ; main visible et immobilisée aux butées haute/basse ;
 - contrôle souris relatif vérifié après sortie du canvas ; file 3→2→1 et plafonnement visuel à cinq clients vérifiés ;
 - score historique vérifié : brochette de 5 (base 10) × combo 5 = 50 ; l'empalement seul n'ajoute aucun point et la broche complète reste visible 1,65 s avant validation ;
 - aucune erreur console ou ressource dans la matrice testée.

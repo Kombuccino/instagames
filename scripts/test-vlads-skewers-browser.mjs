@@ -67,17 +67,24 @@ try {
     if (!touchSession) {
       const box = await canvas.boundingBox()
       assert.ok(box, 'Gameplay canvas must be visible for outside-canvas control probe')
-      const grip = await point(195, 820)
+      const miss = await point(90, 420)
+      await page.mouse.click(miss.x, miss.y)
+      await advance(100)
+      assert.equal((await state()).input.handHint, true, 'A click outside the hand must trigger its visual hint')
+      await capture('hand-hint')
+      const grip = await point(195, 752)
       await page.mouse.move(grip.x, grip.y)
       await page.mouse.down()
+      assert.equal((await state()).input.handHint, false, 'The hand hint must stop as soon as the hand is grabbed')
       await page.mouse.move(box.x - 60, grip.y)
       await advance(17)
       const atLeftLimit = (await state()).skewer.x
-      await page.mouse.move(box.x - 10, grip.y)
+      assert.ok(atLeftLimit <= 55, 'The hand must stop at its left gameplay limit while the pointer continues')
+      await page.mouse.move(grip.x, grip.y)
       await advance(17)
-      const movedRelativelyOutside = (await state()).skewer.x
-      assert.ok(movedRelativelyOutside > atLeftLimit + 20, 'Pointer movement outside the canvas must keep moving Vlad relatively')
-      await page.mouse.move(...Object.values(await point(195, 530)))
+      assert.ok(Math.abs((await state()).skewer.x - 195) < 1, 'Returning to the original pointer position must restore the exact grabbed point without drift')
+      const highReach = await point(195, 452)
+      await page.mouse.move(highReach.x, highReach.y)
       await advance(34)
       assert.ok((await state()).skewer.tipY < 170, 'Vlad must reach the upper gameplay field')
       await capture('arm-high-reach')
@@ -89,14 +96,28 @@ try {
     const probeId = probe.drops.find(drop => drop.kind === 'pepper')?.id
     assert.ok(probeId, 'Deterministic tip probe must exist')
     const pressAt = async (x, y) => {
-      const grip = await point(x, y)
-      if (touchSession) await touchSession.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...grip, id: 1 }] })
-      else { await page.mouse.move(grip.x, grip.y); await page.mouse.down() }
+      const before = await state()
+      const grip = await point(before.skewer.x, before.skewer.y - 68)
+      const horizontal = await point(before.skewer.x + (x - before.skewer.x), before.skewer.y - 68)
+      const destination = await point(before.skewer.x + (x - before.skewer.x), before.skewer.y - 68 + (y - before.skewer.y))
+      if (touchSession) {
+        await touchSession.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...grip, id: 1 }] })
+        await touchSession.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ ...horizontal, id: 1 }] })
+        await advance(17)
+        await touchSession.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ ...destination, id: 1 }] })
+      } else {
+        await page.mouse.move(grip.x, grip.y)
+        await page.mouse.down()
+        await page.mouse.move(horizontal.x, horizontal.y)
+        await advance(17)
+        await page.mouse.move(destination.x, destination.y)
+      }
       await advance(34)
       if (touchSession) await touchSession.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
       else await page.mouse.up()
+      await page.waitForTimeout(430)
     }
-    await pressAt(238, 765)
+    await pressAt(300, 765)
     assert.equal((await state()).skewer.stack.length, 0, 'A press beside the gold tip must not impale')
     assert.ok((await state()).drops.some(drop => drop.id === probeId), 'Near-tip miss must leave the food falling')
     await pressAt(195, 765)

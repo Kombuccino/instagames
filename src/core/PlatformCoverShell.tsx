@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointer
 import type { GameComment, GameSocialStats } from './social'
 import type { InstagameDefinition } from './types'
 import { PhaserCoverHost } from './runtime/PhaserCoverHost'
+import { StaticCoverArt } from './StaticCoverArt'
 import './platformCover.css'
 
 export type PlatformPanel = 'info' | 'comments' | null
@@ -98,7 +99,7 @@ function fallbackComments(author?: string): CommentThread[] {
     },
     {
       id: 'mock-3', nickname: 'TetrisFan87', body: 'Any tips for getting past 1k? Always choke there…', age: '2d', likes: 6, role: 'free',
-      replies: [{ id: 'mock-3-r1', nickname: author || 'MiniFugg', body: 'Try to keep a 2-line buffer and watch for the rare pieces. Practice mode is on the list.', age: '1d', likes: 14, role: 'creator' }],
+      replies: [{ id: 'mock-3-r1', nickname: author || 'MiniFugg', body: 'Try to keep a 2-line buffer and watch for the rare pieces. Practice mode is on the list.', age: '2d', likes: 14, role: 'creator' }],
     },
     { id: 'mock-4', nickname: 'indiepop', body: 'Stunning cover art. Instantly hooked.', age: '3d', likes: 31, role: '999' },
   ]
@@ -195,7 +196,7 @@ export function PlatformCoverShell(props: Props) {
     >
       {activeCover?.image && (
         <div className="mf-core-selected-cover">
-          <img src={activeCover.image} alt="" draggable={false} aria-hidden="true" />
+          <StaticCoverArt variant={activeCover} />
           {active && activeCover.runtime === 'phaser-2d' && activeCover.layers?.length ? (
             <PhaserCoverHost
               active={!panel}

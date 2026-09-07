@@ -54,6 +54,8 @@ Animated layer transforms are authored in the cover's logical coordinate system,
 
 Games may have multiple collectible/unlockable cover treatments, including regional/cultural variations when appropriate.
 
+During the public Alpha, every cover variant that exists in a game's catalog is unlocked and selectable. Score and achievement thresholds remain catalog metadata for the later progression system but do not lock covers during Alpha.
+
 Typical family:
 
 1. primary edition;

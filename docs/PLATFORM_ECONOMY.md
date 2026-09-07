@@ -4,11 +4,17 @@ This document is the product/economic contract for MiniFugg. It defines coins, L
 
 Read together with `docs/DISCOVERY_NAVIGATION.md` and `docs/PLATFORM_EXPORTS.md`.
 
+## 0. Active Alpha override
+
+During the public Alpha, every player receives **500 renewable coins per UTC day**. This temporary allowance overrides the 40-coin free-account and 999-coin Lifetime targets below while the product remains in Alpha. Durable coins are preserved, and renewable coins are still spent first.
+
+The current local Core mock migrates an existing same-day wallet by preserving the number of renewable coins already spent, then applying the 500-coin allowance. The future connected economy remains server-authoritative.
+
 ## 1. Executive summary
 
 MiniFugg is an arcade platform, not a conventional mobile F2P economy.
 
-- Free account: **40 renewable coins per day**.
+- Alpha account: **500 renewable coins per day** (temporary override; production free-account target remains 40).
 - Fugg play: **2 coins**.
 - Bêta play: **1 coin**.
 - Caca / `trash` play: **free**.

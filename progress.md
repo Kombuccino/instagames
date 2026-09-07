@@ -19,3 +19,5 @@ Final DA2 verification: six browser configurations passed, hover clears on canva
 2026-09-07 — Retour de fidélité traité : réutilisation des états Valider illustrés, verre orange de survol masqué sur le cadre original, sprites de globes/billes, ornements du parchemin, vrais matériaux ×/÷ et centrage optique du total. Fond et règles conservés. QA tactile passée ; matrice finale et état orange en cours.
 
 Final illustrated QA: six configurations, amber hover/leave, disabled restoration, touch, replay all passed; build and smoke passed. Captures inspected: phone-three, phone-empty, desktop-validate-hover. Published with consuming code and local generated source images.
+
+2026-09-07 — Politique Alpha Core : allocation renouvelable portée à 500 coins/jour, avec migration des portefeuilles locaux du jour qui conserve les dépenses et les coins durables. Toutes les variantes de cover existantes sont déverrouillées et sélectionnables pendant l’Alpha ; les seuils restent conservés pour la progression future. Vérifié sur TetraMindFck à score 0 : 3/3 covers actives, variante à 15 000 sélectionnée, débit de partie 500→498, aucune erreur navigateur.

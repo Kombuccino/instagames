@@ -48,7 +48,7 @@ Le CTA est un cartouche léger : `INSERT COIN x2`, deux pièces superposées hor
 
 Conserver les onglets Info/Comments dans la même famille. L'ordre est : sélection des covers ; titre et créateur ; description ; version et dernière mise à jour ; high score personnel et accès au leaderboard ; règles ; section créateur.
 
-La cover active doit être évidente. Les autres covers débloquées sont sélectionnables ; les verrouillées utilisent gris/pixellisation pour garder la surprise. Ne pas inventer des variantes indisponibles.
+La cover active doit être évidente. Les autres covers débloquées sont sélectionnables ; les verrouillées utilisent gris/pixellisation pour garder la surprise. Pendant l’Alpha publique, toutes les variantes réellement disponibles dans le catalogue sont débloquées et sélectionnables ; ne pas inventer de variantes absentes.
 
 Ne pas placer de logo ou vignette devant le titre du jeu. La date de création est facultative lorsqu'elle existe. Aucun Difficulty, Tags, Avg. Session, Platforms ou filtre de catalogue non demandé.
 

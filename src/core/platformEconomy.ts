@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useState } from 'react'
+import { PLATFORM_ALPHA_POLICY } from './platformAlphaPolicy'
 
 const STORAGE_KEY = 'minifugg:core-economy-mock:v2'
 const EVENT_NAME = 'minifugg:coin-balance'
-const FREE_DAILY_ALLOWANCE = 40
+const LEGACY_FREE_DAILY_ALLOWANCE = 40
+const DAILY_ALLOWANCE = PLATFORM_ALPHA_POLICY.dailyCoinAllowance
 
 type StoredEconomy = {
   day: string
   dailyCoins: number
   durableCoins: number
+  dailyAllowance: number
 }
 
 function todayId() {
@@ -15,21 +18,31 @@ function todayId() {
 }
 
 function readStore(): StoredEconomy {
-  if (typeof window === 'undefined') return { day: todayId(), dailyCoins: FREE_DAILY_ALLOWANCE, durableCoins: 0 }
+  if (typeof window === 'undefined') return { day: todayId(), dailyCoins: DAILY_ALLOWANCE, durableCoins: 0, dailyAllowance: DAILY_ALLOWANCE }
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY)
     if (raw) {
       const parsed = JSON.parse(raw) as Partial<StoredEconomy>
       const durableCoins = Number.isFinite(parsed.durableCoins) ? Math.max(0, Math.trunc(parsed.durableCoins!)) : 0
       if (parsed.day === todayId() && Number.isFinite(parsed.dailyCoins)) {
-        return { day: todayId(), dailyCoins: Math.max(0, Math.trunc(parsed.dailyCoins!)), durableCoins }
+        const storedDailyCoins = Math.max(0, Math.trunc(parsed.dailyCoins!))
+        const storedAllowance = Number.isFinite(parsed.dailyAllowance)
+          ? Math.max(0, Math.trunc(parsed.dailyAllowance!))
+          : LEGACY_FREE_DAILY_ALLOWANCE
+        const coinsSpentToday = Math.max(0, storedAllowance - storedDailyCoins)
+        return {
+          day: todayId(),
+          dailyCoins: Math.max(0, DAILY_ALLOWANCE - coinsSpentToday),
+          durableCoins,
+          dailyAllowance: DAILY_ALLOWANCE,
+        }
       }
-      return { day: todayId(), dailyCoins: FREE_DAILY_ALLOWANCE, durableCoins }
+      return { day: todayId(), dailyCoins: DAILY_ALLOWANCE, durableCoins, dailyAllowance: DAILY_ALLOWANCE }
     }
   } catch {
     // The prototype economy must never block discovery.
   }
-  return { day: todayId(), dailyCoins: FREE_DAILY_ALLOWANCE, durableCoins: 0 }
+  return { day: todayId(), dailyCoins: DAILY_ALLOWANCE, durableCoins: 0, dailyAllowance: DAILY_ALLOWANCE }
 }
 
 function writeStore(next: StoredEconomy) {

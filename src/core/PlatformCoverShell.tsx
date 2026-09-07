@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import type { GameComment, GameSocialStats } from './social'
 import type { InstagameDefinition } from './types'
+import { PLATFORM_ALPHA_POLICY } from './platformAlphaPolicy'
 import { PhaserCoverHost } from './runtime/PhaserCoverHost'
 import { StaticCoverArt } from './StaticCoverArt'
 import './platformCover.css'
@@ -83,9 +84,13 @@ function coverVariants(game: InstagameDefinition) {
   return [{ id: 'current', label: 'Current cover', image: '', unlockScore: 0 }]
 }
 
+function isCoverUnlocked(bestScore: number, unlockScore = 0) {
+  return PLATFORM_ALPHA_POLICY.allCoverVariantsUnlocked || bestScore >= unlockScore
+}
+
 function seededActiveVariant(game: InstagameDefinition, seed: number, bestScore: number) {
   const variants = coverVariants(game)
-  const unlocked = variants.filter((variant) => bestScore >= (variant.unlockScore ?? 0))
+  const unlocked = variants.filter((variant) => isCoverUnlocked(bestScore, variant.unlockScore))
   const pool = unlocked.length ? unlocked : variants.slice(0, 1)
   return pool[Math.abs(Math.trunc(seed)) % pool.length]?.id ?? variants[0]?.id ?? ''
 }
@@ -240,7 +245,7 @@ export function PlatformCoverShell(props: Props) {
                 <h2 className="mf-ui-h3">COVER SELECTION</h2>
                 <div className="mf-cover-grid">
                   {variants.map((variant) => {
-                    const unlocked = bestScore >= (variant.unlockScore ?? 0)
+                    const unlocked = isCoverUnlocked(bestScore, variant.unlockScore)
                     const activeVariant = activeVariantId === variant.id
                     return (
                       <button key={variant.id} type="button" className={`${activeVariant ? 'is-active' : ''}${unlocked ? '' : ' is-locked'}`} onClick={() => selectCover(variant.id, unlocked)} disabled={!unlocked}>

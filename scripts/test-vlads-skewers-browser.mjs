@@ -58,24 +58,25 @@ try {
     assert.equal(initial.customerRosterSize, 15)
     assert.equal(initial.skewer.stack.length, 0)
 
-    let caught = false
-    for (let attempt = 0; attempt < 150 && !caught; attempt += 1) {
-      const current = await state()
-      const expected = current.activeCustomer?.order[current.skewer.stack.length]
-      const target = current.drops.find(drop => drop.state === 'falling' && drop.kind === expected && drop.y >= 310 && drop.y <= 465)
-      if (!target) {
-        await advance(80)
-        continue
-      }
-      const grip = await point(target.x, Math.min(832, Math.max(670, target.y + 365)))
+    const probe = JSON.parse(await page.evaluate(() => window.vlad_test_action('tip-probe')))
+    const probeId = probe.drops.find(drop => drop.kind === 'pepper')?.id
+    assert.ok(probeId, 'Deterministic tip probe must exist')
+    const pressAt = async (x, y) => {
+      const grip = await point(x, y)
       if (touchSession) await touchSession.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...grip, id: 1 }] })
       else { await page.mouse.move(grip.x, grip.y); await page.mouse.down() }
       await advance(34)
       if (touchSession) await touchSession.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
       else await page.mouse.up()
-      caught = (await state()).skewer.stack.length === 1
     }
-    assert.equal(caught, true, 'A real pointer press at the gold tip must impale the expected falling food')
+    await pressAt(213, 765)
+    assert.equal((await state()).skewer.stack.length, 0, 'A press beside the gold tip must not impale')
+    assert.ok((await state()).drops.some(drop => drop.id === probeId), 'Near-tip miss must leave the food falling')
+    await pressAt(195, 765)
+    assert.equal((await state()).skewer.stack.length, 1, 'A press exactly at the gold tip must impale')
+    assert.ok(!(await state()).drops.some(drop => drop.id === probeId), 'Exact-tip hit must remove the caught food')
+    await page.waitForTimeout(430)
+    assert.ok(Math.abs((await state()).skewer.y - 832) < 1, 'Released arm must spring back to the bottom')
     await capture('pointer-impale')
 
     await page.evaluate(() => window.vlad_test_action('brutality'))
@@ -96,7 +97,9 @@ try {
     await page.waitForTimeout(180)
     await capture('one-life-lost')
 
-    await page.evaluate(() => window.vlad_test_action('grill'))
+    const grillingStart = JSON.parse(await page.evaluate(() => window.vlad_test_action('grill')))
+    const grillingId = grillingStart.drops.find(drop => drop.state === 'grilling')?.id
+    assert.ok(grillingId, 'Deterministic grill probe must exist')
     await advance(520)
     const cooked = await state()
     assert.ok(cooked.drops.some(drop => drop.state === 'grilling'))
@@ -105,7 +108,7 @@ try {
     await capture('grill-charred')
     await advance(700)
     await page.waitForTimeout(260)
-    assert.ok(!(await state()).drops.some(drop => drop.state === 'grilling'), 'Overcooked food must ash and disappear')
+    assert.ok(!(await state()).drops.some(drop => drop.id === grillingId), 'Overcooked food must ash and disappear')
 
     report.scenarios.push({
       name: config.name,

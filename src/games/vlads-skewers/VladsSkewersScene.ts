@@ -12,9 +12,12 @@ const MAX_LOST = 3
 const COMBO_WINDOW = 1.35
 const GRILL_Y = 705
 const TIP_OFFSET = 365
-const TIP_RADIUS = 22
-const PLAY_MIN_X = 82
-const PLAY_MAX_X = 282
+const TIP_RADIUS = 12
+const PLAY_MIN_X = 68
+const PLAY_MAX_X = 290
+const FALLING_FOOD_SIZE = 78
+const STACK_FOOD_SIZE = 70
+const STACK_GAP = 43
 const FONT = '"Arial Black", Impact, sans-serif'
 
 type IngredientKind = 'meat' | 'tomato' | 'pepper' | 'onion' | 'mushroom' | 'zucchini' | 'eggplant' | 'chicken' | 'tofu' | 'fish'
@@ -32,14 +35,16 @@ type IngredientSpec = {
 type FoodVisual = {
   root: Phaser.GameObjects.Container
   body: Phaser.GameObjects.Image
-  eyes: Phaser.GameObjects.Graphics
-  mouth: Phaser.GameObjects.Graphics
-  arms: Phaser.GameObjects.Graphics
-  legs: Phaser.GameObjects.Graphics
-  drool: Phaser.GameObjects.Graphics
-  grillMarks: Phaser.GameObjects.Graphics
+  eyes: Phaser.GameObjects.Image
+  mouth: Phaser.GameObjects.Image
+  leftArm: Phaser.GameObjects.Image
+  rightArm: Phaser.GameObjects.Image
+  leftLeg: Phaser.GameObjects.Image
+  rightLeg: Phaser.GameObjects.Image
+  grillMarks: Phaser.GameObjects.Image
   phase: number
   cooked: boolean
+  size: number
 }
 
 type Drop = {
@@ -78,7 +83,7 @@ type Customer = {
 type CustomerSlot = {
   root: Phaser.GameObjects.Container
   portrait: Phaser.GameObjects.Image
-  drool: Phaser.GameObjects.Graphics
+  drool: Phaser.GameObjects.Image
   baseY: number
   phase: number
   customerId: number
@@ -160,6 +165,7 @@ export class VladsSkewersScene extends Phaser.Scene {
   private hudTimer = 0
   private dragging = false
   private finished = false
+  private returnTween?: Phaser.Tweens.Tween
   private skewerX = 195
   private skewerY = 820
   private previousTip = new Phaser.Math.Vector2(195, 455)
@@ -206,9 +212,11 @@ export class VladsSkewersScene extends Phaser.Scene {
 
   preload() {
     this.load.image('vlad-bg', `${ASSET_ROOT}/backgrounds/pixel-grill-arena.png`)
-    this.load.spritesheet('vlad-food', `${ASSET_ROOT}/sprites/ingredient-bodies.png`, { frameWidth: 256, frameHeight: 256 })
+    this.load.spritesheet('vlad-food', `${ASSET_ROOT}/sprites/ingredient-bodies-v2.png`, { frameWidth: 362, frameHeight: 362 })
     this.load.spritesheet('vlad-customers', `${ASSET_ROOT}/sprites/customer-atlas.png`, { frameWidth: 320, frameHeight: 320 })
-    this.load.spritesheet('vlad-ui', `${ASSET_ROOT}/ui/component-atlas.png`, { frameWidth: 512, frameHeight: 512 })
+    this.load.spritesheet('vlad-parts', `${ASSET_ROOT}/sprites/character-parts-v3.png`, { frameWidth: 313, frameHeight: 313 })
+    this.load.image('vlad-ui', `${ASSET_ROOT}/ui/component-atlas.png`)
+    this.load.image('vlad-booth', `${ASSET_ROOT}/ui/customer-booth-v2.png`)
     this.load.image('vlad-skewer', `${ASSET_ROOT}/props/vlad-skewer-hand.png`)
     this.load.image('vlad-life', `${ASSET_ROOT}/ui/life-skewer.png`)
   }
@@ -218,7 +226,13 @@ export class VladsSkewersScene extends Phaser.Scene {
     this.textures.get('vlad-bg').setFilter(Phaser.Textures.FilterMode.NEAREST)
     this.textures.get('vlad-food').setFilter(Phaser.Textures.FilterMode.NEAREST)
     this.textures.get('vlad-customers').setFilter(Phaser.Textures.FilterMode.NEAREST)
+    this.textures.get('vlad-parts').setFilter(Phaser.Textures.FilterMode.NEAREST)
     this.textures.get('vlad-ui').setFilter(Phaser.Textures.FilterMode.NEAREST)
+    this.textures.get('vlad-booth').setFilter(Phaser.Textures.FilterMode.NEAREST)
+    const ui = this.textures.get('vlad-ui')
+    if (!ui.has('order')) ui.add('order', 0, 24, 124, 650, 360)
+    if (!ui.has('score')) ui.add('score', 0, 690, 150, 305, 340)
+    if (!ui.has('bubble')) ui.add('bubble', 0, 12, 536, 452, 350)
     this.resetRun()
     this.buildScene()
     this.registerInput()
@@ -275,8 +289,8 @@ export class VladsSkewersScene extends Phaser.Scene {
       scale: { start: 1, end: 0 }, alpha: { start: .9, end: 0 }, quantity: 1, maxParticles: 70,
     }).setDepth(3)
     this.juiceParticles = this.add.particles(0, 0, 'vlad-pixel', {
-      emitting: false, lifespan: { min: 420, max: 900 }, speed: { min: 80, max: 245 }, angle: { min: 195, max: 345 },
-      gravityY: 410, scale: { start: 1.35, end: .35 }, alpha: { start: 1, end: .35 }, maxParticles: 180,
+      emitting: false, lifespan: { min: 320, max: 680 }, speed: { min: 62, max: 185 }, angle: { min: 195, max: 345 },
+      gravityY: 370, scale: { start: .72, end: .16 }, alpha: { start: 1, end: .2 }, maxParticles: 120,
     }).setDepth(70)
     this.ashParticles = this.add.particles(0, 0, 'vlad-ash', {
       emitting: false, lifespan: { min: 650, max: 1250 }, speedY: { min: -38, max: -8 }, speedX: { min: -28, max: 28 },
@@ -284,7 +298,10 @@ export class VladsSkewersScene extends Phaser.Scene {
     }).setDepth(22)
 
     this.buildHud()
-    this.skewer = this.add.image(this.skewerX, this.skewerY, 'vlad-skewer').setOrigin(.5, 1).setDisplaySize(170, TIP_OFFSET).setDepth(45)
+    // The authored spear tip sits at x=128.5 in the 512 px source image.
+    // Anchor the whole arm on that exact pixel so the visible point, hit test,
+    // and stacked ingredients all share the same world coordinate.
+    this.skewer = this.add.image(this.skewerX, H + 4, 'vlad-skewer').setOrigin(128.5 / 512, 1).setDisplaySize(170, H + 4 - (this.skewerY - TIP_OFFSET)).setDepth(45)
     this.tipGlow = this.add.graphics().setDepth(44)
     this.comboText = this.add.text(195, 525, '', {
       fontFamily: FONT, fontSize: '28px', color: '#ffe25a', stroke: '#8b130b', strokeThickness: 6, align: 'center', resolution: 1,
@@ -295,28 +312,29 @@ export class VladsSkewersScene extends Phaser.Scene {
   }
 
   private buildHud() {
-    this.orderPanel = this.add.image(190, 62, 'vlad-ui', 0).setDisplaySize(270, 112).setDepth(50)
-    this.add.image(342, 57, 'vlad-ui', 1).setDisplaySize(82, 82).setDepth(50)
-    this.levelText = this.add.text(190, 27, '', { fontFamily: FONT, fontSize: '24px', color: '#ffbd62', stroke: '#220706', strokeThickness: 4, resolution: 1 }).setOrigin(.5).setDepth(52)
-    this.clientsText = this.add.text(190, 97, '', { fontFamily: FONT, fontSize: '13px', color: '#3d1507', resolution: 1 }).setOrigin(.5).setDepth(52)
-    this.add.text(342, 29, 'SCORE', { fontFamily: FONT, fontSize: '11px', color: '#ffdfa0', resolution: 1 }).setOrigin(.5).setDepth(52)
-    this.scoreText = this.add.text(342, 59, '0', { fontFamily: FONT, fontSize: '25px', color: '#ff9e2d', stroke: '#2a0805', strokeThickness: 3, resolution: 1 }).setOrigin(.5).setDepth(52)
+    this.orderPanel = this.add.image(194, 68, 'vlad-ui', 'order').setDisplaySize(244, 122).setDepth(50)
+    this.add.image(352, 56, 'vlad-ui', 'score').setDisplaySize(72, 80).setDepth(50)
+    this.levelText = this.add.text(194, 26, '', { fontFamily: FONT, fontSize: '22px', color: '#ffbd62', stroke: '#220706', strokeThickness: 4, resolution: 1 }).setOrigin(.5).setDepth(52)
+    this.clientsText = this.add.text(194, 105, '', { fontFamily: FONT, fontSize: '12px', color: '#3d1507', stroke: '#f4c786', strokeThickness: 1, resolution: 1 }).setOrigin(.5).setDepth(52)
+    this.add.text(352, 31, 'SCORE', { fontFamily: FONT, fontSize: '9px', color: '#ffdfa0', stroke: '#210706', strokeThickness: 2, resolution: 1 }).setOrigin(.5).setDepth(52)
+    this.scoreText = this.add.text(352, 58, '0', { fontFamily: FONT, fontSize: '23px', color: '#ff9e2d', stroke: '#2a0805', strokeThickness: 3, resolution: 1 }).setOrigin(.5).setDepth(52)
 
     for (let index = 0; index < MAX_LOST; index += 1) {
-      this.add.rectangle(21 + index * 18, 192, 13, 58, 0x080506, .72).setStrokeStyle(1, 0x552319, 1).setDepth(48)
-      this.lifeIcons.push(this.add.image(21 + index * 18, 192, 'vlad-life').setDisplaySize(14, 57).setDepth(51))
+      this.add.rectangle(20 + index * 18, 195, 14, 63, 0x080506, .82).setStrokeStyle(2, 0x6e2518, 1).setDepth(48)
+      this.lifeIcons.push(this.add.image(20 + index * 18, 195, 'vlad-life').setDisplaySize(16, 64).setDepth(51))
     }
 
-    const ys = [302, 450, 620]
+    const ys = [292, 458, 628]
     ys.forEach((y, index) => {
       const root = this.add.container(344, y).setDepth(25 + index)
-      const booth = this.add.image(0, 0, 'vlad-ui', 3).setDisplaySize(92, 138)
-      const portrait = this.add.image(0, 4, 'vlad-customers', 0).setDisplaySize(84, 84)
-      const drool = this.add.graphics()
-      root.add([booth, portrait, drool])
+      const shadow = this.add.rectangle(0, 5, 83, 102, 0x050304, .88)
+      const portrait = this.add.image(0, 5, 'vlad-customers', 0).setDisplaySize(94, 94)
+      const booth = this.add.image(0, 0, 'vlad-booth').setDisplaySize(108, 144)
+      const drool = this.add.image(11, 13, 'vlad-parts', 12).setDisplaySize(27, 27).setVisible(false)
+      root.add([shadow, portrait, booth, drool])
       this.customerSlots.push({ root, portrait, drool, baseY: y, phase: index * 1.7, customerId: -1 })
     })
-    this.serveBubble = this.add.image(320, 533, 'vlad-ui', 2).setDisplaySize(132, 82).setDepth(58)
+    this.serveBubble = this.add.image(319, 544, 'vlad-ui', 'bubble').setDisplaySize(136, 88).setDepth(58)
     this.patienceBar = this.add.graphics().setDepth(61)
   }
 
@@ -369,6 +387,8 @@ export class VladsSkewersScene extends Phaser.Scene {
     if (this.finished) return
     const point = this.pointerWorld(pointer)
     if (point.y < 560) return
+    this.returnTween?.stop()
+    this.returnTween = undefined
     this.dragging = true
     this.moveSkewer(point)
     this.previousTip.set(this.skewerX, this.skewerY - TIP_OFFSET)
@@ -379,7 +399,20 @@ export class VladsSkewersScene extends Phaser.Scene {
     this.moveSkewer(this.pointerWorld(pointer))
   }
 
-  private handlePointerUp() { this.dragging = false }
+  private handlePointerUp() {
+    if (!this.dragging) return
+    this.dragging = false
+    const returnState = { y: this.skewerY }
+    this.returnTween?.stop()
+    this.returnTween = this.tweens.add({
+      targets: returnState,
+      y: 832,
+      duration: 360,
+      ease: 'Back.Out',
+      onUpdate: () => { this.skewerY = returnState.y },
+      onComplete: () => { this.returnTween = undefined },
+    })
+  }
 
   private moveSkewer(point: Phaser.Math.Vector2) {
     this.skewerX = clamp(point.x, 54, 341)
@@ -413,7 +446,7 @@ export class VladsSkewersScene extends Phaser.Scene {
       let burst = 1
       if (this.random() < tuning.second) burst += 1
       if (this.random() < tuning.third) burst += 1
-      for (let index = 0; index < burst; index += 1) this.spawnDrop(126 - index * 30)
+      for (let index = 0; index < burst; index += 1) this.spawnDrop(145 - index * 38)
       this.spawnTimer = tuning.gap + this.random() * tuning.gapJitter
     }
 
@@ -465,7 +498,7 @@ export class VladsSkewersScene extends Phaser.Scene {
 
   private expectedIngredient() { return this.customers[0]?.order[this.stack.length] }
 
-  private spawnDrop(y = 126) {
+  private spawnDrop(y = 145) {
     const tuning = this.tuning()
     if (this.drops.length >= tuning.maxDrops) return
     const roll = this.random()
@@ -484,7 +517,7 @@ export class VladsSkewersScene extends Phaser.Scene {
       state: 'falling', grillAge: 0, visual: null, bloodVisual: null,
     }
     if (kind === 'blood') drop.bloodVisual = this.createBloodVisual(drop.x, drop.y)
-    else drop.visual = this.createFoodVisual(kind, drop.x, drop.y, 54)
+    else drop.visual = this.createFoodVisual(kind, drop.x, drop.y, FALLING_FOOD_SIZE)
     this.drops.push(drop)
   }
 
@@ -500,15 +533,16 @@ export class VladsSkewersScene extends Phaser.Scene {
   private createFoodVisual(kind: Exclude<DropKind, 'blood'>, x: number, y: number, size: number) {
     const frame = kind === 'garlic' ? 7 : specs.get(kind as IngredientKind)!.frame
     const root = this.add.container(x, y).setDepth(20)
-    const legs = this.add.graphics()
-    const arms = this.add.graphics()
-    const body = this.add.image(0, 0, 'vlad-food', frame).setDisplaySize(size, size)
-    const grillMarks = this.add.graphics()
-    const eyes = this.add.graphics()
-    const mouth = this.add.graphics()
-    const drool = this.add.graphics()
-    root.add([legs, arms, body, grillMarks, eyes, mouth, drool])
-    return { root, body, eyes, mouth, arms, legs, drool, grillMarks, phase: this.random() * Math.PI * 2, cooked: false }
+    const leftLeg = this.add.image(-size * .14, size * .34, 'vlad-parts', 10).setDisplaySize(size * .72, size * .72)
+    const rightLeg = this.add.image(size * .14, size * .34, 'vlad-parts', 10).setDisplaySize(size * .72, size * .72).setFlipX(true)
+    const leftArm = this.add.image(-size * .35, 0, 'vlad-parts', 9).setDisplaySize(size * .82, size * .82)
+    const rightArm = this.add.image(size * .35, 0, 'vlad-parts', 9).setDisplaySize(size * .82, size * .82).setFlipX(true)
+    const body = this.add.image(0, 0, 'vlad-food', frame).setDisplaySize(size * 1.08, size * 1.08)
+    const grillMarks = this.add.image(0, 2, 'vlad-parts', 13).setDisplaySize(size * .82, size * .82).setVisible(false)
+    const eyes = this.add.image(0, -size * .09, 'vlad-parts', 0).setDisplaySize(size * .78, size * .78)
+    const mouth = this.add.image(0, size * .15, 'vlad-parts', 4).setDisplaySize(size * .62, size * .62)
+    root.add([leftLeg, rightLeg, leftArm, rightArm, body, grillMarks, eyes, mouth])
+    return { root, body, eyes, mouth, leftArm, rightArm, leftLeg, rightLeg, grillMarks, phase: this.random() * Math.PI * 2, cooked: false, size }
   }
 
   private emotionFor(drop: Drop): Emotion {
@@ -603,48 +637,35 @@ export class VladsSkewersScene extends Phaser.Scene {
 
   private drawFoodParts(visual: FoodVisual, emotion: Emotion, time: number, neighbour: Drop | null) {
     const wave = Math.sin(time * (emotion === 'panic' ? 19 : 7) + visual.phase)
-    visual.eyes.clear(); visual.mouth.clear(); visual.arms.clear(); visual.legs.clear(); visual.drool.clear()
-    const ink = 0x1b0b0b
-    visual.arms.lineStyle(3, ink, 1)
-    let leftHand = { x: -29, y: wave * 7 }
-    let rightHand = { x: 29, y: -wave * 7 }
-    if (neighbour && visual.root.parentContainer === null) {
-      const dx = clamp(neighbour.x - visual.root.x, -38, 38)
-      const dy = clamp(neighbour.y - visual.root.y, -28, 28)
-      if (dx < 0) leftHand = { x: dx, y: dy }
-      else rightHand = { x: dx, y: dy }
-    }
-    visual.arms.lineBetween(-18, -2, leftHand.x, leftHand.y).lineBetween(18, -2, rightHand.x, rightHand.y)
-    visual.arms.fillStyle(0xfff3df).fillRect(leftHand.x - 3, leftHand.y - 3, 6, 6).fillRect(rightHand.x - 3, rightHand.y - 3, 6, 6)
-    visual.legs.lineStyle(3, ink, 1).lineBetween(-10, 20, -14 + wave * 5, 31).lineBetween(10, 20, 14 - wave * 5, 31)
-    visual.legs.fillStyle(0xfff3df).fillRect(-18 + wave * 5, 29, 8, 5).fillRect(10 - wave * 5, 29, 8, 5)
+    const size = visual.size
+    const expression = emotion === 'happy' ? 0 : emotion === 'realizing' ? 1 : emotion === 'panic' ? 2 : 3
+    visual.eyes.setFrame(expression)
+    visual.mouth.setFrame(4 + expression)
 
-    if (emotion === 'dead') {
-      visual.eyes.lineStyle(3, 0xffffff).lineBetween(-12, -8, -5, -1).lineBetween(-5, -8, -12, -1).lineBetween(5, -8, 12, -1).lineBetween(12, -8, 5, -1)
-      visual.mouth.fillStyle(ink).fillRect(-8, 6, 16, 9).fillStyle(0xe54f68).fillRect(-4, 12, 8, 7)
-      return
+    const frantic = emotion === 'panic' ? 18 : emotion === 'happy' ? 8 : emotion === 'realizing' ? 4 : 2
+    visual.leftArm.setPosition(-size * .34, -size * .01).setAngle(emotion === 'dead' ? 54 : -10 - wave * frantic)
+    visual.rightArm.setPosition(size * .34, -size * .01).setAngle(emotion === 'dead' ? -54 : 10 + wave * frantic)
+    visual.leftLeg.setPosition(-size * .14, size * .34).setAngle(emotion === 'dead' ? 24 : wave * frantic * .7)
+    visual.rightLeg.setPosition(size * .14, size * .34).setAngle(emotion === 'dead' ? -24 : -wave * frantic * .7)
+    visual.leftArm.setDisplaySize(size * .82, size * .82)
+    visual.rightArm.setDisplaySize(size * .82, size * .82)
+
+    if (neighbour && visual.root.parentContainer === null && emotion !== 'dead') {
+      const dx = neighbour.x - visual.root.x
+      const dy = neighbour.y - visual.root.y
+      const reach = clamp(Math.hypot(dx, dy) / 72, .7, 1.08)
+      const target = dx < 0 ? visual.leftArm : visual.rightArm
+      target.setDisplaySize(size * .82 * reach, size * .82).setAngle(Phaser.Math.RadToDeg(Math.atan2(dy, Math.abs(dx))) * (dx < 0 ? -1 : 1))
     }
 
-    const wide = emotion === 'panic' ? 7 : 6
-    visual.eyes.fillStyle(0xffffff).fillCircle(-8, -6, wide).fillCircle(8, -6, wide)
-    visual.eyes.fillStyle(ink).fillRect(-9 + wave, -7, 3, 4).fillRect(7 + wave, -7, 3, 4)
-    if (emotion === 'happy') {
-      visual.mouth.fillStyle(ink).fillRect(-8, 5, 16, 7).fillStyle(0xff7a78).fillRect(-4, 9, 8, 4)
-    } else if (emotion === 'realizing') {
-      visual.eyes.lineStyle(2, ink).lineBetween(-15, -15, -5, -13).lineBetween(5, -13, 15, -15)
-      visual.mouth.fillStyle(ink).fillCircle(0, 8, 6)
-    } else {
-      visual.eyes.lineStyle(2, ink).lineBetween(-16, -15, -5, -11).lineBetween(5, -11, 16, -15)
-      visual.mouth.fillStyle(ink).fillRect(-10, 3, 20, 16).fillStyle(0xe94d62).fillRect(-5, 13, 10, 7)
-    }
-    if (Math.floor((time + visual.phase) * 2.2) % 11 === 0) {
-      visual.drool.fillStyle(0x79efff, .95).fillRect(8, 11, 3, 8).fillRect(9, 19, 4, 4)
-    }
+    const faceBounce = emotion === 'panic' ? 1 + Math.abs(wave) * .08 : 1
+    visual.eyes.setDisplaySize(size * .78 * faceBounce, size * .78 * faceBounce)
+    const mouthBounce = emotion === 'panic' ? 1 + Math.abs(wave) * .12 : 1
+    visual.mouth.setDisplaySize(size * .62 * mouthBounce, size * .62 * mouthBounce)
   }
 
   private drawGrillMarks(visual: FoodVisual, color = 0x57210f) {
-    visual.grillMarks.clear().lineStyle(3, color, .9)
-    visual.grillMarks.lineBetween(-16, -12, 10, 14).lineBetween(-8, -17, 18, 9).lineBetween(-19, -3, 5, 20)
+    visual.grillMarks.setVisible(true).setTint(color)
   }
 
   private findImpaleTarget(previous: Phaser.Math.Vector2, tip: Phaser.Math.Vector2) {
@@ -707,41 +728,44 @@ export class VladsSkewersScene extends Phaser.Scene {
   }
 
   private addStackFood(kind: IngredientKind) {
-    const visual = this.createFoodVisual(kind, this.skewerX, this.skewerY - TIP_OFFSET + 47 + this.stack.length * 36, 47)
+    const visual = this.createFoodVisual(kind, this.skewerX, this.skewerY - TIP_OFFSET + 54 + this.stack.length * STACK_GAP, STACK_FOOD_SIZE)
     visual.root.setDepth(47)
     this.stack.push({ kind, visual, lag: 0, lagVelocity: 0 })
   }
 
   private updateSkewer(dt: number) {
-    this.skewer.setPosition(this.skewerX, this.skewerY)
     const tipY = this.skewerY - TIP_OFFSET
+    this.skewer.setPosition(this.skewerX, H + 4).setDisplaySize(170, H + 4 - tipY)
     const velocity = (this.skewerX - this.previousSkewerX) / Math.max(dt, .001)
     this.previousSkewerX = this.skewerX
-    this.tipGlow.clear().fillStyle(0xffc73d, .55).fillRect(this.skewerX - 4, tipY - 5, 8, 10)
+    this.tipGlow.clear().fillStyle(0xffe36a, .75).fillRect(this.skewerX - 2, tipY - 2, 4, 4)
     this.stack.forEach((item, index) => {
       const targetLag = clamp(-velocity * .018, -13, 13)
       item.lagVelocity += (targetLag - item.lag) * dt * 21
       item.lagVelocity *= Math.pow(.08, dt)
       item.lag += item.lagVelocity * dt
-      item.visual.root.setPosition(this.skewerX + item.lag, tipY + 47 + index * 36).setRotation(item.lag * .018)
+      item.visual.root.setPosition(this.skewerX + item.lag, tipY + 54 + index * STACK_GAP).setRotation(item.lag * .018)
       this.drawFoodParts(item.visual, 'dead', this.elapsed + index * .2, null)
       if (item.visual.cooked) this.drawGrillMarks(item.visual)
     })
   }
 
   private showImpact(x: number, y: number, tier: number, color: number) {
-    const count = [8, 14, 22, 32, 48][tier - 1]
+    const count = [4, 7, 10, 14, 20][tier - 1]
     this.juiceParticles.setParticleTint(color).explode(count, x, y)
     this.cameras.main.shake(55 + tier * 32, .0015 + tier * .0014)
-    const ring = this.add.graphics().setPosition(x, y).setDepth(75)
-    ring.lineStyle(3 + tier, color, 1).strokeCircle(0, 0, 13 + tier * 4)
+    const splash = this.add.image(x, y, 'vlad-parts', 15)
+      .setDisplaySize(34 + tier * 9, 34 + tier * 9)
+      .setTint(color)
+      .setAngle((this.random() * 2 - 1) * 22)
+      .setDepth(75)
     const word = this.add.text(x, y - 35, impactWords[Math.floor(this.random() * impactWords.length)], {
       fontFamily: FONT, fontSize: `${15 + tier * 3}px`, color: '#fff0b0', stroke: '#7d0908', strokeThickness: 5, resolution: 1,
     }).setOrigin(.5).setDepth(77)
     const cry = this.add.text(x, y - 13, cries[Math.floor(this.random() * cries.length)], {
       fontFamily: FONT, fontSize: '9px', color: '#ffffff', stroke: '#190505', strokeThickness: 3, resolution: 1,
     }).setOrigin(.5).setDepth(77)
-    this.tweens.add({ targets: [ring, word, cry], y: '-=24', alpha: 0, scale: 1.25, duration: 480 + tier * 45, ease: 'Stepped', onComplete: () => { ring.destroy(); word.destroy(); cry.destroy() } })
+    this.tweens.add({ targets: [splash, word, cry], y: '-=24', alpha: 0, scale: 1.12, duration: 360 + tier * 38, ease: 'Stepped', onComplete: () => { splash.destroy(); word.destroy(); cry.destroy() } })
     if (tier >= 2) {
       const actual = this.combo > 5 ? `×${this.combo} · BRUTALITY!` : tier === 5 ? '×5 BRUTALITY!' : `×${tier}`
       this.comboText.setText(actual).setVisible(true).setScale(.72 + tier * .08).setColor(tier === 5 ? '#ff3b20' : '#ffe25a').setAlpha(1)
@@ -797,8 +821,12 @@ export class VladsSkewersScene extends Phaser.Scene {
 
     const delivery = this.add.container(this.skewerX, this.skewerY - TIP_OFFSET + 90).setDepth(90)
     this.stack.forEach((item, index) => {
-      const clone = this.add.image(0, index * 23, 'vlad-food', specs.get(item.kind)!.frame).setDisplaySize(38, 38).setTint(0xffbd72)
-      delivery.add(clone)
+      const clone = this.createFoodVisual(item.kind, 0, index * 31, 52)
+      clone.body.setTint(0xffbd72)
+      clone.cooked = true
+      this.drawFoodParts(clone, 'dead', this.elapsed + index * .2, null)
+      this.drawGrillMarks(clone)
+      delivery.add(clone.root)
     })
     this.tweens.add({ targets: delivery, x: 338, y: 615, angle: 15, scale: .72, duration: 430, ease: 'Cubic.In', onComplete: () => delivery.destroy(true) })
     this.clearStack()
@@ -839,7 +867,7 @@ export class VladsSkewersScene extends Phaser.Scene {
     this.unlockIcons.forEach(icon => icon.destroy())
     this.unlockIcons = this.availableIngredients().map((ingredient, index, list) => {
       const spacing = Math.min(32, 196 / Math.max(1, list.length - 1))
-      return this.add.image(190 + (index - (list.length - 1) / 2) * spacing, 68, 'vlad-food', ingredient.frame).setDisplaySize(27, 27).setDepth(53)
+      return this.add.image(194 + (index - (list.length - 1) / 2) * spacing, 69, 'vlad-food', ingredient.frame).setDisplaySize(31, 31).setDepth(53)
     })
 
     const orderedCustomers = [this.customers[2], this.customers[1], this.customers[0]]
@@ -858,11 +886,11 @@ export class VladsSkewersScene extends Phaser.Scene {
     this.orderIcons = active ? active.order.map((kind, index) => {
       const done = index < this.stack.length
       const frame = specs.get(kind)!.frame
-      return this.add.image(320 + (index - (active.order.length - 1) / 2) * 20, 526, 'vlad-food', frame)
-        .setDisplaySize(24, 24).setTint(done ? 0x66584b : 0xffffff).setDepth(60)
+      return this.add.image(319 + (index - (active.order.length - 1) / 2) * 22, 538, 'vlad-food', frame)
+        .setDisplaySize(28, 28).setTint(done ? 0x66584b : 0xffffff).setDepth(60)
     }) : []
-    this.patienceBar.clear().fillStyle(0x1b0908, 1).fillRect(290, 555, 61, 6)
-    if (active) this.patienceBar.fillStyle(active.patience / active.maxPatience < .28 ? 0xff3b2e : 0x8ed348, 1).fillRect(292, 557, 57 * active.patience / active.maxPatience, 2)
+    this.patienceBar.clear().fillStyle(0x1b0908, 1).fillRect(286, 570, 67, 8)
+    if (active) this.patienceBar.fillStyle(active.patience / active.maxPatience < .28 ? 0xff3b2e : 0x8ed348, 1).fillRect(289, 573, 61 * active.patience / active.maxPatience, 3)
   }
 
   private updateCustomers() {
@@ -872,10 +900,9 @@ export class VladsSkewersScene extends Phaser.Scene {
       const feastHop = Math.floor((this.elapsed + slot.phase) / 2.8) % 3 === 0 ? hop * (index === 2 ? 9 : 5) : hop * 1.5
       slot.root.y = slot.baseY - feastHop
       slot.root.angle = Math.sin(this.elapsed * 3 + slot.phase) * (index === 2 ? 2 : 1)
-      slot.drool.clear()
-      if (Math.floor((this.elapsed + slot.phase) * 2) % 7 <= 1) {
-        slot.drool.fillStyle(0x75efff, .95).fillRect(12, 16, 2, 7).fillRect(12, 23, 3, 3)
-      }
+      const salivating = Math.floor((this.elapsed + slot.phase) * 2) % 7 <= 1
+      const side = slot.customerId % 2 === 0 ? 1 : -1
+      slot.drool.setVisible(salivating).setPosition(side * 11, 13 + hop * 2).setFlipX(side < 0).setAlpha(.82 + hop * .18)
     })
   }
 
@@ -898,6 +925,22 @@ export class VladsSkewersScene extends Phaser.Scene {
 
   private runTestAction(action: string) {
     if (!import.meta.env.DEV) return this.stateReader()
+    if (action === 'tip-probe') {
+      this.drops.forEach(drop => { drop.visual?.root.destroy(true); drop.bloodVisual?.destroy(true) })
+      this.drops = []
+      this.clearStack()
+      this.spawnTimer = 99
+      const customer = this.customers[0]
+      if (customer) {
+        customer.order = ['pepper']
+        customer.maxPatience = customer.patience = 26
+      }
+      const drop: Drop = {
+        id: this.nextDropId++, kind: 'pepper', x: 195, y: 400, speed: 0, vx: 0, sway: 0, phase: 0,
+        rotation: 0, spin: 0, state: 'falling', grillAge: 0, visual: this.createFoodVisual('pepper', 195, 400, FALLING_FOOD_SIZE), bloodVisual: null,
+      }
+      this.drops.push(drop)
+    }
     if (action === 'brutality') {
       this.clearStack()
       const customer = this.customers[0]
@@ -908,7 +951,7 @@ export class VladsSkewersScene extends Phaser.Scene {
           this.elapsed += .1
           const drop: Drop = {
             id: this.nextDropId++, kind, x: 160 + index * 10, y: 410, speed: 0, vx: 0, sway: 0, phase: index,
-            rotation: 0, spin: 0, state: 'falling', grillAge: 0, visual: this.createFoodVisual(kind, 160 + index * 10, 410, 54), bloodVisual: null,
+            rotation: 0, spin: 0, state: 'falling', grillAge: 0, visual: this.createFoodVisual(kind, 160 + index * 10, 410, FALLING_FOOD_SIZE), bloodVisual: null,
           }
           this.drops.push(drop)
           this.catchDrop(drop)
@@ -921,7 +964,7 @@ export class VladsSkewersScene extends Phaser.Scene {
       const kind: IngredientKind = 'pepper'
       const drop: Drop = {
         id: this.nextDropId++, kind, x: 118, y: GRILL_Y, speed: 0, vx: 0, sway: 0, phase: this.random() * 6,
-        rotation: -8, spin: 0, state: 'falling', grillAge: 0, visual: this.createFoodVisual(kind, 118, GRILL_Y, 58), bloodVisual: null,
+        rotation: -8, spin: 0, state: 'falling', grillAge: 0, visual: this.createFoodVisual(kind, 118, GRILL_Y, FALLING_FOOD_SIZE), bloodVisual: null,
       }
       this.drops.push(drop)
       this.startGrilling(drop)

@@ -4,6 +4,8 @@ Original prompt: Mettre à jour LineFugg pour rendre les GFX conformes à la DA 
 
 2026-09-07 — Vlad gameplay terminé : scène Phaser canonique, ancien DOM/CSS supprimé, rendu pixel sans antialiasing, assets décomposés, aliments à pièces faciales/corporelles séparées, interactions/émotions, cuisson appétissante puis charbon/cendre, 15 clients salivants, piques de vie à gauche, cinq paliers audio/visuels. Tests tactile téléphone + souris bureau réussis, score 5 aliments ×5 = 50 inchangé, console et ressources propres. Restent revue utilisateur, appareil physique et cover `update-required`.
 
+2026-09-07 — Passe corrective Vlad après rejet visuel de la première publication : composition HUD réparée, aliments agrandis et reconstruits avec corps/yeux/bouches/membres authored séparés, loges clients remplacées, bave limitée aux clients, cuisson/grille et ×5 revus. La pointe raster, la collision et la pile sont maintenant sur le même axe exact ; le bras reste raccordé au bas de l'écran et revient automatiquement au relâchement. Test déterministe ajouté pour refuser une cible à 18 px puis accepter le contact exact, sans modifier le scoring.
+
 Suivi produit canonique : src/games/linefugg/GAME_STATUS.md.
 
 2026-09-07 : comparaison du master à la capture utilisateur et au renderer. Priorités : place de la grille, panneaux non déformés, calculs lisibles, indicateurs alignés, décomposition du mécanisme céleste et effets bornés. Références Phaser 4.2.1 consultées via phaser-minifugg ; leur publication est gérée dans une autre tâche. Assets générés depuis le master, import privé Drive en cours. Aucun changement de règles prévu.

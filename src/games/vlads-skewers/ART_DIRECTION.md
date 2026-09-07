@@ -31,7 +31,7 @@ Le client actif occupe la loge du bas, dans la portée physique de la pointe. Lu
 
 Ingrédients de recette : bœuf, tomate, poivron, oignon, champignon, courgette, aubergine, puis poulet, tofu et poisson dans les niveaux tardifs. L'ail reste un danger et la goutte de sang un bonus de patience/ralenti distinct.
 
-Les textures raster contiennent **uniquement les corps**. Yeux, bouche, bras, jambes, bave et marques de grille sont des objets Phaser séparés. Les petits bras/jambes sont des fils sombres terminés par de petites mains/pieds clairs, pas une anatomie humaine modelée dans la nourriture.
+Les textures raster contiennent **uniquement les corps**. Yeux, bouche, bras, jambes et marques de grille sont des objets Phaser séparés. Les petits bras/jambes sont des fils sombres terminés par de petites mains/pieds clairs, pas une anatomie humaine modelée dans la nourriture. **La bave est réservée aux clients affamés : aucun aliment ne bave.**
 
 Pendant la chute : joie naïve → compréhension → inquiétude → panique et tentative désespérée. Les aliments peuvent tendre les bras, se tenir et se repousser, mais ne peuvent jamais échapper à Vlad ni à la grille. Les ingrédients embrochés ont des yeux `× ×`, une langue molle et des membres pendants qui suivent l'inertie de la broche.
 
@@ -43,7 +43,7 @@ La boucle et le scoring historique sont conservés : recette dans l'ordre, livra
 
 Le vocabulaire disponible grandit tous les deux niveaux, de 3 à 10 aliments. La recette passe progressivement de 2 à 6 aliments. L'ouverture reste lisible et l'avalanche véritable arrive tard.
 
-Le percement a du poids : squash/étirement, orientation d'entrée, petite phrase de fin de vie, membres qui retombent, gerbe de jus et fragments. La présentation monte en cinq paliers visuels et sonores — normal, ×2, ×3, ×4, ×5 `BRUTALITY!` — sans modifier le calcul de score. Toute valeur de score supérieure reste intacte même si l'intensité artistique est plafonnée à ×5.
+Le percement a du poids : squash/étirement, orientation d'entrée, petite phrase de fin de vie, membres qui retombent, gerbe de jus et fragments. La collision est centrée sur le pixel visible de la pointe dorée, avec une tolérance courte uniquement autour de cette pointe. La main et le bras restent reliés au bas du stage même lorsque la pique monte très haut ; au relâchement, l'ensemble revient automatiquement en bas. La présentation monte en cinq paliers visuels et sonores — normal, ×2, ×3, ×4, ×5 `BRUTALITY!` — sans modifier le calcul de score. Toute valeur de score supérieure reste intacte même si l'intensité artistique est plafonnée à ×5.
 
 Les particules partent vers le haut/les côtés, retombent sous gravité, suivent le ralenti, passent derrière les ingrédients actifs, sont plafonnées et nettoyées. Le climax ×5 peut afficher un grand titre gothique et déclencher une pluie spectaculaire ; il n'est jamais permanent.
 

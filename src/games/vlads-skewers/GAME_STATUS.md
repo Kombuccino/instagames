@@ -2,7 +2,7 @@
 
 Mis à jour : 7 septembre 2026. Base initiale : `62947acacd03ecb3ae487160c9a2faa246417990`. Contrat réconcilié : `ART_DIRECTION.md`.
 
-Phase gameplay : migration Phaser 4 et deuxième passe corrective en validation. Les deux premières publications web du 7 septembre ont reçu des retours négatifs précis et ne constituent pas des versions approuvées. La présente passe corrige décor animé, contrôle hors cadre, cuisson, bras, membres, HUD, patience et file clients avant une nouvelle revue utilisateur. Registre : `fugg`, stage 390 × 844, runtime `phaser-2d`, migration `current` déverrouillée. Phase cover : C validée et à préserver ; A/B/D encore à explorer ; intégration Core des covers non faite.
+Phase gameplay : migration Phaser 4 et troisième passe corrective en validation. Les publications précédentes du 7 septembre ont reçu des retours négatifs précis et ne constituent pas des versions approuvées. La présente passe remplace le bras étiré et les flammes procédurales, recale le desktop sur la norme LineFugg et introduit les collisions physiques demandées avant une nouvelle revue web. Registre : `fugg`, stage 390 × 844, runtime `phaser-2d`, migration `current` déverrouillée. Phase cover : C validée et à préserver ; A/B/D encore à explorer ; intégration Core des covers non faite.
 
 ## Gameplay livré
 
@@ -15,11 +15,13 @@ Phase gameplay : migration Phaser 4 et deuxième passe corrective en validation.
 - Cinq paliers visuels et sonores jusqu'à ×5 `BRUTALITY!`, sans changement du scoring.
 - Trois piques de réserve à gauche ; une seule tombe par client/brochette raté.
 - Pointe visible, collision et pile partagent exactement le même axe ; le bras reste raccordé au bas du stage et revient automatiquement en bas au relâchement.
-- La pique/main reste à taille fixe ; seule la manche séparée rejoint le bas. Le déplacement devient relatif sous capture et continue hors canvas.
+- Pique rigide séparée d'un nouveau bras authored très long : aucun étirement runtime, extension jusqu'au haut du champ et continuité sous le bas du stage. Le déplacement relatif continue hors canvas.
 - Brochette validée automatiquement au dernier ingrédient, sans livraison latérale. Chaque ingrédient embroché est immédiatement grillé.
-- Flammes pixel animées sur la grille et les six foyers du décor, braises de profondeur ; aliment raté enflammé avec fumée renforcée avant charbon/cendres.
+- Décor authored éteint sans flamme figée ; trois plans de boucles de feu pixel-art dessinées (foyers, salle arrière, grille), braises et fumée de profondeur. Aliment raté enflammé avant charbon/cendres.
 - Cinq balcons fixes maximum ; seule la pile d'acteurs bouge et diminue réellement jusqu'au changement de niveau. Bave recalée par bouche.
 - HUD supérieur compacté, cartouche score agrandi/adaptatif et jauge d'impatience redessinée.
+- Chiffres de score remplacés par des glyphes raster authored assortis à la DA.
+- Hitboxes alimentaires calées légèrement dans la silhouette ; séparation aliment/aliment, rebonds muraux, gravité et collisions directionnelles avec la tige, la main et le bras. Seule la pointe empale.
 
 ## Validation gameplay
 
@@ -28,9 +30,9 @@ Le 7 septembre 2026 :
 - build TypeScript/Vite réussi ;
 - tests Core Audio réussis ;
 - `scripts/test-vlads-skewers-browser.mjs` réussi sur téléphone tactile émulé et bureau souris ;
-- véritable empalement par la pointe avec contre-test décalé de 18 px, retour automatique du bras, roster 15, pile ×5 cuite, perte de pique, cuisson/charbon/cendre et disparition validés ;
+- véritable empalement par la pointe avec contre-test extérieur au corps, poussée latérale par la tige sans empalement, portée haute et retour automatique du bras, roster 15, pile ×5 cuite, perte de pique, cuisson/charbon/cendre et disparition validés ;
 - contrôle souris relatif vérifié après sortie du canvas ; file 3→2→1 et plafonnement visuel à cinq clients vérifiés ;
-- score historique vérifié : brochette de 5 (base 10) × combo 5 = 50 ; l'empalement seul n'ajoute aucun point ;
+- score historique vérifié : brochette de 5 (base 10) × combo 5 = 50 ; l'empalement seul n'ajoute aucun point et la broche complète reste visible 1,65 s avant validation ;
 - aucune erreur console ou ressource dans la matrice testée.
 
 Captures locales : `artifacts/vlads-skewers/`. Limite : émulation navigateur, pas un GPU/tactile physique.

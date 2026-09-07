@@ -41,6 +41,10 @@ try {
     const state = () => page.evaluate(() => JSON.parse(window.render_game_to_text()))
     const advance = ms => page.evaluate(value => window.advanceTime(value), ms)
     const canvas = page.locator('.game-slot[data-index="0"] .mf-phaser-host canvas').first()
+    if (!config.touch) {
+      const feedWidth = await page.locator('.game-feed').evaluate(element => element.getBoundingClientRect().width)
+      assert.ok(feedWidth <= 521, 'Vlad desktop surface must keep the canonical LineFugg/Core feed width')
+    }
     const point = async (x, y) => {
       const box = await canvas.boundingBox()
       assert.ok(box, 'Gameplay canvas must be visible')
@@ -73,6 +77,10 @@ try {
       await advance(17)
       const movedRelativelyOutside = (await state()).skewer.x
       assert.ok(movedRelativelyOutside > atLeftLimit + 20, 'Pointer movement outside the canvas must keep moving Vlad relatively')
+      await page.mouse.move(...Object.values(await point(195, 530)))
+      await advance(34)
+      assert.ok((await state()).skewer.tipY < 170, 'Vlad must reach the upper gameplay field')
+      await capture('arm-high-reach')
       await page.mouse.up()
       await page.waitForTimeout(430)
     }
@@ -88,7 +96,7 @@ try {
       if (touchSession) await touchSession.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
       else await page.mouse.up()
     }
-    await pressAt(213, 765)
+    await pressAt(238, 765)
     assert.equal((await state()).skewer.stack.length, 0, 'A press beside the gold tip must not impale')
     assert.ok((await state()).drops.some(drop => drop.id === probeId), 'Near-tip miss must leave the food falling')
     await pressAt(195, 765)
@@ -98,6 +106,13 @@ try {
     assert.ok(Math.abs((await state()).skewer.y - 832) < 1, 'Released arm must spring back to the bottom')
     await capture('pointer-impale')
 
+    const physicsProbe = JSON.parse(await page.evaluate(() => window.vlad_test_action('physics-probe')))
+    const pushedId = physicsProbe.drops.find(drop => drop.kind === 'tomato')?.id
+    await advance(80)
+    const pushed = (await state()).drops.find(drop => drop.id === pushedId)
+    assert.ok(pushed && pushed.x > physicsProbe.skewer.x + 35, 'The shaft side must push food instead of impaling it')
+    assert.equal((await state()).skewer.stack.length, 0, 'Only the gold point may impale')
+
     await page.evaluate(() => window.vlad_test_action('brutality'))
     const brutality = await state()
     assert.equal(brutality.combo, 5)
@@ -106,7 +121,9 @@ try {
     assert.equal(brutality.score, 0, 'Impalement presentation must not add score')
     await capture('brutality-x5')
 
-    await advance(400)
+    await advance(900)
+    assert.equal((await state()).score, 0, 'Completed skewer must stay on screen long enough to read the impact')
+    await advance(900)
     const served = await state()
     assert.equal(served.score, 50, 'Existing 5-food base 10 × combo 5 scoring must remain intact')
     assert.equal(served.served, 1)

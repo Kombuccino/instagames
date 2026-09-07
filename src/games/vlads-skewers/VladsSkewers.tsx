@@ -31,7 +31,7 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
   return (
     <div className="vlad-skewers-game" style={{
       position: 'absolute', inset: 0, overflow: 'hidden', backgroundColor: '#070405',
-      backgroundImage: 'url(/assets/generated/vlads-skewers/backgrounds/pixel-grill-arena.png)',
+      backgroundImage: 'url(/assets/generated/vlads-skewers/backgrounds/pixel-grill-arena-unlit.png)',
       backgroundSize: 'cover', backgroundPosition: 'center bottom', imageRendering: 'pixelated',
     }}>
       <PhaserGameHost

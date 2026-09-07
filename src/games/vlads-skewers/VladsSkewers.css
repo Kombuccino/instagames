@@ -1,9 +1,3 @@
-@media (min-width: 760px) {
-  .game-feed:has(.game-card[data-phase='playing'] .vlad-skewers-game) {
-    max-width: min(100vw, 760px);
-  }
-}
-
 .vlad-skewers-game canvas {
   image-rendering: pixelated;
 }

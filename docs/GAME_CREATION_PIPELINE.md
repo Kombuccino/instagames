@@ -143,7 +143,7 @@ Une bande avec de grandes marges transparentes n'a pas la même taille utile que
 2. Générer/éditer depuis les références retenues, en précisant rôle, silhouette, ratio, alpha, zones vides et éléments exclus. Un générateur ne garantit pas les dimensions, transparences ou états exacts : contrôler les fichiers obtenus, corriger ou rejeter les sorties inadéquates.
 3. Vérifier visuellement alpha, bords, contenu, cohérence des matières, tailles utiles, alignement des états et lisibilité après réduction. Ne pas accepter une planche illustrée comme atlas sans frames et métadonnées explicitement préparées.
 4. Préserver les sources. Prévoir des résolutions adaptées dès la création ; les dérivés optimisés d'originaux existants suivent l'autorisation et les règles de [ASSET_PIPELINE.md](ASSET_PIPELINE.md), sans écraser la référence approuvée.
-5. Importer les images par **Drive privé → sync GitHub → `public/assets/imported/…`** et vérifier leur présence avant de référencer `/assets/imported/…`. Les métadonnées JSON de scènes/atlas/maps sont du code/versionnement normal ; l'importeur d'images actuel ne transporte que PNG/JPEG/WebP.
+5. **Dans Codex avec accès local**, enregistrer directement les images dans `public/assets/generated/<jeu>/…`, les vérifier puis les committer avec le code. **Depuis ChatGPT sans accès local**, passer par Drive privé → sync GitHub → `public/assets/imported/…`. Référencer uniquement les fichiers vérifiés via `/assets/generated/…` ou `/assets/imported/…` selon leur provenance. Les métadonnées JSON de scènes/atlas/maps sont du code/versionnement normal ; l'importeur Drive ne transporte que PNG/JPEG/WebP. Ne pas imposer Drive à une génération locale Codex.
 6. Reconstruire des composants Phaser, puis leurs états et transitions, avec une seule source de géométrie pour art et hit-testing. Ne pas empiler des rectangles de secours pour cacher des parties incorrectes d'un asset.
 7. Comparer au master dans plusieurs états, pas uniquement le premier écran. Les divergences volontaires doivent être motivées par lisibilité, interaction ou contrainte de production et enregistrées.
 8. Retirer l'ancienne implémentation et ses assets inutilisés lorsque le remplacement est validé. Pour les images synchronisées, coordonner le nettoyage de la source Drive pour éviter leur réimportation. Les propositions musicales gardent leurs identités archivées selon le contrat audio.
@@ -276,7 +276,7 @@ Premiers enseignements de LineFugg :
 - un build réussi ne valide pas l'art, le responsive, le son ou le plaisir ;
 - toute conclusion d'audit doit distinguer observation, mesure, estimation et proposition.
 
-Journal : 2026-09-07 — première version, parcours progressif demandé par l'utilisateur, suivi par jeu, production guidée par le moteur et clarification du périmètre des dix prompts.
+Journal : 2026-09-07 — première version, parcours progressif demandé par l'utilisateur, suivi par jeu, production guidée par le moteur et clarification du périmètre des dix prompts. Précision utilisateur : génération Codex locale → fichiers directs et commit ; Drive réservé au transfert depuis ChatGPT sans accès au dépôt.
 
 ## 12. Références spécialisées
 

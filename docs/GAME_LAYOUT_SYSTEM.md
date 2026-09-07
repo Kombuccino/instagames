@@ -117,3 +117,7 @@ Before a migrated/new game is marked current, verify at least:
 - keyboard/mouse input when supported.
 
 Expected result: screenshots of the canonical stage should align after uniform scaling. Differences should be control affordances, pixel density or optional outside-stage content — not shifted gameplay composition.
+
+### Optional raster density
+
+PhaserGameHost accepts renderPixelRatio (default1, capped at2). This changes backing pixels only. A scene opting in must apply the same density as camera zoom and center on the canonical logical stage; pointer conversion must use that camera. LineFugg freezes density for the mounted session and tests touch at DPR2/3. Do not infer new gameplay dimensions from the backing canvas or reflow the stage.

@@ -1,6 +1,13 @@
 # MiniFugg image asset pipeline
 
-This file is the canonical contract for moving image assets created or prepared in ChatGPT into MiniFugg. Any MiniFugg conversation that creates or integrates images must read and follow it.
+This file is the canonical contract for moving image assets into MiniFugg. Any MiniFugg conversation that creates or integrates images must read and follow it.
+
+## Two entry routes — user decision, 2026-09-07
+
+- **Codex with local repository access:** save generated/finalized artwork directly into the project, normally `public/assets/generated/<game-id>/<purpose>/...`, verify it, then commit it with its consuming code. No Drive upload or Actions wait is required. Preserve approved references and original sources; record source, dimensions, alpha, intended use and any optimized derivatives in the asset manifest.
+- **ChatGPT without local repository access:** use the private Drive hierarchy and automated GitHub sync described below. Its output remains `public/assets/imported/...`.
+
+Runtime uses local `/assets/generated/...` or `/assets/imported/...` URLs matching the route. Existing imported files need not be moved. The approval, decomposition, quality and security requirements apply to both routes. This distinction overrides older wording requiring every Codex-generated image to pass through Drive.
 
 This document governs **transport, storage and verification of image bytes**. When an approved game-art mockup/DA must be converted into actual runtime components, also follow `docs/GAME_ART_PRODUCTION_PIPELINE.md`; a flattened concept board is not automatically a valid runtime asset.
 
@@ -77,7 +84,7 @@ The Google identity is restricted to immutable GitHub repository ID `1352769382`
 
 ## Required behavior for MiniFugg conversations
 
-When an image should enter MiniFugg:
+When an image enters MiniFugg **from ChatGPT through Drive**:
 
 1. Read this file before deciding where to put the asset.
 2. If this image is derived from an approved gameplay DA/mockup, first perform the decomposition/state ownership pass from `docs/GAME_ART_PRODUCTION_PIPELINE.md`.

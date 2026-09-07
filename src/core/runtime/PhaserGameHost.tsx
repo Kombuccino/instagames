@@ -12,6 +12,8 @@ type PhaserGameHostProps = {
   createScene: PhaserSceneFactory
   ariaLabel: string
   className?: string
+  /** Raster density only. The scene keeps its logical stage via camera zoom. */
+  renderPixelRatio?: number
 }
 
 /**
@@ -29,6 +31,7 @@ export function PhaserGameHost({
   createScene,
   ariaLabel,
   className,
+  renderPixelRatio = 1,
 }: PhaserGameHostProps) {
   const mountRef = useRef<HTMLDivElement>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
@@ -40,19 +43,20 @@ export function PhaserGameHost({
   useEffect(() => {
     const parent = mountRef.current
     if (!parent) return
+    const density = Math.max(1, Math.min(2, renderPixelRatio))
 
     const game = new Phaser.Game({
       type: Phaser.AUTO,
       audio: { noAudio: true },
       parent,
-      width: logicalViewport.width,
-      height: logicalViewport.height,
+      width: logicalViewport.width * density,
+      height: logicalViewport.height * density,
       transparent: true,
       scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: logicalViewport.width,
-        height: logicalViewport.height,
+        width: logicalViewport.width * density,
+        height: logicalViewport.height * density,
       },
       input: {
         activePointers: 1,
@@ -79,7 +83,7 @@ export function PhaserGameHost({
       gameRef.current = null
       game.destroy(true)
     }
-  }, [createScene, logicalViewport.height, logicalViewport.width])
+  }, [createScene, logicalViewport.height, logicalViewport.width, renderPixelRatio])
 
   useEffect(() => {
     const game = gameRef.current

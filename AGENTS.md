@@ -137,11 +137,11 @@ Do not build fragile invasive DRM merely to protect local offline values.
 
 ## 10. Assets
 
-Production images use the canonical pipeline:
+Production images use the route appropriate to the working tool (see `docs/ASSET_PIPELINE.md`):
 
-`private Drive Fugg hierarchy → GitHub Actions sync → public/assets/imported/... → /assets/imported/...`
+Codex with local access: save to `public/assets/generated/<game-id>/...`, verify, then commit assets with code. ChatGPT without local repository access: `private Drive Fugg hierarchy → GitHub Actions sync → public/assets/imported/...`.
 
-Never use public Drive URLs, FTP, manual binary GitHub uploads or base64 chunking while that pipeline is available. Preserve originals without resize/recompression unless explicitly requested.
+Do not require Drive for Codex-local generation. Never use public Drive URLs, FTP or base64 chunking. Preserve originals without resize/recompression unless explicitly requested; keep requested optimized derivatives separate.
 
 Important visual objects promised as authored art must be real imported assets; procedural engine shapes are fine for genuinely procedural effects, prototypes and non-art primitives.
 

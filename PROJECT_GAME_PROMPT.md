@@ -74,7 +74,7 @@ Once visual direction is chosen, create/update `src/games/<game-id>/ART_DIRECTIO
 
 A Fugg must not feel like a generic HTML prototype under a premium cover. Use authored assets, motion, sound, interaction feedback and appropriate FX to give gameplay emotional/visual identity. Simple pixel art or low-poly/blockout is valid when deliberately finished.
 
-Production art uses the Drive asset pipeline; do not bypass it.
+Production art follows `docs/ASSET_PIPELINE.md`: ChatGPT without local repository access uses private Drive sync; Codex with local access saves generated assets directly in the project, verifies them and commits with code.
 
 ## Core boundary
 

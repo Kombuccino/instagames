@@ -5,9 +5,10 @@ import { DEFAULT_LOGICAL_VIEWPORTS } from '../../core/runtime/gameRuntimePolicy'
 import { createLineFuggMusicPlayer } from '../../audio/gameMusic'
 import { LINEFUGG_SCENE_KEY, LineFuggScene } from './LineFuggScene'
 
-const LINEFUGG_BACKGROUND = '/assets/imported/linefugg/backgrounds/orbital-stage-bg-v5.png'
+const LINEFUGG_BACKGROUND = '/assets/imported/linefugg/backgrounds/orbital-environment.png'
 
 export function LineFugg({ active, seed, restartToken, session }: GameComponentProps) {
+  const renderPixelRatio = useRef(Math.min(2, Math.max(1, window.devicePixelRatio || 1))).current
   const sessionRef = useRef(session)
   sessionRef.current = session
 
@@ -24,6 +25,7 @@ export function LineFugg({ active, seed, restartToken, session }: GameComponentP
 
   const createScene = useCallback(() => new LineFuggScene({
     seed,
+    renderPixelRatio,
     session: {
       setScore: (score) => sessionRef.current.setScore(score),
       finish: (payload) => {
@@ -31,7 +33,7 @@ export function LineFugg({ active, seed, restartToken, session }: GameComponentP
         sessionRef.current.finish(payload)
       },
     },
-  }), [seed])
+  }), [seed, renderPixelRatio])
 
   return (
     <div
@@ -52,6 +54,7 @@ export function LineFugg({ active, seed, restartToken, session }: GameComponentP
         logicalViewport={DEFAULT_LOGICAL_VIEWPORTS.portrait}
         sceneKey={LINEFUGG_SCENE_KEY}
         createScene={createScene}
+        renderPixelRatio={renderPixelRatio}
         ariaLabel="LineFugg. Grille 7 par 7. Trace trois lignes de cinq cases maximum, ajuste-les si nécessaire, puis utilise le bouton de validation."
       />
     </div>

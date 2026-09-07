@@ -22,6 +22,8 @@ MiniFugg is a mobile-first platform/catalog of many very small authored games (â
 
 The user is not expected to hand-code or manually maintain these games. The workflow is intentionally AI-heavy: ChatGPT/Codex/other agents should be able to design, implement, refactor, migrate, polish and ship games with minimal manual intervention from the user.
 
+Asset transport update, 2026-09-07: Codex with local repository access saves generated images directly under `public/assets/generated/<game-id>/...`, verifies and commits them. Private Drive â†’ Actions remains the route for ChatGPT without local repository access. See `docs/ASSET_PIPELINE.md`; this newer decision overrides historical Drive-only descriptions below.
+
 This creates several non-negotiable product goals:
 
 1. **Creating a new game must remain extremely fast and simple.** A first complete playable version is expected in at most 10 user prompts, with neutral art permitted. Selected games then receive GD refinement and full artistic production. Start with [the unified creation notice](docs/GAME_CREATION_PIPELINE.md), which defines phases, continuity of approved choices and per-game `GAME_STATUS.md` tracking (2026-09-07). See also `AGENTS.md`, `GAME_DEV_SPEC.md` and `PROJECT_GAME_PROMPT.md`.

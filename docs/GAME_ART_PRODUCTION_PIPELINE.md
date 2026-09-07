@@ -4,7 +4,7 @@ This document is the canonical procedure for turning an approved game-art direct
 
 For the complete creation sequence, decision continuity, visual acceptance and progress tracking, start with [GAME_CREATION_PIPELINE.md](GAME_CREATION_PIPELINE.md). Before each gameplay/cover/animation pass, recover the game's approved `ART_DIRECTION.md` references, rejected directions and asset contracts. Generation must carry these decisions forward; the user should not have to repeat them.
 
-Read it together with `docs/ASSET_PIPELINE.md`. `ASSET_PIPELINE.md` defines how image bytes move from private Drive into the repository; this document defines what those image files should be and how to decompose an approved visual reference into a real game.
+Read it together with `docs/ASSET_PIPELINE.md`. That document defines the two entry routes: direct local files/commit for Codex, private Drive sync for ChatGPT without repository access. This document defines what those image files should be and how to decompose an approved visual reference into a real game.
 
 ## 1. An approved DA image is a reference, not automatically a runtime asset
 
@@ -189,8 +189,8 @@ Use this order for a final DA implementation:
 1. freeze `ART_DIRECTION.md`;
 2. decompose the reference and update `ASSET_MANIFEST.md`;
 3. produce clean isolated assets;
-4. upload through private `Fugg/<game-id>/...` Drive hierarchy;
-5. verify GitHub mirror under `public/assets/imported/...`;
+4. save directly under `public/assets/generated/<game-id>/...` in Codex, or upload through private `Fugg/<game-id>/...` in ChatGPT;
+5. verify local generated files or the Actions mirror under `public/assets/imported/...`, according to the entry route;
 6. preload assets in the engine;
 7. rebuild the runtime layer stack without the flattened mockup;
 8. wire state transitions and input feedback;
@@ -215,7 +215,7 @@ Before declaring the art pass complete, answer yes to all relevant items:
 - Are all functional texts localizable or avoided?
 - Does the screen remain coherent at all gameplay states?
 - Does the 390×844 (or declared viewport) composition remain unchanged across device ratios?
-- Are runtime assets mirrored through the canonical Drive pipeline?
+- Are runtime assets verified through their documented local/Drive entry route?
 - Has the flattened DA/master been kept as reference-only when appropriate?
 
 ## 13. Key principle

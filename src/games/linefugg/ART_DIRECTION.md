@@ -12,7 +12,7 @@ Follow [the unified creation notice](../../../docs/GAME_CREATION_PIPELINE.md) an
 - Preserve: celestial brass instrument, ink-blue depth, parchment calculations, clear numbers, three colored lines and restrained mechanical movement. Existing canonical music choices below remain acquired.
 - Rejected: generic sci-fi/neon HUD, interchangeable generated mobile-game finish, distorted ornamental strips, duplicated or misaligned controls and decoration that shrinks or obscures gameplay. The user's 2026-09-07 instruction against generic “ChatGPT style” reinforces these constraints; it does not ban the specifically approved violet line or node glow.
 - Agent autonomy: prepare asset decomposition, align geometry, select supported engine techniques and tune restrained feedback within this direction. Record significant compromises; ask only for unresolved GD or DA decisions. Do not reopen the whole visual exploration.
-- Still to resolve in implementation: usable board width, legible formula/result areas, clean indicator anchors and separately animatable environment pieces. The authored target below and the current 282-unit playable grid differ; measure and validate the blockout before producing replacement art.
+- Implemented 2026-09-07: 322-unit usable board, 46-unit square cells, one parchment ledger with three chip rows, shared dock anchors and a separate animated armillary. This enlarges the former 282-unit grid while keeping its brass frame and the complete controls visible on a small phone. Visual acceptance of this implementation remains distinct from the approved direction.
 
 ## Core concept
 
@@ -29,7 +29,7 @@ Do not place the LineFugg name, logo, slogans, lore copy or decorative prose ins
 - The same authored composition is uniformly scaled on all devices.
 - No PC/mobile reflow, no critical vw/vh, no media-query layout variants.
 - Preserve Core close-box clearance at the upper-left; do not put essential game information underneath it.
-- Grid remains visually dominant and approximately the current width: about 370 logical units across.
+- Grid remains visually dominant: 322 logical units of playable cells at (34, 155), approximately 370 including its brass frame. Cells remain exactly 46 × 46 units.
 
 Target vertical composition:
 
@@ -187,7 +187,7 @@ Visual rhythm may react subtly to kick/snare via orb or brass glints, but gamepl
 
 ## Asset rule
 
-Raster/illustrated production assets must follow `docs/ASSET_PIPELINE.md` and live under `Fugg/linefugg/...` → `public/assets/imported/linefugg/...` → `/assets/imported/linefugg/...`.
+Raster/illustrated production assets follow `docs/ASSET_PIPELINE.md`: Codex-local artwork goes directly into `public/assets/generated/linefugg/...` and Git; artwork transferred from ChatGPT uses `Fugg/linefugg/...` → `public/assets/imported/linefugg/...`. Existing imported files retain their paths.
 
 Important authored visual surfaces are real assets. Phaser primitives are appropriate for dynamic lines, node glows, particles, masks, hit feedback, pips, text and genuinely procedural celestial FX.
 

@@ -12,6 +12,8 @@ Original prompt: Mettre à jour LineFugg pour rendre les GFX conformes à la DA 
 
 2026-09-07 — Prise de Vlad corrigée : drag autorisé uniquement dans l'ellipse de la main, point de prise absolu conservé sans accumulation ni dérive après dépassement des butées, pointeur libre hors zone pendant que la main reste bornée et visible. Clic raté : clignotement coloré de la vraie main et repères pixel jusqu'à une prise valide. QA souris/tactile, clic raté, arrêt du signal, butée, retour exact au point initial, portée haute, relâchement et non-régression gameplay réussis.
 
+2026-09-07 — Feu Vlad repris après retour utilisateur : atlas raster remplacé par huit grandes flammes pixel-art à masses pleines, six foyers/salle/grille redimensionnés, étincelles allongées beaucoup plus denses au premier et troisième plan, fumée renforcée. Recettes et pile bornées à cinq ingrédients sans toucher au barème. QA visuelle et navigateur en cours avant publication.
+
 Suivi produit canonique : src/games/linefugg/GAME_STATUS.md.
 
 2026-09-07 : comparaison du master à la capture utilisateur et au renderer. Priorités : place de la grille, panneaux non déformés, calculs lisibles, indicateurs alignés, décomposition du mécanisme céleste et effets bornés. Références Phaser 4.2.1 consultées via phaser-minifugg ; leur publication est gérée dans une autre tâche. Assets générés depuis le master, import privé Drive en cours. Aucun changement de règles prévu.

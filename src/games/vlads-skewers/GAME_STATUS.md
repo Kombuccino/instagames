@@ -18,7 +18,8 @@ Phase gameplay : migration Phaser 4 et troisième passe corrective en validation
 - Pique rigide séparée d'un nouveau bras authored très long : aucun étirement runtime, extension jusqu'au haut du champ et continuité sous le bas du stage. Le déplacement relatif continue hors canvas.
 - Prise limitée à la silhouette de la main. Le point saisi reste invariant même lorsque le pointeur dépasse une butée ; revenir au point initial restaure exactement la pose initiale. Un clic raté fait clignoter la main jusqu'à la première prise valide.
 - Brochette validée automatiquement au dernier ingrédient, sans livraison latérale. Chaque ingrédient embroché est immédiatement grillé.
-- Décor authored éteint sans flamme figée ; trois plans de boucles de feu pixel-art dessinées (foyers, salle arrière, grille), braises et fumée de profondeur. Aliment raté enflammé avant charbon/cendres.
+- Décor authored éteint sans flamme figée ; nouvel atlas 4×2 de grandes flammes pixel-art à cœur blanc-jaune pour les foyers et le barbecue, salle arrière embrasée, gerbes continues d'étincelles et fumée de profondeur. Aliment raté enflammé avant charbon/cendres.
+- Recettes et pile réelle verrouillées à cinq ingrédients maximum ; compatibilité du barème historique conservée sans changement du scoring.
 - Cinq balcons fixes maximum ; seule la pile d'acteurs bouge et diminue réellement jusqu'au changement de niveau. Bave recalée par bouche.
 - HUD supérieur compacté, cartouche score agrandi/adaptatif et jauge d'impatience redessinée.
 - Chiffres de score remplacés par des glyphes raster authored assortis à la DA.

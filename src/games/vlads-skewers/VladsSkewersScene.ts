@@ -9,9 +9,11 @@ const H = 844
 const GAME_ID = 'vlads-skewers'
 const ASSET_ROOT = '/assets/generated/vlads-skewers'
 const MAX_LOST = 3
+const MAX_STACK = 5
 const COMBO_WINDOW = 1.35
 const GRILL_Y = 705
-const TIP_OFFSET = 385
+const SKEWER_HEIGHT = 300
+const TIP_OFFSET = SKEWER_HEIGHT + 35
 const PLAY_MIN_X = 68
 const PLAY_MAX_X = 290
 const FALLING_FOOD_SIZE = 78
@@ -144,7 +146,7 @@ function mulberry32(seed: number) {
 }
 function clientsForLevel(level: number) { return level + 2 }
 function ingredientCountForLevel(level: number) { return Math.min(ingredients.length, 3 + Math.floor((level - 1) / 2)) }
-function recipeLengthForLevel(level: number) { return Math.min(6, 2 + Math.floor((level - 1) / 2)) }
+function recipeLengthForLevel(level: number) { return Math.min(MAX_STACK, 2 + Math.floor((level - 1) / 2)) }
 function skewerBasePoints(length: number) {
   if (length >= 6) return 15
   if (length === 5) return 10
@@ -220,6 +222,7 @@ export class VladsSkewersScene extends Phaser.Scene {
   private juiceParticles!: Phaser.GameObjects.Particles.ParticleEmitter
   private ashParticles!: Phaser.GameObjects.Particles.ParticleEmitter
   private emberParticles!: Phaser.GameObjects.Particles.ParticleEmitter
+  private foregroundEmberParticles!: Phaser.GameObjects.Particles.ParticleEmitter
   private smokeParticles!: Phaser.GameObjects.Particles.ParticleEmitter
   private ambientFlames: PixelFlame[] = []
 
@@ -234,6 +237,13 @@ export class VladsSkewersScene extends Phaser.Scene {
     lives: MAX_LOST - this.lost,
     slowSeconds: Number(this.slowTimer.toFixed(2)),
     combo: this.combo,
+    maxSkewerIngredients: MAX_STACK,
+    fx: {
+      ambientFlames: this.ambientFlames.length,
+      embersAlive: this.emberParticles?.getAliveParticleCount() ?? 0,
+      foregroundEmbersAlive: this.foregroundEmberParticles?.getAliveParticleCount() ?? 0,
+      smokeAlive: this.smokeParticles?.getAliveParticleCount() ?? 0,
+    },
     customerRosterSize: 15,
     skewer: { x: Math.round(this.skewerX), y: Math.round(this.skewerY), tipX: Math.round(this.skewerX), tipY: Math.round(this.skewerY - TIP_OFFSET), stack: this.stack.map(item => ({ kind: item.kind, cooked: item.visual.cooked })) },
     input: { handOnly: true, handHint: this.handHintActive, gripX: Math.round(this.skewerX), gripY: Math.round(this.skewerY - 68) },
@@ -274,8 +284,8 @@ export class VladsSkewersScene extends Phaser.Scene {
     const skewerTexture = this.textures.get('vlad-skewer')
     if (!skewerTexture.has('shaft')) skewerTexture.add('shaft', 0, 82, 0, 94, 590)
     const fire = this.textures.get('vlad-fire')
-    const fireCell = 313
-    for (let row = 0; row < 4; row += 1) for (let column = 0; column < 4; column += 1) {
+    const fireCell = 443
+    for (let row = 0; row < 2; row += 1) for (let column = 0; column < 4; column += 1) {
       const index = row * 4 + column
       if (!fire.has(`fire-${index}`)) fire.add(`fire-${index}`, 0, column * fireCell, row * fireCell, fireCell, fireCell)
     }
@@ -341,9 +351,13 @@ export class VladsSkewersScene extends Phaser.Scene {
     this.background = this.add.image(W / 2, H / 2, 'vlad-bg').setDisplaySize(W, H).setDepth(0)
     this.makeParticleTextures()
     this.emberParticles = this.add.particles(0, 0, 'vlad-ember', {
-      emitting: false, lifespan: { min: 550, max: 1100 }, speedY: { min: -80, max: -28 }, speedX: { min: -12, max: 12 },
-      scale: { start: 1, end: 0 }, alpha: { start: .9, end: 0 }, quantity: 1, maxParticles: 70,
+      emitting: false, lifespan: { min: 900, max: 1800 }, speedY: { min: -112, max: -34 }, speedX: { min: -22, max: 22 },
+      scale: { start: 1.25, end: .12 }, alpha: { start: 1, end: 0 }, rotate: { min: -18, max: 18 }, quantity: 1, maxParticles: 210,
     }).setDepth(3)
+    this.foregroundEmberParticles = this.add.particles(0, 0, 'vlad-ember', {
+      emitting: false, lifespan: { min: 720, max: 1500 }, speedY: { min: -145, max: -52 }, speedX: { min: -30, max: 30 },
+      scale: { start: 1.5, end: .14 }, alpha: { start: 1, end: 0 }, rotate: { min: -22, max: 22 }, quantity: 1, maxParticles: 180,
+    }).setDepth(21)
     this.juiceParticles = this.add.particles(0, 0, 'vlad-pixel', {
       emitting: false, lifespan: { min: 320, max: 680 }, speed: { min: 62, max: 185 }, angle: { min: 195, max: 345 },
       gravityY: 370, scale: { start: .72, end: .16 }, alpha: { start: 1, end: .2 }, maxParticles: 120,
@@ -353,15 +367,15 @@ export class VladsSkewersScene extends Phaser.Scene {
       gravityY: 18, scale: { start: 1.35, end: .2 }, alpha: { start: .95, end: 0 }, maxParticles: 140,
     }).setDepth(22)
     this.smokeParticles = this.add.particles(0, 0, 'vlad-smoke', {
-      emitting: false, lifespan: { min: 720, max: 1350 }, speedY: { min: -62, max: -24 }, speedX: { min: -16, max: 16 },
-      scale: { start: 1.4, end: 3.1 }, alpha: { start: .58, end: 0 }, maxParticles: 120,
+      emitting: false, lifespan: { min: 1400, max: 2500 }, speedY: { min: -48, max: -15 }, speedX: { min: -14, max: 14 },
+      scale: { start: 1.5, end: 5 }, alpha: { start: .34, end: 0 }, maxParticles: 180,
     }).setDepth(19)
     this.buildAmbientFlames()
 
     this.buildHud()
     this.arm = this.add.image(this.skewerX + 31, this.skewerY - 92, 'vlad-arm').setOrigin(.5, 0).setDisplaySize(264, 440).setDepth(46)
     this.handHint = this.add.graphics().setDepth(62).setVisible(false)
-    this.skewer = this.add.image(this.skewerX, this.skewerY, 'vlad-skewer', 'shaft').setOrigin(.5, 1).setDisplaySize(30, 350).setDepth(45)
+    this.skewer = this.add.image(this.skewerX, this.skewerY, 'vlad-skewer', 'shaft').setOrigin(.5, 1).setDisplaySize(30, SKEWER_HEIGHT).setDepth(45)
     this.tipGlow = this.add.graphics().setDepth(44)
     this.comboText = this.add.text(195, 525, '', {
       fontFamily: FONT, fontSize: '28px', color: '#ffe25a', stroke: '#8b130b', strokeThickness: 6, align: 'center', resolution: 1,
@@ -406,30 +420,37 @@ export class VladsSkewersScene extends Phaser.Scene {
     }
     make('vlad-pixel', 0xffffff, 5)
     make('vlad-ash', 0x5c5149, 4)
-    make('vlad-ember', 0xff6a1c, 4)
+    if (!this.textures.exists('vlad-ember')) {
+      const spark = this.make.graphics({ x: 0, y: 0 })
+      spark.fillStyle(0xffe97a).fillRect(2, 0, 3, 8)
+      spark.fillStyle(0xff6a12).fillRect(1, 4, 5, 5)
+      spark.fillStyle(0xff2b08).fillRect(2, 8, 3, 3)
+      spark.generateTexture('vlad-ember', 7, 11)
+      spark.destroy()
+    }
     make('vlad-smoke', 0x85766d, 5)
   }
 
   private buildAmbientFlames() {
     const sources: Array<Omit<PixelFlame, 'sprite' | 'phase'>> = [
-      { x: 34, y: 221, width: 15, height: 38, layer: 'fixture' },
-      { x: 84, y: 210, width: 9, height: 25, layer: 'fixture' },
-      { x: 286, y: 137, width: 9, height: 25, layer: 'fixture' },
-      { x: 288, y: 355, width: 9, height: 24, layer: 'fixture' },
-      { x: 84, y: 579, width: 10, height: 27, layer: 'fixture' },
-      { x: 287, y: 592, width: 9, height: 25, layer: 'fixture' },
-      ...[83, 119, 158, 201, 243, 286].map((x, index) => ({
-        x, y: 724 + (index % 2) * 4, width: 11 + (index % 3) * 2, height: 27 + ((index * 7) % 18), layer: 'rear' as const,
+      { x: 34, y: 221, width: 46, height: 72, layer: 'fixture' },
+      { x: 84, y: 210, width: 30, height: 52, layer: 'fixture' },
+      { x: 286, y: 137, width: 30, height: 52, layer: 'fixture' },
+      { x: 288, y: 355, width: 30, height: 52, layer: 'fixture' },
+      { x: 84, y: 579, width: 32, height: 56, layer: 'fixture' },
+      { x: 287, y: 592, width: 31, height: 54, layer: 'fixture' },
+      ...[82, 132, 186, 240, 289].map((x, index) => ({
+        x, y: 731 + (index % 2) * 5, width: 82 + (index % 3) * 10, height: 70 + ((index * 11) % 30), layer: 'rear' as const,
       })),
-      ...[58, 92, 130, 171, 214, 255, 298, 334].map((x, index) => ({
-        x, y: 832 + (index % 2) * 3, width: 13 + (index % 3) * 2, height: 31 + ((index * 5) % 18), layer: 'grill' as const,
+      ...[58, 119, 183, 248, 317].map((x, index) => ({
+        x, y: 844 + (index % 2) * 3, width: 104 + (index % 3) * 11, height: 104 + ((index * 13) % 30), layer: 'grill' as const,
       })),
     ]
     this.ambientFlames = sources.map((source, index) => ({
       ...source,
       phase: index * 1.37,
       sprite: this.add.sprite(source.x, source.y, 'vlad-fire', source.layer === 'fixture' ? 'fire-0' : 'fire-4')
-        .setOrigin(.5, 1).setDisplaySize(source.width * 3.2, source.height * 1.75)
+        .setOrigin(.5, 1).setDisplaySize(source.width, source.height)
         .setDepth(source.layer === 'rear' ? 2 : source.layer === 'grill' ? 18 : 4)
         .play({ key: source.layer === 'fixture' ? 'vlad-torch-fire' : 'vlad-grill-fire', startFrame: index % 4 }),
     }))
@@ -524,7 +545,7 @@ export class VladsSkewersScene extends Phaser.Scene {
 
   private moveSkewer(point: Phaser.Math.Vector2) {
     this.skewerX = clamp(point.x, 54, 341)
-    this.skewerY = clamp(point.y, 520, 832)
+    this.skewerY = clamp(point.y, 500, 832)
   }
 
   private isPointOnHand(point: Phaser.Math.Vector2) {
@@ -662,7 +683,7 @@ export class VladsSkewersScene extends Phaser.Scene {
     const grillMarks = this.add.image(0, 2, 'vlad-parts', 13).setDisplaySize(size * .82, size * .82).setVisible(false)
     const eyes = this.add.image(0, -size * .12, 'vlad-parts', 0).setDisplaySize(size * .76, size * .76)
     const mouth = this.add.image(0, size * .24, 'vlad-parts', 4).setDisplaySize(size * .58, size * .58)
-    const fire = this.add.sprite(0, size * .43, 'vlad-fire', 'fire-8')
+    const fire = this.add.sprite(0, size * .43, 'vlad-fire', 'fire-0')
       .setOrigin(.5, 1).setDisplaySize(size * 1.18, size * 1.18).setVisible(false)
       .play({ key: 'vlad-torch-fire', startFrame: Math.floor(this.random() * 4) })
     root.add([leftLeg, rightLeg, leftArm, rightArm, fire, body, grillMarks, eyes, mouth])
@@ -950,7 +971,7 @@ export class VladsSkewersScene extends Phaser.Scene {
 
     const customer = this.customers[0]
     const expected = this.expectedIngredient()
-    if (!customer || this.stack.length >= customer.order.length || drop.kind !== expected) {
+    if (!customer || this.stack.length >= Math.min(customer.order.length, MAX_STACK) || drop.kind !== expected) {
       this.removeDrop(drop)
       this.showImpact(impactX, impactY, 1, specs.get(drop.kind)!.juice)
       this.loseCustomer('MAUVAISE BROCHETTE')
@@ -988,7 +1009,7 @@ export class VladsSkewersScene extends Phaser.Scene {
 
   private updateSkewer(dt: number) {
     const tipY = this.skewerY - TIP_OFFSET
-    this.skewer.setPosition(this.skewerX, this.skewerY - 35).setDisplaySize(30, 350)
+    this.skewer.setPosition(this.skewerX, this.skewerY - 35).setDisplaySize(30, SKEWER_HEIGHT)
     this.arm.setPosition(this.skewerX + 31, this.skewerY - 92)
     this.drawHandHint()
     const velocity = (this.skewerX - this.previousSkewerX) / Math.max(dt, .001)
@@ -1237,10 +1258,14 @@ export class VladsSkewersScene extends Phaser.Scene {
     const tick = Math.floor(this.elapsed * 12)
     if (tick > this.ambientTick) {
       this.ambientTick = tick
-      const source = this.ambientFlames[Math.floor(this.random() * this.ambientFlames.length)]
-      this.emberParticles.explode(source.y > 700 ? 2 : 1, source.x + (this.random() * 2 - 1) * source.width, source.y - source.height * .7)
-      if (tick % 3 === 0) this.emberParticles.explode(1, 58 + this.random() * 270, 680 + this.random() * 95)
-      if (tick % 5 === 0) this.smokeParticles.explode(1, 75 + this.random() * 240, 680 + this.random() * 55)
+      for (let burst = 0; burst < 3; burst += 1) {
+        const source = this.ambientFlames[Math.floor(this.random() * this.ambientFlames.length)]
+        const emitter = source.layer === 'grill' ? this.foregroundEmberParticles : this.emberParticles
+        emitter.explode(source.layer === 'fixture' ? 2 : 4, source.x + (this.random() * 2 - 1) * source.width * .34, source.y - source.height * (.22 + this.random() * .35))
+      }
+      this.foregroundEmberParticles.explode(5, 55 + this.random() * 280, 790 + this.random() * 40)
+      if (tick % 2 === 0) this.emberParticles.explode(4, 70 + this.random() * 245, 675 + this.random() * 70)
+      if (tick % 3 === 0) this.smokeParticles.explode(3, 70 + this.random() * 250, 705 + this.random() * 95)
     }
   }
 
@@ -1321,6 +1346,11 @@ export class VladsSkewersScene extends Phaser.Scene {
       this.levelServed = 0
       this.customers = []
       while (this.customers.length < clientsForLevel(this.level)) this.pushCustomer()
+    }
+    if (action === 'max-recipe') {
+      this.level = 99
+      this.customers = []
+      this.pushCustomer()
     }
     this.refreshHud()
     return this.stateReader()

@@ -60,9 +60,15 @@ try {
     assert.equal(initial.lives, 3)
     assert.equal(initial.score, 0)
     assert.equal(initial.customerRosterSize, 15)
+    assert.equal(initial.maxSkewerIngredients, 5)
+    assert.ok(initial.activeCustomer.order.length <= 5, 'Production recipes must never exceed five ingredients')
+    assert.ok(initial.fx.ambientFlames >= 16, 'The scene must contain authored animated fire across fixtures, rear room and grill')
+    assert.ok(initial.fx.embersAlive + initial.fx.foregroundEmbersAlive >= 12, 'Ambient fire must visibly shed a dense field of sparks')
+    assert.ok(initial.fx.smokeAlive >= 3, 'The fire scene must carry visible depth smoke')
     assert.equal(initial.remainingCustomers, 3)
     assert.equal(initial.visibleCustomers, 3)
     assert.equal(initial.skewer.stack.length, 0)
+    await capture('ambient-fire-particles')
 
     if (!touchSession) {
       const box = await canvas.boundingBox()
@@ -83,7 +89,7 @@ try {
       await page.mouse.move(grip.x, grip.y)
       await advance(17)
       assert.ok(Math.abs((await state()).skewer.x - 195) < 1, 'Returning to the original pointer position must restore the exact grabbed point without drift')
-      const highReach = await point(195, 452)
+      const highReach = await point(195, 420)
       await page.mouse.move(highReach.x, highReach.y)
       await advance(34)
       assert.ok((await state()).skewer.tipY < 170, 'Vlad must reach the upper gameplay field')
@@ -170,6 +176,8 @@ try {
     await page.waitForTimeout(260)
     assert.ok(!(await state()).drops.some(drop => drop.id === grillingId), 'Overcooked food must ash and disappear')
 
+    const maximumRecipe = JSON.parse(await page.evaluate(() => window.vlad_test_action('max-recipe')))
+    assert.equal(maximumRecipe.activeCustomer.order.length, 5, 'Late-game recipes must be hard-capped at five ingredients')
     const fullQueue = JSON.parse(await page.evaluate(() => window.vlad_test_action('queue-six')))
     assert.equal(fullQueue.remainingCustomers, 6)
     assert.equal(fullQueue.visibleCustomers, 5, 'At most five waiting floors should be occupied')

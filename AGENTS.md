@@ -4,6 +4,19 @@ This file is authoritative for any AI or developer modifying `Kombuccino/instaga
 
 For project history, product intent and the current DOM/CSS/Canvas → Phaser transition context, also read root `codex.md`. `codex.md` is an onboarding/handoff document; when it conflicts with a newer normative file, the normative file wins.
 
+## Art-direction brief routing — mandatory
+
+Before any graphic research, image request, visual redesign or art integration, read the latest `main` version of `docs/DA_CORE.md`, then the file for the requested surface:
+
+- `docs/DA_COVER.md` — authored game covers and collectible editions;
+- `docs/DA_GAME.md` — gameplay art research, redesign and stateful art production;
+- `docs/DA_WELCOME.md` — platform entry scene, held phone and direct handoff to discovery;
+- `docs/DA_UI.md` — shared Cover overlay, Info, Comments, Leaderboard, result and future Core panels.
+
+These are the current operational authorities for creative briefs and reconciled visual decisions. Preserve exact approved references and subsequent explicit user corrections within their scope. Older style catalogs and exploratory platform documents provide supporting detail, not permission to restore obsolete visual directions: no baked SWIPE TO PLAY on covers, no half-sized Info/Comments panels, no duplicate interactive game/feed inside the entry phone. Engine, input, economy, asset-transport and other technical contracts remain authoritative in their respective domains.
+
+Keep agent context separate from generator context. Recover decisions yourself, then send only a targeted micro-brief and the exact reference(s) needed for the requested component. Never send the entire catalog, placeholder set or project history as an image brief. Do not ask the user to repeat settled artistic decisions.
+
 ## 1. Read before editing
 
 For any game work, read the latest `main` versions of:

@@ -22,9 +22,21 @@ function opensLayoutLab() {
   return query.get('usr') === 'moigod' && query.get('lab') === 'layout'
 }
 
+function layoutGuideView(): 'game' | 'cover' | null {
+  if (typeof window === 'undefined') return null
+  const query = new URL(window.location.href).searchParams
+  if (query.get('usr') !== 'moigod' || query.get('lab') !== 'layout') return null
+  const view = query.get('view')
+  if (view === 'game') return 'game'
+  if (view === 'cover' || view === 'portrait') return 'cover'
+  return null
+}
+
 export default function App() {
   const [entered, setEntered] = useState(() => opensDirectlyOnAGame())
 
+  const guideView = layoutGuideView()
+  if (guideView) return <LayoutLab focus={guideView} />
   if (opensLayoutLab()) return <LayoutLab />
   if (opensMusicLab()) return <MusicLab />
 

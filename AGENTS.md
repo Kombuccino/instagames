@@ -70,6 +70,8 @@ Gameplay has a fixed authored coordinate system. Default targets:
 - portrait: `390 × 844` logical units;
 - landscape: `844 × 390` logical units.
 
+**Current product scope (decision of 8 September 2026):** all new game, gameplay-DA and cover production is portrait-only at `390 × 844` until the user explicitly reopens landscape. Do not propose, generate or implement a second landscape composition. Existing landscape catalog entries remain supported only for maintenance and migration of their current behavior.
+
 Screen/browser/device changes apply **uniform scaling only** to the canonical game stage. Do not redesign or reflow critical gameplay geometry for PC vs phone. Do not position important game objects primarily with `vw`/`vh`.
 
 A phone is the complete reference experience. Tablet/desktop extra space may host optional Core sidecars or decorative overscan, but it must never move or resize elements relative to one another inside the canonical game.

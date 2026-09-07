@@ -4,16 +4,15 @@ Cette fiche complète `GAME_LAYOUT_SYSTEM.md` et `GAME_ART_PRODUCTION_PIPELINE.m
 
 `/?usr=moigod&lab=layout`
 
-La page permet de télécharger les deux gabarits PNG de livraison, de simuler les écrans courants et de calculer la taille maximale d’un asset à partir de sa zone logique.
+La page permet d’ouvrir séparément le gabarit d’un jeu ou d’une cover, sans interface autour, de télécharger les deux variantes PNG, de simuler les écrans courants et de calculer la taille maximale d’un asset à partir de sa zone logique.
 
-## Les deux cadres
+## Le cadre de production
 
 | Usage | Stage logique | Dérivé raster runtime maximal à densité 2 |
 | --- | ---: | ---: |
 | gameplay portrait et cover | 390 × 844 | 780 × 1688 |
-| gameplay paysage | 844 × 390 | 1688 × 780 |
 
-Une cover du fil de découverte reste en portrait, quelle que soit l’orientation du jeu.
+Depuis la décision du 8 septembre 2026, toute nouvelle production est en portrait. Le paysage reste seulement une compatibilité technique pour les jeux existants qui en dépendent ; il n’entre plus dans les briefs, gabarits ou lots d’assets courants.
 
 Le stage entier est la composition contractuelle. Phaser utilise `FIT` et une échelle uniforme : aucun déplacement interne ne dépend de l’écran. La zone centrale indiquée dans les gabarits est une zone sûre recommandée pour l’action et les sujets critiques, car le Core peut superposer son bouton Retour en gameplay et son rail, sa monnaie et son CTA sur une cover.
 
@@ -38,6 +37,22 @@ Le fond permanent ne contient jamais score, vies, recette, clients, ingrédients
 Toujours visible et fixe : stage canonique, géométrie, gameplay, HUD authored dans la scène, hitboxes, caméra et rapports de taille.
 
 Variable : échelle uniforme, densité physique, marges Core, sidecars optionnels et overscan décoratif. Aucun élément variable ne porte une information indispensable.
+
+## Données d’écran et tendance
+
+Référence au 8 septembre 2026 : les six premières résolutions de viewport mobile publiées par StatCounter représentent 42,48 % des pages vues mesurées dans le monde en août 2026. Elles se regroupent principalement autour des ratios 19,5:9 et 20:9 ; `390 × 844` appartient à cette famille. Source : [StatCounter Global Stats](https://gs.statcounter.com/screen-resolution-stats/mobile/worldwide).
+
+Chez les joueurs PC, l’enquête Steam d’août 2026 reste dominée par `1920 × 1080` (50,52 %) et `2560 × 1440` (21,86 %). Le portage PC doit donc conserver le stage portrait par mise à l’échelle uniforme et utiliser les côtés pour le Core ou un décor optionnel, sans étirer ni recomposer le gameplay. Source : [Steam Hardware Survey](https://store.steampowered.com/hwsurvey).
+
+La tendance structurante est la multiplication des fenêtres redimensionnables : tablettes, appareils pliables, écran partagé et modes bureau. Android recommande de répondre à la taille de fenêtre disponible plutôt qu’au modèle physique. MiniFugg traite donc le Core comme adaptatif et le stage de jeu comme fixe. Source : [guide Android officiel](https://developer.android.com/develop/adaptive-apps/guides/support-different-display-sizes).
+
+## Test plein écran mobile
+
+- Android / Chrome : ouvrir le site HTTPS, choisir « Installer l’application » ou « Ajouter à l’écran d’accueil », puis lancer MiniFugg depuis son icône.
+- iPhone / Safari : utiliser Partager puis « Sur l’écran d’accueil », puis lancer MiniFugg depuis son icône. iOS utilise le mode autonome ; le mode `fullscreen` du manifeste retombe sur ce mode.
+- Le plein écran demandé par le navigateur sert seulement d’aperçu et n’est pas fiable sur iPhone. L’installation PWA est le test web le plus proche de l’app ; un build Capacitor reste la validation du shell natif.
+
+Le dépôt possède déjà les métadonnées iOS et le wordmark canonique. La planche d’exploration favicon/app-icon est archivée, mais aucune option n’est encore enregistrée comme icône canonique dans `docs/BRAND_ASSETS.md`. Le manifeste PWA et ses fichiers 192/512 doivent être branchés après ce choix, sans redessiner la marque.
 
 ## Écarts de plateforme encore ouverts
 

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import './layoutLab.css'
 
-type Orientation = 'portrait' | 'landscape'
+type GuideMode = 'game' | 'cover' | 'combined'
 
 type ScreenPreset = {
   id: string
@@ -10,23 +10,21 @@ type ScreenPreset = {
   height: number
 }
 
-const STAGES = {
-  portrait: { width: 390, height: 844, label: 'PORTRAIT + COVER' },
-  landscape: { width: 844, height: 390, label: 'PAYSAGE' },
-} as const
+const STAGE = { width: 390, height: 844, label: 'PORTRAIT + COVER' } as const
 
 const SCREENS: ScreenPreset[] = [
-  { id: 'phone-short', label: 'Téléphone court', width: 360, height: 640 },
+  { id: 'phone-small', label: 'Petit téléphone', width: 320, height: 568 },
+  { id: 'phone-360-780', label: 'Mobile 19,5:9', width: 360, height: 780 },
+  { id: 'phone-360-800', label: 'Mobile 20:9', width: 360, height: 800 },
   { id: 'phone-reference', label: 'Téléphone référence', width: 390, height: 844 },
+  { id: 'phone-leading', label: 'Format mondial n°1', width: 414, height: 896 },
   { id: 'phone-large', label: 'Grand téléphone', width: 430, height: 932 },
   { id: 'tablet', label: 'Tablette', width: 768, height: 1024 },
-  { id: 'desktop', label: 'Ordinateur', width: 1440, height: 900 },
-  { id: 'phone-landscape', label: 'Téléphone paysage', width: 844, height: 390 },
+  { id: 'desktop', label: 'PC 16:9', width: 1920, height: 1080 },
 ]
 
 const ASSET_ROWS = [
   ['Fond complet portrait', '390 × 844', '780 × 1688', 'Opaque, sans état de jeu'],
-  ['Fond complet paysage', '844 × 390', '1688 × 780', 'Opaque, sans état de jeu'],
   ['Cover plein cadre', '390 × 844', '780 × 1688', 'Titre possible, aucun contrôle Core'],
   ['Objet / personnage', 'zone réelle', 'zone × 2', 'Recadrer au contenu, alpha'],
   ['Bouton ou panneau', 'taille affichée', 'taille × 2', 'États séparés, texte dynamique'],
@@ -37,8 +35,8 @@ function round(value: number) {
   return Math.round(value * 100) / 100
 }
 
-function downloadStageGuide(orientation: Orientation) {
-  const stage = STAGES[orientation]
+function downloadStageGuide(mode: Exclude<GuideMode, 'combined'>) {
+  const stage = STAGE
   const density = 2
   const canvas = document.createElement('canvas')
   canvas.width = stage.width * density
@@ -55,9 +53,7 @@ function downloadStageGuide(orientation: Orientation) {
   for (let x = grid; x < stage.width; x += grid) { context.beginPath(); context.moveTo(x, 0); context.lineTo(x, stage.height); context.stroke() }
   for (let y = grid; y < stage.height; y += grid) { context.beginPath(); context.moveTo(0, y); context.lineTo(stage.width, y); context.stroke() }
 
-  const safe = orientation === 'portrait'
-    ? { x: 78, y: 68, width: 280, height: 674 }
-    : { x: 68, y: 34, width: 708, height: 322 }
+  const safe = { x: 78, y: 68, width: 280, height: 674 }
   context.fillStyle = 'rgba(146, 255, 101, .055)'
   context.fillRect(safe.x, safe.y, safe.width, safe.height)
   context.strokeStyle = '#92ff65'
@@ -68,15 +64,15 @@ function downloadStageGuide(orientation: Orientation) {
   context.textAlign = 'center'
   context.fillText('ZONE SURE POUR LE CONTENU CRITIQUE', safe.x + safe.width / 2, safe.y + safe.height / 2)
 
-  context.fillStyle = 'rgba(255, 92, 88, .18)'
-  context.strokeStyle = '#ff5c58'
-  context.fillRect(8, 8, 48, 48)
-  context.strokeRect(8, 8, 48, 48)
-  context.fillStyle = '#ff5c58'
-  context.font = 'bold 8px monospace'
-  context.fillText('RETOUR', 32, 34)
-
-  if (orientation === 'portrait') {
+  if (mode === 'game') {
+    context.fillStyle = 'rgba(255, 92, 88, .18)'
+    context.strokeStyle = '#ff5c58'
+    context.fillRect(8, 8, 48, 48)
+    context.strokeRect(8, 8, 48, 48)
+    context.fillStyle = '#ff5c58'
+    context.font = 'bold 8px monospace'
+    context.fillText('RETOUR', 32, 34)
+  } else {
     context.setLineDash([4, 3])
     context.strokeStyle = '#ff9f43'
     context.fillStyle = 'rgba(255, 159, 67, .10)'
@@ -100,54 +96,56 @@ function downloadStageGuide(orientation: Orientation) {
   context.fillText(`${stage.width} x ${stage.height} LOGIQUE / PNG ${canvas.width} x ${canvas.height}`, 10, stage.height - 10)
 
   const link = document.createElement('a')
-  link.download = `minifugg-gabarit-${orientation}-${canvas.width}x${canvas.height}.png`
+  link.download = `minifugg-gabarit-portrait-${mode}-${canvas.width}x${canvas.height}.png`
   link.href = canvas.toDataURL('image/png')
   link.click()
 }
 
-function StageGuide({ orientation }: { orientation: Orientation }) {
-  const stage = STAGES[orientation]
-  const portrait = orientation === 'portrait'
-
+function StageArtwork({ mode = 'combined' }: { mode?: GuideMode }) {
+  const stage = STAGE
   return (
-    <figure className="mf-layout-guide" data-orientation={orientation}>
+    <div className="mf-layout-guide__stage" style={{ aspectRatio: `${stage.width} / ${stage.height}` }}>
+      <div className="mf-layout-guide__grid" aria-hidden="true" />
+      <div className="mf-layout-guide__critical">
+        <b>ZONE SÛRE CRITIQUE</b>
+        <small>Action, HUD et sujet principal restent lisibles ici.</small>
+      </div>
+      {(mode === 'game' || mode === 'combined') && <div className="mf-layout-guide__close"><b>CORE</b><small>48 × 48</small></div>}
+      {(mode === 'cover' || mode === 'combined') && (
+        <>
+          <div className="mf-layout-guide__cover-top"><b>COVER</b><small>monnaie Core</small></div>
+          <div className="mf-layout-guide__cover-rail"><b>RAIL</b><small>actions</small></div>
+          <div className="mf-layout-guide__cover-bottom"><b>CTA CORE</b><small>laisser cette zone calme</small></div>
+        </>
+      )}
+      <span className="mf-layout-guide__axis is-x">{stage.width} unités logiques</span>
+      <span className="mf-layout-guide__axis is-y">{stage.height} unités logiques</span>
+    </div>
+  )
+}
+
+function StageGuide() {
+  const stage = STAGE
+  return (
+    <figure className="mf-layout-guide" data-orientation="portrait">
       <figcaption>
         <span>{stage.label}</span>
-        <span className="mf-layout-guide__actions"><strong>{stage.width} × {stage.height}</strong><button type="button" onClick={() => downloadStageGuide(orientation)}>PNG ×2 ↓</button></span>
+        <span className="mf-layout-guide__actions"><strong>{stage.width} × {stage.height}</strong><a href="?usr=moigod&lab=layout&view=cover">VOIR COVER ↗</a><a href="?usr=moigod&lab=layout&view=game">VOIR JEU ↗</a></span>
       </figcaption>
-      <div className="mf-layout-guide__stage" style={{ aspectRatio: `${stage.width} / ${stage.height}` }}>
-        <div className="mf-layout-guide__grid" aria-hidden="true" />
-        <div className="mf-layout-guide__critical">
-          <b>ZONE SÛRE CRITIQUE</b>
-          <small>Action, HUD et sujet principal restent lisibles ici.</small>
-        </div>
-        <div className="mf-layout-guide__close"><b>CORE</b><small>48 × 48</small></div>
-        {portrait && (
-          <>
-            <div className="mf-layout-guide__cover-top"><b>COVER</b><small>monnaie Core</small></div>
-            <div className="mf-layout-guide__cover-rail"><b>RAIL</b><small>actions</small></div>
-            <div className="mf-layout-guide__cover-bottom"><b>CTA CORE</b><small>laisser cette zone calme</small></div>
-          </>
-        )}
-        <span className="mf-layout-guide__axis is-x">{stage.width} unités logiques</span>
-        <span className="mf-layout-guide__axis is-y">{stage.height} unités logiques</span>
-      </div>
-      <p>{portrait
-        ? 'Même gabarit pour le gameplay portrait et la cover. En gameplay, seul le carré Retour du Core recouvre la scène. En cover, le rail, la monnaie et le CTA sont ajoutés par le Core.'
-        : 'Gabarit réservé au gameplay paysage. Les covers du fil de découverte restent en portrait 390 × 844.'}</p>
+      <StageArtwork />
+      <div className="mf-layout-guide__downloads"><button type="button" onClick={() => downloadStageGuide('cover')}>PNG COVER ×2 ↓</button><button type="button" onClick={() => downloadStageGuide('game')}>PNG JEU ×2 ↓</button></div>
+      <p>Même gabarit pour le gameplay et la cover. Les vues isolées montrent la zone verte dans les conditions réelles : Retour Core pour le jeu ; rail, monnaie et CTA pour la cover.</p>
     </figure>
   )
 }
 
 function ScreenSimulator() {
-  const [orientation, setOrientation] = useState<Orientation>('portrait')
-  const [screenId, setScreenId] = useState('phone-short')
-  const stage = STAGES[orientation]
+  const [screenId, setScreenId] = useState('phone-360-800')
+  const stage = STAGE
   const screen = SCREENS.find((item) => item.id === screenId) ?? SCREENS[0]
 
   const geometry = useMemo(() => {
-    const shortLandscape = screen.width > screen.height && screen.height <= 650
-    const surfaceWidth = !shortLandscape && screen.width >= 760 ? Math.min(screen.width, 520) : screen.width
+    const surfaceWidth = screen.width >= 760 ? Math.min(screen.width, 520) : screen.width
     const surfaceHeight = screen.height
     const scale = Math.min(surfaceWidth / stage.width, surfaceHeight / stage.height)
     const displayedWidth = stage.width * scale
@@ -167,14 +165,7 @@ function ScreenSimulator() {
 
   return (
     <section className="mf-layout-panel mf-layout-simulator">
-      <div className="mf-layout-panel__head">
-        <div><small>SIMULATEUR</small><h2>Ce que voit chaque écran</h2></div>
-        <div className="mf-layout-segmented" aria-label="Orientation du jeu">
-          {(['portrait', 'landscape'] as Orientation[]).map((value) => (
-            <button key={value} type="button" data-active={orientation === value} onClick={() => setOrientation(value)}>{value === 'portrait' ? 'PORTRAIT' : 'PAYSAGE'}</button>
-          ))}
-        </div>
-      </div>
+      <div className="mf-layout-panel__head"><div><small>SIMULATEUR PORTRAIT</small><h2>Ce que voit chaque écran</h2></div></div>
       <div className="mf-layout-screen-tabs">
         {SCREENS.map((item) => <button key={item.id} type="button" data-active={screenId === item.id} onClick={() => setScreenId(item.id)}>{item.label}<small>{item.width} × {item.height}</small></button>)}
       </div>
@@ -201,6 +192,77 @@ function ScreenSimulator() {
   )
 }
 
+const MOBILE_STATS = [
+  { size: '414 × 896', share: 13.63 },
+  { size: '360 × 800', share: 9.25 },
+  { size: '390 × 844', share: 6.81 },
+  { size: '393 × 873', share: 5.27 },
+  { size: '384 × 832', share: 4.35 },
+  { size: '360 × 780', share: 3.17 },
+]
+
+const PC_STATS = [
+  { size: '1920 × 1080', share: 50.52 },
+  { size: '2560 × 1440', share: 21.86 },
+  { size: '2560 × 1600', share: 5.71 },
+  { size: '3840 × 2160', share: 4.98 },
+  { size: '3440 × 1440', share: 3.14 },
+  { size: '1920 × 1200', share: 2.76 },
+]
+
+function StatBars({ rows, max }: { rows: Array<{ size: string, share: number }>, max: number }) {
+  return <div className="mf-layout-stat-bars">{rows.map((row) => <div key={row.size}><span>{row.size}</span><i><b style={{ width: `${row.share / max * 100}%` }} /></i><strong>{row.share.toFixed(2).replace('.', ',')} %</strong></div>)}</div>
+}
+
+function ScreenMarketData() {
+  return (
+    <section className="mf-layout-panel mf-layout-market">
+      <div className="mf-layout-panel__head"><div><small>MONDE · AOÛT 2026</small><h2>Les écrans réellement utilisés</h2></div></div>
+      <div className="mf-layout-market__columns">
+        <article><h3>Web mobile</h3><StatBars rows={MOBILE_STATS} max={13.63} /><p>Les six premières résolutions représentent 42,48 % des pages vues mobiles mesurées. Elles forment surtout deux familles très proches : environ 19,5:9 et 20:9. Le cadre MiniFugg 390 × 844 appartient exactement à la première.</p><a href="https://gs.statcounter.com/screen-resolution-stats/mobile/worldwide" target="_blank" rel="noreferrer">StatCounter Global Stats ↗</a></article>
+        <article><h3>Joueurs PC</h3><StatBars rows={PC_STATS} max={50.52} /><p>Le 16:9 reste massif : 1080p, 1440p et 4K dominent. Le 16:10 progresse et l’ultrawide existe, sans justifier d’étirer un jeu portrait sur toute la largeur.</p><a href="https://store.steampowered.com/hwsurvey" target="_blank" rel="noreferrer">Steam Hardware Survey ↗</a></article>
+      </div>
+      <div className="mf-layout-trends"><h3>Tendance à préparer</h3><p>Les appareils pliables, le multi-fenêtrage et le mode bureau rendent la <b>fenêtre disponible</b> plus importante que le modèle du téléphone. Android 16 impose même davantage de redimensionnement sur les grands écrans. Le Core doit donc s’adapter à la fenêtre, tandis que le jeu garde sa composition portrait.</p><a href="https://developer.android.com/develop/adaptive-apps/guides/support-different-display-sizes" target="_blank" rel="noreferrer">Guide Android officiel ↗</a></div>
+    </section>
+  )
+}
+
+function PortingStrategy() {
+  return (
+    <section className="mf-layout-panel">
+      <div className="mf-layout-panel__head"><div><small>MOBILE → PC</small><h2>Comment les jeux résolvent le problème</h2></div></div>
+      <div className="mf-layout-strategies">
+        <article><b>1</b><h3>Cadre fixe + FIT</h3><p>Le monde et le HUD gardent leurs coordonnées. On agrandit uniformément et on accepte des marges. C’est la base choisie pour MiniFugg.</p></article>
+        <article><b>2</b><h3>Zone sûre + décor extensible</h3><p>L’action reste dans le cadre vert. Sur PC, un overscan, une ambiance ou des panneaux Core occupent les côtés sans modifier le jeu.</p></article>
+        <article><b>3</b><h3>Interface adaptative séparée</h3><p>Menus, boutique, commentaires et classements changent de disposition selon la fenêtre. Le canvas de gameplay, lui, reste stable.</p></article>
+        <article><b>4</b><h3>Contrôles par plateforme</h3><p>Toucher sur mobile, souris/clavier ou manette sur PC. Les actions sont remappées sans déplacer les cibles ni changer l’équilibrage.</p></article>
+      </div>
+      <p className="mf-layout-verdict"><b>Choix MiniFugg :</b> production portrait uniquement pour le moment. Le téléphone contient l’expérience complète. Le portage PC ajoute confort, contrôles et décor autour du même jeu ; il ne demande pas une seconde DA.</p>
+    </section>
+  )
+}
+
+function AppModeGuide() {
+  const installed = typeof window !== 'undefined' && (window.matchMedia('(display-mode: standalone)').matches || Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone))
+
+  const requestFullscreen = async () => {
+    if (!document.documentElement.requestFullscreen) return
+    await document.documentElement.requestFullscreen({ navigationUI: 'hide' })
+  }
+
+  return (
+    <section className="mf-layout-panel mf-layout-app-mode">
+      <div className="mf-layout-panel__head"><div><small>TEST MOBILE</small><h2>Voir MiniFugg comme une app</h2></div><strong data-ready={installed}>{installed ? 'MODE APP ACTIF' : 'MODE NAVIGATEUR'}</strong></div>
+      <div className="mf-layout-app-mode__columns">
+        <article><h3>Android · Chrome</h3><ol><li>Ouvrir le site HTTPS dans Chrome.</li><li>Menu ⋮ puis « Ajouter à l’écran d’accueil » ou « Installer l’application ».</li><li>Lancer MiniFugg depuis son icône, pas depuis l’onglet Chrome.</li></ol></article>
+        <article><h3>iPhone · Safari</h3><ol><li>Ouvrir le site dans Safari.</li><li>Partager □↑ puis « Sur l’écran d’accueil ».</li><li>Lancer MiniFugg depuis l’icône. iOS utilise le mode app autonome, sans barre d’adresse.</li></ol></article>
+      </div>
+      <button className="mf-layout-fullscreen-button" type="button" disabled={!document.documentElement.requestFullscreen} onClick={() => void requestFullscreen()}>ESSAYER LE PLEIN ÉCRAN DU NAVIGATEUR</button>
+      <p className="mf-layout-note">Ce bouton donne un aperçu rapide sur les navigateurs compatibles. L’installation sur l’écran d’accueil est le test fiable. MiniFugg possède déjà les métadonnées iOS, mais son manifeste PWA et sa famille d’icônes doivent encore être branchés avant de garantir l’installation Android complète.</p>
+    </section>
+  )
+}
+
 function AssetCalculator() {
   const [width, setWidth] = useState(96)
   const [height, setHeight] = useState(96)
@@ -223,18 +285,21 @@ function AssetCalculator() {
   )
 }
 
-export function LayoutLab() {
+export function LayoutLab({ focus }: { focus?: Exclude<GuideMode, 'combined'> }) {
+  if (focus) {
+    return <main className="mf-layout-focus" data-mode={focus}><StageArtwork mode={focus} /></main>
+  }
+
   return (
     <main className="mf-layout-lab">
       <header className="mf-layout-hero">
         <small>MINIFUGG · CONTRAT VISUEL</small>
-        <h1>Deux cadres.<br />Une seule composition.</h1>
-        <p>Cette page fixe les tailles de création, montre les zones recouvertes par le Core et simule la mise à l’échelle. Une DA doit tenir dans l’un de ces deux cadres avant toute génération d’assets.</p>
+        <h1>Un cadre.<br />Une composition.</h1>
+        <p>MiniFugg produit désormais ses jeux et ses covers en portrait 390 × 844. Cette page fixe les tailles de création, montre les zones recouvertes par le Core et simule la mise à l’échelle avant toute génération d’assets.</p>
       </header>
 
       <section className="mf-layout-guides" aria-label="Gabarits canoniques">
-        <StageGuide orientation="portrait" />
-        <StageGuide orientation="landscape" />
+        <StageGuide />
       </section>
 
       <section className="mf-layout-panel">
@@ -255,6 +320,9 @@ export function LayoutLab() {
 
       <AssetCalculator />
       <ScreenSimulator />
+      <ScreenMarketData />
+      <PortingStrategy />
+      <AppModeGuide />
 
       <section className="mf-layout-panel mf-layout-open">
         <div className="mf-layout-panel__head"><div><small>RESTE À NORMALISER</small><h2>Les écarts encore présents</h2></div></div>
@@ -262,7 +330,8 @@ export function LayoutLab() {
           <li><b>Covers statiques et animées :</b> le Core étire aujourd’hui les images statiques en <i>cover</i>, tandis que Phaser conserve le cadre 390 × 844 en <i>FIT</i>. Leur cadrage doit devenir identique.</li>
           <li><b>Anciens masters 9:16 :</b> ils sont plus larges que 390 × 844 et perdent environ 18 % de leur largeur en plein cadre. Il faut les recadrer avec une vraie zone sûre, sans altérer les originaux validés.</li>
           <li><b>Atlases existants :</b> plusieurs feuilles et personnages dépassent largement leur taille affichée. Chaque migration doit mesurer la zone logique et produire un dérivé runtime à ×2 maximum.</li>
-          <li><b>Overscan :</b> il doit rester décoratif, appartenir à la surface du jeu et ne jamais contenir de cible, HUD ou information indispensable.</li>
+          <li><b>Overscan PC :</b> il doit rester décoratif, appartenir à la surface du jeu et ne jamais contenir de cible, HUD ou information indispensable.</li>
+          <li><b>Installation mobile :</b> les métadonnées iOS existent. Le manifeste PWA et la famille d’icônes MiniFugg doivent encore être reliés après identification du master d’icône approuvé.</li>
         </ol>
       </section>
     </main>

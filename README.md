@@ -1,4 +1,4 @@
-# MiniFugg / Instagames
+# MiniFugg
 
 A mobile-first catalog/feed of small authored games designed to start instantly and remain portable across web, mobile and desktop/store shells.
 

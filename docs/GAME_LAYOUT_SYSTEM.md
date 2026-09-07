@@ -1,5 +1,9 @@
 # MiniFugg — Game Layout System
 
+## Current product scope
+
+New MiniFugg games, gameplay art and covers currently target portrait `390 × 844` only, following the user decision of 8 September 2026. The landscape contract below remains documented for existing catalog compatibility; it is not a production target until the user explicitly reopens it.
+
 This document defines how gameplay geometry behaves across phones, tablets, desktop browsers and wrapped applications.
 
 ## 1. Core rule

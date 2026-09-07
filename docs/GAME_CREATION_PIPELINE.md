@@ -36,6 +36,8 @@ L'affinage ultérieur et la production artistique d'un jeu que l'utilisateur cho
 
 **Question à résoudre : le geste et les décisions donnent-ils envie de rejouer ?**
 
+Portée actuelle : créer le prototype et toute sa production en portrait `390 × 844`. Ne pas consacrer de temps, de prompt ou d’asset à une variante paysage tant que l’utilisateur n’a pas rouvert ce besoin.
+
 1. Résumer en quelques lignes le geste, l'objectif, la boucle d'une partie, la fin/échec, le score éventuel et la raison de recommencer. Noter les hypothèses de règles sans exiger un long cahier des charges.
 2. Déduire l'orientation et le plus petit périmètre jouable. Poser seulement une question de GD si deux interprétations changent profondément le jeu. Une simple idée à archiver ne déclenche pas automatiquement un chantier.
 3. Dès que la création est demandée, coder la mécanique sur le runtime canonique : Phaser pour la 2D, Three.js pour une vraie 3D. Employer formes simples, couleurs distinctes, gros textes, feedback minimum. Aucune exploration graphique obligatoire ni pack d'assets final.

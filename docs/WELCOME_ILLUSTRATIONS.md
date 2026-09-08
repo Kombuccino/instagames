@@ -44,7 +44,7 @@ No new capability is added to either legacy cover runtime.
 
 A cover has a fixed authored composition just like a game.
 
-The central composition remains the same on phone, tablet and desktop. Mobile uses width-first scaling and may crop HAUT/BAS; PC uses height-first scaling and shows the complete MASTER. Desktop side space belongs to Core. EXTRA HAUT/BAS exist only outside MASTER on a proportionally taller mobile viewport.
+The central composition remains the same on phone, tablet and desktop. Mobile uses width-first scaling and may crop HAUT/BAS; PC scales CENTRE to the full height and crops HAUT/BAS. Desktop side space belongs to Core. EXTRA HAUT/BAS exist only outside MASTER on a proportionally taller mobile viewport.
 
 ## 5. Cover variants
 

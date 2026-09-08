@@ -154,7 +154,7 @@ Une bande avec de grandes marges transparentes n'a pas la même taille utile que
 
 ### Responsive, résolution et performance
 
-- Gameplay : largeur logique 390 et échelle uniforme ; largeur pilote sur mobile, hauteur sur PC, CENTRE reste complète. Le changement de résolution ne modifie aucune coordonnée de jeu essentielle.
+- Gameplay : largeur logique 390 et échelle uniforme ; largeur pilote sur mobile, hauteur de CENTRE pilote sur PC, CENTRE reste complète. Le changement de résolution ne modifie aucune coordonnée de jeu essentielle.
 - Décor : HAUT et BAS sont les parties recadrables du MASTER. Un prolongement existe seulement dans EXTRA HAUT/BAS, hors MASTER, sur un viewport mobile très haut. Les gouttières latérales appartiennent au Core et ne reçoivent pas de décor propre au jeu.
 - Ergonomie : mesurer les tailles affichées, textes longs et zones touchables sur le plus petit viewport retenu. « Ça tient » ne vaut pas « c'est lisible et jouable ».
 - Images : choisir la résolution à partir de la taille affichée maximale et de la densité utile, pas de la résolution maximale du générateur. Mesurer téléchargement, décodage, temps de chargement et mémoire ; `largeur × hauteur × 4` donne une estimation RGBA, pas une mesure totale GPU.

@@ -219,7 +219,7 @@ function ScreenSimulator() {
   const geometry = useMemo(() => {
     const desktop = screen.width >= 760
     const surfaceHeight = screen.height
-    const scale = desktop ? surfaceHeight / stage.height : screen.width / stage.width
+    const scale = desktop ? surfaceHeight / 662 : screen.width / stage.width
     const displayedWidth = stage.width * scale
     const displayedHeight = stage.height * scale
     const surfaceWidth = desktop ? displayedWidth : screen.width
@@ -260,7 +260,7 @@ function ScreenSimulator() {
           <div><dt>{geometry.verticalDelta < 0 ? 'Recadrage vertical' : 'EXTRA vertical'}</dt><dd>{round(Math.abs(geometry.verticalDelta))} px</dd></div>
         </dl>
       </div>
-      <p className="mf-layout-note"><b>Mobile :</b> la largeur pilote et la hauteur utile dépend aussi du navigateur ou du mode app. <b>PC :</b> la hauteur pilote et le MASTER entier reste visible. Les côtés appartiennent au Core.</p>
+      <p className="mf-layout-note"><b>Mobile :</b> la largeur pilote et la hauteur utile dépend aussi du navigateur ou du mode app. <b>PC :</b> CENTRE remplit la hauteur ; HAUT/BAS sont hors écran. Les côtés appartiennent au Core.</p>
     </section>
   )
 }
@@ -305,12 +305,12 @@ function PortingStrategy() {
     <section className="mf-layout-panel">
       <div className="mf-layout-panel__head"><div><small>MOBILE → PC</small><h2>Comment les jeux résolvent le problème</h2></div></div>
       <div className="mf-layout-strategies">
-        <article><b>1</b><h3>Échelle uniforme</h3><p>Le monde et le HUD gardent leurs coordonnées. La largeur pilote sur mobile et la hauteur pilote sur PC.</p></article>
+        <article><b>1</b><h3>Échelle uniforme</h3><p>Le monde et le HUD gardent leurs coordonnées. La largeur pilote sur mobile ; la hauteur de CENTRE pilote sur PC.</p></article>
         <article><b>2</b><h3>Recadrage vertical</h3><p>L’action reste dans CENTRE. HAUT et BAS sont les seules parties du MASTER que le mobile peut couper.</p></article>
         <article><b>3</b><h3>Interface adaptative séparée</h3><p>Menus, boutique, commentaires et classements changent de disposition selon la fenêtre. Le canvas de gameplay, lui, reste stable.</p></article>
         <article><b>4</b><h3>Contrôles par plateforme</h3><p>Toucher sur mobile, souris/clavier ou manette sur PC. Les actions sont remappées sans déplacer les cibles ni changer l’équilibrage.</p></article>
       </div>
-      <p className="mf-layout-verdict"><b>Choix MiniFugg :</b> production portrait uniquement pour le moment. Le téléphone contient l’expérience complète. Le portage PC utilise la hauteur disponible ; les côtés restent au Core et ne demandent pas une seconde DA.</p>
+      <p className="mf-layout-verdict"><b>Choix MiniFugg :</b> production portrait uniquement pour le moment. Le téléphone contient l’expérience complète. Sur PC, CENTRE remplit la hauteur disponible ; les côtés restent au Core et ne demandent pas une seconde DA.</p>
     </section>
   )
 }
@@ -324,7 +324,7 @@ function Vocabulary() {
     ['EXTRA HAUT', 'Espace réel au-dessus du MASTER si le viewport est plus haut.'],
     ['EXTRA BAS', 'Espace réel sous le MASTER si le viewport est plus haut.'],
   ] as const
-  return <section className="mf-layout-panel mf-layout-vocabulary"><div className="mf-layout-panel__head"><div><small>VOCABULAIRE</small><h2>Les mêmes mots partout</h2></div></div><div>{words.map(([name, detail]) => <article key={name}><b>{name}</b><p>{detail}</p></article>)}</div><p className="mf-layout-note">Les zones cyan signifient toujours EXTRA. Elles ne font jamais partie du MASTER et ne sont pas présentes sur PC lorsque la hauteur pilote.</p></section>
+  return <section className="mf-layout-panel mf-layout-vocabulary"><div className="mf-layout-panel__head"><div><small>VOCABULAIRE</small><h2>Les mêmes mots partout</h2></div></div><div>{words.map(([name, detail]) => <article key={name}><b>{name}</b><p>{detail}</p></article>)}</div><p className="mf-layout-note">Les zones cyan signifient toujours EXTRA. Elles ne font jamais partie du MASTER. Sur PC, le template réel cadre CENTRE plein écran et recadre HAUT/BAS.</p></section>
 }
 
 function AppModeGuide() {

@@ -25,7 +25,7 @@ Deux zones peuvent exister **hors du MASTER** :
 | **EXTRA HAUT** | seulement si le viewport utile est plus haut que le MASTER mis à l’échelle | prolongement décoratif facultatif |
 | **EXTRA BAS** | seulement si le viewport utile est plus haut que le MASTER mis à l’échelle | prolongement décoratif facultatif |
 
-Le cyan est réservé aux zones **EXTRA**. Il ne doit jamais colorer HAUT ou BAS dans un guide. Sur PC, la hauteur pilote : le MASTER entier occupe toute la hauteur, donc il n’y a ni EXTRA HAUT ni EXTRA BAS. Les espaces restants sont latéraux et appartiennent au Core.
+Le cyan est réservé aux zones **EXTRA**. Il ne doit jamais colorer HAUT ou BAS dans un guide. Sur PC, la hauteur de CENTRE pilote : CENTRE occupe toute la hauteur, HAUT/BAS sont recadrés, et il n’y a ni EXTRA HAUT ni EXTRA BAS. Les espaces restants sont latéraux et appartiennent au Core.
 
 Sur mobile, les 390 unités occupent toute la largeur utile. La hauteur utile dépend du téléphone, des barres de chaque navigateur, du clavier, du mode PWA installé et du shell Capacitor. Si elle est courte, HAUT/BAS sont recadrés symétriquement ou selon un ancrage explicitement choisi ; CENTRE reste entière. Si elle dépasse le MASTER mis à l’échelle, EXTRA HAUT/BAS peuvent apparaître.
 
@@ -49,7 +49,7 @@ Sur mobile, les 390 unités occupent toute la largeur utile. La hauteur utile d�
 2. Composer le MASTER `390 × 844` et garder l’essentiel dans CENTRE.
 3. Réserver les zones Core du modèle.
 4. Considérer HAUT/BAS comme recadrables ; prévoir EXTRA HAUT/BAS seulement si le décor peut être prolongé sans nouvelle information.
-5. Vérifier au minimum A54 Brave `360 × 611`, A54 Chrome `360 × 656`, MASTER entier `390 × 844` et PC 16:9 piloté par la hauteur.
+5. Vérifier au minimum A54 Brave `360 × 611`, A54 Chrome `360 × 656`, MASTER entier `390 × 844` comme référence documentaire et PC 16:9 avec CENTRE plein écran.
 6. Valider le blockout avant de produire la DA finale ou de migrer les écrans existants.
 
 Une référence approuvée garde autorité sur le style. Zones MiniFugg fixe seulement le cadrage, l’occupation et le comportement de l’écran.

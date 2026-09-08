@@ -28,11 +28,11 @@ Default logical stages:
 
 A game may declare another fixed logical size when the mechanic genuinely requires it, but it must still have one explicit authored coordinate system per supported orientation.
 
-The runtime scales the stage uniformly. Mobile uses the full useful width; desktop/big screen uses the full useful height. Conceptually:
+The runtime scales the stage uniformly. Mobile uses the full useful width; desktop/big screen scales from CENTRE's full useful height. Conceptually:
 
-`scale = mobile ? availableWidth / logicalWidth : availableHeight / logicalHeight`
+`scale = mobile ? availableWidth / 390 : availableHeight / 662`
 
-The MASTER is `390 × 844`. CENTRE (`y 91→753`) is guaranteed. On a short mobile viewport, only HAUT/BAS may be cropped. On a proportionally taller mobile viewport, EXTRA HAUT/BAS may exist outside MASTER. On desktop the complete MASTER is visible; remaining space is lateral Core space.
+The MASTER is `390 × 844`. CENTRE (`y 91→753`) is guaranteed. On mobile, only HAUT/BAS may be cropped; on a proportionally taller viewport, EXTRA HAUT/BAS may exist outside MASTER. On desktop CENTRE fills the height and HAUT/BAS are cropped; remaining space is lateral Core space.
 
 Positions, distances, hit boxes, cameras and authored layer relationships stay in logical units.
 
@@ -79,7 +79,7 @@ Use Phaser for:
 - texture loading and reuse;
 - consistent logical scaling.
 
-The Phaser world keeps fixed logical geometry. The host applies the MiniFugg width-first mobile / height-first desktop camera and crop contract without mutating gameplay coordinates. A universal `FIT` that shrinks the 390-wide game on short mobile viewports is legacy behavior to replace.
+The Phaser world keeps fixed logical geometry. The host applies the MiniFugg width-first mobile / CENTRE-height desktop camera and crop contract without mutating gameplay coordinates. A universal `FIT` that shrinks the 390-wide game on short mobile viewports is legacy behavior to replace.
 
 All new covers are static raster art displayed by Core. Existing `PhaserCoverHost` covers may run only until a validated static replacement is active; then remove their layers and runtime code.
 
@@ -87,7 +87,7 @@ All new covers are static raster art displayed by Core. Existing `PhaserCoverHos
 
 LineFugg is the first canonical implementation of the shared 2D host boundary.
 
-`src/core/runtime/PhaserGameHost.tsx` is intentionally small. In the current implementation it owns creation/destruction of `Phaser.Game`, fixed logical dimensions, legacy `Phaser.Scale.FIT`, centered output, pause/resume from `active`, and scene restart from `restartToken`. The platform blockout pass must replace only its display/camera policy with the approved width-first mobile / height-first PC contract while preserving logical geometry.
+`src/core/runtime/PhaserGameHost.tsx` is intentionally small. In the current implementation it owns creation/destruction of `Phaser.Game`, fixed logical dimensions, legacy `Phaser.Scale.FIT`, centered output, pause/resume from `active`, and scene restart from `restartToken`. The platform blockout pass must replace only its display/camera policy with the approved width-first mobile / CENTRE-height PC contract while preserving logical geometry.
 
 The game-specific Phaser `Scene` owns all gameplay rendering, hit-testing, pointer coordinates, animations/feedback and scene listeners in logical units. It reports outward only through the existing MiniFugg session contract (`session.setScore`, `session.finish`).
 

@@ -74,7 +74,7 @@ Gameplay has a canonical portrait width of `390` logical units. The authored MAS
 
 On mobile, scale uniformly from the useful width. On PC or big screen, scale uniformly from the useful height. Do not redesign or reflow critical gameplay geometry for PC vs phone. Do not position important game objects primarily with `vw`/`vh`.
 
-A phone is the complete reference experience. On mobile, width controls scale and HAUT/BAS may be cropped as useful browser/app height changes. On desktop, height controls scale and the whole MASTER is visible. Tablet/desktop lateral space belongs to Core; do not author extra left/right game or cover decoration. Core currency and CTA remain inside the 390-wide frame, while the rail stays over CENTRE at the left.
+A phone is the complete reference experience. On mobile, width controls scale and HAUT/BAS may be cropped as useful browser/app height changes. On desktop, the height of CENTRE controls scale: CENTRE fills the screen while HAUT/BAS are cropped. Tablet/desktop lateral space belongs to Core; do not author extra left/right game or cover decoration. Core currency and CTA remain inside the 390-wide frame, while the rail stays over CENTRE at the left.
 
 Device pixel ratio may improve render resolution but never changes logical coordinates.
 

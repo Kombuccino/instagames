@@ -71,7 +71,7 @@ Do not let generic Phaser examples override these:
 ### Portrait zones and scaling
 
 - canonical width: `390`; art envelope: `390 × 844`; guaranteed CENTRE: `390 × 662`
-- mobile: width controls uniform scale; PC/big screen: height controls uniform scale
+- mobile: width controls uniform scale; PC/big screen: CENTRE's 662-unit height controls uniform scale
 - HAUT and BAS are crop-sensitive parts of MASTER; EXTRA HAUT/BAS exist only outside MASTER on unusually tall mobile viewports
 - do not add game-owned decorative width outside the 390-wide composition
 - keep Core currency and CTA inside the 390-wide frame; keep the cover rail at the left over CENTRE

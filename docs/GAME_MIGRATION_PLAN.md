@@ -29,7 +29,7 @@ Engine migration state and cover migration state are independent. A game may be 
 
 | Priority | Game | Current state | Target | Main migration reason |
 | ---: | --- | --- | --- | --- |
-| 1 | LineFugg | **current Phaser 2D pilot** | Phaser 2D | fixed logical geometry and lifecycle established; host scaling must adopt width-first mobile / height-first PC during the blockout-led platform pass |
+| 1 | LineFugg | **current Phaser 2D pilot** | Phaser 2D | fixed logical geometry and lifecycle established; host scaling must adopt width-first mobile / CENTRE-height PC during the blockout-led platform pass |
 | 2 | Les Brochettes de Vlad | legacy DOM/CSS | Phaser 2D | sprite-count/performance pressure + major visual polish pass |
 | 3 | Train Fighter | legacy DOM/CSS | Phaser 2D | sprite-heavy scrolling/action game; imported raster assets ready to exploit |
 | 4 | TetraMindFck | legacy DOM/CSS | Phaser 2D | mobile/desktop geometry drift + current legacy cover/parallax pilot |
@@ -65,7 +65,7 @@ Production-art and cover work may follow as separate quality passes. Production 
 LineFugg establishes the minimal shared recipe for subsequent 2D migrations:
 
 - React/Core mounts a shared `PhaserGameHost` only; game-world DOM/CSS is not retained.
-- `PhaserGameHost` currently creates one fixed-size Phaser game with legacy `Phaser.Scale.FIT` + centered output, pauses/resumes from `active`, restarts from `restartToken`, and destroys the engine on unmount. Its logical geometry/lifecycle are reusable; its display policy must move to width-first mobile / height-first PC after blockout validation.
+- `PhaserGameHost` currently creates one fixed-size Phaser game with legacy `Phaser.Scale.FIT` + centered output, pauses/resumes from `active`, restarts from `restartToken`, and destroys the engine on unmount. Its logical geometry/lifecycle are reusable; its display policy must move to width-first mobile / CENTRE-height PC after blockout validation.
 - The game scene owns gameplay objects, drawing, hit-testing, pointer coordinates, feedback and scene listeners entirely in logical units.
 - The game reports outward only through the existing MiniFugg session contract.
 - Game-specific geometry remains explicit in the scene rather than being hidden behind a speculative layout framework.

@@ -20,7 +20,7 @@ L'échelle est toujours uniforme : X et Y utilisent le même facteur.
 
 Sur mobile : `scale = largeur utile / 390`. Les 390 unités occupent toute la largeur utile. La hauteur disponible détermine quelle partie de HAUT et BAS est visible. CENTRE ne doit jamais être réduit par des marges internes ajoutées par le jeu.
 
-Sur PC et grand écran : `scale = hauteur utile / 844`. Le portrait occupe la hauteur disponible et obtient sa plus grande largeur proportionnelle. L'espace latéral restant appartient au Core. Le jeu et sa DA ne créent pas de bandes décoratives latérales pour le remplir.
+Sur PC et grand écran : `scale = hauteur utile / 662`. CENTRE occupe exactement la hauteur disponible et obtient la plus grande largeur proportionnelle utile. HAUT et BAS sont recadrés hors écran. L'espace latéral restant appartient au Core. Le jeu et sa DA ne créent pas de bandes décoratives latérales pour le remplir.
 
 Pour les fenêtres exceptionnellement plus courtes que CENTRE après mise à l'échelle par largeur, Core réduit uniformément l'ensemble juste assez pour garder CENTRE complète. Ce cas doit être signalé par les tests plutôt que traité avec une composition différente.
 
@@ -66,4 +66,4 @@ Avant de déclarer une intégration actuelle, vérifier au minimum :
 - haute densité ;
 - touch et souris/clavier selon le jeu.
 
-Résultat attendu : toute la largeur utile mobile sert au jeu, CENTRE reste complète, seules HAUT/BAS peuvent être coupées, EXTRA n'apparaît que hors MASTER et aucun contrôle Core ne sort du cadre de 390. Sur PC, le MASTER entier remplit la hauteur sans bande cyan. Le laboratoire interactif `/?usr=moigod&lab=layout` expose Home, Cover, CoverBeta, CoverCaca, Game, GameOver et Ladder avec un menu extérieur visible sur PC.
+Résultat attendu : toute la largeur utile mobile sert au jeu, CENTRE reste complète, seules HAUT/BAS peuvent être coupées, EXTRA n'apparaît que hors MASTER et aucun contrôle Core ne sort du cadre de 390. Sur PC, CENTRE remplit la hauteur et HAUT/BAS ne sont pas visibles. Le laboratoire interactif `/?usr=moigod&lab=layout` expose Home, Cover, CoverBeta, CoverCaca, Game, GameOver et Ladder avec un menu extérieur visible sur PC.

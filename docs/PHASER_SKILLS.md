@@ -105,7 +105,7 @@ When a generic Phaser skill conflicts with MiniFugg architecture, MiniFugg wins.
 
 Important examples:
 
-- MiniFugg uses a fixed portrait MASTER `390×844`: width-first uniform scaling on mobile and height-first on PC. Short mobile viewports crop HAUT/BAS while preserving CENTRE. Do not adopt generic `FIT` shrinkage or responsive reflow from a framework example.
+- MiniFugg uses a fixed portrait MASTER `390×844`: width-first uniform scaling on mobile and CENTRE-height scaling (`662` units) on PC. HAUT/BAS may be cropped while CENTRE remains complete. Do not adopt generic `FIT` shrinkage or responsive reflow from a framework example.
 - MiniFugg Core owns all realtime audio. The upstream `audio-and-sound` skill may explain Phaser sound APIs, but production MiniFugg games must **not** instantiate or own Phaser audio. Read `docs/AUDIO_SYSTEM.md`; Phaser hosts use `audio: { noAudio: true }`.
 - Core UI remains React/HTML/CSS. Do not move account, comments, shop, discovery or platform controls into Phaser because a generic skill demonstrates Phaser UI.
 - Production images still follow `docs/ASSET_PIPELINE.md` and `docs/GAME_ART_PRODUCTION_PIPELINE.md`.

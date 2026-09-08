@@ -26,7 +26,7 @@ Le poids transféré et la mémoire sont deux problèmes distincts : WebP/AVIF r
 ## Comportement par écran
 
 - **Mobile :** la largeur utile pilote l’échelle uniforme. Une hauteur courte recadre HAUT/BAS ; une hauteur très longue révèle EXTRA HAUT/BAS.
-- **PC/grand écran :** la hauteur utile pilote. Le MASTER entier est visible et atteint la largeur proportionnelle maximale. Les côtés restent au Core.
+- **PC/grand écran :** la hauteur de CENTRE pilote. CENTRE occupe toute la hauteur utile, HAUT/BAS sont recadrés et les côtés restent au Core.
 - **Toujours fixe :** coordonnées, hitboxes, rapports de taille, CENTRE et zones Core dans les 390 unités.
 - **Variable :** échelle physique, hauteur utile du navigateur/shell, recadrage HAUT/BAS, éventuel EXTRA et sidecars Core latéraux.
 
@@ -34,7 +34,7 @@ Les résolutions de marché servent à choisir les tests, mais la mesure décisi
 
 ## État de migration
 
-- **Cible :** covers statiques, nouveaux dérivés WebP lossless/AVIF vérifiés, cadrage commun width-first mobile et height-first PC.
+- **Cible :** covers statiques, nouveaux dérivés WebP lossless/AVIF vérifiés, cadrage commun width-first mobile et CENTRE-height PC.
 - **Actuel :** mélange de covers statiques recadrées par le Core et de covers Phaser en `FIT`, plus plusieurs PNG surdimensionnés.
 - **Legacy à supprimer :** covers animées Phaser, anciens masters 9:16 utilisés sans dérivé, JPG/JPEG runtime et overscan latéral propre aux jeux.
 

@@ -180,7 +180,7 @@ Conceptually:
 
 `scale = mobile ? availableWidth / logicalWidth : availableHeight / logicalHeight`
 
-Phaser keeps fixed logical coordinates. The target host uses width-first scaling on mobile and height-first scaling on PC; universal `FIT` shrinkage is legacy.
+Phaser keeps fixed logical coordinates. The target host uses width-first scaling on mobile and scales CENTRE to the full height on PC; universal `FIT` shrinkage is legacy.
 
 ## 4.1 What is allowed to change by device
 
@@ -323,7 +323,7 @@ It now establishes the reusable pattern:
 
 - React/Core mounts `src/core/runtime/PhaserGameHost.tsx`;
 - Phaser owns the fixed `390×844` game scene;
-- fixed logical coordinates keep geometry stable; host scaling still needs the approved width-first mobile / height-first PC migration;
+- fixed logical coordinates keep geometry stable; host scaling still needs the approved width-first mobile / CENTRE-height PC migration;
 - the Phaser scene owns rendering, hit-testing, pointer coordinates and feedback;
 - Core still owns session lifecycle and platform shell;
 - `active` pauses/resumes;

@@ -7,7 +7,7 @@ Mis à jour le 8 septembre 2026. Ce document sépare l'état actuel, les décisi
 - Production portrait uniquement.
 - MASTER `390 × 844`, CENTRE `390 × 662`, vocabulaire de `MINIFUGG_ZONES.md`.
 - Mobile : utiliser toute la largeur utile ; le navigateur, la PWA ou l'app déterminent la hauteur réellement disponible.
-- PC/grand écran : utiliser toute la hauteur utile pour obtenir la largeur proportionnelle maximale ; les côtés appartiennent au Core.
+- PC/grand écran : CENTRE utilise toute la hauteur utile pour obtenir la largeur proportionnelle maximale ; HAUT/BAS sont recadrés et les côtés appartiennent au Core.
 - Aucun décor latéral propre à une cover ou à un jeu.
 - Covers finales statiques rendues par Core ; abandon de toute nouvelle production de covers animées.
 - Nouvelle production graphique : PNG master, WebP lossless runtime, AVIF validé pour les grandes images statiques, aucun nouveau JPEG.

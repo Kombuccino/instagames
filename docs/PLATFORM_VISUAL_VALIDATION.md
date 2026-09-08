@@ -1,6 +1,6 @@
 # MiniFugg — Current Platform Visual Validation
 
-Validate every surface against its named model in [Zones MiniFugg](MINIFUGG_ZONES.md), including the mobile width-first and desktop height-first views.
+Validate every surface against its named model in [Zones MiniFugg](MINIFUGG_ZONES.md), including the mobile width-first view and the desktop view where CENTRE fills the useful height and HAUT/BAS are cropped.
 
 Living record of the platform visual decisions already approved by the user. Update this file whenever a visual direction is accepted/rejected so later work does not drift back to older concepts.
 

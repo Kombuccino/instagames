@@ -48,7 +48,7 @@ Pour une modification locale, garder le reste intact. Si une contrainte techniqu
 
 ## Concevoir pour le stage réel
 
-Utiliser la largeur logique 390 et l'enveloppe artistique `390 × 844`. Adapter par mise à l'échelle uniforme pilotée par la largeur sur mobile et par la hauteur sur PC, sans composition différente. Les dimensions des textures peuvent être supérieures ; elles ne changent pas les coordonnées du jeu.
+Utiliser la largeur logique 390 et le MASTER `390 × 844`. Adapter par mise à l'échelle uniforme pilotée par la largeur sur mobile et par la hauteur de CENTRE sur PC, sans composition différente. Les dimensions des textures peuvent être supérieures ; elles ne changent pas les coordonnées du jeu.
 
 Vérifier tôt la place des textes, hitboxes, objets, HUD local, contrôles et du petit retour Core. Tester les états simples et chargés, les grandes valeurs et les gestes en cours. Les décors ne doivent pas gagner la bataille du contraste contre l'action.
 

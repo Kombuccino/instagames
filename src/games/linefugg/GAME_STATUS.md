@@ -1,6 +1,6 @@
 # LineFugg — Suivi de création
 
-Mis à jour : 7 septembre 2026. Intégration artistique gameplay réalisée ; revue visuelle finale gameplay à faire. Les quatre covers approuvées sont intégrées en images statiques.
+Mis à jour : 8 septembre 2026 à 16:34 Europe/Paris. Version livrée : `0.3.0`. Changelog : `CHANGELOG.md`. Base inspectée avant édition : `63f6f8680a38c398dfea4a9efdf7ea33102a3112`. Intégration artistique gameplay réalisée ; revue visuelle finale gameplay à faire. Les quatre covers approuvées sont intégrées en images statiques.
 
 Runtime Phaser 4.2.1, stage 390 × 844. Statut historique fugg conservé : il ne vaut pas acceptation de cette nouvelle réalisation gameplay. Cover runtime : current ; quatre masters de jaquette validés, sauvegardés et actifs. Animation des covers reportée à une future demande.
 
@@ -25,7 +25,7 @@ Références : [ART_DIRECTION.md](ART_DIRECTION.md), [ASSET_MANIFEST.md](ASSET_M
 | SFX / musique / mix | À vérifier | Musiques conservées ; écoute finale et audit des événements audio restants |
 | Cover / transition | Quatre covers statiques intégrées et testées | A/B/C/D dans Info → Cover selection ; placeholder débranché, badge retiré pour LineFugg ; animation ultérieure |
 | Performance / QA | Vérifiées en émulation | Build et matrices navigateur réussis ; profilage physique restant |
-| Livraison / curation | Livré sur main | Publication Git ; déploiement et acceptation artistique gameplay à vérifier séparément |
+| Livraison / curation | Livré sur main | Métadonnées produit `0.3.0` et changelog canonique inclus dans cette livraison ; déploiement et acceptation artistique gameplay à vérifier séparément |
 
 ## Vérifications gameplay
 

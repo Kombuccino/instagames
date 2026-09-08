@@ -97,6 +97,11 @@ export const gameRegistry: InstagameDefinition[] = [
     migration: PHASER_MIGRATION_CURRENT,
     welcome: LINEFUGG_WELCOME,
     component: LineFugg,
+    release: {
+      version: '0.3.0',
+      updatedAt: '2026-09-08T16:34:00+02:00',
+      changelogPath: 'src/games/linefugg/CHANGELOG.md',
+    },
     instructions: {
       goal: 'Trace 3 lignes et fabrique le plus gros score possible.',
       rules: [

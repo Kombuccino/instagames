@@ -4,7 +4,7 @@ The Parallax Lab was the desktop tuning tool for the old React/CSS layered-cover
 
 **Do not add new production cover capabilities to this system.**
 
-The canonical future for advanced animated covers is the shared Phaser 4 cover runtime defined in `docs/GAME_ENGINE_ARCHITECTURE.md` and `docs/WELCOME_ILLUSTRATIONS.md`.
+The approved target is static cover art rendered by Core. The Phaser cover runtime is now legacy and must not receive new capabilities.
 
 ## What was preserved
 
@@ -19,4 +19,4 @@ The migration preserved the useful authored information from TetraMindFck:
 
 These decisions now live in `src/games/calc-drop/welcome.ts`.
 
-The former Lab implementation and browser-only drafts are available through Git history. Production tuning now lives in each game's cover data and is rendered by `src/core/runtime/PhaserCoverHost.tsx`.
+The former Lab implementation and browser-only drafts are available through Git history. Current TetraMindFck layer data still renders through `src/core/runtime/PhaserCoverHost.tsx` only until static replacements are validated and the runtime can be removed.

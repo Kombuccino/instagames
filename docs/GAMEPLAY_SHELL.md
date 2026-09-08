@@ -111,9 +111,9 @@ On wide desktop/tablet layouts, Core may optionally use outside-stage side areas
 
 ## 10. Current cover migration state
 
-All existing covers are currently marked **A METTRE A JOUR**. Temporary placeholder covers and the existing TetraMindFck layered system are migration references, not final confirmation of the future Phaser cover runtime.
+All existing covers are currently marked **A METTRE A JOUR**. Temporary placeholder covers and the existing TetraMindFck layered system are migration references; the approved target is static Core raster covers.
 
-Final static covers may remain normal raster Core assets. Advanced animated covers target Phaser 4.
+Final covers are static raster Core assets. Existing animated Phaser/CSS covers are legacy to replace and remove.
 
 ## 11. Locked product decisions
 

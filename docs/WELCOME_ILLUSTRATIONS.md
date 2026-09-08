@@ -1,12 +1,12 @@
 # MiniFugg — Welcome / Cover Illustrations
 
-This document defines production covers and their animation boundary.
+This document defines production covers and the retirement boundary for existing animation systems.
 
-Before a cover pass, follow [GAME_CREATION_PIPELINE.md](GAME_CREATION_PIPELINE.md): recover the game's approved artistic references, rejected directions and motion/audio intent from `ART_DIRECTION.md` and `GAME_STATUS.md`. Carry those decisions into the cover and its animation without asking the user to repeat them. Check fidelity to actual gameplay and the anti-generic visual criteria before accepting generated layers. Keep progress and remaining choices in the game's status file.
+Before a cover pass, follow [GAME_CREATION_PIPELINE.md](GAME_CREATION_PIPELINE.md): recover the game's approved artistic references and rejected directions from `ART_DIRECTION.md` and `GAME_STATUS.md`. Carry those decisions into the static cover without asking the user to repeat them. Check fidelity to actual gameplay and the anti-generic visual criteria before accepting it. Keep progress and remaining choices in the game's status file.
 
 ## Current migration status
 
-TetraMindFck's layered cover variants are current and run in the shared Phaser cover scene. Other catalog covers remain **A METTRE A JOUR** until their registry state is `current`.
+TetraMindFck's layered cover variants currently run in the shared Phaser cover scene. This is the running state, not the approved target: all covers are moving to static Core raster art. Other catalog covers remain **A METTRE A JOUR** until their registry state is `current`.
 
 The registry tracks this with `migration.cover`. Until a game's cover state is `current`, the cover is considered transitional even when the current artwork itself is useful/beautiful.
 
@@ -24,31 +24,27 @@ Core owns:
 
 Login/account/platform UI remains React/HTML/CSS.
 
-## 2. Static vs advanced animated covers
+## 2. Static cover target and animated legacy
 
 ### Static cover
 
 A normal authored raster image may be rendered directly by React Core. Do not initialize Phaser merely to display a still image.
 
-### Advanced animated cover
+### Animated cover — legacy
 
-If a cover uses multiple authored layers, parallax, particles, masks, distortion, camera moves or significant autonomous motion, the target runtime is the **shared Phaser 4 cover scene**.
-
-Do not expand the legacy CSS/React parallax interpreter or add new custom Canvas effects as a parallel cover engine.
+Do not create new animated covers. Existing Phaser or CSS layered covers remain only until an approved static replacement is available. Preserve their current output during transition, then delete the runtime and layer data no longer referenced.
 
 ## 3. Existing legacy cover system
 
-The retired `FuggWelcome`, `ParallaxLab` and `welcomeTuning` implementation remains available in Git history as migration reference. TetraMindFck's preserved layer data now drives the shared Phaser cover scene.
+The retired `FuggWelcome`, `ParallaxLab` and `welcomeTuning` implementation remains available in Git history as migration reference. TetraMindFck's preserved layer data currently drives the shared Phaser cover scene.
 
-New advanced cover capabilities should be implemented in the Phaser cover runtime.
+No new capability is added to either legacy cover runtime.
 
 ## 4. Visual composition is canonical
 
 A cover has a fixed authored composition just like a game.
 
-The central mobile composition must remain the same on phone, tablet and desktop, scaled uniformly. Desktop side space may receive optional Core content/decorative extensions without changing the cover's internal layer positions.
-
-Animated layer transforms are authored in the cover's logical coordinate system, not in arbitrary viewport `vw`/`vh` positions.
+The central composition remains the same on phone, tablet and desktop. Mobile uses width-first scaling and may crop HAUT/BAS; PC uses height-first scaling and shows the complete MASTER. Desktop side space belongs to Core. EXTRA HAUT/BAS exist only outside MASTER on a proportionally taller mobile viewport.
 
 ## 5. Cover variants
 
@@ -71,32 +67,15 @@ Unlocking/selecting a cover never changes gameplay balance.
 
 Before creating/importing/integrating cover artwork, read `docs/ASSET_PIPELINE.md`.
 
-Production art follows:
+Codex writes verified assets directly under `public/assets/generated/...`; ChatGPT without local access uses private Drive → GitHub Actions → `public/assets/imported/...`. Preserve PNG/lossless masters and produce WebP lossless runtime derivatives; AVIF is reserved for validated large static art with fallback. Do not create new JPEG.
 
-`private Drive → GitHub Actions sync → public/assets/imported/... → /assets/imported/...`
+## 7. Static deliverable
 
-Preserve original production assets unless optimization is explicitly requested. Derived web delivery formats may be introduced through the documented derivative pipeline rather than destroying originals.
-
-## 7. Layer bundles
-
-For advanced covers, prefer real authored raster layers where the visual object is part of the illustration:
-
-- background;
-- midground;
-- subject/characters;
-- foreground;
-- title/graphic overlay;
-- optional effect mattes.
-
-Runtime effects may add particles, glow, light movement, shake, distortion or atmospheric motion, but should not replace artwork that should have been authored.
+Deliver one approved lossless MASTER `390 × 844`, plus measured runtime derivatives and fallbacks. Do not bake Core controls into the image. Keep the subject and title outside MONNAIE, RAIL and JOUER masks and keep essential content in CENTRE.
 
 ## 8. Performance
 
-Cover animation must be cheaper than active gameplay and must stop/pause when the cover is not visible.
-
-Do not run heavy particle systems or multiple active engine instances for neighboring feed items. Load cover assets/runtime lazily where practical.
-
-Respect reduced-motion preferences for non-essential cover motion.
+Load cover files lazily and avoid decoding every catalog cover at startup. A runtime derivative must respect the actual display size and asset budget. Removing cover animation also removes inactive render loops and repeated Phaser instances from discovery.
 
 ## 9. Quality bar
 

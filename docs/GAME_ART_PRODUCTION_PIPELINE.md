@@ -168,7 +168,7 @@ All assets are authored for the game's declared logical viewport, normally `390Ã
 
 Asset decomposition does not create mobile/desktop layout variants. Phaser/Core uniformly scale the 390-wide composition: width first on mobile, height first on PC.
 
-Game-owned decorative extension lives only in HAUT and BAS. Lateral sidecars belong to Core, and gameplay-critical geometry never reflows because of device size.
+HAUT and BAS are crop-sensitive parts of MASTER. Decorative extension can exist only in EXTRA HAUT/BAS outside MASTER on unusually tall mobile viewports. Lateral sidecars belong to Core, and gameplay-critical geometry never reflows because of device size.
 
 ## 10. Localization rule
 

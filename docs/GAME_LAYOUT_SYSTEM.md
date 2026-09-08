@@ -6,9 +6,11 @@ Ce document définit le comportement des jeux sur téléphone, tablette, navigat
 
 La production est portrait uniquement. La largeur logique canonique est `390`. Le master artistique maximal mesure `390 × 844` et contient :
 
-- HAUT : `390 × 91`, extension verticale ;
+- HAUT : `390 × 91`, partie du MASTER recadrable ;
 - CENTRE : `390 × 662`, zone minimale toujours visible ;
-- BAS : `390 × 91`, extension verticale.
+- BAS : `390 × 91`, partie du MASTER recadrable.
+
+EXTRA HAUT et EXTRA BAS sont hors MASTER. Ils n'existent que lorsque le viewport mobile utile est proportionnellement plus haut que le MASTER mis à l'échelle. Le cyan des guides leur est exclusivement réservé.
 
 Le paysage reste une compatibilité de maintenance pour les jeux existants. Il ne reçoit plus de nouvelle DA ni de seconde composition sans décision explicite de l'utilisateur.
 
@@ -31,7 +33,7 @@ Dans CENTRE, les relations suivantes restent identiques entre appareils :
 - hitboxes, distances, collisions et zones de geste ;
 - informations indispensables et contrôles propres au jeu.
 
-Un HUD flottant peut s'ancrer au bord visible ou employer HAUT/BAS quand il reste secondaire et ne modifie pas la géométrie jouable. Les contrôles Core restent séparés du monde Phaser.
+Un HUD flottant peut s'ancrer au bord visible ou employer HAUT/BAS quand il reste secondaire et ne modifie pas la géométrie jouable. Il ne dépend jamais d'EXTRA. Les contrôles Core restent séparés du monde Phaser.
 
 ## 4. Limite Core
 
@@ -51,7 +53,7 @@ Three.js peut redimensionner son backbuffer, mais sa caméra préserve CENTRE et
 
 ## 7. Assets
 
-Un fond ou une cover peut remplir `390 × 844`. Tout sujet, texte ou interaction indispensable reste dans CENTRE et hors des masques Core du modèle concerné. HAUT et BAS contiennent du décor prolongeable ou recadrable. Les détails de dimensionnement sont dans [ASSET_SIZE_REFERENCE](ASSET_SIZE_REFERENCE.md) et la décomposition artistique dans [GAME_ART_PRODUCTION_PIPELINE](GAME_ART_PRODUCTION_PIPELINE.md).
+Un fond ou une cover peut remplir le MASTER `390 × 844`. Tout sujet, texte ou interaction indispensable reste dans CENTRE et hors des masques Core du modèle concerné. HAUT et BAS contiennent du décor recadrable ; EXTRA HAUT/BAS sont des prolongements facultatifs distincts. Les détails de dimensionnement et formats sont dans [ASSET_SIZE_REFERENCE](ASSET_SIZE_REFERENCE.md) et la décomposition artistique dans [GAME_ART_PRODUCTION_PIPELINE](GAME_ART_PRODUCTION_PIPELINE.md).
 
 ## 8. Validation
 
@@ -64,4 +66,4 @@ Avant de déclarer une intégration actuelle, vérifier au minimum :
 - haute densité ;
 - touch et souris/clavier selon le jeu.
 
-Résultat attendu : toute la largeur utile mobile sert au jeu, CENTRE reste complète, seules HAUT/BAS varient et aucun contrôle Core ne sort du cadre de 390. Le laboratoire interactif `/?usr=moigod&lab=layout` expose Home, Cover, CoverBeta, CoverCaca, Game, GameOver et Ladder avec un menu extérieur visible sur PC.
+Résultat attendu : toute la largeur utile mobile sert au jeu, CENTRE reste complète, seules HAUT/BAS peuvent être coupées, EXTRA n'apparaît que hors MASTER et aucun contrôle Core ne sort du cadre de 390. Sur PC, le MASTER entier remplit la hauteur sans bande cyan. Le laboratoire interactif `/?usr=moigod&lab=layout` expose Home, Cover, CoverBeta, CoverCaca, Game, GameOver et Ladder avec un menu extérieur visible sur PC.

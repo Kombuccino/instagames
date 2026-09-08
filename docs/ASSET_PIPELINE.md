@@ -57,9 +57,17 @@ Folder names and filenames are normalized to lowercase ASCII. Use descriptive sl
 
 The importer sanitizes every folder segment and filename. If two different Drive items would collapse to the same normalized repository path, the sync refuses the collision instead of overwriting silently.
 
-## Accepted files
+## Accepted files and production formats
 
-The automatic importer accepts only PNG, JPEG and WebP. It preserves the exact uploaded bytes: no resize, recompression or format conversion is performed.
+The automatic importer accepts PNG, WebP, AVIF and legacy JPEG. It preserves the exact uploaded bytes: no resize, recompression or format conversion is performed.
+
+For all new production:
+
+- keep the approved master/source as PNG or another lossless working source;
+- use **WebP lossless** as the normal runtime derivative for sprites, panels, atlases and backgrounds;
+- use **AVIF** for large static covers/backgrounds only after visual comparison, size measurement and decode validation on web, Capacitor and Electron targets;
+- keep a PNG or WebP fallback when AVIF is used;
+- do not create new JPG/JPEG assets. Import support remains only so existing legacy files are not broken before migration.
 
 Limits:
 
@@ -68,7 +76,7 @@ Limits:
 - maximum folder nesting below `Fugg`: 8 levels
 - SVG and other active/executable formats are rejected
 
-Keep the original/source quality unless the user explicitly asks for an optimized derivative. If both an original PNG and an optimized WebP are wanted, keep both as separate files.
+Keep the original/source quality unless the user explicitly asks for an optimized derivative. Masters and runtime derivatives are separate files. A smaller transfer does not imply lower decoded memory: ordinary browser textures still approach width × height × 4 bytes after decoding.
 
 ## Automatic sync
 

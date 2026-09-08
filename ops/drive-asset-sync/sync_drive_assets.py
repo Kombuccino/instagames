@@ -30,6 +30,7 @@ ALLOWED_MIME_TO_FORMAT = {
     "image/png": ("PNG", ".png"),
     "image/jpeg": ("JPEG", ".jpg"),
     "image/webp": ("WEBP", ".webp"),
+    "image/avif": ("AVIF", ".avif"),
 }
 SAFE_NAME_RE = re.compile(r"[^a-zA-Z0-9._-]+")
 

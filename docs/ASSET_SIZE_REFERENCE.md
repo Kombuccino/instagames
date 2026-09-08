@@ -1,70 +1,41 @@
-# MiniFugg — Référence des tailles d’assets
+# MiniFugg — Référence des tailles et formats d’assets
 
-Cette fiche complète `GAME_LAYOUT_SYSTEM.md` et `GAME_ART_PRODUCTION_PIPELINE.md`. Sa représentation interactive est disponible dans l’application avec :
+Le guide interactif est disponible sur `/?usr=moigod&lab=layout`. Il affiche le vocabulaire de [Zones MiniFugg](MINIFUGG_ZONES.md), les modèles Home, Cover, CoverBeta, CoverCaca, Game, GameOver et Ladder, deux captures utiles mesurées sur Galaxy A54, un simulateur et un calculateur d’assets.
 
-`/?usr=moigod&lab=layout`
+## Dimensions
 
-La page permet d’ouvrir séparément les modèles Home, Cover, CoverBeta, CoverCaca, Game, GameOver et Ladder, de télécharger les guides PNG de base, de simuler les écrans courants et de calculer la taille maximale d’un asset à partir de sa zone logique. Son menu de modèle apparaît uniquement sur PC et reste hors du cadre. Le vocabulaire canonique est défini dans [Zones MiniFugg](MINIFUGG_ZONES.md).
+Le MASTER portrait mesure `390 × 844` unités logiques. CENTRE mesure `390 × 662`, de `y 91` à `y 753`. HAUT et BAS appartiennent au MASTER et peuvent être recadrés. EXTRA HAUT/BAS sont hors MASTER et n’apparaissent que sur un viewport proportionnellement plus haut.
 
-Les vues isolées séparent trois contrats :
+Les captures du 8 septembre 2026 donnent environ `360 × 611` CSS dans Brave et `360 × 656` dans Chrome sur le même A54. Ces nombres sont des **pixels CSS de viewport utile**, pas des pixels physiques ni une taille d’image. Le mode PWA ou Capacitor donnera encore une autre hauteur utile.
 
-- **CENTRE** : `390 × 662`, toute la surface commune réellement visible dans Brave et Chrome avec leur interface ouverte ;
-- **HAUT** et **BAS** : deux extensions `390 × 91` révélées ou recadrées selon la hauteur ;
-- **cadre Core** : largeur maximale `390`; MONNAIE et JOUER restent dedans, RAIL reste à gauche sur CENTRE.
+À densité de rendu 2, un fond ou une cover MASTER ne dépasse normalement pas `780 × 1688` pixels. Pour un composant affiché à `W × H` unités, le dérivé runtime maximal est `ceil(W × 2) × ceil(H × 2)`. Recadrer l’alpha au contenu, scinder les atlases dépassant 2048 pixels quand c’est utile et archiver séparément les masters de travail plus grands.
 
-Les captures réelles fournies le 8 septembre 2026 mesurent environ `360 × 611` CSS dans Brave et `360 × 656` dans Chrome sur le même Galaxy A54. Rapportée à une largeur logique de 390, leur intersection donne `390 × 662`. CENTRE occupe donc toute la largeur et les coordonnées verticales `y 91 → 753` dans le master `390 × 844`. Brave affiche pratiquement CENTRE entière ; Chrome révèle environ 49 unités logiques supplémentaires réparties entre HAUT et BAS. Les zones orange/rouge ne réduisent pas CENTRE : elles montrent séparément où le Core peut se superposer.
+## Formats validés
 
-## Le cadre de production
+| Usage | Format cible | Règle |
+| --- | --- | --- |
+| source, master approuvé, masque ou donnée exigeant une fidélité stricte | **PNG** | original conservé, jamais recompressé destructivement |
+| sprite, panneau, atlas, décor courant avec ou sans alpha | **WebP lossless** | format runtime par défaut après comparaison au PNG |
+| grande cover ou grand fond statique | **AVIF** puis WebP/PNG de repli | seulement si le gain est réel et le décodage testé sur les shells cibles |
+| JPG/JPEG | **interdit pour toute nouvelle production** | les fichiers existants sont legacy et remplacés lors de leur migration |
 
-| Usage | Stage logique | Dérivé raster runtime maximal à densité 2 |
-| --- | ---: | ---: |
-| gameplay portrait et cover | 390 × 844 | 780 × 1688 |
+Phaser charge les formats que le navigateur/WebView sait décoder. Cette politique reste compatible avec les navigateurs modernes, PWA, Capacitor Android/iOS et Electron/Steam définis par MiniFugg. Les replis PNG/WebP couvrent le petit parc ancien que nous ne ciblons pas en priorité.
 
-Depuis la décision du 8 septembre 2026, toute nouvelle production est en portrait. Le paysage reste seulement une compatibilité technique pour les jeux existants qui en dépendent ; il n’entre plus dans les briefs, gabarits ou lots d’assets courants.
+Le poids transféré et la mémoire sont deux problèmes distincts : WebP/AVIF réduisent fortement le téléchargement et le stockage, mais une image décodée ordinaire occupe encore environ `largeur × hauteur × 4` octets en mémoire. Les textures GPU compressées pourront constituer une optimisation ultérieure pour les jeux très chargés, avec un repli lossless obligatoire.
 
-Le master `390 × 844` reste la composition artistique maximale. Le gameplay place toute sa boucle essentielle dans CENTRE, puis peut employer HAUT et BAS pour du décor, de l’anticipation ou un espace de mouvement secondaire. Sur PC, la hauteur commande l’échelle et l’espace latéral restant appartient au Core. Aucun décor de jeu supplémentaire n’est créé sur les côtés. RETOUR, RAIL, MONNAIE et JOUER sont des masques d’occupation distincts.
+## Comportement par écran
 
-## Règle de dimensionnement
+- **Mobile :** la largeur utile pilote l’échelle uniforme. Une hauteur courte recadre HAUT/BAS ; une hauteur très longue révèle EXTRA HAUT/BAS.
+- **PC/grand écran :** la hauteur utile pilote. Le MASTER entier est visible et atteint la largeur proportionnelle maximale. Les côtés restent au Core.
+- **Toujours fixe :** coordonnées, hitboxes, rapports de taille, CENTRE et zones Core dans les 390 unités.
+- **Variable :** échelle physique, hauteur utile du navigateur/shell, recadrage HAUT/BAS, éventuel EXTRA et sidecars Core latéraux.
 
-Pour un composant qui occupe `W × H` unités logiques :
+Les résolutions de marché servent à choisir les tests, mais la mesure décisive est `window.innerWidth × window.innerHeight` dans chaque mode réel. Les statistiques de résolution ne donnent pas la hauteur utile après les barres du navigateur.
 
-- fichier runtime maximal : `ceil(W × 2) × ceil(H × 2)` pixels ;
-- transparence recadrée au contenu utile ;
-- master de travail éventuellement supérieur, archivé séparément ;
-- le jeu ne charge pas le master surdimensionné ;
-- une feuille d’atlas runtime reste de préférence sous 2048 × 2048, sinon elle est scindée.
+## État de migration
 
-Cette règle est un maximum, pas une cible obligatoire. Une texture volontairement franche, une forme procédurale ou un pixel art construit sur une grille plus basse peut utiliser moins de pixels. Le rapport avec la taille affichée doit rester volontaire et cohérent entre les assets du même jeu.
+- **Cible :** covers statiques, nouveaux dérivés WebP lossless/AVIF vérifiés, cadrage commun width-first mobile et height-first PC.
+- **Actuel :** mélange de covers statiques recadrées par le Core et de covers Phaser en `FIT`, plus plusieurs PNG surdimensionnés.
+- **Legacy à supprimer :** covers animées Phaser, anciens masters 9:16 utilisés sans dérivé, JPG/JPEG runtime et overscan latéral propre aux jeux.
 
-## État dynamique
-
-Le fond permanent ne contient jamais score, vies, recette, clients, ingrédients, contrôle ou état mutable. Les panneaux authored peuvent fournir le cadre et la matière ; Phaser fournit les valeurs et les états. Les états visuels importants d’un bouton, personnage ou objet sont livrés séparément ou dans un atlas mesuré.
-
-## Différences selon l’écran
-
-Toujours visible et fixe : stage canonique, géométrie, gameplay, HUD authored dans la scène, hitboxes, caméra et rapports de taille.
-
-Variable : échelle uniforme, densité physique, marges/sidecars Core et quantité visible de HAUT/BAS. Aucun élément variable ne porte une information indispensable.
-
-## Données d’écran et tendance
-
-Référence au 8 septembre 2026 : les six premières résolutions de viewport mobile publiées par StatCounter représentent 42,48 % des pages vues mesurées dans le monde en août 2026. Elles se regroupent principalement autour des ratios 19,5:9 et 20:9 ; `390 × 844` appartient à cette famille. Source : [StatCounter Global Stats](https://gs.statcounter.com/screen-resolution-stats/mobile/worldwide).
-
-Chez les joueurs PC, l’enquête Steam d’août 2026 reste dominée par `1920 × 1080` (50,52 %) et `2560 × 1440` (21,86 %). Le portage PC doit donc conserver le portrait par mise à l’échelle uniforme pilotée par la hauteur et réserver les côtés au Core, sans étirer ni recomposer le gameplay. Source : [Steam Hardware Survey](https://store.steampowered.com/hwsurvey).
-
-La tendance structurante est la multiplication des fenêtres redimensionnables : tablettes, appareils pliables, écran partagé et modes bureau. Android recommande de répondre à la taille de fenêtre disponible plutôt qu’au modèle physique. MiniFugg traite donc le Core comme adaptatif et le stage de jeu comme fixe. Source : [guide Android officiel](https://developer.android.com/develop/adaptive-apps/guides/support-different-display-sizes).
-
-## Test plein écran mobile
-
-- Android / Chrome : ouvrir le site HTTPS, choisir « Installer l’application » ou « Ajouter à l’écran d’accueil », puis lancer MiniFugg depuis son icône.
-- iPhone / Safari : utiliser Partager puis « Sur l’écran d’accueil », puis lancer MiniFugg depuis son icône. iOS utilise le mode autonome ; le mode `fullscreen` du manifeste retombe sur ce mode.
-- Le plein écran demandé par le navigateur sert seulement d’aperçu et n’est pas fiable sur iPhone. L’installation PWA est le test web le plus proche de l’app ; un build Capacitor reste la validation du shell natif.
-
-Le dépôt possède déjà les métadonnées iOS et le wordmark canonique. La planche d’exploration favicon/app-icon est archivée, mais aucune option n’est encore enregistrée comme icône canonique dans `docs/BRAND_ASSETS.md`. Le manifeste PWA et ses fichiers 192/512 doivent être branchés après ce choix, sans redessiner la marque.
-
-## Écarts de plateforme encore ouverts
-
-- Les covers statiques utilisent actuellement un remplissage CSS par recadrage, alors que les covers Phaser conservent 390 × 844 en `FIT`. Le cadrage doit être unifié dans le Core.
-- Les anciens masters 9:16 sont plus larges que 390 × 844. En plein cadre actuel, environ 18 % de leur largeur disparaît. Les originaux validés doivent rester intacts et recevoir un dérivé cadré avec une zone sûre.
-- Les migrations doivent encore réduire plusieurs textures et atlases existants produits très au-dessus de leur taille d’affichage.
-- L’extension décorative appartient à HAUT et BAS. Il ne faut plus produire d’overscan latéral propre au jeu ou à la cover.
+La refonte plateforme commence par les templates/blockouts. Les écrans de production et les jeux ne sont repris en série qu’après validation de cette expérience.

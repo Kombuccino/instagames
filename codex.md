@@ -119,7 +119,7 @@ The runtime decision is now fixed unless Core explicitly reopens it.
 | --- | --- |
 | Core/platform UI | React + TypeScript + HTML/CSS |
 | 2D gameplay | Phaser 4 |
-| Advanced animated covers | Phaser 4 |
+| Static covers | React Core + raster art |
 | Genuine 3D gameplay | Three.js |
 | Build tooling | Vite |
 
@@ -174,13 +174,13 @@ Default stages:
 - portrait: **390 × 844 logical units**;
 - landscape: **844 × 390 logical units**.
 
-The browser/device does not recompute internal geometry. The complete authored game stage is scaled uniformly to fit the available host.
+The browser/device does not recompute internal geometry. The authored MASTER is scaled uniformly: useful width drives mobile; useful height drives desktop/big screen.
 
 Conceptually:
 
-`scale = min(availableWidth / logicalWidth, availableHeight / logicalHeight)`
+`scale = mobile ? availableWidth / logicalWidth : availableHeight / logicalHeight`
 
-Phaser uses the equivalent fixed-size + `FIT` + centered approach.
+Phaser keeps fixed logical coordinates. The target host uses width-first scaling on mobile and height-first scaling on PC; universal `FIT` shrinkage is legacy.
 
 ## 4.1 What is allowed to change by device
 
@@ -188,7 +188,7 @@ Phaser uses the equivalent fixed-size + `FIT` + centered approach.
 - overall scale;
 - control mapping (touch vs mouse/keyboard vs gamepad);
 - optional Core content outside the central stage on large screens;
-- decorative overscan outside gameplay-critical geometry.
+- mobile vertical crop of HAUT/BAS or optional EXTRA HAUT/BAS outside MASTER.
 
 ## 4.2 What must not change by device
 
@@ -323,7 +323,7 @@ It now establishes the reusable pattern:
 
 - React/Core mounts `src/core/runtime/PhaserGameHost.tsx`;
 - Phaser owns the fixed `390×844` game scene;
-- `Phaser.Scale.FIT` + centering keeps the geometry stable;
+- fixed logical coordinates keep geometry stable; host scaling still needs the approved width-first mobile / height-first PC migration;
 - the Phaser scene owns rendering, hit-testing, pointer coordinates and feedback;
 - Core still owns session lifecycle and platform shell;
 - `active` pauses/resumes;
@@ -495,12 +495,7 @@ However, the old `FuggWelcome` / Parallax Lab / CSS-layer renderer is **not** th
 
 Read `docs/PARALLAX_LAB.md`.
 
-The intended future is:
-
-- static cover → normal raster rendered by React Core;
-- advanced animated cover → shared Phaser cover runtime.
-
-The old Tetra layered cover should be translated into the future runtime rather than expanded with more legacy behavior.
+The approved target from 8 September 2026 is one static cover path: normal raster art rendered by React Core. Do not create new animated covers. TetraMindFck's current Phaser layers and older CSS parallax are legacy; replace them with validated static covers, then remove their runtime code.
 
 ## 12.2 “Open the game box” transition
 
@@ -1045,9 +1040,9 @@ When implemented, create/update `docs/AUDIO_SYSTEM.md` and make all games consum
 
 After audio is stabilized, migrate the animated home/metro entry visuals away from custom Canvas-era helpers toward the canonical Phaser visual runtime, while leaving login/account UI in React Core.
 
-## Priority C — shared premium cover runtime
+## Priority C — static cover unification
 
-Build the shared Phaser cover runtime and translate TetraMindFck’s valuable layered cover work into it.
+Replace current Phaser/CSS animated covers with validated static Core rasters and one shared crop/overlay contract.
 
 Implement the shared “open the game box” cover→game transition as platform behavior rather than a game-specific trick.
 
@@ -1128,7 +1123,6 @@ MiniFugg Core (React/TypeScript)
 │
 ├── 2D visual runtime (Phaser 4)
 │   ├── games
-│   ├── advanced covers
 │   └── animated entry/home visuals
 │
 ├── 3D visual runtime (Three.js)

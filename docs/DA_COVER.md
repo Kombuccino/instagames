@@ -60,17 +60,17 @@ Les jaquettes sont en anglais par défaut, sauf édition localisée ou titre pro
 
 Ne pas dessiner dans le raster les coins du joueur, boutons sociaux, compteurs, prix, `INSERT COIN`, `CHANGE GAME` ou autres contrôles. **Ne plus inscrire `SWIPE TO PLAY`**, malgré les anciennes formulations du catalogue. Prévoir l'espace des overlays validés sans ajouter de bande noire permanente. Leur composition dépend de `DA_UI.md`.
 
-## Animation et fabrication
+## Fabrication statique
 
-Concevoir les éléments mobiles avant l'export : environnement, formes/événement intermédiaire, personnage, premier plan, titre, éventuels masques. Produire de vrais assets raster séparés pour les objets illustrés. Conserver l'alignement, les pivots, l'échelle de référence et les zones cachées nécessaires au mouvement ; éviter les trous et silhouettes dupliquées après détourage.
+La cover finale est une composition raster statique. Produire un master lossless `390 × 844`, garder titre et sujet dans les zones sûres du modèle Cover, puis fabriquer les dérivés runtime prévus par `ASSET_SIZE_REFERENCE.md`.
 
-Associer le mouvement au sens : vibration nerveuse, flottement d'un objet suspendu, respiration d'une pression lumineuse, dérive atmosphérique, balancement d'un objet accroché. Ne pas faire flotter toute la composition. Les effets du moteur peuvent compléter l'art, pas remplacer les éléments promis.
+Exprimer le mouvement dans l'image par le cadrage, les lignes de force, la posture, la lumière et les matières. La cover ne dépend plus d'un découpage en couches animées.
 
-Les covers avancées utilisent le runtime Phaser partagé ; ne pas reconstruire l'ancien moteur CSS/FuggWelcome. Une cover statique peut rester une image Core. Prévoir un repli statique et une réduction des mouvements ; arrêter l'animation hors écran.
+Ne pas créer de nouvelle cover animée. Les covers Phaser/CSS existantes sont legacy : conserver leur rendu jusqu'à validation d'un remplacement statique, puis supprimer leur runtime. Core affiche les covers finales.
 
 ## Micro-brief à remplir
 
-> Produire [une cover finale / une étude précise] pour [titre exact]. Le jeu consiste à [mécanique réelle] ; l'image doit exprimer [idée unique]. Référence principale : [image disponible, rôle]. Famille [A/B/C/D], réalisée visuellement en [médium], avec [palette, cadrage, matière, zones calmes]. Préserver [identités et invariants]. Texte illustré autorisé : [texte exact]. Aucun contrôle Core ni SWIPE TO PLAY dans l'image. Sortie [ratio, PNG/alpha, couche ou master demandé]. Ne pas produire de mockup, autre jeu ou écran supplémentaire non demandé.
+> Produire [une cover finale / une étude précise] pour [titre exact]. Le jeu consiste à [mécanique réelle] ; l'image doit exprimer [idée unique]. Référence principale : [image disponible, rôle]. Famille [A/B/C/D], réalisée visuellement en [médium], avec [palette, cadrage, matière, zones calmes]. Préserver [identités et invariants]. Texte illustré autorisé : [texte exact]. Aucun contrôle Core ni SWIPE TO PLAY dans l'image. Sortie statique : master PNG lossless `390 × 844`, puis dérivé WebP lossless ou AVIF validé. Ne pas produire de mockup, couche animée, autre jeu ou écran supplémentaire non demandé.
 
 ## Acceptation et sources
 

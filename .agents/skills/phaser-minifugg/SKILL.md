@@ -1,6 +1,6 @@
 ---
 name: phaser-minifugg
-description: Use this skill for any MiniFugg task that creates, migrates, debugs or polishes Phaser 4 gameplay, animated covers, entry scenes, rendering, scaling, input, cameras, particles, tweens, physics, assets or Phaser lifecycle. It routes the agent to the official Phaser 4.2.1 vendor skills while enforcing MiniFugg architecture.
+description: Use this skill for any MiniFugg task that creates, migrates, debugs or polishes Phaser 4 gameplay, legacy cover migration, entry scenes, rendering, scaling, input, cameras, particles, tweens, physics, assets or Phaser lifecycle. It routes the agent to the official Phaser 4.2.1 vendor skills while enforcing MiniFugg architecture.
 ---
 
 # Phaser 4 in MiniFugg
@@ -72,7 +72,7 @@ Do not let generic Phaser examples override these:
 
 - canonical width: `390`; art envelope: `390 × 844`; guaranteed CENTRE: `390 × 662`
 - mobile: width controls uniform scale; PC/big screen: height controls uniform scale
-- HAUT and BAS absorb vertical crop/reveal; critical gameplay remains in CENTRE
+- HAUT and BAS are crop-sensitive parts of MASTER; EXTRA HAUT/BAS exist only outside MASTER on unusually tall mobile viewports
 - do not add game-owned decorative width outside the 390-wide composition
 - keep Core currency and CTA inside the 390-wide frame; keep the cover rail at the left over CENTRE
 - do not reflow gameplay for desktop vs mobile
@@ -80,7 +80,7 @@ Do not let generic Phaser examples override these:
 
 ### React/Core boundary
 
-Phaser owns game/cover/entry-scene rendering and game-specific interaction. React Core owns account, discovery, comments, shop, leaderboard, platform controls and other Core UI.
+Phaser owns gameplay/entry-scene rendering and game-specific interaction. New covers are static raster art owned by React Core. Existing Phaser covers are legacy to replace and remove. React Core owns account, discovery, comments, shop, leaderboard, platform controls and other Core UI.
 
 The Core close/return control is overlaid by Core. Do not draw a game-specific duplicate inside Phaser or artwork.
 
@@ -100,7 +100,7 @@ The upstream `audio-and-sound` skill is reference material only; MiniFugg's Core
 
 ### Assets
 
-Production imagery uses the MiniFugg Drive → GitHub asset pipeline. Do not replace authored assets with generic generated rectangles because Phaser can draw them procedurally. Use procedural graphics for dynamic FX, masks, particles, debug/prototype geometry and truly procedural content.
+Production imagery follows the route selected by `ASSET_PIPELINE.md`: Codex writes locally; ChatGPT uses private Drive. New runtime art uses verified WebP lossless by default, AVIF only for validated large static art, and PNG for masters/fallbacks; no new JPG/JPEG. Do not replace authored assets with generic generated rectangles because Phaser can draw them procedurally. Use procedural graphics for dynamic FX, masks, particles, debug/prototype geometry and truly procedural content.
 
 ### Cleanup
 

@@ -47,7 +47,7 @@ On phone, tablet, browser, Electron desktop/Steam or other wrappers, the **centr
 
 On wide screens, leftover left/right space may be used for optional Core sidecars such as leaderboard, comments, creator/profile context or session stats. These sidecars are additive. Removing them must reveal the same complete central mobile experience.
 
-The same invariant applies to game stages and advanced animated covers. See `docs/GAME_ENGINE_ARCHITECTURE.md` and `docs/GAME_LAYOUT_SYSTEM.md`.
+The same invariant applies to game stages and static Core covers. Existing animated covers are legacy. See `docs/GAME_ENGINE_ARCHITECTURE.md` and `docs/GAME_LAYOUT_SYSTEM.md`.
 
 ## Canonical Side Panel / Gameplay language
 

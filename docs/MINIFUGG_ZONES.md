@@ -1,24 +1,35 @@
 # MiniFugg — Zones MiniFugg
 
-**Zones MiniFugg** est le vocabulaire canonique des compositions portrait. Il remplace les noms de gabarits variables employés dans les discussions, les briefs de DA et les intégrations. Le guide visuel est disponible sur `/?usr=moigod&lab=layout`.
+**Zones MiniFugg** est le vocabulaire canonique des compositions portrait. Le guide visuel et ses modèles sont disponibles sur `/?usr=moigod&lab=layout`.
 
-## Cadre commun
+## État de la décision
 
-Toute surface utilise une largeur logique de `390`. Le master artistique maximal mesure `390 × 844` et se découpe verticalement ainsi :
+- **Cible validée — 8 septembre 2026 :** largeur mobile prioritaire, hauteur PC prioritaire, aucun décor de jeu ou de cover ajouté sur les côtés.
+- **À tester en blockout :** nouvelle expérience Home/Cover/mobile/PC avant de modifier en série les scènes et les jeux.
+- **Legacy à éliminer :** mise à l’échelle `FIT` universelle qui réduit inutilement le jeu sur mobile, bandes cyan dessinées dans le master, overscan latéral propre aux jeux et compositions 9:16 non recadrées.
 
-| Nom | Coordonnées | Rôle |
+## Vocabulaire commun
+
+Le **MASTER** est le cadre artistique complet de `390 × 844` unités logiques. Il contient trois zones :
+
+| Nom | Coordonnées dans MASTER | Rôle |
 | --- | ---: | --- |
-| **HAUT** | `x 0→390`, `y 0→91` | Extension verticale. Elle peut être révélée ou recadrée. Aucun élément indispensable. |
-| **CENTRE** | `x 0→390`, `y 91→753` | Zone minimale commune `390 × 662`, toujours visible et exploitable. Toute action et information indispensable y tient. |
-| **BAS** | `x 0→390`, `y 753→844` | Extension verticale. Elle peut être révélée ou recadrée. Aucun élément indispensable. |
+| **HAUT** | `x 0→390`, `y 0→91` | Partie recadrable du MASTER. Décor ou information secondaire seulement. |
+| **CENTRE** | `x 0→390`, `y 91→753` | Zone commune `390 × 662`, toujours visible. Toute action et information indispensable y tient. |
+| **BAS** | `x 0→390`, `y 753→844` | Partie recadrable du MASTER. Décor ou information secondaire seulement. |
 
-Sur mobile, la largeur disponible commande l’échelle : les 390 unités occupent la largeur utile. La hauteur visible varie avec le navigateur ou le shell ; HAUT et BAS absorbent cet écart. Sur PC et grand écran, la hauteur disponible commande l’échelle du portrait afin d’obtenir la plus grande largeur proportionnelle possible. L’espace latéral restant appartient au Core ; une DA de jeu ou de cover ne reçoit pas de décor latéral supplémentaire.
+Deux zones peuvent exister **hors du MASTER** :
 
-Les contrôles Core sont contenus dans le même cadre horizontal de 390 unités. **MONNAIE** et **JOUER** ne dépassent jamais ses bords. **RAIL** reste à gauche, par-dessus CENTRE, y compris sur PC. Les zones Core sont des masques d’occupation : une image peut continuer dessous, mais elle ne doit pas y placer un sujet, un titre ou un détail nécessaire.
+| Nom | Présence | Rôle |
+| --- | --- | --- |
+| **EXTRA HAUT** | seulement si le viewport utile est plus haut que le MASTER mis à l’échelle | prolongement décoratif facultatif |
+| **EXTRA BAS** | seulement si le viewport utile est plus haut que le MASTER mis à l’échelle | prolongement décoratif facultatif |
 
-## Noms par écran
+Le cyan est réservé aux zones **EXTRA**. Il ne doit jamais colorer HAUT ou BAS dans un guide. Sur PC, la hauteur pilote : le MASTER entier occupe toute la hauteur, donc il n’y a ni EXTRA HAUT ni EXTRA BAS. Les espaces restants sont latéraux et appartiennent au Core.
 
-Les noms de base HAUT, CENTRE et BAS sont communs à tous les écrans. Les zones fonctionnelles emploient uniquement les noms suivants :
+Sur mobile, les 390 unités occupent toute la largeur utile. La hauteur utile dépend du téléphone, des barres de chaque navigateur, du clavier, du mode PWA installé et du shell Capacitor. Si elle est courte, HAUT/BAS sont recadrés symétriquement ou selon un ancrage explicitement choisi ; CENTRE reste entière. Si elle dépasse le MASTER mis à l’échelle, EXTRA HAUT/BAS peuvent apparaître.
+
+## Zones Core par écran
 
 | Écran | Zones fonctionnelles |
 | --- | --- |
@@ -26,20 +37,19 @@ Les noms de base HAUT, CENTRE et BAS sont communs à tous les écrans. Les zones
 | **Cover** | **MONNAIE**, **RAIL**, **JOUER** |
 | **CoverBeta** | **BÊTA**, **MONNAIE**, **RAIL**, **JOUER** |
 | **CoverCaca** | **CACA**, **MONNAIE**, **RAIL**, **JOUER** |
-| **Game** | **RETOUR** ; le gameplay indispensable reste dans **CENTRE** |
+| **Game** | **RETOUR** ; gameplay indispensable dans **CENTRE** |
 | **GameOver** | **RETOUR**, **RÉSULTAT**, **SCORE**, **REJOUER**, **CLASSEMENT** |
 | **Ladder** | **RETOUR**, **CLASSEMENT**, **PÉRIODE**, **SCORES** |
 
-Ces noms décrivent une fonction, pas un style. Les cadres montrés par le laboratoire servent à expliquer les occupations et les ancrages ; ils ne constituent pas une DA à recopier.
+**MONNAIE** et **JOUER** restent entièrement dans les 390 unités de largeur. **RAIL** reste à gauche, par-dessus CENTRE, y compris sur PC. Ces zones sont des masques d’occupation, pas une direction artistique.
 
 ## Règle de production
 
-Avant une création de DA, une cover, une intégration Phaser ou un écran Core :
+1. Choisir le modèle d’écran.
+2. Composer le MASTER `390 × 844` et garder l’essentiel dans CENTRE.
+3. Réserver les zones Core du modèle.
+4. Considérer HAUT/BAS comme recadrables ; prévoir EXTRA HAUT/BAS seulement si le décor peut être prolongé sans nouvelle information.
+5. Vérifier au minimum A54 Brave `360 × 611`, A54 Chrome `360 × 656`, MASTER entier `390 × 844` et PC 16:9 piloté par la hauteur.
+6. Valider le blockout avant de produire la DA finale ou de migrer les écrans existants.
 
-1. nommer l’écran parmi les sept modèles ci-dessus ;
-2. composer le contenu essentiel dans CENTRE ;
-3. réserver les masques Core de cet écran ;
-4. prolonger uniquement le décor dans HAUT et BAS ;
-5. vérifier une vue mobile par largeur et une vue PC par hauteur dans le laboratoire.
-
-Le brief transmis à un générateur indique le modèle, les zones calmes et les éléments séparés à livrer. Une référence approuvée reste prioritaire pour le style ; les Zones MiniFugg déterminent seulement le cadrage, l’occupation et le comportement de l’écran.
+Une référence approuvée garde autorité sur le style. Zones MiniFugg fixe seulement le cadrage, l’occupation et le comportement de l’écran.

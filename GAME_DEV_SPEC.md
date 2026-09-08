@@ -42,11 +42,11 @@ Defaults:
 - portrait: `390 × 844`;
 - landscape: `844 × 390`.
 
-The full game world/UI composition is authored against this coordinate system. A physical screen only changes the uniform display scale.
+The full game world/UI composition is authored against this coordinate system. MASTER is `390 × 844`; CENTRE is `390 × 662`, while HAUT/BAS are crop-sensitive parts of MASTER. A physical screen only changes the uniform display scale and visible vertical slice.
 
-A phone, tablet, desktop browser, Electron window and mobile WebView must preserve the same internal positions/proportions.
+A mobile viewport uses its full useful width; browser bars, PWA and native shells may change the useful height and crop HAUT/BAS. Desktop/big screen uses full useful height and shows MASTER whole. All preserve the same internal positions/proportions.
 
-Wide screens may receive optional Core sidebars or decorative overscan outside the canonical stage. They do not cause the central game to reflow.
+Wide screens may receive optional Core sidebars. They do not receive game-owned lateral overscan and do not cause the central game to reflow. EXTRA HAUT/BAS are the only named extension zones and exist outside MASTER only on proportionally taller mobile viewports.
 
 ## 4. Registry contract
 

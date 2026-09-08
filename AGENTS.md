@@ -49,7 +49,7 @@ For any approved game-DA implementation, asset decomposition or final gameplay-a
 
 For each substantial game pass, read/update `src/games/<id>/GAME_STATUS.md` (create it if missing). Before art, cover, animation or audio work, recover the approved references, decisions and rejected directions from the game's `ART_DIRECTION.md`, asset manifest and linked discussions. Do not ask the user to repeat settled choices or substitute generic generated art. Follow the continuity and visual acceptance checks in `docs/GAME_CREATION_PIPELINE.md`.
 
-For Core/platform work also read the relevant platform documents, especially `docs/PLATFORM_UI_BASELINE.md`, `docs/PLATFORM_VISUAL_VALIDATION.md`, `docs/DISCOVERY_NAVIGATION.md`, `docs/PLATFORM_ECONOMY.md`, `docs/PLATFORM_EXPORTS.md` and `docs/PLATFORM_ART_DIRECTION.md`.
+For Core/platform work also read the relevant platform documents, especially `docs/PLATFORM_REDESIGN.md`, `docs/PLATFORM_UI_BASELINE.md`, `docs/PLATFORM_VISUAL_VALIDATION.md`, `docs/DISCOVERY_NAVIGATION.md`, `docs/PLATFORM_ECONOMY.md`, `docs/PLATFORM_EXPORTS.md` and `docs/PLATFORM_ART_DIRECTION.md`.
 
 For any production image creation/import/integration, first read and follow `docs/ASSET_PIPELINE.md`.
 
@@ -59,7 +59,7 @@ Do not choose a new engine per game.
 
 - Core UI/login/discovery/Info/Comments/shop/leaderboards: **React + TypeScript + HTML/CSS**.
 - New and migrated 2D gameplay: **Phaser 4**.
-- Advanced animated covers: **Phaser 4**; static covers may remain normal Core raster art.
+- Covers: **static raster art rendered by Core**. Existing Phaser animated covers are legacy migration sources and must be removed after their static replacements are validated.
 - Genuine 3D low-poly/blockout gameplay: **Three.js**.
 
 Do not add PixiJS as a parallel production runtime.
@@ -68,13 +68,13 @@ Do not create new bespoke raw Canvas/WebGL/WebGPU gameplay renderers unless the 
 
 ## 3. Canonical logical stage — mandatory
 
-Gameplay has a canonical portrait width of `390` logical units. The authored art envelope is `390 × 844`; its always-visible CENTRE is `390 × 662`. HAUT and BAS are vertical extension zones. Exact names, coordinates and per-screen masks are defined in `docs/MINIFUGG_ZONES.md`.
+Gameplay has a canonical portrait width of `390` logical units. The authored MASTER is `390 × 844`; its always-visible CENTRE is `390 × 662`. HAUT and BAS are crop-sensitive parts of MASTER. EXTRA HAUT/BAS exist only outside MASTER when a mobile viewport is proportionally taller. Exact names, coordinates and per-screen masks are defined in `docs/MINIFUGG_ZONES.md`.
 
 **Current product scope (decision of 8 September 2026):** all new game, gameplay-DA and cover production is portrait-only until the user explicitly reopens landscape. Do not propose, generate or implement a second landscape composition. Existing landscape catalog entries remain supported only for maintenance and migration of their current behavior.
 
 On mobile, scale uniformly from the useful width. On PC or big screen, scale uniformly from the useful height. Do not redesign or reflow critical gameplay geometry for PC vs phone. Do not position important game objects primarily with `vw`/`vh`.
 
-A phone is the complete reference experience. HAUT and BAS may be cropped or revealed as height changes. Tablet/desktop lateral space belongs to Core; do not author extra left/right game or cover decoration. Core currency and CTA remain inside the 390-wide frame, while the rail stays over CENTRE at the left.
+A phone is the complete reference experience. On mobile, width controls scale and HAUT/BAS may be cropped as useful browser/app height changes. On desktop, height controls scale and the whole MASTER is visible. Tablet/desktop lateral space belongs to Core; do not author extra left/right game or cover decoration. Core currency and CTA remain inside the 390-wide frame, while the rail stays over CENTRE at the left.
 
 Device pixel ratio may improve render resolution but never changes logical coordinates.
 
@@ -97,7 +97,7 @@ When migration becomes canonical, delete the superseded renderer/code in the sam
 
 ## 5. Current covers are migration-marked
 
-All current game covers are considered **A METTRE A JOUR** until their registry cover migration state is `current`.
+The approved target is static covers rendered by Core. Current Phaser/CSS animated cover implementations are legacy until replaced and removed. A cover remains **A METTRE A JOUR** until its static asset, crop behavior and Core overlays are validated and its registry state is `current`.
 
 Do not expand the legacy CSS parallax/FuggWelcome system. Existing TetraMindFck layered work may be used as visual/data reference while migrating to the shared Phaser cover runtime.
 
@@ -165,6 +165,8 @@ Production images use the route appropriate to the working tool (see `docs/ASSET
 Codex with local access: save to `public/assets/generated/<game-id>/...`, verify, then commit assets with code. ChatGPT without local repository access: `private Drive Fugg hierarchy → GitHub Actions sync → public/assets/imported/...`.
 
 Do not require Drive for Codex-local generation. Never use public Drive URLs, FTP or base64 chunking. Preserve originals without resize/recompression unless explicitly requested; keep requested optimized derivatives separate.
+
+New production must not use JPG/JPEG. Preserve approved masters as PNG or another lossless source; use verified WebP lossless as the normal runtime derivative and AVIF for large static artwork only when visual quality, size and target-shell decoding have been checked. Keep a PNG/WebP fallback. Transfer compression does not reduce decoded RGBA memory; measure texture dimensions as well as file size.
 
 Important visual objects promised as authored art must be real imported assets; procedural engine shapes are fine for genuinely procedural effects, prototypes and non-art primitives.
 

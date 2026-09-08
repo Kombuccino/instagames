@@ -1,6 +1,6 @@
 # DA GAME — Recherche et refonte artistique du gameplay
 
-Toute étude ou intégration suit le modèle Game de [Zones MiniFugg](MINIFUGG_ZONES.md) : largeur 390, boucle indispensable dans CENTRE, extension décorative uniquement dans HAUT et BAS, masque RETOUR réservé au Core.
+Toute étude ou intégration suit le modèle Game de [Zones MiniFugg](MINIFUGG_ZONES.md) : MASTER 390 × 844, boucle indispensable dans CENTRE, HAUT/BAS recadrables, éventuel prolongement uniquement dans EXTRA HAUT/BAS, masque RETOUR réservé au Core.
 
 ## Mission et limites
 

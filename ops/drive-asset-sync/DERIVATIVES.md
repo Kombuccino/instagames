@@ -5,9 +5,9 @@ MiniFugg keeps original production artwork intact and may additionally import op
 Recommended pattern for illustrated welcome screens:
 
 - keep the original PNG master unchanged;
-- create a same-resolution WebP derivative only after visual validation;
-- start around WebP quality 88 and inspect the result visually;
-- use the WebP path at runtime when the visual difference is negligible;
+- create a same-resolution WebP **lossless** derivative after visual validation;
+- optionally test AVIF for a large static image and keep WebP/PNG fallback;
+- use the smallest validated lossless runtime path;
 - keep both master and derivative in the private `Fugg` Drive inbox so the canonical importer handles both;
 - never replace or silently recompress the source master.
 

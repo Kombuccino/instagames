@@ -19,7 +19,7 @@ Engine migration state and cover migration state are independent. A game may be 
 
 - Core UI: React + TypeScript + HTML/CSS.
 - 2D games: Phaser 4.
-- Advanced animated covers: Phaser 4.
+- Covers: static raster art rendered by Core.
 - 3D low-poly/blockout games: Three.js.
 - Fixed canonical logical stage + uniform scaling.
 - Semantic input actions mapped to touch, keyboard/mouse and gamepad.
@@ -29,7 +29,7 @@ Engine migration state and cover migration state are independent. A game may be 
 
 | Priority | Game | Current state | Target | Main migration reason |
 | ---: | --- | --- | --- | --- |
-| 1 | LineFugg | **current Phaser 2D pilot** | Phaser 2D | canonical viewport, FIT scaling, pointer mapping and lifecycle recipe now established; cover still A METTRE A JOUR |
+| 1 | LineFugg | **current Phaser 2D pilot** | Phaser 2D | fixed logical geometry and lifecycle established; host scaling must adopt width-first mobile / height-first PC during the blockout-led platform pass |
 | 2 | Les Brochettes de Vlad | legacy DOM/CSS | Phaser 2D | sprite-count/performance pressure + major visual polish pass |
 | 3 | Train Fighter | legacy DOM/CSS | Phaser 2D | sprite-heavy scrolling/action game; imported raster assets ready to exploit |
 | 4 | TetraMindFck | legacy DOM/CSS | Phaser 2D | mobile/desktop geometry drift + current legacy cover/parallax pilot |
@@ -65,7 +65,7 @@ Production-art and cover work may follow as separate quality passes. Production 
 LineFugg establishes the minimal shared recipe for subsequent 2D migrations:
 
 - React/Core mounts a shared `PhaserGameHost` only; game-world DOM/CSS is not retained.
-- `PhaserGameHost` creates one fixed-size Phaser game, uses `Phaser.Scale.FIT` + centered output, pauses/resumes from `active`, restarts the scene from `restartToken`, and destroys the engine on unmount.
+- `PhaserGameHost` currently creates one fixed-size Phaser game with legacy `Phaser.Scale.FIT` + centered output, pauses/resumes from `active`, restarts from `restartToken`, and destroys the engine on unmount. Its logical geometry/lifecycle are reusable; its display policy must move to width-first mobile / height-first PC after blockout validation.
 - The game scene owns gameplay objects, drawing, hit-testing, pointer coordinates, feedback and scene listeners entirely in logical units.
 - The game reports outward only through the existing MiniFugg session contract.
 - Game-specific geometry remains explicit in the scene rather than being hidden behind a speculative layout framework.
@@ -74,13 +74,13 @@ Reuse these primitives for the next migrations, extending the shared host only w
 
 ## Cover migration
 
-Static covers may remain raster images rendered by React Core.
+The approved target is one static raster cover path rendered by React Core. Do not create new animated covers.
 
-A cover that needs authored motion/parallax/FX should move to the shared Phaser cover runtime instead of expanding the retired `FuggWelcome` CSS/Canvas machinery.
+TetraMindFck currently has two layered variants using `PhaserCoverHost` and one Core raster variant. This describes the running implementation only: the animated variants are legacy and must receive static replacements before `PhaserCoverHost` and its layer data are removed.
 
-TetraMindFck is the first current migration: its two layered variants use `PhaserCoverHost`, while its third static variant stays a Core raster. Only the active feed slot creates a Phaser instance; inactive copies use their static preview.
+Legacy CSS parallax, `FuggWelcome`, the former Parallax Lab and animated Phaser cover code are migration sources, not foundations to extend. Git history remains the archive after cutover.
 
-The former Parallax Lab and legacy cover interpreter remain available in Git history. They are not the target architecture.
+The platform-wide layout redesign is blockout-first: validate Home, Cover, Game, GameOver and Ladder templates on mobile browser, installed app and desktop before applying broad migrations to production scenes.
 
 ## Platform work that should happen alongside the game migrations
 

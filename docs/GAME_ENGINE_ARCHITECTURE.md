@@ -1,6 +1,6 @@
 # MiniFugg — Game Engine Architecture
 
-This document is normative. Read it before creating, migrating or structurally modifying a MiniFugg game, animated cover or gameplay renderer.
+This document is normative. Read it before creating, migrating or structurally modifying a MiniFugg game, cover or gameplay renderer.
 
 ## 1. One platform, three rendering responsibilities
 
@@ -9,7 +9,8 @@ MiniFugg deliberately standardizes the runtime instead of choosing a different t
 | Responsibility | Canonical technology |
 | --- | --- |
 | Core UI, account, login, discovery, Info, Comments, shop, leaderboard | React + TypeScript + HTML/CSS |
-| 2D gameplay and advanced animated covers | Phaser 4 |
+| 2D gameplay | Phaser 4 |
+| Static covers | React Core + raster art |
 | Genuine 3D gameplay | Three.js |
 
 Do not add PixiJS as a parallel production runtime. Do not start new raw Canvas/WebGL/WebGPU rendering systems for gameplay without an explicit Core architecture decision.
@@ -27,9 +28,11 @@ Default logical stages:
 
 A game may declare another fixed logical size when the mechanic genuinely requires it, but it must still have one explicit authored coordinate system per supported orientation.
 
-The runtime scales the entire stage uniformly to fit the available central viewport while preserving aspect ratio. Conceptually:
+The runtime scales the stage uniformly. Mobile uses the full useful width; desktop/big screen uses the full useful height. Conceptually:
 
-`scale = min(availableWidth / logicalWidth, availableHeight / logicalHeight)`
+`scale = mobile ? availableWidth / logicalWidth : availableHeight / logicalHeight`
+
+The MASTER is `390 × 844`. CENTRE (`y 91→753`) is guaranteed. On a short mobile viewport, only HAUT/BAS may be cropped. On a proportionally taller mobile viewport, EXTRA HAUT/BAS may exist outside MASTER. On desktop the complete MASTER is visible; remaining space is lateral Core space.
 
 Positions, distances, hit boxes, cameras and authored layer relationships stay in logical units.
 
@@ -57,7 +60,7 @@ On a tablet or desktop, the canonical central game/cover remains unchanged excep
 
 A sidecar must never be required to understand or play the game. Removing both sidecars must leave the canonical mobile experience complete.
 
-Decorative game overscan may fill unused space when appropriate, but it must not change the authored central geometry or collision world.
+Do not produce game-owned lateral overscan. Optional Core sidecars or ambience may use the remaining desktop width.
 
 ## 4. Phaser is the standard 2D runtime
 
@@ -76,15 +79,15 @@ Use Phaser for:
 - texture loading and reuse;
 - consistent logical scaling.
 
-The standard Phaser scale policy is a fixed logical width/height with aspect-preserving `FIT` behavior and centered output. Do not use a resize mode that mutates the gameplay world to match each browser window.
+The Phaser world keeps fixed logical geometry. The host applies the MiniFugg width-first mobile / height-first desktop camera and crop contract without mutating gameplay coordinates. A universal `FIT` that shrinks the 390-wide game on short mobile viewports is legacy behavior to replace.
 
-Phaser is also the target runtime for advanced animated Fugg covers. Static covers do not need a game engine: Core can display them as normal raster art.
+All new covers are static raster art displayed by Core. Existing `PhaserCoverHost` covers may run only until a validated static replacement is active; then remove their layers and runtime code.
 
 ### 4.1 Shared Phaser host pattern
 
 LineFugg is the first canonical implementation of the shared 2D host boundary.
 
-`src/core/runtime/PhaserGameHost.tsx` is intentionally small. Core/React owns the mount node and passes lifecycle state; the host owns creation/destruction of `Phaser.Game`, fixed logical dimensions, `Phaser.Scale.FIT`, centered output, pause/resume from `active`, and scene restart from `restartToken`.
+`src/core/runtime/PhaserGameHost.tsx` is intentionally small. In the current implementation it owns creation/destruction of `Phaser.Game`, fixed logical dimensions, legacy `Phaser.Scale.FIT`, centered output, pause/resume from `active`, and scene restart from `restartToken`. The platform blockout pass must replace only its display/camera policy with the approved width-first mobile / height-first PC contract while preserving logical geometry.
 
 The game-specific Phaser `Scene` owns all gameplay rendering, hit-testing, pointer coordinates, animations/feedback and scene listeners in logical units. It reports outward only through the existing MiniFugg session contract (`session.setScore`, `session.finish`).
 

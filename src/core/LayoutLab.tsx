@@ -24,22 +24,21 @@ type ScreenPreset = {
 const STAGE = { width: 390, height: 844, label: 'PORTRAIT + COVER' } as const
 
 const SCREENS: ScreenPreset[] = [
-  { id: 'phone-small', label: 'Petit téléphone', width: 320, height: 568 },
-  { id: 'phone-360-780', label: 'Mobile 19,5:9', width: 360, height: 780 },
-  { id: 'phone-360-800', label: 'Mobile 20:9', width: 360, height: 800 },
-  { id: 'phone-reference', label: 'Téléphone référence', width: 390, height: 844 },
-  { id: 'phone-leading', label: 'Format mondial n°1', width: 414, height: 896 },
-  { id: 'phone-large', label: 'Grand téléphone', width: 430, height: 932 },
+  { id: 'a54-brave', label: 'A54 · Brave web', width: 360, height: 611 },
+  { id: 'a54-chrome', label: 'A54 · Chrome web', width: 360, height: 656 },
+  { id: 'phone-minimum', label: 'CENTRE seule', width: 390, height: 662 },
+  { id: 'phone-reference', label: 'MASTER entier', width: 390, height: 844 },
+  { id: 'phone-extra', label: 'Mobile très haut', width: 360, height: 820 },
   { id: 'tablet', label: 'Tablette', width: 768, height: 1024 },
   { id: 'desktop', label: 'PC 16:9', width: 1920, height: 1080 },
 ]
 
 const ASSET_ROWS = [
-  ['Fond complet portrait', '390 × 844', '780 × 1688', 'Opaque, sans état de jeu'],
-  ['Cover plein cadre', '390 × 844', '780 × 1688', 'Titre possible, aucun contrôle Core'],
-  ['Objet / personnage', 'zone réelle', 'zone × 2', 'Recadrer au contenu, alpha'],
-  ['Bouton ou panneau', 'taille affichée', 'taille × 2', 'États séparés, texte dynamique'],
-  ['Atlas', 'cellules mesurées', '≤ 2048 par feuille', 'Pas de vide géant, scinder si besoin'],
+  ['Fond complet portrait', '390 × 844', '780 × 1688', 'WebP lossless ; PNG de repli/source'],
+  ['Cover statique', '390 × 844', '780 × 1688', 'AVIF ou WebP validé ; aucun contrôle Core'],
+  ['Objet / personnage', 'zone réelle', 'zone × 2', 'WebP lossless avec alpha, recadré'],
+  ['Bouton ou panneau', 'taille affichée', 'taille × 2', 'États séparés ; WebP/PNG avec alpha'],
+  ['Atlas / masque / map', 'cellules mesurées', '≤ 2048 par feuille', 'PNG/WebP lossless ; scinder si besoin'],
 ] as const
 
 function round(value: number) {
@@ -75,7 +74,7 @@ function downloadStageGuide(mode: 'game' | 'cover') {
   context.textAlign = 'center'
   context.fillText('CENTRE - 390 x 662', safe.x + safe.width / 2, safe.y + safe.height / 2)
 
-  context.fillStyle = '#62d9ff'
+  context.fillStyle = '#eef2e7'
   context.font = 'bold 9px monospace'
   context.fillText('HAUT', stage.width / 2, 48)
   context.fillText('BAS', stage.width / 2, 802)
@@ -166,14 +165,19 @@ function StageArtwork({ mode = 'combined', fullSurface = false }: { mode?: Guide
   const stage = STAGE
   return (
     <div className="mf-layout-guide__stage" data-full-surface={fullSurface} data-mode={mode} style={fullSurface ? undefined : { aspectRatio: `${stage.width} / ${stage.height}` }}>
+      <div className="mf-layout-guide__extra-frame" aria-hidden="true">
+        <Zone className="mf-layout-guide__extra is-top" name="EXTRA HAUT" />
+        <Zone className="mf-layout-guide__extra is-bottom" name="EXTRA BAS" />
+      </div>
       <div className="mf-layout-guide__artwork">
         <div className="mf-layout-guide__grid" aria-hidden="true" />
-        <Zone className="mf-layout-guide__band is-top" name="HAUT" detail="hauteur variable" />
+        <span className="mf-layout-guide__master">MASTER · 390 × 844</span>
+        <Zone className="mf-layout-guide__band is-top" name="HAUT" detail="recadrable" />
         <div className="mf-layout-guide__critical">
           <b>CENTRE</b>
           <small>390 × 662 · zone minimale commune.</small>
         </div>
-        <Zone className="mf-layout-guide__band is-bottom" name="BAS" detail="hauteur variable" />
+        <Zone className="mf-layout-guide__band is-bottom" name="BAS" detail="recadrable" />
         <span className="mf-layout-guide__axis is-x">{stage.width} unités logiques</span>
         <span className="mf-layout-guide__axis is-y">{stage.height} unités logiques</span>
       </div>
@@ -192,7 +196,7 @@ function StageGuide() {
       </figcaption>
       <StageArtwork />
       <div className="mf-layout-guide__downloads"><button type="button" onClick={() => downloadStageGuide('cover')}>PNG COVER ×2 ↓</button><button type="button" onClick={() => downloadStageGuide('game')}>PNG JEU ×2 ↓</button></div>
-      <p>Le master artistique garde 390 × 844. CENTRE est toujours visible ; HAUT et BAS absorbent les différences de hauteur sans ajouter de décor latéral.</p>
+      <p>MASTER contient HAUT, CENTRE et BAS. Sur mobile court, HAUT/BAS sont recadrés. Les zones cyan EXTRA n’apparaissent qu’au-delà du MASTER sur un viewport plus haut.</p>
     </figure>
   )
 }
@@ -208,7 +212,7 @@ function TemplateMenu({ active }: { active: LayoutTemplate }) {
 }
 
 function ScreenSimulator() {
-  const [screenId, setScreenId] = useState('phone-360-800')
+  const [screenId, setScreenId] = useState('a54-chrome')
   const stage = STAGE
   const screen = SCREENS.find((item) => item.id === screenId) ?? SCREENS[0]
 
@@ -243,20 +247,20 @@ function ScreenSimulator() {
           <div className="mf-layout-device__surface" style={{ width: geometry.surfaceWidth * previewScale, height: geometry.surfaceHeight * previewScale }}>
             <div className="mf-layout-device__stage" style={{ width: geometry.displayedWidth * previewScale, height: geometry.displayedHeight * previewScale }}>
               <b>{stage.width} × {stage.height}</b>
-              <small>composition intacte</small>
+              <small>{geometry.verticalDelta < 0 ? 'recadrage vertical' : geometry.verticalDelta > 0 ? 'MASTER + EXTRA' : 'MASTER entier'}</small>
             </div>
           </div>
         </div>
         <dl className="mf-layout-readout">
-          <div><dt>Écran</dt><dd>{screen.width} × {screen.height}</dd></div>
+          <div><dt>Viewport utile</dt><dd>{screen.width} × {screen.height}</dd></div>
           <div><dt>Surface Core actuelle</dt><dd>{round(geometry.surfaceWidth)} × {round(geometry.surfaceHeight)}</dd></div>
           <div><dt>Stage affiché</dt><dd>{round(geometry.displayedWidth)} × {round(geometry.displayedHeight)}</dd></div>
           <div><dt>Échelle uniforme</dt><dd>× {round(geometry.scale)}</dd></div>
           <div><dt>Espace Core latéral</dt><dd>{round(geometry.lateralCore)} px</dd></div>
-          <div><dt>Variation verticale</dt><dd>{round(geometry.verticalDelta)} px</dd></div>
+          <div><dt>{geometry.verticalDelta < 0 ? 'Recadrage vertical' : 'EXTRA vertical'}</dt><dd>{round(Math.abs(geometry.verticalDelta))} px</dd></div>
         </dl>
       </div>
-      <p className="mf-layout-note"><b>Mobile :</b> la largeur pilote. <b>PC :</b> la hauteur pilote. Les différences se trouvent en HAUT/BAS ou dans l’espace latéral appartenant au Core.</p>
+      <p className="mf-layout-note"><b>Mobile :</b> la largeur pilote et la hauteur utile dépend aussi du navigateur ou du mode app. <b>PC :</b> la hauteur pilote et le MASTER entier reste visible. Les côtés appartiennent au Core.</p>
     </section>
   )
 }
@@ -302,13 +306,25 @@ function PortingStrategy() {
       <div className="mf-layout-panel__head"><div><small>MOBILE → PC</small><h2>Comment les jeux résolvent le problème</h2></div></div>
       <div className="mf-layout-strategies">
         <article><b>1</b><h3>Échelle uniforme</h3><p>Le monde et le HUD gardent leurs coordonnées. La largeur pilote sur mobile et la hauteur pilote sur PC.</p></article>
-        <article><b>2</b><h3>Extension verticale</h3><p>L’action reste dans CENTRE. HAUT et BAS peuvent apparaître ou disparaître sans modifier le jeu.</p></article>
+        <article><b>2</b><h3>Recadrage vertical</h3><p>L’action reste dans CENTRE. HAUT et BAS sont les seules parties du MASTER que le mobile peut couper.</p></article>
         <article><b>3</b><h3>Interface adaptative séparée</h3><p>Menus, boutique, commentaires et classements changent de disposition selon la fenêtre. Le canvas de gameplay, lui, reste stable.</p></article>
         <article><b>4</b><h3>Contrôles par plateforme</h3><p>Toucher sur mobile, souris/clavier ou manette sur PC. Les actions sont remappées sans déplacer les cibles ni changer l’équilibrage.</p></article>
       </div>
       <p className="mf-layout-verdict"><b>Choix MiniFugg :</b> production portrait uniquement pour le moment. Le téléphone contient l’expérience complète. Le portage PC utilise la hauteur disponible ; les côtés restent au Core et ne demandent pas une seconde DA.</p>
     </section>
   )
+}
+
+function Vocabulary() {
+  const words = [
+    ['MASTER', 'Le cadre artistique complet 390 × 844.'],
+    ['HAUT', 'Partie supérieure du MASTER, recadrable.'],
+    ['CENTRE', 'Zone commune 390 × 662, toujours visible.'],
+    ['BAS', 'Partie inférieure du MASTER, recadrable.'],
+    ['EXTRA HAUT', 'Espace réel au-dessus du MASTER si le viewport est plus haut.'],
+    ['EXTRA BAS', 'Espace réel sous le MASTER si le viewport est plus haut.'],
+  ] as const
+  return <section className="mf-layout-panel mf-layout-vocabulary"><div className="mf-layout-panel__head"><div><small>VOCABULAIRE</small><h2>Les mêmes mots partout</h2></div></div><div>{words.map(([name, detail]) => <article key={name}><b>{name}</b><p>{detail}</p></article>)}</div><p className="mf-layout-note">Les zones cyan signifient toujours EXTRA. Elles ne font jamais partie du MASTER et ne sont pas présentes sur PC lorsque la hauteur pilote.</p></section>
 }
 
 function AppModeGuide() {
@@ -364,15 +380,17 @@ export function LayoutLab({ focus }: { focus?: LayoutTemplate }) {
       <header className="mf-layout-hero">
         <small>MINIFUGG · ZONES MINIFUGG</small>
         <h1>Un cadre.<br />Une composition.</h1>
-        <p>MiniFugg produit ses écrans en portrait sur une largeur logique de 390. Cette page fixe le vocabulaire HAUT, CENTRE et BAS, montre les zones Core et simule l’affichage avant toute création d’assets.</p>
+        <p>MiniFugg produit ses écrans en portrait sur une largeur logique de 390. Cette page sépare le MASTER, ses zones recadrables et les vrais espaces EXTRA, puis montre les zones Core avant toute création d’assets.</p>
       </header>
 
       <section className="mf-layout-guides" aria-label="Gabarits canoniques">
         <StageGuide />
       </section>
 
+      <Vocabulary />
+
       <section className="mf-layout-panel">
-        <div className="mf-layout-panel__head"><div><small>FICHIERS</small><h2>Dimensions de livraison</h2></div><strong className="mf-layout-rule">runtime = zone logique × 2</strong></div>
+        <div className="mf-layout-panel__head"><div><small>FICHIERS</small><h2>Dimensions et formats de livraison</h2></div><strong className="mf-layout-rule">runtime ≤ zone logique × 2</strong></div>
         <div className="mf-layout-table-wrap">
           <table>
             <thead><tr><th>Asset</th><th>Zone logique</th><th>Fichier runtime max</th><th>Règle</th></tr></thead>
@@ -384,6 +402,7 @@ export function LayoutLab({ focus }: { focus?: LayoutTemplate }) {
           <p><b>2.</b> La transparence vide compte dans la texture : recadrer chaque objet.</p>
           <p><b>3.</b> Score, vies, commandes et états restent séparés du fond.</p>
           <p><b>4.</b> Phaser anime et éclaire les assets ; il ne répare pas une composition incohérente.</p>
+          <p><b>5.</b> Aucun nouveau JPG/JPEG. PNG pour les sources et replis ; WebP lossless par défaut, AVIF pour les grandes images validées.</p>
         </div>
       </section>
 
@@ -396,10 +415,11 @@ export function LayoutLab({ focus }: { focus?: LayoutTemplate }) {
       <section className="mf-layout-panel mf-layout-open">
         <div className="mf-layout-panel__head"><div><small>RESTE À NORMALISER</small><h2>Les écarts encore présents</h2></div></div>
         <ol>
-          <li><b>Covers statiques et animées :</b> le Core étire aujourd’hui les images statiques en <i>cover</i>, tandis que Phaser conserve le cadre 390 × 844 en <i>FIT</i>. Leur cadrage doit devenir identique.</li>
+          <li><b>Covers :</b> la cible est désormais statique. Les covers Phaser animées actuelles restent legacy jusqu’à leur remplacement, puis leur runtime sera supprimé.</li>
           <li><b>Anciens masters 9:16 :</b> ils sont plus larges que 390 × 844 et perdent environ 18 % de leur largeur en plein cadre. Il faut les recadrer avec une vraie zone sûre, sans altérer les originaux validés.</li>
           <li><b>Atlases existants :</b> plusieurs feuilles et personnages dépassent largement leur taille affichée. Chaque migration doit mesurer la zone logique et produire un dérivé runtime à ×2 maximum.</li>
-          <li><b>Anciens overscans PC :</b> ils doivent être retirés au fil des migrations. Les extensions propres au jeu restent dans HAUT et BAS ; les côtés appartiennent au Core.</li>
+          <li><b>Anciens overscans PC :</b> ils doivent être retirés au fil des migrations. HAUT et BAS restent dans le MASTER ; EXTRA HAUT/BAS sont les seuls prolongements possibles. Les côtés appartiennent au Core.</li>
+          <li><b>Refonte plateforme :</b> Home, Cover, mobile et PC seront d’abord testés avec ces templates en blockout. Les scènes et jeux ne migrent qu’après validation de ce modèle.</li>
           <li><b>Installation mobile :</b> les métadonnées iOS existent. Le manifeste PWA et la famille d’icônes MiniFugg doivent encore être reliés après identification du master d’icône approuvé.</li>
         </ol>
       </section>

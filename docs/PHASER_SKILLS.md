@@ -48,7 +48,7 @@ Phaser explicitly publishes these files for AI coding agents. The Phaser reposit
 
 ## Why MiniFugg vendors them
 
-Phaser 4 is now the canonical runtime for MiniFugg 2D gameplay and advanced animated covers. The project deliberately avoids relying only on an agent's generic memory of Phaser because:
+Phaser 4 is the canonical runtime for MiniFugg 2D gameplay. Covers are now static Core raster art; the existing Phaser cover host is legacy migration code. The project deliberately avoids relying only on an agent's generic memory of Phaser because:
 
 - Phaser 4 differs materially from Phaser 3;
 - the renderer, filters and several APIs changed;
@@ -105,7 +105,7 @@ When a generic Phaser skill conflicts with MiniFugg architecture, MiniFugg wins.
 
 Important examples:
 
-- MiniFugg uses a fixed logical stage (`390×844` portrait / `844×390` landscape by default) with uniform `FIT` scaling. Do not adopt a generic responsive reflow pattern from a framework example.
+- MiniFugg uses a fixed portrait MASTER `390×844`: width-first uniform scaling on mobile and height-first on PC. Short mobile viewports crop HAUT/BAS while preserving CENTRE. Do not adopt generic `FIT` shrinkage or responsive reflow from a framework example.
 - MiniFugg Core owns all realtime audio. The upstream `audio-and-sound` skill may explain Phaser sound APIs, but production MiniFugg games must **not** instantiate or own Phaser audio. Read `docs/AUDIO_SYSTEM.md`; Phaser hosts use `audio: { noAudio: true }`.
 - Core UI remains React/HTML/CSS. Do not move account, comments, shop, discovery or platform controls into Phaser because a generic skill demonstrates Phaser UI.
 - Production images still follow `docs/ASSET_PIPELINE.md` and `docs/GAME_ART_PRODUCTION_PIPELINE.md`.

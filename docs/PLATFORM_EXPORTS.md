@@ -5,7 +5,8 @@ MiniFugg keeps one web-first game codebase and wraps it for distribution. Games 
 ## 1. Canonical application runtime
 
 - Core UI: React + TypeScript + HTML/CSS.
-- 2D gameplay / advanced animated covers: Phaser 4.
+- 2D gameplay: Phaser 4.
+- Covers: static raster art rendered by Core; animated cover runtimes are legacy.
 - 3D gameplay: Three.js.
 - Build tooling: Vite.
 - Audio: the session-wide MiniFugg Core manager (`AUDIO_SYSTEM.md`) in every shell.

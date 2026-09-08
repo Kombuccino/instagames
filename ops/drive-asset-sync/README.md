@@ -109,7 +109,7 @@ The importer:
 - is hard-locked to Drive folder `1o7YIB4qEPYNJvOI9yPr_6tUPEW3dDF0H`;
 - is hard-locked to `Kombuccino/instagames`, branch `main`;
 - writes only to `public/assets/imported/`;
-- accepts only PNG, JPEG and WebP;
+- accepts PNG, WebP, AVIF and legacy JPEG; new production does not use JPEG;
 - decodes the image and verifies the actual format instead of trusting the filename;
 - rejects files over 10 MiB;
 - rejects images over 40 million pixels and decompression-bomb warnings;
@@ -130,7 +130,7 @@ A Fugg welcome cover that uses parallax should be treated as a small asset bundl
 - foreground character or hero object;
 - title/logo/CTA overlay.
 
-Transparent layers should use PNG masters and may also have WebP runtime derivatives. All files still enter through the same private `Fugg` Drive inbox and are verified under `public/assets/imported/` before the code references them.
+Transparent layers keep PNG masters and normally use WebP lossless runtime derivatives. Large static art may use AVIF with a WebP/PNG fallback after target validation. All files still enter through the same private `Fugg` Drive inbox and are verified under `public/assets/imported/` before the code references them.
 
 ## Security model
 

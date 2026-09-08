@@ -20,6 +20,8 @@ Original prompt: Mettre à jour LineFugg pour rendre les GFX conformes à la DA 
 
 2026-09-08 — Correction du laboratoire après retour utilisateur : les routes isolées jeu/cover occupent désormais la vraie surface du feed et recadrent le plan artistique 390 × 844 par remplissage uniforme, au lieu d’afficher systématiquement le cadre entier en FIT. Les overlays Core restent ancrés à la fenêtre, donc ne sont pas entraînés par le crop. Le jeu conserve séparément sa géométrie Phaser en FIT ; cette vue matérialise le crop du décor plein cadre.
 
+2026-09-08 — Deuxième correction après essai réel sur Galaxy A54 : l’ancien rectangle vert mélangeait crop, gameplay et occultation Core. Le laboratoire sépare désormais le stage Phaser en FIT intégral, le fond/cover mobile en COVER, une zone verte de cover élargie (`24..366 × 93..751`) qui survit à la matrice mobile, et les masques Core orange/rouge ancrés au viewport. Sur écran large, la cover canonique passe en FIT dans la surface Core pour éviter le crop vertical destructeur ; les marges servent au Core/overscan.
+
 Suivi produit canonique : src/games/linefugg/GAME_STATUS.md.
 
 2026-09-07 : comparaison du master à la capture utilisateur et au renderer. Priorités : place de la grille, panneaux non déformés, calculs lisibles, indicateurs alignés, décomposition du mécanisme céleste et effets bornés. Références Phaser 4.2.1 consultées via phaser-minifugg ; leur publication est gérée dans une autre tâche. Assets générés depuis le master, import privé Drive en cours. Aucun changement de règles prévu.

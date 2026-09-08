@@ -4,7 +4,15 @@ Cette fiche complète `GAME_LAYOUT_SYSTEM.md` et `GAME_ART_PRODUCTION_PIPELINE.m
 
 `/?usr=moigod&lab=layout`
 
-La page permet d’ouvrir séparément le gabarit d’un jeu ou d’une cover, sans interface autour, de télécharger les deux variantes PNG, de simuler les écrans courants et de calculer la taille maximale d’un asset à partir de sa zone logique. Les vues isolées utilisent toute la surface réelle du feed : le plan artistique 390 × 844 la remplit par mise à l’échelle uniforme et crop centré, tandis que les contrôles Core restent ancrés à la fenêtre comme en production.
+La page permet d’ouvrir séparément le gabarit d’un jeu ou d’une cover, sans interface autour, de télécharger les deux variantes PNG, de simuler les écrans courants et de calculer la taille maximale d’un asset à partir de sa zone logique. Les contrôles Core restent ancrés à la fenêtre comme en production.
+
+Les vues isolées séparent maintenant trois contrats :
+
+- **stage jouable** : `390 × 844` en `FIT`, entièrement visible et jamais croppé ;
+- **fond de jeu / cover mobile** : remplissage uniforme de la surface avec crop centré ;
+- **overlays Core** : ancrés à la fenêtre, indépendamment du plan artistique.
+
+La zone verte de la cover occupe les coordonnées logiques approximatives `x 24 → 366`, `y 93 → 751`. Elle est calculée pour rester dans la partie visible sur la plage mobile de validation actuelle, du téléphone court `320 × 568` aux téléphones modernes longs. Les zones orange ne réduisent pas ce rectangle : elles montrent séparément où le Core peut recouvrir l’art.
 
 ## Le cadre de production
 
@@ -14,7 +22,7 @@ La page permet d’ouvrir séparément le gabarit d’un jeu ou d’une cover, s
 
 Depuis la décision du 8 septembre 2026, toute nouvelle production est en portrait. Le paysage reste seulement une compatibilité technique pour les jeux existants qui en dépendent ; il n’entre plus dans les briefs, gabarits ou lots d’assets courants.
 
-Le stage entier est la composition contractuelle. La vue de crop montre le comportement du fond ou de la cover plein cadre. La géométrie jouable Phaser conserve `FIT` et ses coordonnées fixes ; le décor peut déborder et être recadré pour remplir la surface. La zone centrale indiquée dans les gabarits est une zone sûre recommandée pour l’action et les sujets critiques, car le Core peut superposer son bouton Retour en gameplay et son rail, sa monnaie et son CTA sur une cover.
+Le stage entier est la composition contractuelle. La géométrie jouable Phaser conserve `FIT` et ses coordonnées fixes ; le décor peut déborder et être recadré pour remplir la surface. Sur écran large, le stage/cover canonique est conservé et l’espace restant appartient au Core ou au décor d’accompagnement : on ne détruit pas une composition portrait avec un crop vertical massif. La zone verte marque ce qui doit rester visible ; le bouton Retour, le rail, la monnaie et le CTA sont des masques d’occupation distincts.
 
 ## Règle de dimensionnement
 

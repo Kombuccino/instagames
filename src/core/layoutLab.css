@@ -47,7 +47,7 @@ body:has(.mf-layout-lab) { overflow: auto; background: var(--layout-ink); color:
 .mf-layout-guide[data-orientation="portrait"] .mf-layout-guide__stage { max-width: 390px; }
 .mf-layout-guide__artwork { position: absolute; inset: 0; overflow: hidden; background: #162027; }
 .mf-layout-guide__grid { position: absolute; inset: 0; background: linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px); background-size: 10% 10%; }
-.mf-layout-guide__critical { position: absolute; inset: 8% 8% 12% 20%; display: grid; place-content: center; padding: 12px; border: 2px solid var(--layout-green); background: rgba(146,255,101,.055); text-align: center; }
+.mf-layout-guide__critical { position: absolute; inset: 11% 6%; display: grid; place-content: center; padding: 12px; border: 2px solid var(--layout-green); background: rgba(146,255,101,.055); text-align: center; }
 .mf-layout-guide__critical b { color: var(--layout-green); font-size: clamp(10px, 1.5vw, 15px); }
 .mf-layout-guide__critical small { margin-top: 5px; color: #cbd3ce; font-size: 9px; }
 .mf-layout-guide__close { position: absolute; top: 1%; left: 1%; width: 14%; aspect-ratio: 1; display: grid; place-content: center; border: 1px solid var(--layout-red); background: rgba(255,92,88,.18); text-align: center; }
@@ -81,6 +81,9 @@ body:has(.mf-layout-focus) { overflow: hidden; background: #050708; }
 .mf-layout-focus { display: grid; width: 100vw; height: 100dvh; place-items: center; overflow: hidden; background: #050708; }
 .mf-layout-focus .mf-layout-guide__stage { width: 100%; height: 100%; max-width: none; border: 0; box-shadow: none; }
 .mf-layout-focus .mf-layout-guide__artwork { inset: auto; left: 50%; top: 50%; width: max(100cqw, calc(100cqh * 390 / 844)); height: max(100cqh, calc(100cqw * 844 / 390)); transform: translate(-50%, -50%); }
+.mf-layout-focus .mf-layout-guide__gameplay-frame { position: absolute; z-index: 4; left: 50%; top: 50%; width: min(100cqw, calc(100cqh * 390 / 844)); height: min(100cqh, calc(100cqw * 844 / 390)); display: grid; place-content: center; padding: 12px; transform: translate(-50%, -50%); border: 2px solid var(--layout-green); background: rgba(146,255,101,.045); text-align: center; pointer-events: none; }
+.mf-layout-guide__gameplay-frame b { color: var(--layout-green); font-size: clamp(10px, 1.5vw, 15px); }
+.mf-layout-guide__gameplay-frame small { margin-top: 5px; color: #cbd3ce; font-size: 9px; }
 .mf-layout-focus .mf-layout-guide__close { top: max(8px, calc(env(safe-area-inset-top, 0px) + 6px)); left: max(8px, calc(env(safe-area-inset-left, 0px) + 6px)); width: 48px; height: 48px; aspect-ratio: auto; }
 .mf-layout-focus .mf-layout-guide__cover-top { top: max(18px, env(safe-area-inset-top)); right: 18px; width: 86px; min-height: 34px; }
 .mf-layout-focus .mf-layout-guide__cover-rail { left: 18px; top: 50%; width: 42px; height: 350px; transform: translateY(-45%); }
@@ -88,6 +91,7 @@ body:has(.mf-layout-focus) { overflow: hidden; background: #050708; }
 
 @media (min-width: 760px) {
   .mf-layout-focus .mf-layout-guide__stage { max-width: 520px; }
+  .mf-layout-focus[data-mode="cover"] .mf-layout-guide__artwork { width: min(100cqw, calc(100cqh * 390 / 844)); height: min(100cqh, calc(100cqw * 844 / 390)); }
 }
 
 .mf-layout-market__columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }

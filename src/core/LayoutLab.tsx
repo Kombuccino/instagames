@@ -53,7 +53,9 @@ function downloadStageGuide(mode: Exclude<GuideMode, 'combined'>) {
   for (let x = grid; x < stage.width; x += grid) { context.beginPath(); context.moveTo(x, 0); context.lineTo(x, stage.height); context.stroke() }
   for (let y = grid; y < stage.height; y += grid) { context.beginPath(); context.moveTo(0, y); context.lineTo(stage.width, y); context.stroke() }
 
-  const safe = { x: 78, y: 68, width: 280, height: 674 }
+  const safe = mode === 'cover'
+    ? { x: 24, y: 93, width: 342, height: 658 }
+    : { x: 2, y: 2, width: 386, height: 840 }
   context.fillStyle = 'rgba(146, 255, 101, .055)'
   context.fillRect(safe.x, safe.y, safe.width, safe.height)
   context.strokeStyle = '#92ff65'
@@ -62,7 +64,7 @@ function downloadStageGuide(mode: Exclude<GuideMode, 'combined'>) {
   context.fillStyle = '#92ff65'
   context.font = 'bold 11px monospace'
   context.textAlign = 'center'
-  context.fillText('ZONE SURE POUR LE CONTENU CRITIQUE', safe.x + safe.width / 2, safe.y + safe.height / 2)
+  context.fillText(mode === 'cover' ? 'ZONE VERTE - TOUJOURS VISIBLE' : 'STAGE PHASER - TOUJOURS VISIBLE', safe.x + safe.width / 2, safe.y + safe.height / 2)
 
   if (mode === 'game') {
     context.fillStyle = 'rgba(255, 92, 88, .18)'
@@ -107,13 +109,14 @@ function StageArtwork({ mode = 'combined', fullSurface = false }: { mode?: Guide
     <div className="mf-layout-guide__stage" data-full-surface={fullSurface} data-mode={mode} style={fullSurface ? undefined : { aspectRatio: `${stage.width} / ${stage.height}` }}>
       <div className="mf-layout-guide__artwork">
         <div className="mf-layout-guide__grid" aria-hidden="true" />
-        <div className="mf-layout-guide__critical">
-          <b>ZONE SÛRE CRITIQUE</b>
-          <small>Action, HUD et sujet principal restent lisibles ici.</small>
-        </div>
+        {(!fullSurface || mode !== 'game') && <div className="mf-layout-guide__critical">
+          <b>ZONE VERTE · TOUJOURS VISIBLE</b>
+          <small>Le crop mobile ne doit jamais atteindre cette zone.</small>
+        </div>}
         <span className="mf-layout-guide__axis is-x">{stage.width} unités logiques</span>
         <span className="mf-layout-guide__axis is-y">{stage.height} unités logiques</span>
       </div>
+      {fullSurface && mode === 'game' && <div className="mf-layout-guide__gameplay-frame"><b>STAGE PHASER · TOUJOURS VISIBLE</b><small>390 × 844 · FIT uniforme · aucun crop du gameplay</small></div>}
       {(mode === 'game' || mode === 'combined') && <div className="mf-layout-guide__close"><b>CORE</b><small>48 × 48</small></div>}
       {(mode === 'cover' || mode === 'combined') && (
         <>

@@ -22,6 +22,8 @@ Original prompt: Mettre à jour LineFugg pour rendre les GFX conformes à la DA 
 
 2026-09-08 — Deuxième correction après essai réel sur Galaxy A54 : l’ancien rectangle vert mélangeait crop, gameplay et occultation Core. Le laboratoire sépare désormais le stage Phaser en FIT intégral, le fond/cover mobile en COVER, une zone verte de cover élargie (`24..366 × 93..751`) qui survit à la matrice mobile, et les masques Core orange/rouge ancrés au viewport. Sur écran large, la cover canonique passe en FIT dans la surface Core pour éviter le crop vertical destructeur ; les marges servent au Core/overscan.
 
+2026-09-08 — Mesures réelles A54 fournies ensuite : Brave ≈ `360 × 611` CSS, Chrome ≈ `360 × 656`. La définition FIT précédente perdait 78 px de largeur jouable dans Brave et rendait Vlad moins généreux. Nouveau contrat de laboratoire : largeur logique 390 fixe, fenêtre minimale commune `390 × 662` occupant toute la surface Brave, hauteur additionnelle révélée selon le navigateur/shell, master artistique `390 × 844` et overlays Core indépendants. Cette évolution doit être évaluée comme futur contrat runtime avant migration globale des jeux.
+
 Suivi produit canonique : src/games/linefugg/GAME_STATUS.md.
 
 2026-09-07 : comparaison du master à la capture utilisateur et au renderer. Priorités : place de la grille, panneaux non déformés, calculs lisibles, indicateurs alignés, décomposition du mécanisme céleste et effets bornés. Références Phaser 4.2.1 consultées via phaser-minifugg ; leur publication est gérée dans une autre tâche. Assets générés depuis le master, import privé Drive en cours. Aucun changement de règles prévu.

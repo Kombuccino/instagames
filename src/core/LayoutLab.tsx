@@ -53,9 +53,7 @@ function downloadStageGuide(mode: Exclude<GuideMode, 'combined'>) {
   for (let x = grid; x < stage.width; x += grid) { context.beginPath(); context.moveTo(x, 0); context.lineTo(x, stage.height); context.stroke() }
   for (let y = grid; y < stage.height; y += grid) { context.beginPath(); context.moveTo(0, y); context.lineTo(stage.width, y); context.stroke() }
 
-  const safe = mode === 'cover'
-    ? { x: 24, y: 93, width: 342, height: 658 }
-    : { x: 2, y: 2, width: 386, height: 840 }
+  const safe = { x: 0, y: 91, width: 390, height: 662 }
   context.fillStyle = 'rgba(146, 255, 101, .055)'
   context.fillRect(safe.x, safe.y, safe.width, safe.height)
   context.strokeStyle = '#92ff65'
@@ -64,7 +62,7 @@ function downloadStageGuide(mode: Exclude<GuideMode, 'combined'>) {
   context.fillStyle = '#92ff65'
   context.font = 'bold 11px monospace'
   context.textAlign = 'center'
-  context.fillText(mode === 'cover' ? 'ZONE VERTE - TOUJOURS VISIBLE' : 'STAGE PHASER - TOUJOURS VISIBLE', safe.x + safe.width / 2, safe.y + safe.height / 2)
+  context.fillText('ZONE MINIMALE COMMUNE A54 - 390 x 662', safe.x + safe.width / 2, safe.y + safe.height / 2)
 
   if (mode === 'game') {
     context.fillStyle = 'rgba(255, 92, 88, .18)'
@@ -109,14 +107,13 @@ function StageArtwork({ mode = 'combined', fullSurface = false }: { mode?: Guide
     <div className="mf-layout-guide__stage" data-full-surface={fullSurface} data-mode={mode} style={fullSurface ? undefined : { aspectRatio: `${stage.width} / ${stage.height}` }}>
       <div className="mf-layout-guide__artwork">
         <div className="mf-layout-guide__grid" aria-hidden="true" />
-        {(!fullSurface || mode !== 'game') && <div className="mf-layout-guide__critical">
-          <b>ZONE VERTE · TOUJOURS VISIBLE</b>
-          <small>Le crop mobile ne doit jamais atteindre cette zone.</small>
-        </div>}
+        <div className="mf-layout-guide__critical">
+          <b>ZONE MINIMALE COMMUNE · A54</b>
+          <small>390 × 662 · toute cette surface est jouable dans Brave et Chrome.</small>
+        </div>
         <span className="mf-layout-guide__axis is-x">{stage.width} unités logiques</span>
         <span className="mf-layout-guide__axis is-y">{stage.height} unités logiques</span>
       </div>
-      {fullSurface && mode === 'game' && <div className="mf-layout-guide__gameplay-frame"><b>STAGE PHASER · TOUJOURS VISIBLE</b><small>390 × 844 · FIT uniforme · aucun crop du gameplay</small></div>}
       {(mode === 'game' || mode === 'combined') && <div className="mf-layout-guide__close"><b>CORE</b><small>48 × 48</small></div>}
       {(mode === 'cover' || mode === 'combined') && (
         <>
@@ -139,7 +136,7 @@ function StageGuide() {
       </figcaption>
       <StageArtwork />
       <div className="mf-layout-guide__downloads"><button type="button" onClick={() => downloadStageGuide('cover')}>PNG COVER ×2 ↓</button><button type="button" onClick={() => downloadStageGuide('game')}>PNG JEU ×2 ↓</button></div>
-      <p>Même gabarit pour le gameplay et la cover. Les vues isolées montrent la zone verte dans les conditions réelles : Retour Core pour le jeu ; rail, monnaie et CTA pour la cover.</p>
+      <p>Le master artistique garde 390 × 844. La zone verte 390 × 662 est la surface minimale commune mesurée sur l’A54 ; les navigateurs et le mode app peuvent révéler davantage en hauteur.</p>
     </figure>
   )
 }

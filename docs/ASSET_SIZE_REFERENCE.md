@@ -6,13 +6,13 @@ Cette fiche complète `GAME_LAYOUT_SYSTEM.md` et `GAME_ART_PRODUCTION_PIPELINE.m
 
 La page permet d’ouvrir séparément le gabarit d’un jeu ou d’une cover, sans interface autour, de télécharger les deux variantes PNG, de simuler les écrans courants et de calculer la taille maximale d’un asset à partir de sa zone logique. Les contrôles Core restent ancrés à la fenêtre comme en production.
 
-Les vues isolées séparent maintenant trois contrats :
+Les vues isolées séparent trois contrats :
 
-- **stage jouable** : `390 × 844` en `FIT`, entièrement visible et jamais croppé ;
-- **fond de jeu / cover mobile** : remplissage uniforme de la surface avec crop centré ;
+- **fenêtre minimale jouable A54** : `390 × 662`, correspondant à toute la surface commune réellement visible dans Brave et Chrome avec leur interface ouverte ;
+- **fond de jeu / cover mobile** : composition `390 × 844`, remplissage uniforme de la surface avec crop centré ;
 - **overlays Core** : ancrés à la fenêtre, indépendamment du plan artistique.
 
-La zone verte de la cover occupe les coordonnées logiques approximatives `x 24 → 366`, `y 93 → 751`. Elle est calculée pour rester dans la partie visible sur la plage mobile de validation actuelle, du téléphone court `320 × 568` aux téléphones modernes longs. Les zones orange ne réduisent pas ce rectangle : elles montrent séparément où le Core peut recouvrir l’art.
+Les captures réelles fournies le 8 septembre 2026 mesurent environ `360 × 611` CSS dans Brave et `360 × 656` dans Chrome sur le même Galaxy A54. Rapportée à une largeur logique de 390, leur intersection donne `390 × 662`. La zone verte occupe donc toute la largeur et les coordonnées verticales `y 91 → 753` dans le master `390 × 844`. Brave affiche pratiquement cette zone entière ; Chrome révèle environ 49 unités logiques supplémentaires réparties en haut et en bas. Les zones orange/rouge ne réduisent pas la zone minimale : elles montrent séparément où le Core peut se superposer.
 
 ## Le cadre de production
 
@@ -22,7 +22,7 @@ La zone verte de la cover occupe les coordonnées logiques approximatives `x 24 
 
 Depuis la décision du 8 septembre 2026, toute nouvelle production est en portrait. Le paysage reste seulement une compatibilité technique pour les jeux existants qui en dépendent ; il n’entre plus dans les briefs, gabarits ou lots d’assets courants.
 
-Le stage entier est la composition contractuelle. La géométrie jouable Phaser conserve `FIT` et ses coordonnées fixes ; le décor peut déborder et être recadré pour remplir la surface. Sur écran large, le stage/cover canonique est conservé et l’espace restant appartient au Core ou au décor d’accompagnement : on ne détruit pas une composition portrait avec un crop vertical massif. La zone verte marque ce qui doit rester visible ; le bouton Retour, le rail, la monnaie et le CTA sont des masques d’occupation distincts.
+Le master `390 × 844` reste la composition artistique maximale. Le gameplay place toute sa boucle essentielle dans la fenêtre minimale `390 × 662`, puis peut employer la hauteur supplémentaire pour davantage de décor, d’anticipation ou d’espace de mouvement sans déplacer les éléments essentiels. Il ne doit pas créer des marges internes qui réduisent encore cette fenêtre. Sur écran large, le stage/cover canonique est conservé et l’espace restant appartient au Core ou au décor d’accompagnement : on ne détruit pas une composition portrait avec un crop vertical massif. Le bouton Retour, le rail, la monnaie et le CTA sont des masques d’occupation distincts.
 
 ## Règle de dimensionnement
 

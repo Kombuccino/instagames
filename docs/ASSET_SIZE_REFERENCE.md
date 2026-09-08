@@ -4,7 +4,7 @@ Cette fiche complète `GAME_LAYOUT_SYSTEM.md` et `GAME_ART_PRODUCTION_PIPELINE.m
 
 `/?usr=moigod&lab=layout`
 
-La page permet d’ouvrir séparément le gabarit d’un jeu ou d’une cover, sans interface autour, de télécharger les deux variantes PNG, de simuler les écrans courants et de calculer la taille maximale d’un asset à partir de sa zone logique.
+La page permet d’ouvrir séparément le gabarit d’un jeu ou d’une cover, sans interface autour, de télécharger les deux variantes PNG, de simuler les écrans courants et de calculer la taille maximale d’un asset à partir de sa zone logique. Les vues isolées utilisent toute la surface réelle du feed : le plan artistique 390 × 844 la remplit par mise à l’échelle uniforme et crop centré, tandis que les contrôles Core restent ancrés à la fenêtre comme en production.
 
 ## Le cadre de production
 
@@ -14,7 +14,7 @@ La page permet d’ouvrir séparément le gabarit d’un jeu ou d’une cover, s
 
 Depuis la décision du 8 septembre 2026, toute nouvelle production est en portrait. Le paysage reste seulement une compatibilité technique pour les jeux existants qui en dépendent ; il n’entre plus dans les briefs, gabarits ou lots d’assets courants.
 
-Le stage entier est la composition contractuelle. Phaser utilise `FIT` et une échelle uniforme : aucun déplacement interne ne dépend de l’écran. La zone centrale indiquée dans les gabarits est une zone sûre recommandée pour l’action et les sujets critiques, car le Core peut superposer son bouton Retour en gameplay et son rail, sa monnaie et son CTA sur une cover.
+Le stage entier est la composition contractuelle. La vue de crop montre le comportement du fond ou de la cover plein cadre. La géométrie jouable Phaser conserve `FIT` et ses coordonnées fixes ; le décor peut déborder et être recadré pour remplir la surface. La zone centrale indiquée dans les gabarits est une zone sûre recommandée pour l’action et les sujets critiques, car le Core peut superposer son bouton Retour en gameplay et son rail, sa monnaie et son CTA sur une cover.
 
 ## Règle de dimensionnement
 

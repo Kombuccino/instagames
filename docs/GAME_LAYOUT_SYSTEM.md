@@ -128,4 +128,4 @@ PhaserGameHost accepts renderPixelRatio (default1, capped at2). This changes bac
 
 ## 11. Asset-size reference and visual lab
 
-Use `docs/ASSET_SIZE_REFERENCE.md` to size raster deliveries from their actual logical display zone. The interactive reference is available at `/?usr=moigod&lab=layout`; it exposes the portrait and landscape templates, Core overlay zones, screen simulations and downloadable PNG guides.
+Use `docs/ASSET_SIZE_REFERENCE.md` to size raster deliveries from their actual logical display zone. The interactive reference is available at `/?usr=moigod&lab=layout`; it exposes the current portrait game and cover templates, Core overlay zones, real full-surface crop previews, screen simulations and downloadable PNG guides.

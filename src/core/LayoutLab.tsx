@@ -101,14 +101,18 @@ function downloadStageGuide(mode: Exclude<GuideMode, 'combined'>) {
   link.click()
 }
 
-function StageArtwork({ mode = 'combined' }: { mode?: GuideMode }) {
+function StageArtwork({ mode = 'combined', fullSurface = false }: { mode?: GuideMode, fullSurface?: boolean }) {
   const stage = STAGE
   return (
-    <div className="mf-layout-guide__stage" style={{ aspectRatio: `${stage.width} / ${stage.height}` }}>
-      <div className="mf-layout-guide__grid" aria-hidden="true" />
-      <div className="mf-layout-guide__critical">
-        <b>ZONE SÛRE CRITIQUE</b>
-        <small>Action, HUD et sujet principal restent lisibles ici.</small>
+    <div className="mf-layout-guide__stage" data-full-surface={fullSurface} data-mode={mode} style={fullSurface ? undefined : { aspectRatio: `${stage.width} / ${stage.height}` }}>
+      <div className="mf-layout-guide__artwork">
+        <div className="mf-layout-guide__grid" aria-hidden="true" />
+        <div className="mf-layout-guide__critical">
+          <b>ZONE SÛRE CRITIQUE</b>
+          <small>Action, HUD et sujet principal restent lisibles ici.</small>
+        </div>
+        <span className="mf-layout-guide__axis is-x">{stage.width} unités logiques</span>
+        <span className="mf-layout-guide__axis is-y">{stage.height} unités logiques</span>
       </div>
       {(mode === 'game' || mode === 'combined') && <div className="mf-layout-guide__close"><b>CORE</b><small>48 × 48</small></div>}
       {(mode === 'cover' || mode === 'combined') && (
@@ -118,8 +122,6 @@ function StageArtwork({ mode = 'combined' }: { mode?: GuideMode }) {
           <div className="mf-layout-guide__cover-bottom"><b>CTA CORE</b><small>laisser cette zone calme</small></div>
         </>
       )}
-      <span className="mf-layout-guide__axis is-x">{stage.width} unités logiques</span>
-      <span className="mf-layout-guide__axis is-y">{stage.height} unités logiques</span>
     </div>
   )
 }
@@ -287,7 +289,7 @@ function AssetCalculator() {
 
 export function LayoutLab({ focus }: { focus?: Exclude<GuideMode, 'combined'> }) {
   if (focus) {
-    return <main className="mf-layout-focus" data-mode={focus}><StageArtwork mode={focus} /></main>
+    return <main className="mf-layout-focus" data-mode={focus}><StageArtwork mode={focus} fullSurface /></main>
   }
 
   return (

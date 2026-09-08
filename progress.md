@@ -18,6 +18,8 @@ Original prompt: Mettre à jour LineFugg pour rendre les GFX conformes à la DA 
 
 2026-09-08 — Référence d’affichage MiniFugg recentrée sur le seul stage portrait 390 × 844. Le laboratoire expose désormais deux vues isolées sans interface autour (jeu et cover), la zone sûre verte et les superpositions Core propres à chaque contexte, plus les données d’écran actuelles, la stratégie mobile→PC et le mode d’emploi plein écran/PWA. La décision portrait-only est inscrite dans les documents normatifs. Le titre public et le nom de package portent MiniFugg ; l’ancien nom n’apparaît plus dans les titres visibles. Build et trois captures navigateur inspectées sans erreur. Le wordmark canonique est local ; la planche favicon/app-icon existe dans l’archive, mais aucun choix canonique n’est encore consigné.
 
+2026-09-08 — Correction du laboratoire après retour utilisateur : les routes isolées jeu/cover occupent désormais la vraie surface du feed et recadrent le plan artistique 390 × 844 par remplissage uniforme, au lieu d’afficher systématiquement le cadre entier en FIT. Les overlays Core restent ancrés à la fenêtre, donc ne sont pas entraînés par le crop. Le jeu conserve séparément sa géométrie Phaser en FIT ; cette vue matérialise le crop du décor plein cadre.
+
 Suivi produit canonique : src/games/linefugg/GAME_STATUS.md.
 
 2026-09-07 : comparaison du master à la capture utilisateur et au renderer. Priorités : place de la grille, panneaux non déformés, calculs lisibles, indicateurs alignés, décomposition du mécanisme céleste et effets bornés. Références Phaser 4.2.1 consultées via phaser-minifugg ; leur publication est gérée dans une autre tâche. Assets générés depuis le master, import privé Drive en cours. Aucun changement de règles prévu.

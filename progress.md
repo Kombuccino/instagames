@@ -24,6 +24,8 @@ Original prompt: Mettre à jour LineFugg pour rendre les GFX conformes à la DA 
 
 2026-09-08 — Mesures réelles A54 fournies ensuite : Brave ≈ `360 × 611` CSS, Chrome ≈ `360 × 656`. La définition FIT précédente perdait 78 px de largeur jouable dans Brave et rendait Vlad moins généreux. Nouveau contrat de laboratoire : largeur logique 390 fixe, fenêtre minimale commune `390 × 662` occupant toute la surface Brave, hauteur additionnelle révélée selon le navigateur/shell, master artistique `390 × 844` et overlays Core indépendants. Cette évolution doit être évaluée comme futur contrat runtime avant migration globale des jeux.
 
+2026-09-08 — Le contrat est devenu « Zones MiniFugg » : HAUT, CENTRE et BAS, avec largeur pilotée sur mobile et hauteur pilotée sur PC. Le laboratoire expose Home, Cover, CoverBeta, CoverCaca, Game, GameOver et Ladder ; son menu extérieur est visible uniquement sur PC. MONNAIE et JOUER sont enfermés dans le cadre 390, RAIL reste à gauche sur CENTRE. Les règles AGENTS, Phaser, DA, création, production et validation renvoient désormais toutes au document canonique `docs/MINIFUGG_ZONES.md`. Validation : 28 combinaisons modèle/viewport, navigation PC, build et captures inspectées sans erreur.
+
 Suivi produit canonique : src/games/linefugg/GAME_STATUS.md.
 
 2026-09-07 : comparaison du master à la capture utilisateur et au renderer. Priorités : place de la grille, panneaux non déformés, calculs lisibles, indicateurs alignés, décomposition du mécanisme céleste et effets bornés. Références Phaser 4.2.1 consultées via phaser-minifugg ; leur publication est gérée dans une autre tâche. Assets générés depuis le master, import privé Drive en cours. Aucun changement de règles prévu.

@@ -1,131 +1,67 @@
 # MiniFugg — Game Layout System
 
-## Current product scope
+Ce document définit le comportement des jeux sur téléphone, tablette, navigateur PC et futurs wrappers. Les noms et coordonnées des surfaces sont dans [Zones MiniFugg](MINIFUGG_ZONES.md).
 
-New MiniFugg games, gameplay art and covers currently target portrait `390 × 844` only, following the user decision of 8 September 2026. The landscape contract below remains documented for existing catalog compatibility; it is not a production target until the user explicitly reopens it.
+## 1. Portée actuelle
 
-This document defines how gameplay geometry behaves across phones, tablets, desktop browsers and wrapped applications.
+La production est portrait uniquement. La largeur logique canonique est `390`. Le master artistique maximal mesure `390 × 844` et contient :
 
-## 1. Core rule
+- HAUT : `390 × 91`, extension verticale ;
+- CENTRE : `390 × 662`, zone minimale toujours visible ;
+- BAS : `390 × 91`, extension verticale.
 
-**Gameplay is not responsively reflowed. It is authored once in a fixed logical stage and uniformly scaled.**
+Le paysage reste une compatibilité de maintenance pour les jeux existants. Il ne reçoit plus de nouvelle DA ni de seconde composition sans décision explicite de l'utilisateur.
 
-The old approach of using viewport-dependent layout tokens/media queries to rearrange critical game elements is legacy and must not be used for migrated/new gameplay.
+## 2. Règle d'échelle
 
-Default logical stages:
+L'échelle est toujours uniforme : X et Y utilisent le même facteur.
 
-- portrait: `390 × 844`;
-- landscape: `844 × 390`.
+Sur mobile : `scale = largeur utile / 390`. Les 390 unités occupent toute la largeur utile. La hauteur disponible détermine quelle partie de HAUT et BAS est visible. CENTRE ne doit jamais être réduit par des marges internes ajoutées par le jeu.
 
-A game may declare another fixed logical size if needed, but the size is explicit and stable.
+Sur PC et grand écran : `scale = hauteur utile / 844`. Le portrait occupe la hauteur disponible et obtient sa plus grande largeur proportionnelle. L'espace latéral restant appartient au Core. Le jeu et sa DA ne créent pas de bandes décoratives latérales pour le remplir.
 
-## 2. Uniform fit
+Pour les fenêtres exceptionnellement plus courtes que CENTRE après mise à l'échelle par largeur, Core réduit uniformément l'ensemble juste assez pour garder CENTRE complète. Ce cas doit être signalé par les tests plutôt que traité avec une composition différente.
 
-Given logical size `(LW, LH)` and available central area `(AW, AH)`:
+## 3. Géométrie stable
 
-`scale = min(AW / LW, AH / LH)`
+Dans CENTRE, les relations suivantes restent identiques entre appareils :
 
-Then:
+- positions relatives, proportions et silhouettes ;
+- plateau, grille, piste et caméra de gameplay ;
+- hitboxes, distances, collisions et zones de geste ;
+- informations indispensables et contrôles propres au jeu.
 
-- displayed width = `LW × scale`;
-- displayed height = `LH × scale`;
-- center the result in the available central area.
+Un HUD flottant peut s'ancrer au bord visible ou employer HAUT/BAS quand il reste secondaire et ne modifie pas la géométrie jouable. Les contrôles Core restent séparés du monde Phaser.
 
-Never independently stretch X/Y.
+## 4. Limite Core
 
-Never use the physical viewport as the simulation coordinate system.
+La largeur du contenu de Home, Cover et Game est limitée au même cadre de 390 unités. MONNAIE et JOUER ne dépassent jamais à gauche ou à droite. RAIL reste à gauche, superposé à CENTRE, y compris sur PC. RETOUR appartient au Core et reste atteignable pendant le jeu.
 
-## 3. What stays fixed
+Les marges latérales de bureau peuvent accueillir des menus de diagnostic, panneaux ou sidecars Core. Elles ne font pas partie de la cover ni du gameplay.
 
-Across device sizes, these relationships must remain the same:
+## 5. Phaser
 
-- sprite positions relative to each other;
-- board/grid/mouth/track proportions;
-- hit boxes;
-- camera framing;
-- authored HUD positions inside the game;
-- distances and collision coordinates;
-- layer composition.
+Phaser travaille en coordonnées logiques et reçoit une caméra/zone visible conforme au contrat ci-dessus. Selon l'hôte, employer les capacités Phaser `WIDTH_CONTROLS_HEIGHT`, `HEIGHT_CONTROLS_WIDTH`, `FIT`, une caméra ou un viewport calculé ; le choix d'API doit reproduire le contrat MiniFugg plutôt que dicter le cadrage.
 
-This is specifically intended to eliminate failures such as HARI/TetraMindFck looking materially different on PC and phone.
+Ne pas utiliser `RESIZE` sans couche de conversion explicite : changer directement la taille du monde selon le navigateur déplace les objets et les entrées. La densité de rendu peut monter jusqu'à 2 sans modifier les coordonnées logiques. Les coordonnées du pointeur sont reconverties dans ce même espace.
 
-## 4. What may adapt
+## 6. Three.js et anciens jeux
 
-Only the following may change by environment:
+Three.js peut redimensionner son backbuffer, mais sa caméra préserve CENTRE et le cadrage portrait. Les anciens rendus DOM/CSS/Canvas gardent leurs correctifs uniquement jusqu'à leur migration ; ne pas ajouter une nouvelle stratégie responsive parallèle.
 
-- the uniform scale of the canonical stage;
-- render pixel density / device pixel ratio;
-- control presentation/mapping (touch vs keyboard/mouse/gamepad);
-- optional Core sidecars outside the canonical stage;
-- decorative overscan outside the canonical stage **but still inside the Core-owned game surface/slot**;
-- safe-area padding outside/around the canonical stage when required by device chrome.
+## 7. Assets
 
-The game mechanic must remain complete without sidecars or overscan.
+Un fond ou une cover peut remplir `390 × 844`. Tout sujet, texte ou interaction indispensable reste dans CENTRE et hors des masques Core du modèle concerné. HAUT et BAS contiennent du décor prolongeable ou recadrable. Les détails de dimensionnement sont dans [ASSET_SIZE_REFERENCE](ASSET_SIZE_REFERENCE.md) et la décomposition artistique dans [GAME_ART_PRODUCTION_PIPELINE](GAME_ART_PRODUCTION_PIPELINE.md).
 
-A game must never paint its own decorative overscan into the browser/window gutters outside the game surface. Those gutters and any future sidecars are Core-owned. If Core caps the desktop game feed/surface, the game stays inside that cap; black or platform-owned space outside it is intentional.
+## 8. Validation
 
-## 5. Desktop/tablet extra space
+Avant de déclarer une intégration actuelle, vérifier au minimum :
 
-The mobile composition is the reference.
+- A54 Brave ou équivalent `360 × 611` utile ;
+- A54 Chrome ou équivalent `360 × 656` utile ;
+- téléphone plus haut ;
+- PC 16:9 avec cadrage commandé par la hauteur ;
+- haute densité ;
+- touch et souris/clavier selon le jeu.
 
-On wide screens, Core may use left/right space for optional:
-
-- leaderboard;
-- comments;
-- profile/creator info;
-- session stats;
-- discovery/community context.
-
-Do not enlarge the game non-uniformly just to consume every desktop pixel. Do not move canonical controls into sidebars.
-
-The game's own backdrop may fill or overscan its **game surface** so the authored stage does not look like a narrow object floating inside its slot, but it must stop at the game-surface boundary. It must not turn a portrait Fugg into a browser-wide experience on desktop. For decorative backdrops, `cover` + crop is preferred when preserving visual scale matters: narrow screens may lose non-critical left/right decoration rather than shrinking the backdrop with `contain`. Gameplay geometry still uses the fixed logical stage and uniform FIT.
-
-## 6. Phaser implementation
-
-2D games use Phaser with a fixed logical width/height and aspect-preserving `FIT` scaling centered in the host.
-
-Do not use Phaser `RESIZE` as the normal MiniFugg gameplay policy because it changes the game/canvas world dimensions with the parent.
-
-Coordinates used by game objects, cameras and physics remain logical coordinates.
-
-## 7. Three.js implementation
-
-Three.js games also use a fixed authored logical composition. The renderer may resize its physical backbuffer with the host/device pixel ratio, but camera framing must preserve the intended canonical composition.
-
-For perspective cameras, adapt renderer resolution/aspect deliberately without exposing new playable world merely because a desktop window is wider. Extra 3D overscan may exist decoratively, but gameplay-critical framing remains stable.
-
-## 8. Legacy DOM layout
-
-`.mf-game-layout`, `.mf-game-hud`, `.mf-game-stage`, `.mf-game-controls` and `--mf-*` layout tokens remain available only to keep legacy games functioning during migration and for ordinary Core/HTML UI where appropriate.
-
-They are no longer the canonical strategy for gameplay geometry.
-
-Do not spend migration time perfecting legacy responsive behavior. Replace it with the fixed logical stage.
-
-## 9. Text and touch targets
-
-Text and game controls authored inside the logical stage scale with the stage. Choose logical sizes that remain readable on the smallest supported phone.
-
-Platform/Core HTML controls may use normal accessible CSS sizing and safe-area handling because they are outside the game-world geometry.
-
-## 10. Validation matrix
-
-Before a migrated/new game is marked current, verify at least:
-
-- narrow phone portrait or landscape as appropriate;
-- larger modern phone;
-- tablet-sized viewport;
-- desktop browser with significant unused side space;
-- high-DPI device/emulation;
-- touch input;
-- keyboard/mouse input when supported.
-
-Expected result: screenshots of the canonical stage should align after uniform scaling. Differences should be control affordances, pixel density or optional outside-stage content — not shifted gameplay composition.
-
-### Optional raster density
-
-PhaserGameHost accepts renderPixelRatio (default1, capped at2). This changes backing pixels only. A scene opting in must apply the same density as camera zoom and center on the canonical logical stage; pointer conversion must use that camera. LineFugg freezes density for the mounted session and tests touch at DPR2/3. Do not infer new gameplay dimensions from the backing canvas or reflow the stage.
-
-## 11. Asset-size reference and visual lab
-
-Use `docs/ASSET_SIZE_REFERENCE.md` to size raster deliveries from their actual logical display zone. The interactive reference is available at `/?usr=moigod&lab=layout`; it exposes the current portrait game and cover templates, Core overlay zones, real full-surface crop previews, screen simulations and downloadable PNG guides.
+Résultat attendu : toute la largeur utile mobile sert au jeu, CENTRE reste complète, seules HAUT/BAS varient et aucun contrôle Core ne sort du cadre de 390. Le laboratoire interactif `/?usr=moigod&lab=layout` expose Home, Cover, CoverBeta, CoverCaca, Game, GameOver et Ladder avec un menu extérieur visible sur PC.

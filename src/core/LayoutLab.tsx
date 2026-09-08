@@ -1,7 +1,18 @@
 import { useMemo, useState } from 'react'
 import './layoutLab.css'
 
-type GuideMode = 'game' | 'cover' | 'combined'
+export type LayoutTemplate = 'home' | 'cover' | 'cover-beta' | 'cover-caca' | 'game' | 'game-over' | 'ladder'
+type GuideMode = LayoutTemplate | 'combined'
+
+const TEMPLATE_LINKS: Array<{ id: LayoutTemplate, label: string }> = [
+  { id: 'home', label: 'Home' },
+  { id: 'cover', label: 'Cover' },
+  { id: 'cover-beta', label: 'CoverBeta' },
+  { id: 'cover-caca', label: 'CoverCaca' },
+  { id: 'game', label: 'Game' },
+  { id: 'game-over', label: 'GameOver' },
+  { id: 'ladder', label: 'Ladder' },
+]
 
 type ScreenPreset = {
   id: string
@@ -35,7 +46,7 @@ function round(value: number) {
   return Math.round(value * 100) / 100
 }
 
-function downloadStageGuide(mode: Exclude<GuideMode, 'combined'>) {
+function downloadStageGuide(mode: 'game' | 'cover') {
   const stage = STAGE
   const density = 2
   const canvas = document.createElement('canvas')
@@ -62,7 +73,12 @@ function downloadStageGuide(mode: Exclude<GuideMode, 'combined'>) {
   context.fillStyle = '#92ff65'
   context.font = 'bold 11px monospace'
   context.textAlign = 'center'
-  context.fillText('ZONE MINIMALE COMMUNE A54 - 390 x 662', safe.x + safe.width / 2, safe.y + safe.height / 2)
+  context.fillText('CENTRE - 390 x 662', safe.x + safe.width / 2, safe.y + safe.height / 2)
+
+  context.fillStyle = '#62d9ff'
+  context.font = 'bold 9px monospace'
+  context.fillText('HAUT', stage.width / 2, 48)
+  context.fillText('BAS', stage.width / 2, 802)
 
   if (mode === 'game') {
     context.fillStyle = 'rgba(255, 92, 88, .18)'
@@ -76,13 +92,13 @@ function downloadStageGuide(mode: Exclude<GuideMode, 'combined'>) {
     context.setLineDash([4, 3])
     context.strokeStyle = '#ff9f43'
     context.fillStyle = 'rgba(255, 159, 67, .10)'
-    context.fillRect(11, 245, 60, 350); context.strokeRect(11, 245, 60, 350)
+    context.fillRect(11, 111, 60, 350); context.strokeRect(11, 111, 60, 350)
     context.fillRect(18, 758, 354, 68); context.strokeRect(18, 758, 354, 68)
     context.fillRect(286, 18, 86, 34); context.strokeRect(286, 18, 86, 34)
     context.setLineDash([])
     context.fillStyle = '#ff9f43'
     context.font = 'bold 8px monospace'
-    context.fillText('RAIL CORE', 41, 420)
+    context.fillText('RAIL', 41, 286)
     context.fillText('CTA CORE', 195, 794)
     context.fillText('MONNAIE', 329, 39)
   }
@@ -101,27 +117,67 @@ function downloadStageGuide(mode: Exclude<GuideMode, 'combined'>) {
   link.click()
 }
 
+function Zone({ className, name, detail }: { className: string, name: string, detail?: string }) {
+  return <div className={className}><b>{name}</b>{detail && <small>{detail}</small>}</div>
+}
+
+function TemplateZones({ mode }: { mode: GuideMode }) {
+  const cover = mode === 'cover' || mode === 'cover-beta' || mode === 'cover-caca' || mode === 'combined'
+  return (
+    <div className="mf-layout-guide__core-frame">
+      {(mode === 'game' || mode === 'game-over' || mode === 'ladder' || mode === 'combined') && <Zone className="mf-layout-guide__close" name="RETOUR" detail="Core" />}
+      {cover && (
+        <>
+          <Zone className="mf-layout-guide__cover-top" name="MONNAIE" detail="Core" />
+          <Zone className="mf-layout-guide__cover-rail" name="RAIL" detail="Core" />
+          <Zone className="mf-layout-guide__cover-bottom" name="JOUER" detail="Core" />
+        </>
+      )}
+      {mode === 'home' && (
+        <>
+          <Zone className="mf-layout-guide__home-logo" name="MARQUE" />
+          <Zone className="mf-layout-guide__home-scene" name="SCÈNE" detail="accueil animé" />
+          <Zone className="mf-layout-guide__home-enter" name="ENTRER" detail="geste / CTA" />
+        </>
+      )}
+      {(mode === 'cover-beta' || mode === 'cover-caca') && (
+        <Zone className="mf-layout-guide__cover-message" name={mode === 'cover-beta' ? 'BÊTA' : 'CACA'} detail="état de la cover" />
+      )}
+      {mode === 'game-over' && (
+        <div className="mf-layout-guide__result">
+          <Zone className="mf-layout-guide__result-title" name="RÉSULTAT" />
+          <Zone className="mf-layout-guide__result-score" name="SCORE" />
+          <Zone className="mf-layout-guide__result-action" name="REJOUER" />
+          <Zone className="mf-layout-guide__result-link" name="CLASSEMENT" />
+        </div>
+      )}
+      {mode === 'ladder' && (
+        <div className="mf-layout-guide__ladder">
+          <Zone className="mf-layout-guide__ladder-title" name="CLASSEMENT" />
+          <Zone className="mf-layout-guide__ladder-period" name="PÉRIODE" />
+          <Zone className="mf-layout-guide__ladder-list" name="SCORES" detail="liste défilante" />
+        </div>
+      )}
+    </div>
+  )
+}
+
 function StageArtwork({ mode = 'combined', fullSurface = false }: { mode?: GuideMode, fullSurface?: boolean }) {
   const stage = STAGE
   return (
     <div className="mf-layout-guide__stage" data-full-surface={fullSurface} data-mode={mode} style={fullSurface ? undefined : { aspectRatio: `${stage.width} / ${stage.height}` }}>
       <div className="mf-layout-guide__artwork">
         <div className="mf-layout-guide__grid" aria-hidden="true" />
+        <Zone className="mf-layout-guide__band is-top" name="HAUT" detail="hauteur variable" />
         <div className="mf-layout-guide__critical">
-          <b>ZONE MINIMALE COMMUNE · A54</b>
-          <small>390 × 662 · toute cette surface est jouable dans Brave et Chrome.</small>
+          <b>CENTRE</b>
+          <small>390 × 662 · zone minimale commune.</small>
         </div>
+        <Zone className="mf-layout-guide__band is-bottom" name="BAS" detail="hauteur variable" />
         <span className="mf-layout-guide__axis is-x">{stage.width} unités logiques</span>
         <span className="mf-layout-guide__axis is-y">{stage.height} unités logiques</span>
       </div>
-      {(mode === 'game' || mode === 'combined') && <div className="mf-layout-guide__close"><b>CORE</b><small>48 × 48</small></div>}
-      {(mode === 'cover' || mode === 'combined') && (
-        <>
-          <div className="mf-layout-guide__cover-top"><b>COVER</b><small>monnaie Core</small></div>
-          <div className="mf-layout-guide__cover-rail"><b>RAIL</b><small>actions</small></div>
-          <div className="mf-layout-guide__cover-bottom"><b>CTA CORE</b><small>laisser cette zone calme</small></div>
-        </>
-      )}
+      <TemplateZones mode={mode} />
     </div>
   )
 }
@@ -132,12 +188,22 @@ function StageGuide() {
     <figure className="mf-layout-guide" data-orientation="portrait">
       <figcaption>
         <span>{stage.label}</span>
-        <span className="mf-layout-guide__actions"><strong>{stage.width} × {stage.height}</strong><a href="?usr=moigod&lab=layout&view=cover">VOIR COVER ↗</a><a href="?usr=moigod&lab=layout&view=game">VOIR JEU ↗</a></span>
+        <span className="mf-layout-guide__actions"><strong>{stage.width} × {stage.height}</strong><a href="?usr=moigod&lab=layout&view=cover">VOIR COVER ↗</a><a href="?usr=moigod&lab=layout&view=game">VOIR GAME ↗</a></span>
       </figcaption>
       <StageArtwork />
       <div className="mf-layout-guide__downloads"><button type="button" onClick={() => downloadStageGuide('cover')}>PNG COVER ×2 ↓</button><button type="button" onClick={() => downloadStageGuide('game')}>PNG JEU ×2 ↓</button></div>
-      <p>Le master artistique garde 390 × 844. La zone verte 390 × 662 est la surface minimale commune mesurée sur l’A54 ; les navigateurs et le mode app peuvent révéler davantage en hauteur.</p>
+      <p>Le master artistique garde 390 × 844. CENTRE est toujours visible ; HAUT et BAS absorbent les différences de hauteur sans ajouter de décor latéral.</p>
     </figure>
+  )
+}
+
+function TemplateMenu({ active }: { active: LayoutTemplate }) {
+  return (
+    <nav className="mf-layout-template-menu" aria-label="Zones MiniFugg">
+      <b>ZONES MINIFUGG</b>
+      {TEMPLATE_LINKS.map((item) => <a key={item.id} data-active={active === item.id} href={`?usr=moigod&lab=layout&view=${item.id}`}>{item.label}</a>)}
+      <a href="?usr=moigod&lab=layout">Guide complet</a>
+    </nav>
   )
 }
 
@@ -147,19 +213,20 @@ function ScreenSimulator() {
   const screen = SCREENS.find((item) => item.id === screenId) ?? SCREENS[0]
 
   const geometry = useMemo(() => {
-    const surfaceWidth = screen.width >= 760 ? Math.min(screen.width, 520) : screen.width
+    const desktop = screen.width >= 760
     const surfaceHeight = screen.height
-    const scale = Math.min(surfaceWidth / stage.width, surfaceHeight / stage.height)
+    const scale = desktop ? surfaceHeight / stage.height : screen.width / stage.width
     const displayedWidth = stage.width * scale
     const displayedHeight = stage.height * scale
+    const surfaceWidth = desktop ? displayedWidth : screen.width
     return {
       surfaceWidth,
       surfaceHeight,
       displayedWidth,
       displayedHeight,
       scale,
-      horizontalGap: Math.max(0, surfaceWidth - displayedWidth),
-      verticalGap: Math.max(0, surfaceHeight - displayedHeight),
+      lateralCore: Math.max(0, screen.width - displayedWidth),
+      verticalDelta: surfaceHeight - displayedHeight,
     }
   }, [screen, stage])
 
@@ -185,11 +252,11 @@ function ScreenSimulator() {
           <div><dt>Surface Core actuelle</dt><dd>{round(geometry.surfaceWidth)} × {round(geometry.surfaceHeight)}</dd></div>
           <div><dt>Stage affiché</dt><dd>{round(geometry.displayedWidth)} × {round(geometry.displayedHeight)}</dd></div>
           <div><dt>Échelle uniforme</dt><dd>× {round(geometry.scale)}</dd></div>
-          <div><dt>Espace horizontal</dt><dd>{round(geometry.horizontalGap)} px</dd></div>
-          <div><dt>Espace vertical</dt><dd>{round(geometry.verticalGap)} px</dd></div>
+          <div><dt>Espace Core latéral</dt><dd>{round(geometry.lateralCore)} px</dd></div>
+          <div><dt>Variation verticale</dt><dd>{round(geometry.verticalDelta)} px</dd></div>
         </dl>
       </div>
-      <p className="mf-layout-note"><b>Vert :</b> toujours visible et interactif. <b>Hachures :</b> espace Core ou overscan décoratif ; il peut apparaître ou disparaître sans modifier le jeu.</p>
+      <p className="mf-layout-note"><b>Mobile :</b> la largeur pilote. <b>PC :</b> la hauteur pilote. Les différences se trouvent en HAUT/BAS ou dans l’espace latéral appartenant au Core.</p>
     </section>
   )
 }
@@ -234,12 +301,12 @@ function PortingStrategy() {
     <section className="mf-layout-panel">
       <div className="mf-layout-panel__head"><div><small>MOBILE → PC</small><h2>Comment les jeux résolvent le problème</h2></div></div>
       <div className="mf-layout-strategies">
-        <article><b>1</b><h3>Cadre fixe + FIT</h3><p>Le monde et le HUD gardent leurs coordonnées. On agrandit uniformément et on accepte des marges. C’est la base choisie pour MiniFugg.</p></article>
-        <article><b>2</b><h3>Zone sûre + décor extensible</h3><p>L’action reste dans le cadre vert. Sur PC, un overscan, une ambiance ou des panneaux Core occupent les côtés sans modifier le jeu.</p></article>
+        <article><b>1</b><h3>Échelle uniforme</h3><p>Le monde et le HUD gardent leurs coordonnées. La largeur pilote sur mobile et la hauteur pilote sur PC.</p></article>
+        <article><b>2</b><h3>Extension verticale</h3><p>L’action reste dans CENTRE. HAUT et BAS peuvent apparaître ou disparaître sans modifier le jeu.</p></article>
         <article><b>3</b><h3>Interface adaptative séparée</h3><p>Menus, boutique, commentaires et classements changent de disposition selon la fenêtre. Le canvas de gameplay, lui, reste stable.</p></article>
         <article><b>4</b><h3>Contrôles par plateforme</h3><p>Toucher sur mobile, souris/clavier ou manette sur PC. Les actions sont remappées sans déplacer les cibles ni changer l’équilibrage.</p></article>
       </div>
-      <p className="mf-layout-verdict"><b>Choix MiniFugg :</b> production portrait uniquement pour le moment. Le téléphone contient l’expérience complète. Le portage PC ajoute confort, contrôles et décor autour du même jeu ; il ne demande pas une seconde DA.</p>
+      <p className="mf-layout-verdict"><b>Choix MiniFugg :</b> production portrait uniquement pour le moment. Le téléphone contient l’expérience complète. Le portage PC utilise la hauteur disponible ; les côtés restent au Core et ne demandent pas une seconde DA.</p>
     </section>
   )
 }
@@ -287,17 +354,17 @@ function AssetCalculator() {
   )
 }
 
-export function LayoutLab({ focus }: { focus?: Exclude<GuideMode, 'combined'> }) {
+export function LayoutLab({ focus }: { focus?: LayoutTemplate }) {
   if (focus) {
-    return <main className="mf-layout-focus" data-mode={focus}><StageArtwork mode={focus} fullSurface /></main>
+    return <main className="mf-layout-focus" data-mode={focus}><StageArtwork mode={focus} fullSurface /><TemplateMenu active={focus} /></main>
   }
 
   return (
     <main className="mf-layout-lab">
       <header className="mf-layout-hero">
-        <small>MINIFUGG · CONTRAT VISUEL</small>
+        <small>MINIFUGG · ZONES MINIFUGG</small>
         <h1>Un cadre.<br />Une composition.</h1>
-        <p>MiniFugg produit désormais ses jeux et ses covers en portrait 390 × 844. Cette page fixe les tailles de création, montre les zones recouvertes par le Core et simule la mise à l’échelle avant toute génération d’assets.</p>
+        <p>MiniFugg produit ses écrans en portrait sur une largeur logique de 390. Cette page fixe le vocabulaire HAUT, CENTRE et BAS, montre les zones Core et simule l’affichage avant toute création d’assets.</p>
       </header>
 
       <section className="mf-layout-guides" aria-label="Gabarits canoniques">
@@ -332,7 +399,7 @@ export function LayoutLab({ focus }: { focus?: Exclude<GuideMode, 'combined'> })
           <li><b>Covers statiques et animées :</b> le Core étire aujourd’hui les images statiques en <i>cover</i>, tandis que Phaser conserve le cadre 390 × 844 en <i>FIT</i>. Leur cadrage doit devenir identique.</li>
           <li><b>Anciens masters 9:16 :</b> ils sont plus larges que 390 × 844 et perdent environ 18 % de leur largeur en plein cadre. Il faut les recadrer avec une vraie zone sûre, sans altérer les originaux validés.</li>
           <li><b>Atlases existants :</b> plusieurs feuilles et personnages dépassent largement leur taille affichée. Chaque migration doit mesurer la zone logique et produire un dérivé runtime à ×2 maximum.</li>
-          <li><b>Overscan PC :</b> il doit rester décoratif, appartenir à la surface du jeu et ne jamais contenir de cible, HUD ou information indispensable.</li>
+          <li><b>Anciens overscans PC :</b> ils doivent être retirés au fil des migrations. Les extensions propres au jeu restent dans HAUT et BAS ; les côtés appartiennent au Core.</li>
           <li><b>Installation mobile :</b> les métadonnées iOS existent. Le manifeste PWA et la famille d’icônes MiniFugg doivent encore être reliés après identification du master d’icône approuvé.</li>
         </ol>
       </section>

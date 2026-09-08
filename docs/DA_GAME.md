@@ -1,5 +1,7 @@
 # DA GAME — Recherche et refonte artistique du gameplay
 
+Toute étude ou intégration suit le modèle Game de [Zones MiniFugg](MINIFUGG_ZONES.md) : largeur 390, boucle indispensable dans CENTRE, extension décorative uniquement dans HAUT et BAS, masque RETOUR réservé au Core.
+
 ## Mission et limites
 
 Appliquer `DA_CORE.md`. Concevoir un vrai univers jouable, pas seulement un écran spectaculaire. Les jeux MiniFugg peuvent être très différents : pixel art, encre, papier, graphisme vectoriel, objets tactiles ou vraie 3D low-poly. Leur cohérence vient de leur propre DA, pas d'un habillage générique commun.
@@ -46,7 +48,7 @@ Pour une modification locale, garder le reste intact. Si une contrainte techniqu
 
 ## Concevoir pour le stage réel
 
-Utiliser le viewport logique déclaré, normalement `390 × 844` en portrait ou `844 × 390` en paysage. Adapter par mise à l'échelle uniforme, pas par une composition PC différente. Les dimensions des textures peuvent être supérieures ; elles ne changent pas les coordonnées du jeu.
+Utiliser la largeur logique 390 et l'enveloppe artistique `390 × 844`. Adapter par mise à l'échelle uniforme pilotée par la largeur sur mobile et par la hauteur sur PC, sans composition différente. Les dimensions des textures peuvent être supérieures ; elles ne changent pas les coordonnées du jeu.
 
 Vérifier tôt la place des textes, hitboxes, objets, HUD local, contrôles et du petit retour Core. Tester les états simples et chargés, les grandes valeurs et les gestes en cours. Les décors ne doivent pas gagner la bataille du contraste contre l'action.
 

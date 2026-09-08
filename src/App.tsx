@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { GameFeed } from './core/GameFeed'
-import { LayoutLab } from './core/LayoutLab'
+import { LayoutLab, type LayoutTemplate } from './core/LayoutLab'
 import { MusicLab } from './core/MusicLab'
 import { PlatformEntryScene } from './core/PlatformEntryScene'
 import { gameRegistry } from './core/gameRegistry'
@@ -22,13 +22,13 @@ function opensLayoutLab() {
   return query.get('usr') === 'moigod' && query.get('lab') === 'layout'
 }
 
-function layoutGuideView(): 'game' | 'cover' | null {
+function layoutGuideView(): LayoutTemplate | null {
   if (typeof window === 'undefined') return null
   const query = new URL(window.location.href).searchParams
   if (query.get('usr') !== 'moigod' || query.get('lab') !== 'layout') return null
   const view = query.get('view')
-  if (view === 'game') return 'game'
-  if (view === 'cover' || view === 'portrait') return 'cover'
+  if (view === 'portrait') return 'cover'
+  if (view === 'home' || view === 'cover' || view === 'cover-beta' || view === 'cover-caca' || view === 'game' || view === 'game-over' || view === 'ladder') return view
   return null
 }
 

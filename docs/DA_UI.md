@@ -1,5 +1,7 @@
 # DA UI — Interfaces partagées MiniFugg
 
+Les écrans et masques Core emploient les noms de [Zones MiniFugg](MINIFUGG_ZONES.md). MONNAIE et JOUER restent dans le cadre horizontal de 390 unités ; RAIL reste à gauche sur CENTRE, y compris sur PC. GameOver et Ladder suivent leurs modèles dédiés.
+
 ## Mission et références
 
 Appliquer `DA_CORE.md`. Une nouvelle interface est d'abord un assemblage du système MiniFugg, pas une nouvelle DA. Ce contrat ne s'applique pas à la direction artistique interne des jeux.

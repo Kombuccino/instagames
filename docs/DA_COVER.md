@@ -1,5 +1,7 @@
 # DA COVER — Jaquettes illustrées et éditions de jeux
 
+Avant tout brief ou toute intégration, choisir Cover, CoverBeta ou CoverCaca dans [Zones MiniFugg](MINIFUGG_ZONES.md). Le sujet et le titre restent dans CENTRE, hors de MONNAIE, RAIL et JOUER ; HAUT et BAS prolongent seulement le décor.
+
 ## Mission
 
 Appliquer `DA_CORE.md`. Produire une jaquette qui donne envie d'ouvrir un petit jeu comme un objet éditorial précieux, étrange ou excessivement ambitieux. L'esprit recherché est celui des illustrations commerciales et affiches de jeux des années 1980–1990, interprété librement, notamment à travers des traditions européennes et asiatiques. Ce n'est ni une capture du jeu ni une fiche App Store.

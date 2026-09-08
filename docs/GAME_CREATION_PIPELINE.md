@@ -36,7 +36,7 @@ L'affinage ultérieur et la production artistique d'un jeu que l'utilisateur cho
 
 **Question à résoudre : le geste et les décisions donnent-ils envie de rejouer ?**
 
-Portée actuelle : créer le prototype et toute sa production en portrait `390 × 844`. Ne pas consacrer de temps, de prompt ou d’asset à une variante paysage tant que l’utilisateur n’a pas rouvert ce besoin.
+Portée actuelle : créer le prototype et toute sa production en portrait selon [Zones MiniFugg](MINIFUGG_ZONES.md), sur une largeur logique de 390 et une enveloppe artistique maximale `390 × 844`. Ne pas consacrer de temps, de prompt ou d’asset à une variante paysage tant que l’utilisateur n’a pas rouvert ce besoin.
 
 1. Résumer en quelques lignes le geste, l'objectif, la boucle d'une partie, la fin/échec, le score éventuel et la raison de recommencer. Noter les hypothèses de règles sans exiger un long cahier des charges.
 2. Déduire l'orientation et le plus petit périmètre jouable. Poser seulement une question de GD si deux interprétations changent profondément le jeu. Une simple idée à archiver ne déclenche pas automatiquement un chantier.
@@ -73,7 +73,7 @@ Une bêta peut rester simple visuellement et recevoir juste les sons utiles au c
 
 ### Continuité obligatoire : ne pas faire répéter la DA
 
-Avant chaque lot d'assets, cover, animation ou son, l'agent relit cette notice, le suivi du jeu et les sections pertinentes des documents spécialisés. Il récupère dans `ART_DIRECTION.md` un **contrat artistique** court et durable :
+Avant chaque lot d'assets, cover, animation ou son, l'agent relit cette notice, [Zones MiniFugg](MINIFUGG_ZONES.md), le suivi du jeu et les sections pertinentes des documents spécialisés. Il récupère dans `ART_DIRECTION.md` un **contrat artistique** court et durable :
 
 - références exactes approuvées, rôle de chaque référence et décisions utilisateur datées ;
 - identité du jeu : émotion, silhouettes, matières, palette, composition et hiérarchie ;
@@ -154,8 +154,8 @@ Une bande avec de grandes marges transparentes n'a pas la même taille utile que
 
 ### Responsive, résolution et performance
 
-- Gameplay : un stage logique fixe, FIT et échelle uniforme ; composition identique entre téléphone et desktop. Le changement de résolution ne modifie aucune coordonnée de jeu.
-- Décor : débord dimensionné selon les ratios réellement pris en charge, crop dans la surface Core, jamais dans les gouttières externes. Un fond au même ratio que le stage n'offre pas à lui seul un débord latéral suffisant.
+- Gameplay : largeur logique 390 et échelle uniforme ; largeur pilote sur mobile, hauteur sur PC, CENTRE reste complète. Le changement de résolution ne modifie aucune coordonnée de jeu essentielle.
+- Décor : extension uniquement dans HAUT et BAS. Les gouttières latérales appartiennent au Core et ne reçoivent pas de décor propre au jeu.
 - Ergonomie : mesurer les tailles affichées, textes longs et zones touchables sur le plus petit viewport retenu. « Ça tient » ne vaut pas « c'est lisible et jouable ».
 - Images : choisir la résolution à partir de la taille affichée maximale et de la densité utile, pas de la résolution maximale du générateur. Mesurer téléchargement, décodage, temps de chargement et mémoire ; `largeur × hauteur × 4` donne une estimation RGBA, pas une mesure totale GPU.
 - Rendu : vérifier backbuffer et résolution des textes sur haut DPI. Préférer textures partagées, effets bornés et chargement utile ; pause/destruction des scènes et audio inactifs. Mesurer avant d'ajouter des passes plein écran ou un atlas gigantesque.

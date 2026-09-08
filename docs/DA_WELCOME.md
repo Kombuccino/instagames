@@ -1,5 +1,7 @@
 # DA WELCOME — Scène d'entrée de l'application
 
+La composition suit le modèle Home de [Zones MiniFugg](MINIFUGG_ZONES.md) et ses noms MARQUE, SCÈNE et ENTRER. Le contenu essentiel reste dans CENTRE ; HAUT et BAS absorbent uniquement les différences de hauteur.
+
 ## Périmètre
 
 Appliquer `DA_CORE.md`. Ici, « Welcome » désigne l'arrivée dans **MiniFugg**, avant le feed. Ce n'est ni la jaquette d'un jeu, ni une page publicitaire, ni une deuxième version du feed.

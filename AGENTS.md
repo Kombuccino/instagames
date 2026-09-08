@@ -21,6 +21,8 @@ Before any graphic research, image request, visual redesign or art integration, 
 - `docs/DA_WELCOME.md` — platform entry scene, held phone and direct handoff to discovery;
 - `docs/DA_UI.md` — shared Cover overlay, Info, Comments, Leaderboard, result and future Core panels.
 
+Also read `docs/MINIFUGG_ZONES.md`. Its short zone names and 390-wide Core containment are mandatory in every Home, Cover, gameplay, result and ladder brief or integration.
+
 These are the current operational authorities for creative briefs and reconciled visual decisions. Preserve exact approved references and subsequent explicit user corrections within their scope. Older style catalogs and exploratory platform documents provide supporting detail, not permission to restore obsolete visual directions: no baked SWIPE TO PLAY on covers, no half-sized Info/Comments panels, no duplicate interactive game/feed inside the entry phone. Engine, input, economy, asset-transport and other technical contracts remain authoritative in their respective domains.
 
 Keep agent context separate from generator context. Recover decisions yourself, then send only a targeted micro-brief and the exact reference(s) needed for the requested component. Never send the entire catalog, placeholder set or project history as an image brief. Do not ask the user to repeat settled artistic decisions.
@@ -36,6 +38,7 @@ For any game work, read the latest `main` versions of:
 - `docs/AUDIO_SYSTEM.md`
 - `docs/GAME_MIGRATION_PLAN.md`
 - `docs/GAME_LAYOUT_SYSTEM.md`
+- `docs/MINIFUGG_ZONES.md`
 - `docs/INPUT_GESTURES.md`
 - `docs/ORIENTATION_LAYOUT.md`
 - the game's `ART_DIRECTION.md` when present.
@@ -65,16 +68,13 @@ Do not create new bespoke raw Canvas/WebGL/WebGPU gameplay renderers unless the 
 
 ## 3. Canonical logical stage — mandatory
 
-Gameplay has a fixed authored coordinate system. Default targets:
+Gameplay has a canonical portrait width of `390` logical units. The authored art envelope is `390 × 844`; its always-visible CENTRE is `390 × 662`. HAUT and BAS are vertical extension zones. Exact names, coordinates and per-screen masks are defined in `docs/MINIFUGG_ZONES.md`.
 
-- portrait: `390 × 844` logical units;
-- landscape: `844 × 390` logical units.
+**Current product scope (decision of 8 September 2026):** all new game, gameplay-DA and cover production is portrait-only until the user explicitly reopens landscape. Do not propose, generate or implement a second landscape composition. Existing landscape catalog entries remain supported only for maintenance and migration of their current behavior.
 
-**Current product scope (decision of 8 September 2026):** all new game, gameplay-DA and cover production is portrait-only at `390 × 844` until the user explicitly reopens landscape. Do not propose, generate or implement a second landscape composition. Existing landscape catalog entries remain supported only for maintenance and migration of their current behavior.
+On mobile, scale uniformly from the useful width. On PC or big screen, scale uniformly from the useful height. Do not redesign or reflow critical gameplay geometry for PC vs phone. Do not position important game objects primarily with `vw`/`vh`.
 
-Screen/browser/device changes apply **uniform scaling only** to the canonical game stage. Do not redesign or reflow critical gameplay geometry for PC vs phone. Do not position important game objects primarily with `vw`/`vh`.
-
-A phone is the complete reference experience. Tablet/desktop extra space may host optional Core sidecars or decorative overscan, but it must never move or resize elements relative to one another inside the canonical game.
+A phone is the complete reference experience. HAUT and BAS may be cropped or revealed as height changes. Tablet/desktop lateral space belongs to Core; do not author extra left/right game or cover decoration. Core currency and CTA remain inside the 390-wide frame, while the rail stays over CENTRE at the left.
 
 Device pixel ratio may improve render resolution but never changes logical coordinates.
 

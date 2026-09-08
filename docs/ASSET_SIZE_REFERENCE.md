@@ -4,15 +4,15 @@ Cette fiche complète `GAME_LAYOUT_SYSTEM.md` et `GAME_ART_PRODUCTION_PIPELINE.m
 
 `/?usr=moigod&lab=layout`
 
-La page permet d’ouvrir séparément le gabarit d’un jeu ou d’une cover, sans interface autour, de télécharger les deux variantes PNG, de simuler les écrans courants et de calculer la taille maximale d’un asset à partir de sa zone logique. Les contrôles Core restent ancrés à la fenêtre comme en production.
+La page permet d’ouvrir séparément les modèles Home, Cover, CoverBeta, CoverCaca, Game, GameOver et Ladder, de télécharger les guides PNG de base, de simuler les écrans courants et de calculer la taille maximale d’un asset à partir de sa zone logique. Son menu de modèle apparaît uniquement sur PC et reste hors du cadre. Le vocabulaire canonique est défini dans [Zones MiniFugg](MINIFUGG_ZONES.md).
 
 Les vues isolées séparent trois contrats :
 
-- **fenêtre minimale jouable A54** : `390 × 662`, correspondant à toute la surface commune réellement visible dans Brave et Chrome avec leur interface ouverte ;
-- **fond de jeu / cover mobile** : composition `390 × 844`, remplissage uniforme de la surface avec crop centré ;
-- **overlays Core** : ancrés à la fenêtre, indépendamment du plan artistique.
+- **CENTRE** : `390 × 662`, toute la surface commune réellement visible dans Brave et Chrome avec leur interface ouverte ;
+- **HAUT** et **BAS** : deux extensions `390 × 91` révélées ou recadrées selon la hauteur ;
+- **cadre Core** : largeur maximale `390`; MONNAIE et JOUER restent dedans, RAIL reste à gauche sur CENTRE.
 
-Les captures réelles fournies le 8 septembre 2026 mesurent environ `360 × 611` CSS dans Brave et `360 × 656` dans Chrome sur le même Galaxy A54. Rapportée à une largeur logique de 390, leur intersection donne `390 × 662`. La zone verte occupe donc toute la largeur et les coordonnées verticales `y 91 → 753` dans le master `390 × 844`. Brave affiche pratiquement cette zone entière ; Chrome révèle environ 49 unités logiques supplémentaires réparties en haut et en bas. Les zones orange/rouge ne réduisent pas la zone minimale : elles montrent séparément où le Core peut se superposer.
+Les captures réelles fournies le 8 septembre 2026 mesurent environ `360 × 611` CSS dans Brave et `360 × 656` dans Chrome sur le même Galaxy A54. Rapportée à une largeur logique de 390, leur intersection donne `390 × 662`. CENTRE occupe donc toute la largeur et les coordonnées verticales `y 91 → 753` dans le master `390 × 844`. Brave affiche pratiquement CENTRE entière ; Chrome révèle environ 49 unités logiques supplémentaires réparties entre HAUT et BAS. Les zones orange/rouge ne réduisent pas CENTRE : elles montrent séparément où le Core peut se superposer.
 
 ## Le cadre de production
 
@@ -22,7 +22,7 @@ Les captures réelles fournies le 8 septembre 2026 mesurent environ `360 × 611`
 
 Depuis la décision du 8 septembre 2026, toute nouvelle production est en portrait. Le paysage reste seulement une compatibilité technique pour les jeux existants qui en dépendent ; il n’entre plus dans les briefs, gabarits ou lots d’assets courants.
 
-Le master `390 × 844` reste la composition artistique maximale. Le gameplay place toute sa boucle essentielle dans la fenêtre minimale `390 × 662`, puis peut employer la hauteur supplémentaire pour davantage de décor, d’anticipation ou d’espace de mouvement sans déplacer les éléments essentiels. Il ne doit pas créer des marges internes qui réduisent encore cette fenêtre. Sur écran large, le stage/cover canonique est conservé et l’espace restant appartient au Core ou au décor d’accompagnement : on ne détruit pas une composition portrait avec un crop vertical massif. Le bouton Retour, le rail, la monnaie et le CTA sont des masques d’occupation distincts.
+Le master `390 × 844` reste la composition artistique maximale. Le gameplay place toute sa boucle essentielle dans CENTRE, puis peut employer HAUT et BAS pour du décor, de l’anticipation ou un espace de mouvement secondaire. Sur PC, la hauteur commande l’échelle et l’espace latéral restant appartient au Core. Aucun décor de jeu supplémentaire n’est créé sur les côtés. RETOUR, RAIL, MONNAIE et JOUER sont des masques d’occupation distincts.
 
 ## Règle de dimensionnement
 
@@ -44,13 +44,13 @@ Le fond permanent ne contient jamais score, vies, recette, clients, ingrédients
 
 Toujours visible et fixe : stage canonique, géométrie, gameplay, HUD authored dans la scène, hitboxes, caméra et rapports de taille.
 
-Variable : échelle uniforme, densité physique, marges Core, sidecars optionnels et overscan décoratif. Aucun élément variable ne porte une information indispensable.
+Variable : échelle uniforme, densité physique, marges/sidecars Core et quantité visible de HAUT/BAS. Aucun élément variable ne porte une information indispensable.
 
 ## Données d’écran et tendance
 
 Référence au 8 septembre 2026 : les six premières résolutions de viewport mobile publiées par StatCounter représentent 42,48 % des pages vues mesurées dans le monde en août 2026. Elles se regroupent principalement autour des ratios 19,5:9 et 20:9 ; `390 × 844` appartient à cette famille. Source : [StatCounter Global Stats](https://gs.statcounter.com/screen-resolution-stats/mobile/worldwide).
 
-Chez les joueurs PC, l’enquête Steam d’août 2026 reste dominée par `1920 × 1080` (50,52 %) et `2560 × 1440` (21,86 %). Le portage PC doit donc conserver le stage portrait par mise à l’échelle uniforme et utiliser les côtés pour le Core ou un décor optionnel, sans étirer ni recomposer le gameplay. Source : [Steam Hardware Survey](https://store.steampowered.com/hwsurvey).
+Chez les joueurs PC, l’enquête Steam d’août 2026 reste dominée par `1920 × 1080` (50,52 %) et `2560 × 1440` (21,86 %). Le portage PC doit donc conserver le portrait par mise à l’échelle uniforme pilotée par la hauteur et réserver les côtés au Core, sans étirer ni recomposer le gameplay. Source : [Steam Hardware Survey](https://store.steampowered.com/hwsurvey).
 
 La tendance structurante est la multiplication des fenêtres redimensionnables : tablettes, appareils pliables, écran partagé et modes bureau. Android recommande de répondre à la taille de fenêtre disponible plutôt qu’au modèle physique. MiniFugg traite donc le Core comme adaptatif et le stage de jeu comme fixe. Source : [guide Android officiel](https://developer.android.com/develop/adaptive-apps/guides/support-different-display-sizes).
 
@@ -67,4 +67,4 @@ Le dépôt possède déjà les métadonnées iOS et le wordmark canonique. La pl
 - Les covers statiques utilisent actuellement un remplissage CSS par recadrage, alors que les covers Phaser conservent 390 × 844 en `FIT`. Le cadrage doit être unifié dans le Core.
 - Les anciens masters 9:16 sont plus larges que 390 × 844. En plein cadre actuel, environ 18 % de leur largeur disparaît. Les originaux validés doivent rester intacts et recevoir un dérivé cadré avec une zone sûre.
 - Les migrations doivent encore réduire plusieurs textures et atlases existants produits très au-dessus de leur taille d’affichage.
-- L’overscan appartient uniquement à la surface décorative du jeu. Il ne doit jamais remplacer ou agrandir la scène canonique.
+- L’extension décorative appartient à HAUT et BAS. Il ne faut plus produire d’overscan latéral propre au jeu ou à la cover.

@@ -1,5 +1,7 @@
 # MiniFugg — Platform UI Baseline
 
+All Home, Cover, Game, GameOver and Ladder composition uses [Zones MiniFugg](MINIFUGG_ZONES.md). Core controls stay inside the 390-wide frame; desktop side space remains Core-owned.
+
 This file records the visual baseline that later platform UI studies must refine instead of reinventing.
 
 ## Canonical reference — user supplied

@@ -1,5 +1,7 @@
 # DA CORE — Identité MiniFugg et méthode de commande graphique
 
+Toute création emploie le vocabulaire et les contraintes de [Zones MiniFugg](MINIFUGG_ZONES.md). Les zones règlent le cadrage et l'occupation ; les références approuvées règlent le style.
+
 ## Autorité et périmètre
 
 Ce fichier fixe les instructions communes aux demandes graphiques MiniFugg. Ce sont des exigences de travail, pas une liste d'inspirations facultatives. Lire sa dernière version sur `main`, puis le fichier correspondant au livrable : `DA_COVER.md` pour une jaquette ; `DA_GAME.md` pour les graphismes jouables ; `DA_WELCOME.md` pour l'entrée de l'application ; `DA_UI.md` pour les interfaces partagées. Les cinq fichiers sont dans `docs/`.

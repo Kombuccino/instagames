@@ -2,7 +2,7 @@
 
 This document is the canonical procedure for turning an approved game-art direction / gameplay mockup into production-ready MiniFugg assets and runtime rendering.
 
-For the complete creation sequence, decision continuity, visual acceptance and progress tracking, start with [GAME_CREATION_PIPELINE.md](GAME_CREATION_PIPELINE.md). Before each gameplay/cover/animation pass, recover the game's approved `ART_DIRECTION.md` references, rejected directions and asset contracts. Generation must carry these decisions forward; the user should not have to repeat them.
+For the complete creation sequence, decision continuity, visual acceptance and progress tracking, start with [GAME_CREATION_PIPELINE.md](GAME_CREATION_PIPELINE.md) and [Zones MiniFugg](MINIFUGG_ZONES.md). Before each gameplay/cover/animation pass, recover the game's approved `ART_DIRECTION.md` references, rejected directions and asset contracts. Generation must carry these decisions forward; the user should not have to repeat them.
 
 Read it together with `docs/ASSET_PIPELINE.md`. That document defines the two entry routes: direct local files/commit for Codex, private Drive sync for ChatGPT without repository access. This document defines what those image files should be and how to decompose an approved visual reference into a real game.
 
@@ -166,9 +166,9 @@ Animation planning happens before flattening/export, not after integration.
 
 All assets are authored for the game's declared logical viewport, normally `390×844` portrait or `844×390` landscape.
 
-Asset decomposition does not create mobile/desktop layout variants. Phaser/Core uniformly scale the canonical composition.
+Asset decomposition does not create mobile/desktop layout variants. Phaser/Core uniformly scale the 390-wide composition: width first on mobile, height first on PC.
 
-Decorative overscan/sidecars may exist outside the game stage where the platform architecture allows it, but gameplay-critical geometry never reflows because of device size.
+Game-owned decorative extension lives only in HAUT and BAS. Lateral sidecars belong to Core, and gameplay-critical geometry never reflows because of device size.
 
 ## 10. Localization rule
 

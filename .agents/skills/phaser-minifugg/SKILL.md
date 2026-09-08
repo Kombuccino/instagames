@@ -15,6 +15,7 @@ Before applying generic Phaser advice, read the latest project rules relevant to
 - `codex.md` for project history/context
 - `docs/GAME_ENGINE_ARCHITECTURE.md`
 - `docs/GAME_LAYOUT_SYSTEM.md`
+- `docs/MINIFUGG_ZONES.md`
 - `docs/INPUT_GESTURES.md`
 - `docs/ORIENTATION_LAYOUT.md`
 - `docs/AUDIO_SYSTEM.md`
@@ -67,11 +68,13 @@ See `docs/PHASER_SKILLS.md` for the complete inventory and provenance.
 
 Do not let generic Phaser examples override these:
 
-### Fixed stage
+### Portrait zones and scaling
 
-- portrait default: `390 × 844`
-- landscape default: `844 × 390`
-- use fixed logical coordinates and uniform aspect-preserving FIT scaling
+- canonical width: `390`; art envelope: `390 × 844`; guaranteed CENTRE: `390 × 662`
+- mobile: width controls uniform scale; PC/big screen: height controls uniform scale
+- HAUT and BAS absorb vertical crop/reveal; critical gameplay remains in CENTRE
+- do not add game-owned decorative width outside the 390-wide composition
+- keep Core currency and CTA inside the 390-wide frame; keep the cover rail at the left over CENTRE
 - do not reflow gameplay for desktop vs mobile
 - do not use critical `vw` / `vh` world geometry
 

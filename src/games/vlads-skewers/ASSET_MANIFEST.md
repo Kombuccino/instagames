@@ -7,8 +7,8 @@ The three approved DA files under `GFX/crea-chatgpt/game/` are **REFERENCE ONLY*
 | Asset | Family | Logical use / bounds | Alpha | Motion / states | Owner above | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | `backgrounds/pixel-grill-arena-unlit.png` | permanent environment | full stage `390×844`; widened fall field x `38..326`, y `118..690` | opaque | architecture, fixtures and grill only; no flame, HUD, client or skewer baked | Phaser fire layers, score, order, lives, clients, ingredients | integrated |
-| `backgrounds/pixel-grill-overscan.png` | desktop overscan | landscape side scenery behind the canonical portrait canvas | opaque | distinct dungeon wings and quiet central void; never a duplicate/enlargement of the portrait arena | canonical Phaser canvas | integrated |
 | `sprites/ingredient-bodies-v2.png` fixed 4×3 grid | gameplay characters | falling display ~`78×78`; stacked body ~`70×70` | real | 11 faceless/limbless foods + one empty cell; no state baked | Phaser eyes, mouths, arms, legs, cooked colour, grill marks, char/ash | integrated |
+| `sprites/bone-in-beef.png` | gameplay character body | falling/stacked beef body, wider than the other foods | real | isolated bone-in rib steak; no face, limb, drool or cooked state baked | Phaser eyes, mouth, limbs, cooked colour and grill marks | integrated |
 | `sprites/character-parts-v3.png` fixed 4×4 grid | stateful character pieces | food facial/limb overlays and customer drool | real | 4 eye states, 4 mouths, authored arms/legs, drool, grill marks, ash and juice | Phaser animation/physics; drool frame used only by customers | integrated |
 | `sprites/customer-atlas.png` fixed 5×3 grid | animatable decoration / customers | right architecture portrait ~`96×96` | real | 15 distinct hungry/joyful clients; idle/cheer through pose, hop and mouth-anchored drool | Phaser order bubble, patience, queue state | integrated |
 | `props/vlad-skewer-hand.png` frame `shaft` | animatable prop | rigid `30×300` skewer, dimensionnée pour cinq aliments maximum ; point reaches y ~165 at maximum extension | real | never scaled by reach; gold point is sole impalement source | Phaser stack, collisions, multiplier | integrated |
@@ -19,9 +19,8 @@ The three approved DA files under `GFX/crea-chatgpt/game/` are **REFERENCE ONLY*
 | `ui/gothic-digits.png` fixed 12-glyph strip | structural UI | dynamic score | real alpha | digits `0..9`, `X`, `+` authored from the approved DA typography | Phaser dynamic values | integrated |
 | articulated ingredient limbs | dynamic gameplay | four independent appendages around each body | procedural pixel graphics | two segments, elbow/knee, small hand/foot; gesture sets for joy, realization, panic and death | Phaser | integrated |
 | impact drops and callouts | dynamic FX | large tapered juice pixels with 2.2–3.9 s life; stacked text callouts | procedural pixel graphics/text | progressive entry, persistent debris, displaced callouts and fade-out | Phaser | integrated |
-| desktop decorative overscan | permanent environment support | canonical LineFugg/Core feed width; crop inside the game surface only | same opaque background, `cover` crop | never widens or moves gameplay geometry | Core surface + canonical Phaser canvas | integrated |
 
-Runtime texts and values stay dynamic: score, level, clients remaining, order icons, patience, impact word/cry, multiplier, `BRUTALITY!` and end state.
+Runtime texts and values stay dynamic: score, level, secondary client counter, order icons, patience, comic impact cry, multiplier, active bonus, `BRUTALITY!` and end state.
 
 ## Layer order
 
@@ -41,11 +40,11 @@ Runtime texts and values stay dynamic: score, level, clients remaining, order ic
 - Customer drool and food grill marks are separate, stateful overlays rather than baked pixels. Foods never receive drool.
 - Falling emotion reads joy → realization → worry → frantic last attempt; bodies first cook into appetizing marked food, then missed bodies burn black on the lower grate, ash and disappear.
 - Nearby falling characters can visually grab or repel one another without escaping the bounded fall/grill outcome.
-- Stack limbs are articulated in two readable segments with four independent spring states; each side lags, falls and settles under movement while bodies remain locked to the skewer.
+- Stack limbs are articulated in two readable segments with four independent low-mass angular states; acceleration and direction can make them whirl while bodies remain locked to the skewer.
 - Food hitboxes are slightly inside their visible silhouettes. Foods separate, rebound with gravity, and are pushed directionally by walls, shaft, hand and arm ; shaft/hand contact never impersonates the tip.
 - Three left life skewers match the approved gold/red spear family and disappear one per missed customer.
 - Normal→×5 impacts have five clearly different visual/audio intensities while scoring stays unchanged.
-- The skewer and authored long arm remain fixed-size and travel together; the arm asset overflows below the stage instead of stretching. Pointer capture keeps relative control outside the canvas.
+- The skewer and authored long arm remain fixed-size and travel together; the natural centered pose exposes roughly one third of the arm, and the enlarged hand hit area remains fully inside CENTRE. Pointer capture keeps relative control outside the canvas.
 - A complete recipe validates automatically; there is no delivery target or side gesture.
 - Customer architecture is fixed, at most five actors are visible, and mouth offsets own drool placement per portrait.
 

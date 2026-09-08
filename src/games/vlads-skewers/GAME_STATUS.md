@@ -30,6 +30,10 @@ Prompt de reprise préparé : `docs/prompts/VLAD_GAMEPLAY_RECOVERY.md`.
 - Hitboxes alimentaires calées légèrement dans la silhouette ; séparation aliment/aliment, rebonds muraux et gravité. La tige, la main et le bras sont traversables ; seule la pointe empale.
 - Passe du 8 septembre : nouvelle main qui enveloppe réellement la poignée, tige/main/bras désormais traversables par les aliments, champ de chute élargi, entrée sur la pointe en 0,8 s et poussée souple de la pile. Gerbes agrandies et persistantes, paroles empilables avec fondu long.
 - Overscan desktop distinct du fond portrait, flammes d'appliques réduites/recalées, braises effilées recolorisées, portraits alignés par leur base et commande client enrichie d'une broche horizontale.
+- Passe du 8 septembre : pose naturelle de la main recentrée/relevée, ellipse de prise agrandie et butée basse gardant la main dans CENTRE. Orientation d'arrivée conservée sur broche et grille ; membres de pile à très faible masse capables de grands arcs sous vitesse et accélération.
+- Côte de bœuf avec os remplaçant le cube, recette client agrandie, panneau haut réduit au niveau et aux ingrédients, compteur client secondaire déplacé au sommet de la pile.
+- Gerbes dirigées par l'angle de perforation avec gouttes, graines, éclats et morceaux croissants selon le palier ; bonus/multiplicateur ancrés près de la main avec pulse, dernières paroles placées dans une bulle BD.
+- Overscan propre au jeu supprimé conformément aux Zones MiniFugg : les côtés ordinateur appartiennent au Core.
 
 ## Validation gameplay
 
@@ -42,8 +46,9 @@ Les 7 et 8 septembre 2026 :
 - clic hors main refusé et signal visuel vérifié ; dérive nulle après dépassement horizontal puis retour du pointeur au point de prise ; main visible et immobilisée aux butées haute/basse ;
 - contrôle souris relatif vérifié après sortie du canvas ; file 3→2→1 et plafonnement visuel à cinq clients vérifiés ;
 - score historique vérifié : brochette de 5 (base 10) × combo 5 = 50 ; l'empalement seul n'ajoute aucun point et la broche complète reste visible 2,35 s avant validation ;
-- insertion non instantanée vérifiée, chute élargie, overscan distinct, particules persistantes, ordre sur broche et alignement inférieur des quinze portraits contrôlés dans les captures téléphone/bureau ;
+- insertion non instantanée vérifiée, chute élargie, décor strictement contenu dans le stage 390, particules persistantes, ordre sur broche et alignement inférieur des quinze portraits contrôlés dans les captures téléphone/bureau ;
 - aucune erreur console ou ressource dans la matrice testée.
+- le 8 septembre : nouvelle matrice téléphone tactile + bureau souris réussie, orientation broche/grille et grands arcs inertiels couverts par assertions ; score historique ×5 toujours égal à 50 ; build de production réussi.
 
 Captures locales : `artifacts/vlads-skewers/`. Limite : émulation navigateur, pas un GPU/tactile physique.
 

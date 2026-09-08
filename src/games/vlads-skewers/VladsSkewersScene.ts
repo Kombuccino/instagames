@@ -20,6 +20,10 @@ const FALLING_FOOD_SIZE = 78
 const STACK_FOOD_SIZE = 70
 const STACK_GAP = 43
 const HAND_GRIP_OFFSET = 43
+const NATURAL_SKEWER_Y = 780
+const MAX_SKEWER_Y = 796
+const HAND_HIT_RADIUS_X = 68
+const HAND_HIT_RADIUS_Y = 76
 const FONT = '"Arial Black", Impact, sans-serif'
 
 type IngredientKind = 'meat' | 'tomato' | 'pepper' | 'onion' | 'mushroom' | 'zucchini' | 'eggplant' | 'chicken' | 'tofu' | 'fish'
@@ -71,6 +75,7 @@ type Drop = {
 type StackFood = {
   kind: IngredientKind
   visual: FoodVisual
+  baseRotation: number
   lag: number
   lagVelocity: number
   limbSwing: [number, number, number, number]
@@ -194,15 +199,17 @@ export class VladsSkewersScene extends Phaser.Scene {
   private returnTween?: Phaser.Tweens.Tween
   private autoServeAt: number | null = null
   private skewerX = 195
-  private skewerY = 820
-  private previousTip = new Phaser.Math.Vector2(195, 455)
+  private skewerY = NATURAL_SKEWER_Y
+  private previousTip = new Phaser.Math.Vector2(195, NATURAL_SKEWER_Y - TIP_OFFSET)
   private previousSkewerX = 195
-  private previousSkewerY = 820
+  private previousSkewerY = NATURAL_SKEWER_Y
+  private skewerVelocityX = 0
+  private skewerVelocityY = 0
   private capturedPointerId: number | null = null
   private dragStartClientX = 0
   private dragStartClientY = 0
   private dragStartSkewerX = 195
-  private dragStartSkewerY = 820
+  private dragStartSkewerY = NATURAL_SKEWER_Y
   private handHintActive = false
   private inputCanvas?: HTMLCanvasElement
   private ambientTick = 0
@@ -215,8 +222,9 @@ export class VladsSkewersScene extends Phaser.Scene {
   private scoreText!: Phaser.GameObjects.Text
   private scoreDigits: Phaser.GameObjects.Image[] = []
   private levelText!: Phaser.GameObjects.Text
-  private clientsText!: Phaser.GameObjects.Text
+  private clientCountText!: Phaser.GameObjects.Text
   private comboText!: Phaser.GameObjects.Text
+  private bonusText!: Phaser.GameObjects.Text
   private statusText!: Phaser.GameObjects.Text
   private orderIcons: Phaser.GameObjects.Image[] = []
   private unlockIcons: Phaser.GameObjects.Image[] = []
@@ -228,6 +236,8 @@ export class VladsSkewersScene extends Phaser.Scene {
   private orderPanel!: Phaser.GameObjects.Image
   private juiceParticles!: Phaser.GameObjects.Particles.ParticleEmitter
   private juiceSpeckParticles!: Phaser.GameObjects.Particles.ParticleEmitter
+  private juiceSeedParticles!: Phaser.GameObjects.Particles.ParticleEmitter
+  private juiceChunkParticles!: Phaser.GameObjects.Particles.ParticleEmitter
   private ashParticles!: Phaser.GameObjects.Particles.ParticleEmitter
   private emberParticles!: Phaser.GameObjects.Particles.ParticleEmitter
   private foregroundEmberParticles!: Phaser.GameObjects.Particles.ParticleEmitter
@@ -255,11 +265,11 @@ export class VladsSkewersScene extends Phaser.Scene {
     },
     customerRosterSize: 15,
     fallArea: { minX: PLAY_MIN_X, maxX: PLAY_MAX_X },
-    skewer: { x: Math.round(this.skewerX), y: Math.round(this.skewerY), tipX: Math.round(this.skewerX), tipY: Math.round(this.skewerY - TIP_OFFSET), stack: this.stack.map(item => ({ kind: item.kind, cooked: item.visual.cooked, y: Math.round(item.visual.root.y), entryProgress: Number(item.entryAge.toFixed(2)) })) },
+    skewer: { x: Math.round(this.skewerX), y: Math.round(this.skewerY), tipX: Math.round(this.skewerX), tipY: Math.round(this.skewerY - TIP_OFFSET), stack: this.stack.map(item => ({ kind: item.kind, cooked: item.visual.cooked, y: Math.round(item.visual.root.y), rotation: Number(item.visual.root.rotation.toFixed(3)), limbAngles: item.limbSwing.map(angle => Number(angle.toFixed(2))), entryProgress: Number(item.entryAge.toFixed(2)) })) },
     impactCallouts: this.impactCallouts.length,
-    input: { handOnly: true, handHint: this.handHintActive, gripX: Math.round(this.skewerX), gripY: Math.round(this.skewerY - HAND_GRIP_OFFSET) },
+    input: { handOnly: true, handHint: this.handHintActive, gripX: Math.round(this.skewerX), gripY: Math.round(this.skewerY - HAND_GRIP_OFFSET), hitRadiusX: HAND_HIT_RADIUS_X, hitRadiusY: HAND_HIT_RADIUS_Y },
     activeCustomer: this.customers[0] ? { id: this.customers[0].id, name: this.customers[0].name, order: this.customers[0].order, patience: Number(this.customers[0].patience.toFixed(1)) } : null,
-    drops: this.drops.slice(0, 40).map(drop => ({ id: drop.id, kind: drop.kind, x: Math.round(drop.x), y: Math.round(drop.y), vx: Math.round(drop.vx), speed: Math.round(drop.speed), state: drop.state, emotion: this.emotionFor(drop) })),
+    drops: this.drops.slice(0, 40).map(drop => ({ id: drop.id, kind: drop.kind, x: Math.round(drop.x), y: Math.round(drop.y), vx: Math.round(drop.vx), speed: Math.round(drop.speed), rotation: Number((drop.visual?.root.rotation ?? Phaser.Math.DegToRad(drop.rotation)).toFixed(3)), state: drop.state, emotion: this.emotionFor(drop) })),
   })
 
   constructor(bridge: VladsSkewersSceneBridge) {
@@ -270,6 +280,7 @@ export class VladsSkewersScene extends Phaser.Scene {
   preload() {
     this.load.image('vlad-bg', `${ASSET_ROOT}/backgrounds/pixel-grill-arena-unlit.png`)
     this.load.spritesheet('vlad-food', `${ASSET_ROOT}/sprites/ingredient-bodies-v2.png`, { frameWidth: 362, frameHeight: 362 })
+    this.load.image('vlad-meat', `${ASSET_ROOT}/sprites/bone-in-beef.png`)
     this.load.spritesheet('vlad-customers', `${ASSET_ROOT}/sprites/customer-atlas.png`, { frameWidth: 320, frameHeight: 320 })
     this.load.spritesheet('vlad-parts', `${ASSET_ROOT}/sprites/character-parts-v3.png`, { frameWidth: 313, frameHeight: 313 })
     this.load.image('vlad-ui', `${ASSET_ROOT}/ui/component-atlas.png`)
@@ -284,6 +295,7 @@ export class VladsSkewersScene extends Phaser.Scene {
     this.cameras.main.setZoom(this.bridge.renderPixelRatio ?? 1).centerOn(W / 2, H / 2)
     this.textures.get('vlad-bg').setFilter(Phaser.Textures.FilterMode.NEAREST)
     this.textures.get('vlad-food').setFilter(Phaser.Textures.FilterMode.NEAREST)
+    this.textures.get('vlad-meat').setFilter(Phaser.Textures.FilterMode.NEAREST)
     this.textures.get('vlad-customers').setFilter(Phaser.Textures.FilterMode.NEAREST)
     this.textures.get('vlad-parts').setFilter(Phaser.Textures.FilterMode.NEAREST)
     this.textures.get('vlad-ui').setFilter(Phaser.Textures.FilterMode.NEAREST)
@@ -351,10 +363,12 @@ export class VladsSkewersScene extends Phaser.Scene {
     this.handHintActive = false
     this.ambientTick = 0
     this.skewerX = 195
-    this.skewerY = 820
-    this.previousTip.set(195, 455)
+    this.skewerY = NATURAL_SKEWER_Y
+    this.previousTip.set(195, NATURAL_SKEWER_Y - TIP_OFFSET)
     this.previousSkewerX = 195
-    this.previousSkewerY = 820
+    this.previousSkewerY = NATURAL_SKEWER_Y
+    this.skewerVelocityX = 0
+    this.skewerVelocityY = 0
     while (this.customers.length < clientsForLevel(this.level)) this.pushCustomer()
   }
 
@@ -377,6 +391,14 @@ export class VladsSkewersScene extends Phaser.Scene {
       emitting: false, lifespan: { min: 1500, max: 2700 }, speed: { min: 95, max: 275 }, angle: { min: 190, max: 350 },
       gravityY: 190, scale: { start: .75, end: .18 }, alpha: { start: 1, end: 0, ease: 'Quad.In' }, maxParticles: 220,
     }).setDepth(69)
+    this.juiceSeedParticles = this.add.particles(0, 0, 'vlad-seed', {
+      emitting: false, lifespan: { min: 1900, max: 3400 }, speed: { min: 72, max: 220 }, angle: { min: 190, max: 350 },
+      gravityY: 175, rotate: { min: -360, max: 360 }, scale: { start: 1, end: .36 }, alpha: { start: 1, end: 0, ease: 'Cubic.In' }, maxParticles: 130,
+    }).setDepth(71)
+    this.juiceChunkParticles = this.add.particles(0, 0, 'vlad-juice-chunk', {
+      emitting: false, lifespan: { min: 2100, max: 3800 }, speed: { min: 62, max: 205 }, angle: { min: 190, max: 350 },
+      gravityY: 205, rotate: { min: -260, max: 260 }, scale: { start: 1.15, end: .24 }, alpha: { start: 1, end: 0, ease: 'Cubic.In' }, maxParticles: 160,
+    }).setDepth(72)
     this.ashParticles = this.add.particles(0, 0, 'vlad-ash', {
       emitting: false, lifespan: { min: 750, max: 1450 }, speedY: { min: -52, max: -14 }, speedX: { min: -34, max: 34 },
       gravityY: 18, scale: { start: 1.35, end: .2 }, alpha: { start: .95, end: 0 }, maxParticles: 140,
@@ -395,16 +417,18 @@ export class VladsSkewersScene extends Phaser.Scene {
     this.comboText = this.add.text(195, 525, '', {
       fontFamily: FONT, fontSize: '28px', color: '#ffe25a', stroke: '#8b130b', strokeThickness: 6, align: 'center', resolution: 1,
     }).setOrigin(.5).setDepth(80).setVisible(false)
+    this.bonusText = this.add.text(195, 650, '', {
+      fontFamily: FONT, fontSize: '12px', color: '#ff8b9a', stroke: '#36050b', strokeThickness: 4, align: 'center', resolution: 1,
+    }).setOrigin(.5).setDepth(81).setVisible(false)
     this.statusText = this.add.text(195, 574, '', {
       fontFamily: FONT, fontSize: '13px', color: '#fff0c4', stroke: '#170707', strokeThickness: 4, align: 'center', wordWrap: { width: 355 }, resolution: 1,
     }).setOrigin(.5).setDepth(82)
   }
 
   private buildHud() {
-    this.orderPanel = this.add.image(176, 54, 'vlad-ui', 'order').setDisplaySize(214, 94).setDepth(50)
+    this.orderPanel = this.add.image(195, 48, 'vlad-ui', 'order').setDisplaySize(188, 82).setDepth(50)
     this.add.image(342, 48, 'vlad-ui', 'score').setDisplaySize(96, 88).setDepth(50)
-    this.levelText = this.add.text(176, 19, '', { fontFamily: FONT, fontSize: '17px', color: '#ffbd62', stroke: '#220706', strokeThickness: 3, resolution: 1 }).setOrigin(.5).setDepth(52)
-    this.clientsText = this.add.text(176, 85, '', { fontFamily: FONT, fontSize: '10px', color: '#3d1507', stroke: '#f4c786', strokeThickness: 1, resolution: 1 }).setOrigin(.5).setDepth(52)
+    this.levelText = this.add.text(195, 18, '', { fontFamily: FONT, fontSize: '15px', color: '#ffbd62', stroke: '#220706', strokeThickness: 3, resolution: 1 }).setOrigin(.5).setDepth(52)
     this.add.text(342, 19, 'SCORE', { fontFamily: FONT, fontSize: '9px', color: '#ffdfa0', stroke: '#210706', strokeThickness: 2, resolution: 1 }).setOrigin(.5).setDepth(52)
     this.scoreText = this.add.text(342, 51, '', { fontFamily: FONT, fontSize: '1px', color: '#ff9e2d', resolution: 1 }).setVisible(false)
 
@@ -421,7 +445,10 @@ export class VladsSkewersScene extends Phaser.Scene {
       actor.add([portrait, drool])
       this.customerSlots.push({ actor, portrait, drool, baseY: y + 48, phase: index * 1.7, customerId: -1 })
     })
-    this.serveBubble = this.add.image(316, 558, 'vlad-ui', 'bubble').setDisplaySize(140, 86).setDepth(58)
+    this.clientCountText = this.add.text(349, 172, '', {
+      fontFamily: FONT, fontSize: '9px', color: '#ffd899', stroke: '#180707', strokeThickness: 3, resolution: 1,
+    }).setOrigin(.5).setDepth(58)
+    this.serveBubble = this.add.image(300, 558, 'vlad-ui', 'bubble').setDisplaySize(176, 104).setDepth(58)
     this.orderSkewer = this.add.graphics().setDepth(59)
     this.patienceBar = this.add.graphics().setDepth(61)
   }
@@ -452,6 +479,21 @@ export class VladsSkewersScene extends Phaser.Scene {
       drop.fillStyle(0xffd9d0, .9).fillRect(3, 8, 2, 4)
       drop.generateTexture('vlad-juice-drop', 11, 18)
       drop.destroy()
+    }
+    if (!this.textures.exists('vlad-seed')) {
+      const seed = this.make.graphics({ x: 0, y: 0 })
+      seed.fillStyle(0x6b3117).fillRect(1, 0, 4, 1)
+      seed.fillStyle(0xffe3a0).fillRect(0, 1, 6, 2).fillRect(1, 3, 4, 1)
+      seed.fillStyle(0xffffff).fillRect(1, 1, 2, 1)
+      seed.generateTexture('vlad-seed', 6, 4)
+      seed.destroy()
+    }
+    if (!this.textures.exists('vlad-juice-chunk')) {
+      const chunk = this.make.graphics({ x: 0, y: 0 })
+      chunk.fillStyle(0xffffff).fillRect(1, 0, 5, 2).fillRect(0, 2, 8, 4).fillRect(2, 6, 5, 2)
+      chunk.fillStyle(0xffd7bf, .85).fillRect(1, 2, 3, 2)
+      chunk.generateTexture('vlad-juice-chunk', 8, 8)
+      chunk.destroy()
     }
     make('vlad-smoke', 0x85766d, 5)
   }
@@ -559,7 +601,7 @@ export class VladsSkewersScene extends Phaser.Scene {
     this.returnTween?.stop()
     this.returnTween = this.tweens.add({
       targets: returnState,
-      y: 832,
+      y: NATURAL_SKEWER_Y,
       duration: 360,
       ease: 'Back.Out',
       onUpdate: () => { this.skewerY = returnState.y },
@@ -569,12 +611,12 @@ export class VladsSkewersScene extends Phaser.Scene {
 
   private moveSkewer(point: Phaser.Math.Vector2) {
     this.skewerX = clamp(point.x, 54, 341)
-    this.skewerY = clamp(point.y, 500, 832)
+    this.skewerY = clamp(point.y, 500, MAX_SKEWER_Y)
   }
 
   private isPointOnHand(point: Phaser.Math.Vector2) {
-    const dx = (point.x - this.skewerX) / 43
-    const dy = (point.y - (this.skewerY - HAND_GRIP_OFFSET)) / 50
+    const dx = (point.x - this.skewerX) / HAND_HIT_RADIUS_X
+    const dy = (point.y - (this.skewerY - HAND_GRIP_OFFSET)) / HAND_HIT_RADIUS_Y
     return dx * dx + dy * dy <= 1
   }
 
@@ -624,7 +666,7 @@ export class VladsSkewersScene extends Phaser.Scene {
     const tip = new Phaser.Math.Vector2(this.skewerX, this.skewerY - TIP_OFFSET)
     if (this.dragging) {
       const target = this.findImpaleTarget(this.previousTip, tip)
-      if (target) this.catchDrop(target)
+      if (target) this.catchDrop(target, tip.x - this.previousTip.x, tip.y - this.previousTip.y)
     }
     this.previousTip.copy(tip)
     this.updateSkewer(dt)
@@ -694,6 +736,12 @@ export class VladsSkewersScene extends Phaser.Scene {
     return root
   }
 
+  private createIngredientIcon(kind: IngredientKind, x: number, y: number, size: number, depth: number) {
+    return kind === 'meat'
+      ? this.add.image(x, y, 'vlad-meat').setDisplaySize(size * 1.1, size).setDepth(depth)
+      : this.add.image(x, y, 'vlad-food', specs.get(kind)!.frame).setDisplaySize(size, size).setDepth(depth)
+  }
+
   private createFoodVisual(kind: Exclude<DropKind, 'blood'>, x: number, y: number, size: number) {
     const frame = kind === 'garlic' ? 7 : specs.get(kind as IngredientKind)!.frame
     const root = this.add.container(x, y).setDepth(20)
@@ -701,7 +749,9 @@ export class VladsSkewersScene extends Phaser.Scene {
     const rightLeg = this.add.graphics()
     const leftArm = this.add.graphics()
     const rightArm = this.add.graphics()
-    const body = this.add.image(0, 0, 'vlad-food', frame).setDisplaySize(size * 1.08, size * 1.08)
+    const body = kind === 'meat'
+      ? this.add.image(0, 0, 'vlad-meat').setDisplaySize(size * 1.18, size * 1.08)
+      : this.add.image(0, 0, 'vlad-food', frame).setDisplaySize(size * 1.08, size * 1.08)
     const grillMarks = this.add.image(0, 2, 'vlad-parts', 13).setDisplaySize(size * .82, size * .82).setVisible(false)
     const eyes = this.add.image(0, -size * .12, 'vlad-parts', 0).setDisplaySize(size * .76, size * .76)
     const mouth = this.add.image(0, size * .24, 'vlad-parts', 4).setDisplaySize(size * .58, size * .58)
@@ -795,7 +845,6 @@ export class VladsSkewersScene extends Phaser.Scene {
     drop.speed = 0
     drop.vx = 0
     drop.y = GRILL_Y + 9 + this.random() * 12
-    drop.rotation = (this.random() * 2 - 1) * 12
     if (drop.kind === 'blood') {
       this.removeDrop(drop)
       return
@@ -811,7 +860,7 @@ export class VladsSkewersScene extends Phaser.Scene {
     if (!drop.visual) return
     const struggle = Math.max(0, 1 - drop.grillAge / 1.5)
     drop.visual.root.setPosition(drop.x + Math.sin(this.elapsed * 31 + drop.phase) * 2.5 * struggle, drop.y + Math.abs(Math.sin(this.elapsed * 17 + drop.phase)) * 2)
-    drop.visual.root.setRotation(Phaser.Math.DegToRad(drop.rotation + Math.sin(this.elapsed * 18) * 5 * struggle))
+    drop.visual.root.setRotation(Phaser.Math.DegToRad(drop.rotation))
     drop.visual.cooked = true
     if (drop.grillAge < .9) drop.visual.body.setTint(0xffbd72)
     else if (drop.grillAge < 1.65) drop.visual.body.setTint(0x654331)
@@ -939,21 +988,23 @@ export class VladsSkewersScene extends Phaser.Scene {
     return found
   }
 
-  private catchDrop(drop: Drop) {
+  private catchDrop(drop: Drop, impactDx = 0, impactDy = -1) {
     const impactX = drop.x
     const impactY = drop.y
+    const impactRotation = drop.visual?.root.rotation ?? Phaser.Math.DegToRad(drop.rotation)
     if (drop.kind === 'blood') {
       this.slowTimer = 3.4
       const active = this.customers[0]
       if (active) active.patience = Math.min(active.maxPatience, active.patience + 5)
       this.removeDrop(drop)
       this.flashStatus('SANG FROID · +TEMPS', '#ff7180')
+      this.showActiveBonus()
       miniFuggAudio.playGameSfx(GAME_ID, 'bonus', { intensity: .9 })
       return
     }
     if (drop.kind === 'garlic') {
       this.removeDrop(drop)
-      this.showImpact(impactX, impactY, 1, 0xf1d6a3)
+      this.showImpact(impactX, impactY, 1, 0xf1d6a3, impactDx, impactDy)
       this.loseCustomer('AIL ! CLIENT PERDU')
       return
     }
@@ -962,7 +1013,7 @@ export class VladsSkewersScene extends Phaser.Scene {
     const expected = this.expectedIngredient()
     if (!customer || this.stack.length >= Math.min(customer.order.length, MAX_STACK) || drop.kind !== expected) {
       this.removeDrop(drop)
-      this.showImpact(impactX, impactY, 1, specs.get(drop.kind)!.juice)
+      this.showImpact(impactX, impactY, 1, specs.get(drop.kind)!.juice, impactDx, impactDy)
       this.loseCustomer('MAUVAISE BROCHETTE')
       return
     }
@@ -972,12 +1023,12 @@ export class VladsSkewersScene extends Phaser.Scene {
     this.lastImpaleAt = this.elapsed
     const tier = Math.min(5, Math.max(1, this.combo))
     this.removeDrop(drop)
-    this.addStackFood(drop.kind, impactX, impactY)
+    this.addStackFood(drop.kind, impactX, impactY, impactRotation)
     const stacked = this.stack[this.stack.length - 1]
     stacked.visual.cooked = true
     stacked.visual.body.setTint(0xffbd72)
     this.drawGrillMarks(stacked.visual)
-    this.showImpact(impactX, impactY, tier, specs.get(drop.kind)!.juice)
+    this.showImpact(impactX, impactY, tier, specs.get(drop.kind)!.juice, impactDx, impactDy)
     void miniFuggAudio.playSfx(`vlad.impale${tier}`, { owner: GAME_ID, intensity: .8 + tier * .09 })
     if (this.stack.length === customer.order.length) {
       this.autoServeAt = this.elapsed + 2.35
@@ -987,14 +1038,14 @@ export class VladsSkewersScene extends Phaser.Scene {
     this.refreshHud()
   }
 
-  private addStackFood(kind: IngredientKind, impactX = this.skewerX, impactY = this.skewerY - TIP_OFFSET) {
+  private addStackFood(kind: IngredientKind, impactX = this.skewerX, impactY = this.skewerY - TIP_OFFSET, baseRotation = 0) {
     this.stack.forEach(item => { item.pushOffsetY -= STACK_GAP })
     const targetY = this.skewerY - TIP_OFFSET + 54
     const visual = this.createFoodVisual(kind, impactX, impactY, STACK_FOOD_SIZE)
     visual.root.setDepth(47)
     this.stack.push({
-      kind, visual, lag: 0, lagVelocity: 0,
-      limbSwing: [-.2, .18, -.12, .14], limbVelocity: [0, 0, 0, 0],
+      kind, visual, baseRotation, lag: 0, lagVelocity: 0,
+      limbSwing: [-.35, .28, -.2, .25], limbVelocity: [0, 0, 0, 0],
       entryOffsetX: impactX - this.skewerX,
       entryOffsetY: impactY - targetY,
       entryAge: 0,
@@ -1008,13 +1059,24 @@ export class VladsSkewersScene extends Phaser.Scene {
     this.skewer.setPosition(this.skewerX, this.skewerY - 35).setDisplaySize(30, SKEWER_HEIGHT)
     this.arm.setPosition(this.skewerX + 23, this.skewerY - 92)
     this.drawHandHint()
-    const velocity = (this.skewerX - this.previousSkewerX) / Math.max(dt, .001)
+    const velocityX = (this.skewerX - this.previousSkewerX) / Math.max(dt, .001)
+    const velocityY = (this.skewerY - this.previousSkewerY) / Math.max(dt, .001)
+    const accelerationX = (velocityX - this.skewerVelocityX) / Math.max(dt, .001)
+    const accelerationY = (velocityY - this.skewerVelocityY) / Math.max(dt, .001)
+    this.skewerVelocityX = velocityX
+    this.skewerVelocityY = velocityY
     this.previousSkewerX = this.skewerX
     this.previousSkewerY = this.skewerY
+    const badgeX = clamp(this.skewerX + (this.skewerX > 270 ? -72 : 72), 62, 328)
+    const badgeY = clamp(this.skewerY - 108, 540, 710)
+    this.comboText.setPosition(badgeX, badgeY)
+    this.bonusText.setPosition(badgeX, badgeY + (this.comboText.visible ? 30 : 0))
+    if (this.slowTimer > 0) this.bonusText.setText(`SANG FROID ${this.slowTimer.toFixed(1)}s`).setVisible(true)
+    else this.bonusText.setVisible(false)
     this.tipGlow.clear().fillStyle(0xffe36a, .75).fillRect(this.skewerX - 2, tipY - 2, 4, 4)
     this.stack.forEach((item, index) => {
       const rankFromTip = this.stack.length - 1 - index
-      const targetLag = clamp(-velocity * .018, -13, 13)
+      const targetLag = clamp(-velocityX * .018, -13, 13)
       item.lagVelocity += (targetLag - item.lag) * dt * 21
       item.lagVelocity *= Math.pow(.08, dt)
       item.lag += item.lagVelocity * dt
@@ -1026,9 +1088,9 @@ export class VladsSkewersScene extends Phaser.Scene {
       item.visual.root.setPosition(
         this.skewerX + item.lag + item.entryOffsetX * entry,
         tipY + 54 + rankFromTip * STACK_GAP + item.pushOffsetY + item.entryOffsetY * entry,
-      ).setRotation(item.lag * .018 + entry * .12)
+      ).setRotation(item.baseRotation)
       this.drawFoodParts(item.visual, 'dead', this.elapsed + index * .2, null)
-      this.drawInertStackLimbs(item, velocity, dt, index)
+      this.drawInertStackLimbs(item, velocityX, velocityY, accelerationX, accelerationY, dt, index)
       if (item.visual.cooked) this.drawGrillMarks(item.visual)
     })
   }
@@ -1045,29 +1107,40 @@ export class VladsSkewersScene extends Phaser.Scene {
     const y = Math.round(this.skewerY - HAND_GRIP_OFFSET)
     this.arm.setTint(0xffd873)
     hint.setVisible(true).lineStyle(3, 0xffd34d, 1)
-    hint.strokeRect(x - 39, y - 47, 18, 3).strokeRect(x - 39, y - 47, 3, 18)
-    hint.strokeRect(x + 21, y - 47, 18, 3).strokeRect(x + 36, y - 47, 3, 18)
-    hint.strokeRect(x - 39, y + 44, 18, 3).strokeRect(x - 39, y + 29, 3, 18)
-    hint.strokeRect(x + 21, y + 44, 18, 3).strokeRect(x + 36, y + 29, 3, 18)
+    hint.strokeRect(x - 62, y - 68, 22, 3).strokeRect(x - 62, y - 68, 3, 22)
+    hint.strokeRect(x + 40, y - 68, 22, 3).strokeRect(x + 59, y - 68, 3, 22)
+    hint.strokeRect(x - 62, y + 65, 22, 3).strokeRect(x - 62, y + 46, 3, 22)
+    hint.strokeRect(x + 40, y + 65, 22, 3).strokeRect(x + 59, y + 46, 3, 22)
   }
 
-  private drawInertStackLimbs(item: StackFood, velocity: number, dt: number, index: number) {
+  private drawInertStackLimbs(item: StackFood, velocityX: number, velocityY: number, accelerationX: number, accelerationY: number, dt: number, index: number) {
     const visual = item.visual
     const size = visual.size
-    const target = clamp(-velocity * .0018, -.9, .9)
-    for (let limb = 0; limb < 4; limb += 1) {
-      const sideBias = limb % 2 === 0 ? -.08 : .08
-      const gravityRest = limb < 2 ? sideBias : sideBias * .55
-      const stiffness = limb < 2 ? 8.5 : 6.8
-      item.limbVelocity[limb] += (gravityRest + target * (limb % 2 === 0 ? .92 : 1.08) - item.limbSwing[limb]) * stiffness * dt
-      item.limbVelocity[limb] *= Math.pow(limb < 2 ? .16 : .24, dt)
-      item.limbSwing[limb] += item.limbVelocity[limb] * dt
+    const speed = Math.hypot(velocityX, velocityY)
+    const agitation = clamp(speed / 420, 0, 1.8)
+    const kickX = clamp(-accelerationX / 4400, -2.4, 2.4)
+    const kickY = clamp(-accelerationY / 5200, -2, 2)
+    for (let limbIndex = 0; limbIndex < 4; limbIndex += 1) {
+      const side = limbIndex % 2 === 0 ? -1 : 1
+      const phase = this.elapsed * (12 + limbIndex * 1.7) + index * 1.9 + limbIndex * 2.2
+      const velocityTorque = (-velocityX * .018 + velocityY * .011 * side) * (limbIndex < 2 ? 1.12 : .94)
+      const accelerationKick = kickX * (1 + limbIndex * .08) + kickY * side
+      const flutter = Math.sin(phase) * agitation * (4.4 + limbIndex * .4)
+      const gravityReturn = -Math.sin(item.limbSwing[limbIndex]) * (agitation < .08 ? 4.8 : .6)
+      item.limbVelocity[limbIndex] += (velocityTorque + accelerationKick + flutter + gravityReturn) * dt
+      item.limbVelocity[limbIndex] *= Math.pow(agitation > .12 ? .74 : .24, dt)
+      item.limbSwing[limbIndex] += item.limbVelocity[limbIndex] * dt
     }
     const limb = (side: -1 | 1, swing: number, leg: boolean) => {
       const start = leg ? { x: side * size * .17, y: size * .29 } : { x: side * size * .32, y: 0 }
-      const hang = size * (leg ? .62 : .55)
-      const end = { x: side * size * .34 + swing * hang, y: size * (leg ? .68 : .53) }
-      const joint = { x: (start.x + end.x) * .48 - swing * size * .12, y: (start.y + end.y) * .5 + size * .08 }
+      const hang = size * (leg ? .58 : .55)
+      const angle = Math.PI / 2 + swing
+      const end = { x: start.x + Math.cos(angle) * hang, y: start.y + Math.sin(angle) * hang }
+      const bend = Math.sin(swing * .7 + side) * size * .13
+      const joint = {
+        x: (start.x + end.x) * .5 + Math.cos(angle + Math.PI / 2) * bend,
+        y: (start.y + end.y) * .5 + Math.sin(angle + Math.PI / 2) * bend,
+      }
       return { start, joint, end }
     }
     const la = limb(-1, item.limbSwing[0], false)
@@ -1078,28 +1151,44 @@ export class VladsSkewersScene extends Phaser.Scene {
     this.drawJointedLimb(visual.rightArm, ra.start, ra.joint, ra.end, 'hand', 1)
     this.drawJointedLimb(visual.leftLeg, ll.start, ll.joint, ll.end, 'foot', -1)
     this.drawJointedLimb(visual.rightLeg, rl.start, rl.joint, rl.end, 'foot', 1)
-    visual.root.angle += Math.sin(this.elapsed * 2.3 + index) * .08
   }
 
-  private showImpact(x: number, y: number, tier: number, color: number) {
+  private showImpact(x: number, y: number, tier: number, color: number, impactDx = 0, impactDy = -1) {
     const count = [12, 18, 25, 34, 46][tier - 1]
+    const direction = Math.hypot(impactDx, impactDy) > 2
+      ? Phaser.Math.RadToDeg(Math.atan2(impactDy, impactDx))
+      : -90
+    const cone = { min: direction - 34, max: direction + 34 }
+    this.juiceParticles.setEmitterAngle(cone)
+    this.juiceSpeckParticles.setEmitterAngle({ min: direction - 46, max: direction + 46 })
+    this.juiceSeedParticles.setEmitterAngle({ min: direction - 52, max: direction + 52 })
+    this.juiceChunkParticles.setEmitterAngle({ min: direction - 38, max: direction + 38 })
     this.juiceParticles.setParticleTint(color).explode(count, x, y)
     this.juiceSpeckParticles.setParticleTint(color).explode(Math.round(count * .72), x, y)
+    this.juiceSeedParticles.explode(2 + tier * 2, x, y)
+    this.juiceChunkParticles.setParticleTint(color).explode(4 + tier * 3, x, y)
     this.cameras.main.shake(55 + tier * 32, .0015 + tier * .0014)
     const splash = this.add.image(x, y, 'vlad-parts', 15)
       .setDisplaySize(34 + tier * 9, 34 + tier * 9)
       .setTint(color)
       .setAngle((this.random() * 2 - 1) * 22)
       .setDepth(75)
-    const callout = this.add.container(x, y - 35).setDepth(77)
+    const calloutX = clamp(x + (tier % 2 === 0 ? 42 : -42), 82, 308)
+    const callout = this.add.container(calloutX, y - 35).setDepth(77)
     const word = this.add.text(0, 0, impactWords[Math.floor(this.random() * impactWords.length)], {
-      fontFamily: FONT, fontSize: `${15 + tier * 3}px`, color: '#fff0b0', stroke: '#7d0908', strokeThickness: 5, resolution: 1,
+      fontFamily: FONT, fontSize: `${14 + tier * 2}px`, color: '#fff0b0', stroke: '#7d0908', strokeThickness: 5, resolution: 1,
     }).setOrigin(.5)
-    const cry = this.add.text(0, 22, cries[Math.floor(this.random() * cries.length)], {
-      fontFamily: FONT, fontSize: '9px', color: '#ffffff', stroke: '#190505', strokeThickness: 3, resolution: 1,
+    const cry = this.add.text(0, 31, cries[Math.floor(this.random() * cries.length)], {
+      fontFamily: FONT, fontSize: '9px', color: '#2a0908', resolution: 1,
     }).setOrigin(.5)
-    callout.add([word, cry])
-    this.impactCallouts.forEach(older => { older.y -= 48; older.setAlpha(Math.max(.42, older.alpha * .82)) })
+    const bubbleWidth = clamp(cry.width + 24, 74, 138)
+    const bubble = this.add.graphics()
+      .fillStyle(0x160607, 1).fillRect(-bubbleWidth / 2 - 3, 16, bubbleWidth + 6, 31)
+      .fillStyle(0xfff1cc, 1).fillRect(-bubbleWidth / 2, 19, bubbleWidth, 25)
+      .fillStyle(0x160607, 1).fillTriangle(-8, 44, 5, 44, -4, 54)
+      .fillStyle(0xfff1cc, 1).fillTriangle(-5, 42, 3, 42, -3, 49)
+    callout.add([bubble, word, cry])
+    this.impactCallouts.forEach(older => { older.y -= 38; older.setAlpha(older.alpha * .52) })
     this.impactCallouts.push(callout)
     this.tweens.add({ targets: splash, y: splash.y - 24, alpha: 0, scale: 1.2, delay: 520 + tier * 90, duration: 900, ease: 'Cubic.Out', onComplete: () => splash.destroy() })
     this.tweens.add({
@@ -1112,6 +1201,12 @@ export class VladsSkewersScene extends Phaser.Scene {
       this.tweens.killTweensOf(this.comboText)
       this.tweens.add({ targets: this.comboText, scale: { from: 1.35, to: 1 }, duration: 210, ease: 'Back.Out' })
     }
+  }
+
+  private showActiveBonus() {
+    this.bonusText.setText('SANG FROID 3.4s').setVisible(true).setAlpha(1).setScale(1.9)
+    this.tweens.killTweensOf(this.bonusText)
+    this.tweens.add({ targets: this.bonusText, scale: 1, duration: 320, ease: 'Back.Out' })
   }
 
   private removeDrop(drop: Drop) {
@@ -1194,11 +1289,10 @@ export class VladsSkewersScene extends Phaser.Scene {
     if (!this.scoreText) return
     this.drawScoreDigits()
     this.levelText.setText(`NIVEAU ${this.level}`)
-    this.clientsText.setText(`RESTE ${this.customers.length}/${clientsForLevel(this.level)} CLIENTS`)
     this.unlockIcons.forEach(icon => icon.destroy())
     this.unlockIcons = this.availableIngredients().map((ingredient, index, list) => {
-      const spacing = Math.min(32, 196 / Math.max(1, list.length - 1))
-      return this.add.image(176 + (index - (list.length - 1) / 2) * spacing, 51, 'vlad-food', ingredient.frame).setDisplaySize(25, 25).setDepth(53)
+      const spacing = Math.min(27, 166 / Math.max(1, list.length - 1))
+      return this.createIngredientIcon(ingredient.kind, 195 + (index - (list.length - 1) / 2) * spacing, 52, 23, 53)
     })
 
     const visibleCustomers = this.customers.slice(0, 5).reverse()
@@ -1211,27 +1305,31 @@ export class VladsSkewersScene extends Phaser.Scene {
       slot.portrait.setFrame(customer.frame)
       slot.actor.setScale(index === this.customerSlots.length - 1 ? 1.02 : .9)
     })
+    const topCustomerSlot = this.customerSlots[firstVisibleSlot]
+    this.clientCountText
+      .setText(`RESTE ×${this.customers.length}`)
+      .setPosition(349, topCustomerSlot ? Math.min(topCustomerSlot.baseY - 110, 492) : 172)
+      .setVisible(this.customers.length > 0)
 
     this.orderIcons.forEach(icon => icon.destroy())
     const active = this.customers[0]
     this.orderSkewer.clear().setVisible(Boolean(active))
     if (active) {
-      const half = Math.max(34, (active.order.length - 1) * 10 + 22)
-      this.orderSkewer.lineStyle(5, 0x35140c, 1).lineBetween(316 - half, 553, 316 + half, 553)
-      this.orderSkewer.lineStyle(2, 0xd38b25, 1).lineBetween(316 - half, 552, 316 + half + 5, 552)
-      this.orderSkewer.fillStyle(0xf2b342, 1).fillTriangle(316 - half - 8, 552, 316 - half, 547, 316 - half, 557)
-      this.orderSkewer.fillStyle(0x8d2418, 1).fillRect(316 + half + 3, 547, 4, 10)
+      const half = Math.max(43, (active.order.length - 1) * 14 + 24)
+      this.orderSkewer.lineStyle(6, 0x35140c, 1).lineBetween(300 - half, 555, 300 + half, 555)
+      this.orderSkewer.lineStyle(2, 0xd38b25, 1).lineBetween(300 - half, 554, 300 + half + 5, 554)
+      this.orderSkewer.fillStyle(0xf2b342, 1).fillTriangle(300 - half - 9, 554, 300 - half, 548, 300 - half, 560)
+      this.orderSkewer.fillStyle(0x8d2418, 1).fillRect(300 + half + 3, 548, 5, 13)
     }
     this.orderIcons = active ? active.order.map((kind, index) => {
       const done = index < this.stack.length
-      const frame = specs.get(kind)!.frame
-      return this.add.image(316 + (index - (active.order.length - 1) / 2) * 22, 553, 'vlad-food', frame)
-        .setDisplaySize(25, 25).setTint(done ? 0x66584b : 0xffffff).setDepth(60)
+      return this.createIngredientIcon(kind, 300 + (index - (active.order.length - 1) / 2) * 28, 555, 32, 60)
+        .setTint(done ? 0x66584b : 0xffffff)
     }) : []
     this.serveBubble.setVisible(Boolean(active))
-    const meterX = 281
-    const meterY = 590
-    const meterWidth = 72
+    const meterX = 254
+    const meterY = 608
+    const meterWidth = 92
     const ratio = active ? clamp(active.patience / active.maxPatience, 0, 1) : 0
     const meterColor = ratio < .25 ? 0xff3b24 : ratio < .55 ? 0xffa51f : 0x8ed348
     this.patienceBar.clear()
@@ -1240,7 +1338,7 @@ export class VladsSkewersScene extends Phaser.Scene {
       .fillStyle(0x3b1710, 1).fillRect(meterX + 4, meterY + 4, meterWidth - 8, 4)
     if (active) this.patienceBar.fillStyle(meterColor, 1).fillRect(meterX + 4, meterY + 4, Math.round((meterWidth - 8) * ratio), 4)
     this.patienceBar.fillStyle(0xe6a34b, 1).fillTriangle(meterX - 4, meterY + 6, meterX, meterY + 2, meterX, meterY + 10)
-    for (let tick = 1; tick < 4; tick += 1) this.patienceBar.fillStyle(0x080405, .8).fillRect(meterX + tick * 16 + 3, meterY + 3, 2, 6)
+    for (let tick = 1; tick < 4; tick += 1) this.patienceBar.fillStyle(0x080405, .8).fillRect(meterX + tick * 21 + 3, meterY + 3, 2, 6)
   }
 
   private drawScoreDigits() {
@@ -1301,7 +1399,7 @@ export class VladsSkewersScene extends Phaser.Scene {
     this.tweens.killTweensOf(this.orderPanel)
     this.orderPanel.setAlpha(.55)
     this.tweens.add({ targets: this.orderPanel, alpha: 1, duration: 320, ease: 'Cubic.Out' })
-    this.flashStatus(`NIVEAU ${this.level} · ${clientsForLevel(this.level)} CLIENTS`, '#ffca69')
+    this.flashStatus(`NIVEAU ${this.level}`, '#ffca69')
   }
 
   private runTestAction(action: string) {
@@ -1318,7 +1416,7 @@ export class VladsSkewersScene extends Phaser.Scene {
       }
       const drop: Drop = {
         id: this.nextDropId++, kind: 'pepper', x: 195, y: 400, speed: 0, vx: 0, sway: 0, phase: 0,
-        rotation: 0, spin: 0, state: 'falling', grillAge: 0, smokeTick: 0, visual: this.createFoodVisual('pepper', 195, 400, FALLING_FOOD_SIZE), bloodVisual: null,
+        rotation: 23, spin: 0, state: 'falling', grillAge: 0, smokeTick: 0, visual: this.createFoodVisual('pepper', 195, 400, FALLING_FOOD_SIZE), bloodVisual: null,
       }
       this.drops.push(drop)
     }
@@ -1338,6 +1436,16 @@ export class VladsSkewersScene extends Phaser.Scene {
           this.catchDrop(drop)
         })
       }
+    }
+    if (action === 'limb-whirl' && this.stack.length > 0) {
+      this.skewerX = 72
+      this.updateSkewer(1 / 60)
+      this.skewerX = 318
+      for (let step = 0; step < 24; step += 1) {
+        this.updateSkewer(1 / 60)
+      }
+      this.skewerX = 195
+      this.updateSkewer(1 / 60)
     }
     if (action === 'serve') this.serveCustomer()
     if (action === 'lose') this.loseCustomer('BROCHETTE RATÉE')

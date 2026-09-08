@@ -70,7 +70,9 @@ try {
     assert.equal(initial.skewer.stack.length, 0)
     assert.ok(initial.fallArea.minX <= 40 && initial.fallArea.maxX >= 325, 'Food fall space must use the widened arena')
     const wrapperBackground = await page.locator('.vlad-skewers-game').evaluate(element => getComputedStyle(element).backgroundImage)
-    assert.match(wrapperBackground, /pixel-grill-overscan/, 'Desktop overscan must use dedicated side scenery rather than duplicate the portrait arena')
+    assert.equal(wrapperBackground, 'none', 'Game-owned scenery must stay inside the canonical 390-wide stage')
+    assert.ok(initial.input.hitRadiusX > 55 && initial.input.hitRadiusY > 65, 'The hand pickup area must be substantially larger than the visible hand')
+    assert.ok(initial.skewer.y <= 780, 'The natural pose must expose roughly one third of Vlad’s arm')
     await capture('ambient-fire-particles')
 
     if (!touchSession) {
@@ -132,10 +134,11 @@ try {
     assert.ok((await state()).drops.some(drop => drop.id === probeId), 'Near-tip miss must leave the food falling')
     await pressAt(195, 765)
     assert.equal((await state()).skewer.stack.length, 1, 'A press exactly at the gold tip must impale')
+    assert.ok(Math.abs((await state()).skewer.stack[0].rotation - 0.401) < 0.03, 'Pierced food must preserve its incoming orientation')
     assert.ok((await state()).skewer.stack[0].entryProgress < 1, 'Caught food must still be visibly sliding onto the skewer after the initial impact')
     assert.ok(!(await state()).drops.some(drop => drop.id === probeId), 'Exact-tip hit must remove the caught food')
     await page.waitForTimeout(430)
-    assert.ok(Math.abs((await state()).skewer.y - 832) < 1, 'Released arm must spring back to the bottom')
+    assert.ok(Math.abs((await state()).skewer.y - 780) < 1, 'Released arm must spring back to its centered natural pose')
     assert.equal((await state()).skewer.stack[0].entryProgress, 1, 'The food must settle progressively instead of teleporting')
     await capture('pointer-impale')
 
@@ -153,6 +156,8 @@ try {
     assert.ok(brutality.skewer.stack.every(item => item.cooked), 'Completed skewer must be golden/grill-marked')
     assert.equal(brutality.score, 0, 'Impalement presentation must not add score')
     assert.ok(brutality.skewer.stack.every(item => item.entryProgress < 1), 'Rapid catches must preserve the progressive insertion phase')
+    const whirled = JSON.parse(await page.evaluate(() => window.vlad_test_action('limb-whirl')))
+    assert.ok(whirled.skewer.stack.some(item => item.limbAngles.some(angle => Math.abs(angle) > 0.65)), 'Fast skewer movement must send the light limbs into wide inertial arcs')
     await advance(650)
     await capture('brutality-x5')
 
@@ -173,10 +178,12 @@ try {
 
     const grillingStart = JSON.parse(await page.evaluate(() => window.vlad_test_action('grill')))
     const grillingId = grillingStart.drops.find(drop => drop.state === 'grilling')?.id
+    const grillingRotation = grillingStart.drops.find(drop => drop.id === grillingId)?.rotation
     assert.ok(grillingId, 'Deterministic grill probe must exist')
     await advance(520)
     const cooked = await state()
     assert.ok(cooked.drops.some(drop => drop.state === 'grilling'))
+    assert.ok(Math.abs(cooked.drops.find(drop => drop.id === grillingId).rotation - grillingRotation) < 0.01, 'Food must keep its incoming orientation while grilling')
     await capture('grill-appetizing')
     await advance(1250)
     await capture('grill-charred')

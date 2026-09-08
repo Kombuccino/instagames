@@ -26,6 +26,8 @@ Original prompt: Mettre à jour LineFugg pour rendre les GFX conformes à la DA 
 
 2026-09-08 — Le contrat est devenu « Zones MiniFugg » : HAUT, CENTRE et BAS, avec largeur pilotée sur mobile et hauteur pilotée sur PC. Le laboratoire expose Home, Cover, CoverBeta, CoverCaca, Game, GameOver et Ladder ; son menu extérieur est visible uniquement sur PC. MONNAIE et JOUER sont enfermés dans le cadre 390, RAIL reste à gauche sur CENTRE. Les règles AGENTS, Phaser, DA, création, production et validation renvoient désormais toutes au document canonique `docs/MINIFUGG_ZONES.md`. Validation : 28 combinaisons modèle/viewport, navigation PC, build et captures inspectées sans erreur.
 
+2026-09-08 — Corrections Vlad locales : prise de main agrandie et pose naturelle recentrée/relevée, orientation des aliments conservée entre chute, broche et grille, membres embrochés à inertie angulaire très légère. Recette agrandie, côte avec os distincte, panneau haut simplifié et compteur clients au sommet de la pile. Impacts directionnels enrichis (gouttes, graines, éclats, morceaux), bonus près de la main et paroles en bulles BD. Overscan de jeu supprimé pour respecter le stage 390 et les Zones MiniFugg. Build et tests téléphone/bureau réussis, score ×5 inchangé à 50.
+
 Suivi produit canonique : src/games/linefugg/GAME_STATUS.md.
 
 2026-09-07 : comparaison du master à la capture utilisateur et au renderer. Priorités : place de la grille, panneaux non déformés, calculs lisibles, indicateurs alignés, décomposition du mécanisme céleste et effets bornés. Références Phaser 4.2.1 consultées via phaser-minifugg ; leur publication est gérée dans une autre tâche. Assets générés depuis le master, import privé Drive en cours. Aucun changement de règles prévu.

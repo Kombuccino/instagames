@@ -7,7 +7,6 @@ import { VLADS_SKEWERS_SCENE_KEY, VladsSkewersScene } from './VladsSkewersScene'
 import './VladsSkewers.css'
 
 const GAME_ID = 'vlads-skewers'
-const VLAD_OVERSCAN = '/assets/generated/vlads-skewers/backgrounds/pixel-grill-overscan.png'
 
 export function VladsSkewers({ active, seed, restartToken, session }: GameComponentProps) {
   const renderPixelRatio = useRef(Math.min(2, Math.max(1, window.devicePixelRatio || 1))).current
@@ -32,8 +31,6 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
   return (
     <div className="vlad-skewers-game" style={{
       position: 'absolute', inset: 0, overflow: 'hidden', backgroundColor: '#070405',
-      backgroundImage: `url(${VLAD_OVERSCAN})`,
-      backgroundSize: 'cover', backgroundPosition: 'center bottom', imageRendering: 'pixelated',
     }}>
       <PhaserGameHost
         active={active}

@@ -34,6 +34,11 @@ Prompt de reprise préparé : `docs/prompts/VLAD_GAMEPLAY_RECOVERY.md`.
 - Côte de bœuf avec os remplaçant le cube, recette client agrandie, panneau haut réduit au niveau et aux ingrédients, compteur client secondaire déplacé au sommet de la pile.
 - Gerbes dirigées par l'angle de perforation avec gouttes, graines, éclats et morceaux croissants selon le palier ; bonus/multiplicateur ancrés près de la main avec pulse, dernières paroles placées dans une bulle BD.
 - Overscan propre au jeu supprimé conformément aux Zones MiniFugg : les côtés ordinateur appartiennent au Core.
+- Passe de précision validée le 8 septembre : seule une traversée ascendante de la pointe embroche ; le point exact d'entrée reste ancré et produit des brochettes réellement décentrées. Une attaque descendante lacère sans capturer, projette des sucs, affole, accélère et dévie l'ingrédient.
+- Membres embrochés passés en ragdolls visuels à deux articulations indépendantes, sous gravité monde : ils pendent vers le bas quelle que soit la rotation du corps et fouettent sous accélération.
+- Nouveau score demandé : chaîne cumulative 1/2/6/24/120, multipliée par la beauté moyenne ×0,8 à ×3,5 et arrondie. Le point central est valorisé ; le bord reste accepté mais donne une brochette volontairement bancale.
+- Livraison non bloquante : dès la complétion, la brochette se détache et vole vers le client tandis qu'une pique vide devient immédiatement jouable ; réaction client à l'arrivée.
+- Commande client compactée et ancienne barre remplacée par une petite horloge sectorielle avec secondes restantes et couleur d'urgence.
 
 ## Validation gameplay
 
@@ -48,6 +53,7 @@ Les 7 et 8 septembre 2026 :
 - score historique vérifié : brochette de 5 (base 10) × combo 5 = 50 ; l'empalement seul n'ajoute aucun point et la broche complète reste visible 2,35 s avant validation ;
 - insertion non instantanée vérifiée, chute élargie, décor strictement contenu dans le stage 390, particules persistantes, ordre sur broche et alignement inférieur des quinze portraits contrôlés dans les captures téléphone/bureau ;
 - aucune erreur console ou ressource dans la matrice testée.
+- le 8 septembre : matrice téléphone tactile + bureau souris étendue aux coups descendants, interdiction d'embrocher en descente, ancrages décentrés, double articulation, chaîne cumulative, beauté décimale, livraison immédiate et horloge d'impatience. Score déterministe de contrôle : `(1+2+6+24+120) × 2,5 = 382,5`, arrondi à `383`.
 - le 8 septembre : nouvelle matrice téléphone tactile + bureau souris réussie, orientation broche/grille et grands arcs inertiels couverts par assertions ; score historique ×5 toujours égal à 50 ; build de production réussi.
 
 Captures locales : `artifacts/vlads-skewers/`. Limite : émulation navigateur, pas un GPU/tactile physique.

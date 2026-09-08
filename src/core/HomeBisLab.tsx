@@ -40,7 +40,7 @@ const HOME_BIS_GAMES: HomeBisGame[] = [
     title: "Vlad's Skewers",
     kicker: 'FIVE INGREDIENTS. ONE VERY SHARP SERVICE.',
     copy: 'Build the order from the tip of Vlad’s skewer, dodge the garlic and keep impatient guests fed. Clean upward hits reward timing, beauty and a brutal chain multiplier.',
-    issue: 'VERSION 0.2.0',
+    issue: '0.2.0',
     release: 'FIRST TRACKED 2026',
     updated: 'SEP 8, 2026',
     cover: '/assets/imported/vlads-skewers/welcome/vlad-cover-c-graphic-poster-approved-2026-09-07.png',
@@ -90,9 +90,6 @@ function withLabCover(game: InstagameDefinition, item: HomeBisGame): InstagameDe
 }
 
 function MagazinePage({ item, section, onSection }: { item: HomeBisGame, section: MagazineSection, onSection: (section: MagazineSection) => void }) {
-  const game = gameRegistry.find((candidate) => candidate.id === item.id)
-  const bestScore = game ? readWelcomeBestScore(game.id) : 0
-
   return (
     <article className="mf-home-bis-magazine" style={{ '--mag-accent': item.accent } as React.CSSProperties}>
       <div className="mf-home-bis-cover-curl" style={{ backgroundImage: `url(${item.cover})` }} aria-hidden="true" />
@@ -114,17 +111,16 @@ function MagazinePage({ item, section, onSection }: { item: HomeBisGame, section
               <h2>{item.kicker}</h2>
               <p className="mf-home-bis-copy">{item.copy}</p>
               <dl className="mf-home-bis-facts">
-                <div><dt>BUILD</dt><dd>{item.issue}</dd></div>
-                <div><dt>RELEASE</dt><dd>{item.release}</dd></div>
+                <div><dt>VERSION</dt><dd>{item.issue}</dd></div>
+                <div><dt>FIRST RELEASE</dt><dd>{item.release}</dd></div>
                 <div><dt>LAST UPDATE</dt><dd>{item.updated}</dd></div>
-                <div><dt>YOUR HIGH SCORE</dt><dd>{bestScore > 0 ? bestScore.toLocaleString('en-US') : 'NO SCORE YET'}</dd></div>
               </dl>
             </div>
             <div className="mf-home-bis-side-column">
               <figure><img src={item.showcase} alt={`Advanced ${item.title} game in progress`} /><figcaption>IN PLAY — A RUN ALREADY IN TROUBLE</figcaption></figure>
               <section className="mf-home-bis-how">
-                <h3>HOW IT PLAYS</h3>
-                <ol>{item.rules.map((rule) => <li key={rule}>{rule}</li>)}</ol>
+                <h3>HOW TO PLAY</h3>
+                <ul>{item.rules.map((rule) => <li key={rule}>{rule}</li>)}</ul>
               </section>
               <p className="mf-home-bis-byline">A MINIFUGG GAME</p>
             </div>
@@ -156,6 +152,66 @@ function MagazinePage({ item, section, onSection }: { item: HomeBisGame, section
         )}
       </div>
     </article>
+  )
+}
+
+function HomeBisPhone({ game, catalog, active, onChangeGame, onMagazineSection }: {
+  game: InstagameDefinition
+  catalog: InstagameDefinition[]
+  active: boolean
+  onChangeGame: () => void
+  onMagazineSection: (section: MagazineSection) => void
+}) {
+  const [playing, setPlaying] = useState(false)
+  const [restartToken, setRestartToken] = useState(0)
+  const [finishedScore, setFinishedScore] = useState<number | null>(null)
+  const Game = game.component
+
+  useEffect(() => {
+    if (!active) {
+      setPlaying(false)
+      setFinishedScore(null)
+    }
+  }, [active])
+
+  const start = () => {
+    setFinishedScore(null)
+    setRestartToken((value) => value + 1)
+    setPlaying(true)
+  }
+
+  return (
+    <div className="mf-home-bis-phone-screen">
+      {playing ? (
+        <div className="mf-home-bis-game-stage">
+          <Game
+            active={active && finishedScore === null}
+            seed={1}
+            restartToken={restartToken}
+            session={{ setScore: () => undefined, finish: ({ score }) => setFinishedScore(score) }}
+          />
+          <button className="mf-home-bis-return" type="button" onClick={() => { setPlaying(false); setFinishedScore(null) }} aria-label="Return to cover">↩</button>
+          {finishedScore !== null && (
+            <div className="mf-home-bis-result">
+              <small>FINAL SCORE</small><strong>{finishedScore.toLocaleString('en-US')}</strong>
+              <button type="button" onClick={start}>PLAY AGAIN</button>
+              <button type="button" onClick={() => { setPlaying(false); setFinishedScore(null) }}>BACK TO COVER</button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <PlatformCoverShell
+          game={game} catalog={catalog} active={active} seed={0} coins={500} cost={2}
+          social={{ loved: false, loves: 842, comments: 126, bookmarked: false, bookmarks: 311, plays: 4_931 }} comments={[]}
+          bestScore={readWelcomeBestScore(game.id)} panel={null} nickname="Player" commentText="" launchError=""
+          onPanel={(panel) => onMagazineSection(panel === 'comments' ? 'comments' : 'feature')} onClosePanel={() => undefined}
+          onToggleLove={() => undefined} onToggleBookmark={() => undefined} onPlay={start}
+          onChangeGame={onChangeGame} onShare={() => undefined} onNicknameChange={() => undefined}
+          onCommentTextChange={() => undefined} onPostComment={() => undefined}
+          onOpenLeaderboard={() => onMagazineSection('ranking')} onSelectCover={() => undefined}
+        />
+      )}
+    </div>
   )
 }
 
@@ -210,19 +266,13 @@ export function HomeBisLab() {
                 <div className="mf-home-bis-phone-wrap">
                   <div className="mf-home-bis-hand" aria-hidden="true"><i /><i /><i /><i /><b /></div>
                   <div className="mf-home-bis-phone">
-                    <div className="mf-home-bis-phone-screen">
-                      <PlatformCoverShell
-                        game={game} catalog={labGames.filter(Boolean) as InstagameDefinition[]} active seed={0} coins={500} cost={2}
-                        social={{ loved: false, loves: 842, comments: 126, bookmarked: false, bookmarks: 311, plays: 4_931 }} comments={[]}
-                        bestScore={readWelcomeBestScore(game.id)} panel={null} nickname="Player" commentText="" launchError=""
-                        onPanel={(panel) => setSection(panel === 'comments' ? 'comments' : 'feature')} onClosePanel={() => undefined}
-                        onToggleLove={() => undefined} onToggleBookmark={() => undefined}
-                        onPlay={() => { window.location.href = `/?game=${game.id}` }}
-                        onChangeGame={() => goTo((index + 1) % HOME_BIS_GAMES.length)} onShare={() => undefined}
-                        onNicknameChange={() => undefined} onCommentTextChange={() => undefined} onPostComment={() => undefined}
-                        onOpenLeaderboard={() => setSection('ranking')} onSelectCover={() => undefined}
-                      />
-                    </div>
+                    <HomeBisPhone
+                      game={game}
+                      catalog={labGames.filter(Boolean) as InstagameDefinition[]}
+                      active={activeIndex === index}
+                      onChangeGame={() => goTo((index + 1) % HOME_BIS_GAMES.length)}
+                      onMagazineSection={setSection}
+                    />
                   </div>
                 </div>
               </div>

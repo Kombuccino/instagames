@@ -68,13 +68,13 @@ Contenu obligatoire :
 3. description courte, issue des métadonnées réelles du jeu ;
 4. une capture éditoriale compacte prise dans le jeu réel et dans un état `showcase` reproductible ;
 5. version, première sortie si elle est connue et dernière mise à jour ;
-6. meilleur score réel du joueur lorsqu'il existe.
+6. un bloc `HOW TO PLAY` sous forme de trois puces courtes au maximum.
 
-Contenu facultatif : un seul détail visuel issu d'un asset officiel existant, ou une petite reproduction d'une jaquette approuvée ; une citation éditoriale originale et non signée ; un bloc `HOW IT PLAYS` limité à trois principes. Les règles complètes restent dans le panneau Info du Core et ne sont pas une obligation du magazine.
+Contenu facultatif : un seul détail visuel issu d'un asset officiel existant, ou une petite reproduction d'une jaquette approuvée ; une citation éditoriale originale et non signée. Les règles complètes restent dans le panneau Info du Core et ne sont pas une obligation du magazine.
 
 La page gauche est d'abord éditoriale : le texte et sa hiérarchie occupent une place réelle. La capture ne dépasse pas environ un quart de page et ne devient jamais le sujet dominant. Elle montre une partie déjà engagée : plateau nourri, mécanique principale lisible et, si possible, un effet caractéristique. Une capture prise dans les premières secondes ou un état presque vide est rejeté. La page ne devient jamais une galerie. Aucun encart décoratif sans source réelle, comme une fausse planète ou une fausse interface, n'est autorisé.
 
-La note et le verdict humoristiques sont retirés du modèle minimal tant que leur utilité éditoriale n'est pas validée. Ne pas les inventer pour remplir la page. Le score affiché est la donnée personnelle réelle déjà détenue par le Core.
+La note, le verdict humoristique et le meilleur score sont retirés de la Feature. Ne pas les inventer pour remplir la page. Les scores appartiennent à la rubrique Ranking et aux interfaces Core prévues pour eux.
 
 ## Commentaires
 
@@ -108,7 +108,7 @@ Le Game Over relève également du Core. Il doit recevoir un template MiniFugg d
 
 ## Téléphone et main
 
-Le téléphone est un support fictif dédié au jeu. Son verre utile a une largeur logique de `390` et peut être légèrement plus haut que le MASTER de jeu afin de supprimer les réserves autrefois consacrées aux caméras et boutons. La cible de maquette initiale est `390 × 884`. Le gameplay conserve son MASTER canonique `390 × 844` et peut employer les 40 unités restantes comme prolongement de fond ou marge de transition, sans déplacer ses éléments critiques. Il n'y a ni caméra, ni encoche, ni capteur, ni haut-parleur, ni menton. Le cadre reste très fin.
+Le téléphone est un support fictif dédié au jeu. Son verre utile conserve la largeur logique de `390`. Dans la Home bis alpha, sa surface active reprend directement le MASTER `390 × 844`, occupe 95 % de la hauteur PC disponible et utilise toute la largeur correspondante. Cette géométrie légèrement plus large remplace le premier essai `390 × 884` tant que la scène étendue reste en validation. Il n'y a ni caméra, ni encoche, ni capteur, ni haut-parleur, ni menton. Le cadre reste très fin.
 
 Dans l'état `FEATURE`, le téléphone affiche la Cover active avec l'overlay Core complet : MONNAIE, RAIL, JOUER et CHANGE GAME. Il ne duplique pas la capture de gameplay du magazine. Lorsque le joueur lance la partie, le téléphone passe au gameplay et le magazine peut rester ouvert sans répéter l'image jouée en direct.
 

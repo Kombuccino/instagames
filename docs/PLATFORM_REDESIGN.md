@@ -31,7 +31,7 @@ Le téléphone, la PWA installée et les fenêtres trop étroites emploient l'ex
 Un écran suffisamment large emploie l'espace latéral comme partie de l'expérience Core :
 
 1. la scène Home low-poly s'étend sur le viewport entier ;
-2. après l'entrée, la main rapproche le téléphone au tout premier plan ; il se place à droite et utilise pratiquement toute la hauteur utile car cover et gameplay s'y déroulent réellement ; le verre est une surface `390 × 884` sans caméra, encoche, capteur ni menton, contenant le MASTER `390 × 844` intact, entourée d'un cadre fictif minimal ;
+2. après l'entrée, la main rapproche le téléphone au tout premier plan ; il se place à droite et utilise 95 % de la hauteur utile car cover et gameplay s'y déroulent réellement ; le verre reprend directement le MASTER `390 × 844`, sans caméra, encoche, capteur ni menton, entouré d'un cadre fictif minimal ;
 3. le métro s'assombrit progressivement tandis qu'une chambre avec bureau apparaît ; le téléphone et la main forment le raccord visuel continu ; une fois arrivé, le décor de chambre ne subsiste qu'en bordure ;
 4. à gauche, le magazine `MiniFugg Retro Gaming` est d'abord fermé : sa première de couverture reste lisible pendant environ 4–5 secondes ;
 5. le magazine s'ouvre ensuite sur le premier Fugg, avec une seule page active posée presque à plat et réellement lisible ; le reste de l'objet est replié dessous et laisse deviner un fragment arrondi de la cover du jeu ; trois onglets donnent accès aux pages de même taille `FEATURE`, `COMMENTS` et `RANKING` ;
@@ -41,7 +41,9 @@ La une est toujours la même. Elle met en scène Fuggy canonique dans une pose a
 
 Le magazine est une autre composition des mêmes données Core, pas un second système social. Ses pages fixes mêlent humour éditorial français, encarts et hiérarchie américains, densité maîtrisée, petites captures et repères colorés japonais. Les trois grilles sont `FEATURE`, `COMMENTS` et `RANKING`, en anglais. Aucun gribouillis, texte manuscrit, mascotte improvisée, papier sale, vieillissement artificiel, Like ou Favori. Le nom du jeu est recomposé en texte vivant dans la typographie éditoriale du magazine. Cette présentation n'impose pas une DA rétro aux jeux affichés dans le téléphone. Le contrat détaillé vit dans `DA_MAGAZINE.md`.
 
-La page `FEATURE` réserve sa surface à une description courte, une capture compacte d'une partie avancée, trois principes de jeu au maximum, la version, les dates disponibles et le meilleur score réel du joueur. `COMMENTS` donne la place aux conversations et réactions. `RANKING` emploie exactement le même gabarit pour le podium, le classement et la ligne du joueur. Chaque rubrique remplace la précédente dans la page active.
+La page `FEATURE` réserve sa surface au nom du jeu composé dans la police du magazine, une baseline, une description courte, une capture compacte d'une partie avancée, trois puces `HOW TO PLAY`, la version, la première sortie connue et la dernière mise à jour. Elle n'affiche ni logo raster du jeu, ni high score, ni note, ni verdict. `COMMENTS` donne la place aux conversations et réactions. `RANKING` emploie exactement le même gabarit pour le podium, le classement et la ligne du joueur. Chaque rubrique remplace la précédente dans la page active.
+
+La Home bis alpha `/?usr=moigod&lab=home-bis` est le prototype fonctionnel de cette direction. Elle utilise une surface de téléphone au ratio canonique `390 × 844`, à 95 % de la hauteur utile PC, et lance le vrai jeu dans ce téléphone sans quitter la scène. Le premier essai `390 × 884` reste une hypothèse documentée, pas la géométrie de cette alpha.
 
 Les onglets permettent de sauter directement à une rubrique ; le tourné de page reste court et peut être réduit ou supprimé selon les préférences de mouvement.
 

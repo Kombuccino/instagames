@@ -110,6 +110,15 @@ export type GameInstructions = {
   controls?: string[]
 }
 
+export type GameReleaseMetadata = {
+  /** Player-facing semantic version for the currently deployed game. */
+  version: string
+  /** ISO 8601 delivery timestamp with the Europe/Paris offset at delivery time. */
+  updatedAt: string
+  /** Repository-relative canonical changelog source. */
+  changelogPath: `src/games/${string}/CHANGELOG.md`
+}
+
 export type GameFinishPayload = {
   score: number
   boardId?: string
@@ -146,4 +155,6 @@ export type InstagameDefinition = {
   component: ComponentType<GameComponentProps>
   instructions?: GameInstructions
   features?: GameFeatureConfig
+  /** Single source consumed by the Information panel for shipped release details. */
+  release?: GameReleaseMetadata
 }

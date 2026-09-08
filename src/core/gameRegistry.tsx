@@ -146,6 +146,11 @@ export const gameRegistry: InstagameDefinition[] = [
     migration: { ...PHASER_MIGRATION_CURRENT, cover: 'update-required' },
     welcome: placeholderWelcome('vlads-skewers'),
     component: VladsSkewers,
+    release: {
+      version: '0.2.0',
+      updatedAt: '2026-09-08T14:48:00+02:00',
+      changelogPath: 'src/games/vlads-skewers/CHANGELOG.md',
+    },
     instructions: {
       goal: 'Prépare les brochettes demandées et sers le plus de clients possible.',
       rules: [

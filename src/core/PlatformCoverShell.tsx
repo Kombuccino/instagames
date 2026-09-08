@@ -88,6 +88,14 @@ function isCoverUnlocked(bestScore: number, unlockScore = 0) {
   return PLATFORM_ALPHA_POLICY.allCoverVariantsUnlocked || bestScore >= unlockScore
 }
 
+function formatReleaseDate(updatedAt: string) {
+  return new Intl.DateTimeFormat('en-US', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'Europe/Paris',
+  }).format(new Date(updatedAt))
+}
+
 function seededActiveVariant(game: InstagameDefinition, seed: number, bestScore: number) {
   const variants = coverVariants(game)
   const unlocked = variants.filter((variant) => isCoverUnlocked(bestScore, variant.unlockScore))
@@ -262,7 +270,11 @@ export function PlatformCoverShell(props: Props) {
                 <h1 className="mf-ui-h1">{game.title}</h1>
                 <p className="mf-ui-meta">by <strong className="mf-ui-player-name mf-ui-label">{game.author || 'MiniFugg'}</strong></p>
                 <p className="mf-info-description mf-ui-body">{game.description}</p>
-                <p className="mf-info-version mf-ui-meta">Version 0.1 <span>•</span> Last update Sep 6, 2026</p>
+                {game.release && (
+                  <p className="mf-info-version mf-ui-meta">
+                    Version {game.release.version} <span>•</span> Last update {formatReleaseDate(game.release.updatedAt)}
+                  </p>
+                )}
               </section>
 
               <section className="mf-high-score">

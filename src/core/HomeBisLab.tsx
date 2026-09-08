@@ -6,6 +6,7 @@ import type { InstagameDefinition } from './types'
 import './homeBisLab.css'
 
 type MagazineSection = 'feature' | 'comments' | 'ranking'
+type PageMotion = 'still' | 'incoming-forward' | 'incoming-backward' | 'outgoing-forward' | 'outgoing-backward'
 
 type HomeBisGame = {
   id: 'tetramindfck' | 'vlads-skewers' | 'linefugg'
@@ -89,9 +90,9 @@ function withLabCover(game: InstagameDefinition, item: HomeBisGame): InstagameDe
   }
 }
 
-function MagazinePage({ item, section, onSection }: { item: HomeBisGame, section: MagazineSection, onSection: (section: MagazineSection) => void }) {
+function MagazinePage({ item, section, onSection, motion = 'still' }: { item: HomeBisGame, section: MagazineSection, onSection: (section: MagazineSection) => void, motion?: PageMotion }) {
   return (
-    <article className="mf-home-bis-magazine" style={{ '--mag-accent': item.accent } as React.CSSProperties}>
+    <article className={`mf-home-bis-magazine is-${motion}`} style={{ '--mag-accent': item.accent } as React.CSSProperties}>
       <div className="mf-home-bis-cover-curl" style={{ backgroundImage: `url(${item.cover})` }} aria-hidden="true" />
       <div className="mf-home-bis-page">
         <header className="mf-home-bis-masthead">
@@ -155,12 +156,13 @@ function MagazinePage({ item, section, onSection }: { item: HomeBisGame, section
   )
 }
 
-function HomeBisPhone({ game, catalog, active, onChangeGame, onMagazineSection }: {
+function HomeBisPhone({ game, catalog, active, onChangeGame, onMagazineSection, onPlayingChange }: {
   game: InstagameDefinition
   catalog: InstagameDefinition[]
   active: boolean
   onChangeGame: () => void
   onMagazineSection: (section: MagazineSection) => void
+  onPlayingChange: (playing: boolean) => void
 }) {
   const [playing, setPlaying] = useState(false)
   const [restartToken, setRestartToken] = useState(0)
@@ -171,13 +173,23 @@ function HomeBisPhone({ game, catalog, active, onChangeGame, onMagazineSection }
     if (!active) {
       setPlaying(false)
       setFinishedScore(null)
+      onPlayingChange(false)
     }
-  }, [active])
+  }, [active, onPlayingChange])
+
+  useEffect(() => () => onPlayingChange(false), [onPlayingChange])
 
   const start = () => {
     setFinishedScore(null)
     setRestartToken((value) => value + 1)
     setPlaying(true)
+    onPlayingChange(true)
+  }
+
+  const returnToCover = () => {
+    setPlaying(false)
+    setFinishedScore(null)
+    onPlayingChange(false)
   }
 
   return (
@@ -190,12 +202,12 @@ function HomeBisPhone({ game, catalog, active, onChangeGame, onMagazineSection }
             restartToken={restartToken}
             session={{ setScore: () => undefined, finish: ({ score }) => setFinishedScore(score) }}
           />
-          <button className="mf-home-bis-return" type="button" onClick={() => { setPlaying(false); setFinishedScore(null) }} aria-label="Return to cover">↩</button>
+          <button className="mf-home-bis-return" type="button" onClick={returnToCover} aria-label="Return to cover">↩</button>
           {finishedScore !== null && (
             <div className="mf-home-bis-result">
               <small>FINAL SCORE</small><strong>{finishedScore.toLocaleString('en-US')}</strong>
               <button type="button" onClick={start}>PLAY AGAIN</button>
-              <button type="button" onClick={() => { setPlaying(false); setFinishedScore(null) }}>BACK TO COVER</button>
+              <button type="button" onClick={returnToCover}>BACK TO COVER</button>
             </div>
           )}
         </div>
@@ -218,7 +230,12 @@ function HomeBisPhone({ game, catalog, active, onChangeGame, onMagazineSection }
 export function HomeBisLab() {
   const [section, setSection] = useState<MagazineSection>('feature')
   const [activeIndex, setActiveIndex] = useState(0)
-  const scroller = useRef<HTMLDivElement>(null)
+  const [previousIndex, setPreviousIndex] = useState<number | null>(null)
+  const [turnDirection, setTurnDirection] = useState<'forward' | 'backward'>('forward')
+  const [transitionId, setTransitionId] = useState(0)
+  const [gamePlaying, setGamePlaying] = useState(false)
+  const transitionTimer = useRef<number | null>(null)
+  const wheelLockedUntil = useRef(0)
   const labGames = useMemo(() => HOME_BIS_GAMES.map((item) => {
     const game = gameRegistry.find((candidate) => candidate.id === item.id)
     return game ? withLabCover(game, item) : null
@@ -226,61 +243,85 @@ export function HomeBisLab() {
 
   useEffect(() => {
     document.title = 'Home bis · MiniFugg'
+    return () => {
+      if (transitionTimer.current !== null) window.clearTimeout(transitionTimer.current)
+    }
   }, [])
 
   useEffect(() => {
-    const root = scroller.current
-    if (!root) return
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
-      if (visible) setActiveIndex(Number((visible.target as HTMLElement).dataset.index || 0))
-    }, { root, threshold: [0.55, 0.8] })
-    root.querySelectorAll('[data-index]').forEach((node) => observer.observe(node))
-    return () => observer.disconnect()
-  }, [])
-
-  useEffect(() => {
+    const readLabState = () => JSON.stringify({ lab: 'home-bis', activeGame: HOME_BIS_GAMES[activeIndex].id, magazineSection: section, phone: gamePlaying ? 'playing' : 'cover' })
     Object.assign(window, {
-      render_game_to_text: () => JSON.stringify({ lab: 'home-bis', activeGame: HOME_BIS_GAMES[activeIndex].id, magazineSection: section }),
+      render_game_to_text: readLabState,
+      render_home_bis_to_text: readLabState,
       advanceTime: () => undefined,
     })
-  }, [activeIndex, section])
+  }, [activeIndex, gamePlaying, section])
 
-  const goTo = (index: number) => scroller.current?.children[index]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  const changeGame = (nextIndex: number, direction?: 'forward' | 'backward') => {
+    if (gamePlaying || nextIndex === activeIndex) return
+    const normalized = (nextIndex + HOME_BIS_GAMES.length) % HOME_BIS_GAMES.length
+    const resolvedDirection = direction ?? (normalized > activeIndex ? 'forward' : 'backward')
+    if (transitionTimer.current !== null) window.clearTimeout(transitionTimer.current)
+    setPreviousIndex(activeIndex)
+    setTurnDirection(resolvedDirection)
+    setActiveIndex(normalized)
+    setTransitionId((value) => value + 1)
+    transitionTimer.current = window.setTimeout(() => {
+      transitionTimer.current = null
+      setPreviousIndex(null)
+    }, 560)
+  }
+
+  const onWheel = (event: React.WheelEvent<HTMLElement>) => {
+    if (gamePlaying || Math.abs(event.deltaY) < 24 || Date.now() < wheelLockedUntil.current) return
+    wheelLockedUntil.current = Date.now() + 650
+    changeGame(activeIndex + (event.deltaY > 0 ? 1 : -1), event.deltaY > 0 ? 'forward' : 'backward')
+  }
+
+  const item = HOME_BIS_GAMES[activeIndex]
+  const game = labGames[activeIndex]
+  const previousItem = previousIndex === null ? null : HOME_BIS_GAMES[previousIndex]
+  if (!game) return null
 
   return (
-    <main className="mf-home-bis" style={{ '--room-accent': HOME_BIS_GAMES[activeIndex].accent } as React.CSSProperties}>
+    <main
+      className={`mf-home-bis${gamePlaying ? ' is-playing' : ''}`}
+      style={{ '--room-accent': item.accent } as React.CSSProperties}
+      onWheel={onWheel}
+      onKeyDown={(event) => {
+        if (event.key === 'ArrowDown' || event.key === 'PageDown') changeGame(activeIndex + 1, 'forward')
+        if (event.key === 'ArrowUp' || event.key === 'PageUp') changeGame(activeIndex - 1, 'backward')
+      }}
+      tabIndex={-1}
+    >
       <aside className="mf-home-bis-nav" aria-label="Games">
-        {HOME_BIS_GAMES.map((item, index) => <button key={item.id} className={index === activeIndex ? 'is-active' : ''} onClick={() => goTo(index)} aria-label={`Show ${item.title}`}><span>{index + 1}</span>{item.title}</button>)}
+        {HOME_BIS_GAMES.map((candidate, index) => <button key={candidate.id} disabled={gamePlaying} className={index === activeIndex ? 'is-active' : ''} onClick={() => changeGame(index)} aria-label={`Show ${candidate.title}`}><span>{index + 1}</span>{candidate.title}</button>)}
       </aside>
-      <div className="mf-home-bis-scroller" ref={scroller}>
-        {HOME_BIS_GAMES.map((item, index) => {
-          const game = labGames[index]
-          if (!game) return null
-          return (
-            <section className="mf-home-bis-scene" key={item.id} data-index={index} data-game={item.id}>
-              <div className="mf-home-bis-wall" aria-hidden="true"><i className="mf-home-bis-lamp" /><i className="mf-home-bis-cat" /></div>
-              <div className="mf-home-bis-desk" aria-hidden="true" />
-              <div className="mf-home-bis-layout">
-                <MagazinePage item={item} section={section} onSection={setSection} />
-                <div className="mf-home-bis-phone-wrap">
-                  <div className="mf-home-bis-hand" aria-hidden="true"><i /><i /><i /><i /><b /></div>
-                  <div className="mf-home-bis-phone">
-                    <HomeBisPhone
-                      game={game}
-                      catalog={labGames.filter(Boolean) as InstagameDefinition[]}
-                      active={activeIndex === index}
-                      onChangeGame={() => goTo((index + 1) % HOME_BIS_GAMES.length)}
-                      onMagazineSection={setSection}
-                    />
-                  </div>
-                </div>
-              </div>
-              <p className="mf-home-bis-scroll-cue">SCROLL FOR NEXT FUGG <span>↓</span></p>
-            </section>
-          )
-        })}
-      </div>
+      <section className="mf-home-bis-scene" data-game={item.id}>
+        <div className="mf-home-bis-wall" aria-hidden="true"><i className="mf-home-bis-lamp" /><i className="mf-home-bis-cat" /></div>
+        <div className="mf-home-bis-desk" aria-hidden="true" />
+        <div className="mf-home-bis-layout">
+          <div className="mf-home-bis-magazine-stack" aria-live="polite">
+            {previousItem && <MagazinePage key={`previous-${transitionId}`} item={previousItem} section={section} onSection={setSection} motion={`outgoing-${turnDirection}`} />}
+            <MagazinePage key={`current-${item.id}-${transitionId}`} item={item} section={section} onSection={setSection} motion={previousItem ? `incoming-${turnDirection}` : 'still'} />
+          </div>
+          <div className="mf-home-bis-phone-wrap">
+            <div className="mf-home-bis-hand" aria-hidden="true"><i /><i /><i /><i /><b /></div>
+            <div className="mf-home-bis-phone">
+              <HomeBisPhone
+                key={`${game.id}-${transitionId}`}
+                game={game}
+                catalog={labGames.filter(Boolean) as InstagameDefinition[]}
+                active
+                onChangeGame={() => changeGame(activeIndex + 1, 'forward')}
+                onMagazineSection={setSection}
+                onPlayingChange={setGamePlaying}
+              />
+            </div>
+          </div>
+        </div>
+        <p className="mf-home-bis-scroll-cue">{gamePlaying ? 'GAME CONTROLS ACTIVE' : 'WHEEL OR CHANGE GAME'} <span>{gamePlaying ? '●' : '↕'}</span></p>
+      </section>
     </main>
   )
 }

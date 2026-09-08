@@ -35,7 +35,7 @@ Un écran suffisamment large emploie l'espace latéral comme partie de l'expéri
 3. le métro s'assombrit progressivement tandis qu'une chambre avec bureau apparaît ; le téléphone et la main forment le raccord visuel continu ; une fois arrivé, le décor de chambre ne subsiste qu'en bordure ;
 4. à gauche, le magazine `MiniFugg Retro Gaming` est d'abord fermé : sa première de couverture reste lisible pendant environ 4–5 secondes ;
 5. le magazine s'ouvre ensuite sur le premier Fugg, avec une seule page active posée presque à plat et réellement lisible ; le reste de l'objet est replié dessous et laisse deviner un fragment arrondi de la cover du jeu ; trois onglets donnent accès aux pages de même taille `FEATURE`, `COMMENTS` et `RANKING` ;
-6. cover puis gameplay restent dans le téléphone ; changer de Fugg tourne aussi la page du magazine.
+6. cover puis gameplay restent dans le téléphone ; changer de Fugg remplace la cover dans l'écran fixe et tourne la page du magazine, sans faire glisser le téléphone, la main, le bureau ou le décor.
 
 La une est toujours la même. Elle met en scène Fuggy canonique dans une pose amusante low-poly, avec le masthead MiniFugg exact et des accroches courtes en anglais. Elle ne sélectionne plus de jeu, de favori ou de contenu dynamique.
 
@@ -43,7 +43,7 @@ Le magazine est une autre composition des mêmes données Core, pas un second sy
 
 La page `FEATURE` réserve sa surface au nom du jeu composé dans la police du magazine, une baseline, une description courte, une capture compacte d'une partie avancée, trois puces `HOW TO PLAY`, la version, la première sortie connue et la dernière mise à jour. Elle n'affiche ni logo raster du jeu, ni high score, ni note, ni verdict. `COMMENTS` donne la place aux conversations et réactions. `RANKING` emploie exactement le même gabarit pour le podium, le classement et la ligne du joueur. Chaque rubrique remplace la précédente dans la page active.
 
-La Home bis alpha `/?usr=moigod&lab=home-bis` est le prototype fonctionnel de cette direction. Elle utilise une surface de téléphone au ratio canonique `390 × 844`, à 95 % de la hauteur utile PC, et lance le vrai jeu dans ce téléphone sans quitter la scène. Le premier essai `390 × 884` reste une hypothèse documentée, pas la géométrie de cette alpha.
+La Home bis alpha `/?usr=moigod&lab=home-bis` est le prototype fonctionnel de cette direction. Elle utilise une surface de téléphone au ratio canonique `390 × 844`, à 95 % de la hauteur utile PC, et lance le vrai jeu dans ce téléphone sans quitter la scène. Bureau, magazine, main et téléphone forment une scène unique persistante : molette, navigation latérale et `CHANGE GAME` ne changent que le contenu du téléphone et la page. Ces commandes sont verrouillées pendant le gameplay. Le premier essai `390 × 884` reste une hypothèse documentée, pas la géométrie de cette alpha.
 
 Les onglets permettent de sauter directement à une rubrique ; le tourné de page reste court et peut être réduit ou supprimé selon les préférences de mouvement.
 

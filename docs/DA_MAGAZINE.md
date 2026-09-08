@@ -43,6 +43,8 @@ La langue éditoriale du magazine est l'anglais. Les données restent localisabl
 
 Une seule page active est visible. Le reste du magazine est replié dessous ; son bord forme un rouleau plus rond qui révèle un fragment reconnaissable de la cover approuvée du jeu. `FEATURE`, `COMMENTS` et `RANKING` remplacent le contenu dans ce même rectangle. Les trois états conservent exactement largeur, hauteur, angle et perspective. Aucun classement ne déplie une deuxième page.
 
+Le changement de Fugg ne déplace jamais le bureau, le téléphone, la main ou le magazine. La cover est remplacée dans l'écran fixe pendant que la page du magazine tourne. Seules l'ancienne et la nouvelle page existent pendant cette courte transition. Une fois le gameplay lancé, la molette, la navigation des jeux et `CHANGE GAME` sont suspendus jusqu'au retour à la Cover.
+
 Trois onglets physiques donnent un accès direct aux rubriques :
 
 - `FEATURE` ;

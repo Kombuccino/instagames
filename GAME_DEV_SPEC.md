@@ -59,6 +59,7 @@ Every real game declares at least:
 - `runtime`;
 - `logicalViewport`;
 - `migration`;
+- `release`: version, `updatedAt` in Europe/Paris and game changelog path;
 - `component`;
 - `features` / instructions as relevant.
 
@@ -106,6 +107,8 @@ Production images must use `docs/ASSET_PIPELINE.md`.
 When implementing an approved DA/mockup, first perform the production decomposition in `docs/GAME_ART_PRODUCTION_PIPELINE.md`. A flattened concept image is a visual reference unless it contains only genuinely static decoration. It must not be used as a convenience background when it already contains fake grid, score, controls, paths or other live state.
 
 Every visible function has one owner: authored asset, engine-owned dynamic layer, or Core. Mutable gameplay state is never baked beneath a second live copy.
+
+Before full DA integration, validate a visual translation board: annotated composition/layers, assets to isolate, key state storyboard and visible Phaser FX proposals with their cost/priority. Then implement a representative vertical slice before scaling the work to the whole game. This board stays faithful to the approved DA and is recorded with the game's art direction and manifest.
 
 A finished Fugg must not rely on generic CSS/engine geometry as a substitute for promised authored art. Engine primitives are appropriate for procedural effects, dynamic geometry, debug geometry and deliberately geometric styles.
 

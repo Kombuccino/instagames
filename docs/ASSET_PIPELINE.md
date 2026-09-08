@@ -45,9 +45,12 @@ Fugg/<game-id>/
   props/
   fx/
   concepts/
+  production-boards/
 ```
 
 A feature may add a useful level below that, for example `welcome/variants/` or `welcome/parallax/v1/`. Avoid deep or decorative folder trees.
+
+`production-boards/` contains approved visual translation boards and FX/storyboard studies; it is an archive/reference location, not a runtime texture folder. Keep runtime-ready FX textures in `fx/` and record the link between the two in `ASSET_MANIFEST.md`.
 
 Use the game's real registry ID when one exists. Current IDs include `train-fighter`, `linefugg`, `shoot-the-shooter`, `vlads-skewers`, `hari-rotten-teeth`, `tetramindfck`, `crazy-papers` and `debth-of-life`.
 
@@ -77,6 +80,12 @@ Limits:
 - SVG and other active/executable formats are rejected
 
 Keep the original/source quality unless the user explicitly asks for an optimized derivative. Masters and runtime derivatives are separate files. A smaller transfer does not imply lower decoded memory: ordinary browser textures still approach width × height × 4 bytes after decoding.
+
+## External packs and reusable FX
+
+Before recreating a prominent visual effect from scratch, the agent may look for a high-quality external asset or pack. It must verify that the asset is usable in MiniFugg's targets and preserve the source URL, creator, licence, proof of purchase when applicable, allowed usage and required attribution in the game's `ASSET_MANIFEST.md`. A package made for another Phaser version is not automatically a compatible code plugin; prefer its image/sprite resources unless its Phaser 4.2.1 compatibility is verified.
+
+An imported pack is material to adapt, not a visual direction. Recolor, animate and combine it only in ways that preserve the approved game's palette, pixel density, line/matter language and performance budget. Do not import a realistic/VFX-heavy asset into a pixel, paper or editorial game just because it looks impressive in isolation.
 
 ## Automatic sync
 

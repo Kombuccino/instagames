@@ -24,6 +24,10 @@ Normal workflow:
 
 A second implementation is allowed only when both variants intentionally coexist in the product at runtime or when a short-lived migration is explicitly documented.
 
+### Git history is not the player's changelog
+
+Git retains every technical revision; the player-facing game still needs one explicit version, last-update timestamp and readable changelog. On every game delivery to `main`, update that metadata and the matching `src/games/<id>/CHANGELOG.md` in the same commit as the change. The Info panel consumes the metadata, not a hardcoded label. See `GAME_CREATION_PIPELINE.md` for incrementing and changelog contents.
+
 ## 2. File names describe responsibility, not chronology
 
 Splitting a large source file is fine when the split has a stable semantic purpose.

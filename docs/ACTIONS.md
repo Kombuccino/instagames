@@ -17,7 +17,7 @@ Annoncer en une ou deux phrases le travail choisi, la procédure utilisée et po
 | Créer un jeu, améliorer les règles, poursuivre une bêta | [Création et suivi](GAME_CREATION_PIPELINE.md), [spécification](../GAME_DEV_SPEC.md) | Prototype jouable, puis affinage ; compteur de dix prompts selon les règles existantes |
 | Faire la DA du jeu | [DA commune](DA_CORE.md), [DA gameplay](DA_GAME.md) | Quatre ou cinq pistes si aucune direction n'est choisie, sur le vrai jeu et sa géométrie |
 | Faire des covers / jaquettes | [DA commune](DA_CORE.md), [DA covers](DA_COVER.md), [Zones MiniFugg](MINIFUGG_ZONES.md) | Interprétations éditoriales distinctes, fidèles au sens du jeu et cadrées dans le modèle Cover |
-| Intégrer une DA, animer, ajouter des FX | [Production artistique](GAME_ART_PRODUCTION_PIPELINE.md), [assets](ASSET_PIPELINE.md), DA de la surface | Assets séparés, états, interactions et comparaison au master |
+| Intégrer une DA, animer, ajouter des FX | [Production artistique](GAME_ART_PRODUCTION_PIPELINE.md), [assets](ASSET_PIPELINE.md), DA de la surface | Planche de traduction DA → jeu validée, mini-tranche jouable, puis assets séparés, états et comparaison au master |
 | Créer / corriger une interface ou une entrée MiniFugg | [Refonte par blockouts](PLATFORM_REDESIGN.md), [DA UI](DA_UI.md) ou [DA Welcome](DA_WELCOME.md), [DA commune](DA_CORE.md), [Zones MiniFugg](MINIFUGG_ZONES.md), [validation plateforme](PLATFORM_VISUAL_VALIDATION.md) | Blockout validé avant reprise générale, puis réutilisation des références, composants et zones canoniques |
 | Coder, migrer ou corriger le gameplay / les contrôles | [Architecture](GAME_ENGINE_ARCHITECTURE.md), [migration](GAME_MIGRATION_PLAN.md), [layout](GAME_LAYOUT_SYSTEM.md), [Zones MiniFugg](MINIFUGG_ZONES.md), [gestes](INPUT_GESTURES.md), [orientation](ORIENTATION_LAYOUT.md) | Correction dans le moteur canonique, vérifiée sur les états et écrans utiles |
 | Musique ou sons | [Core Audio](AUDIO_SYSTEM.md), [Music Lab](MUSIC_LAB.md), [validation audio](AUDIO_VALIDATION.md) | Références et pistes acquises conservées, écoute et cycle de vie vérifiés |
@@ -39,11 +39,15 @@ Avant une recherche de DA gameplay, capturer le jeu réel et fixer la compositio
 
 Avant présentation, vérifier : bonne référence, contenu demandé, textes autorisés, lisibilité et faisabilité. Comparer aussi les propositions entre elles : idée, cadrage, médium, hiérarchie. Des étiquettes de styles différentes ne suffisent pas ; des motifs communs ne rendent pas automatiquement les images identiques. Corriger les erreurs manifestes sans faire porter ce contrôle à l'utilisateur. En cas d'échecs répétés, diagnostiquer le brief ou l'outil plutôt que régénérer indéfiniment.
 
-Après validation, conserver les originaux et noter la portée du choix. Ne pas régénérer une série approuvée pour la rendre « finale ». Avant intégration complète, vérifier un échantillon représentatif en jeu. Avant livraison, comparer aux références et tester les états, écrans et interactions utiles ; un build vert ne valide pas l'art.
+Après validation d'une DA gameplay, produire la **planche de traduction DA → jeu** avant l'intégration complète : composition annotée, couches, états, storyboard des interactions et planche FX/mouvement dans le style de la DA. La montrer avec une légende courte (recette Phaser, déclencheur, coût, priorité). Ne pas remplacer cette étape par une longue description ou par une intégration aveugle.
+
+Après validation, conserver les originaux et noter la portée du choix. Ne pas régénérer une série approuvée pour la rendre « finale ». Réaliser et vérifier une mini-tranche représentative en jeu avant de décliner toute la production. Avant livraison, comparer aux références et tester les états, écrans et interactions utiles ; un build vert ne valide pas l'art.
 
 ## 5. Transmettre et apprendre
 
 Après une décision ou une passe significative, actualiser la fiche et le document concernés : choix daté, référence exacte et rôle, refus, réalisé / reste, preuves, prochaine action. Séparer proposition, validation artistique, fichier sauvegardé, intégration et test. GitHub partage ces traces, pas automatiquement toute la mémoire des conversations.
+
+À chaque livraison qui atteint `main`, mettre à jour les métadonnées produit du jeu : version, date/heure Europe/Paris et entrée de changelog. La fiche Information doit lire cette source unique, jamais une valeur écrite en dur. Une passe non livrée reste un travail en cours : elle ne doit pas annoncer une fausse version au joueur.
 
 Avant d'écrire, vérifier le dernier `main` et les modifications en cours. Signaler dans le suivi les lots actifs quand plusieurs discussions travaillent en parallèle ; ne pas écraser un travail concurrent. Livrer les changements autorisés sur `main`, vérifier la publication Git et distinguer celle-ci du déploiement de l'application.
 

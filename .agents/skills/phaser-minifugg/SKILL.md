@@ -102,6 +102,12 @@ The upstream `audio-and-sound` skill is reference material only; MiniFugg's Core
 
 Production imagery follows the route selected by `ASSET_PIPELINE.md`: Codex writes locally; ChatGPT uses private Drive. New runtime art uses verified WebP lossless by default, AVIF only for validated large static art, and PNG for masters/fallbacks; no new JPG/JPEG. Do not replace authored assets with generic generated rectangles because Phaser can draw them procedurally. Use procedural graphics for dynamic FX, masks, particles, debug/prototype geometry and truly procedural content.
 
+### DA, FX and visual validation
+
+Before a full approved-DA integration, follow `GAME_ART_PRODUCTION_PIPELINE.md`: create the visual translation board, show composition/layers/states and FX proposals in the approved DA's own visual language, then validate one representative vertical slice before scaling production.
+
+For each notable FX, record the intended player sensation, trigger, Phaser recipe, asset support, cost and reduced-motion behavior. Prefer bounded particles, shared textures and local/internal effects for ambient detail. Reserve camera-wide filters and dense bursts for short, high-value moments, then measure them on the target device. The board is the reference; a prose-only FX list is insufficient.
+
 ### Cleanup
 
 Pause inactive scenes, remove listeners/timers, destroy game instances on unmount and do not retain parallel DOM/Canvas legacy renderers after a migration becomes canonical.

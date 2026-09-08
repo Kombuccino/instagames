@@ -46,6 +46,18 @@ Après le choix, mettre à jour `src/games/<id>/ART_DIRECTION.md` avec la réfé
 
 Pour une modification locale, garder le reste intact. Si une contrainte technique rend une promesse impossible telle quelle, présenter le compromis concret plutôt que changer silencieusement de style.
 
+### Planche de traduction DA → jeu — obligatoire avant la grande intégration
+
+Une DA validée est suivie d'une **planche de production visuelle**, pas d'un long rapport ni d'une intégration directe. Elle réemploie la DA approuvée et montre, à l'échelle du stage :
+
+- la composition annotée : zones de jeu, couches, éléments cachés au crop et ordre de profondeur ;
+- les éléments isolés à produire ou à rechercher ;
+- les états visibles et un storyboard des interactions clés (par exemple intact → contact → transformation → résultat) ;
+- les propositions de mouvement et de FX sous forme de vignettes, dans le même langage graphique ;
+- les idées ajoutées par l'agent, explicitement marquées comme propositions plutôt que confondues avec la DA validée.
+
+Chaque vignette garde palette, formes, densité, contours, matière et type de mouvement de la DA. Une rupture de style est une décision artistique à soumettre, jamais un effet technique ajouté par défaut. Sauvegarder la planche, son rôle et sa validation dans `ART_DIRECTION.md`; sa production détaillée et ses fichiers vont dans `ASSET_MANIFEST.md` et le pipeline artistique.
+
 ## Concevoir pour le stage réel
 
 Utiliser la largeur logique 390 et le MASTER `390 × 844`. Adapter par mise à l'échelle uniforme pilotée par la largeur sur mobile et par la hauteur de CENTRE sur PC, sans composition différente. Les dimensions des textures peuvent être supérieures ; elles ne changent pas les coordonnées du jeu.
@@ -64,9 +76,11 @@ Produire des composants propres : alpha réel, pivots, dimensions utiles, marges
 
 Les scores, calculs, textes traduisibles et états restent dynamiques. Les objets artistiques promis restent de vrais assets ; ne pas les remplacer par des rectangles, emojis ou formes procédurales génériques. La géométrie moteur convient en revanche aux masques, sélections, effets ou objets réellement procéduraux.
 
-## Mouvement, frontières et validation
+## Mouvement, FX, frontières et validation
 
 Définir pour chaque animation son déclencheur, son pivot, sa durée, son amplitude, son interruption et sa version réduite. Donner du poids ou un caractère matériel ; ne pas appliquer le même flottement/rebond à tout. Les FX soutiennent une action. L'audio passe par le système Core existant.
+
+Pour chaque élément vivant ou effet notable, documenter dans la planche et le manifeste : intention perceptible, états, déclencheur, recette Phaser envisagée, textures/frames requises, budget et priorité. Les effets permanents privilégient les micro-mouvements peu coûteux ; les passages spectaculaires concentrent les particules, lumière, impact et caméra sur un événement court. Rechercher d'abord une solution ou un asset de qualité sous licence compatible, puis innover lorsque cela sert mieux l'identité du jeu. Ne pas présenter une proposition FX seulement en texte : elle doit être visualisée avant la production complète.
 
 Les styles du jeu restent dans son dossier et ne ciblent pas les interfaces, conteneurs ou variables globales du Core. Le Core ne dépend pas des classes privées du jeu. Plusieurs fichiers fonctionnels sont possibles ; des couches successives `fix/v2/final` ne le sont pas. Git conserve l'historique.
 

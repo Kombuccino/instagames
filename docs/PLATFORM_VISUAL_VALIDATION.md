@@ -93,7 +93,7 @@ Order / content:
    - locked covers stay mysterious using grayscale, pixelation, or both, rather than revealing clean final art;
 2. game title, creator name and optional creation date — **no logo/icon thumbnail in front of these game details**;
 3. short game description;
-4. version + last-update date;
+4. version + last-update date/heure réelles, issues des métadonnées du jeu livré ;
 5. **personal high score**, with a clear action to open the separate leaderboard panel;
 6. `HOW TO PLAY` / rules in a few concise lines;
 7. creator section:
@@ -105,6 +105,10 @@ Order / content:
    - show the first 20, then expose the next 20 when requested.
 
 No Difficulty, Tags, Avg. Session, Platforms or similar catalog/filter metadata.
+
+### Product version traceability
+
+The Info panel reads a game's single release metadata source. It must display the delivered version and its `updatedAt` timestamp in Europe/Paris; it must never render a shared placeholder. The corresponding game changelog records the visible change, its release commit and relevant validation/reference links. Updating either a game or the Core surface is incomplete until this trace stays coherent with the version a player can actually open.
 
 ### Comments panel
 

@@ -52,7 +52,7 @@ Conserver les onglets Info/Comments dans la même famille. L'ordre est : sélect
 
 La cover active doit être évidente. Les autres covers débloquées sont sélectionnables ; les verrouillées utilisent gris/pixellisation pour garder la surprise. Pendant l’Alpha publique, toutes les variantes réellement disponibles dans le catalogue sont débloquées et sélectionnables ; ne pas inventer de variantes absentes.
 
-Ne pas placer de logo ou vignette devant le titre du jeu. La date de création est facultative lorsqu'elle existe. Aucun Difficulty, Tags, Avg. Session, Platforms ou filtre de catalogue non demandé.
+Ne pas placer de logo ou vignette devant le titre du jeu. La date de création est facultative lorsqu'elle existe. La ligne `version · dernière mise à jour` est obligatoire et vient des métadonnées réelles du jeu : version livrée et date/heure Europe/Paris de cette livraison. Elle ne peut jamais être une valeur générique écrite dans le composant. Le changelog lié doit permettre de retrouver les évolutions de cette version. Aucun Difficulty, Tags, Avg. Session, Platforms ou filtre de catalogue non demandé.
 
 La section créateur contient nom, description, lien éventuel, nombre de jeux et grille de ses jeux. Afficher les vingt premiers, puis permettre les vingt suivants. La page peut dépasser la hauteur du viewport ; ne pas compresser tout son contenu pour le faire tenir sur une image.
 

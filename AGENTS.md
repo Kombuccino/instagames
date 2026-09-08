@@ -172,6 +172,8 @@ Important visual objects promised as authored art must be real imported assets; 
 
 An approved DA/mockup is not automatically a runtime background or atlas. Before final integration, decompose it according to `docs/GAME_ART_PRODUCTION_PIPELINE.md`: permanent environment, animatable decoration, structural surfaces, stateful controls and engine-owned dynamic gameplay. Mutable gameplay/UI state must never remain baked underneath the live Phaser layer.
 
+Before full implementation of an approved gameplay DA, produce and obtain feedback on its visual translation board: annotated composition, assets/layers, state storyboard and visible Phaser FX proposals with cost/priority. Integrate one representative vertical slice before producing the whole pass. FX must keep the DA's visual language; use the board as the production reference.
+
 ## 11. Visual quality
 
 MiniFugg gameplay must not settle for a generic “small HTML5 game” presentation.
@@ -189,6 +191,7 @@ Do not confuse engine complexity with polish: simple pixel art, paper art or low
 - Keep user-approved visual references unchanged unless explicitly asked.
 - Run/build/typecheck where tools permit.
 - `main` is the deployable source of truth; do not leave the accepted state only on an abandoned branch.
+- On every game delivery to `main`, update the game release metadata, version, Europe/Paris last-update timestamp and per-game changelog in the same commit. Core Information reads that metadata; never leave a generic hardcoded version/date.
 
 ## 13. Distribution portability
 

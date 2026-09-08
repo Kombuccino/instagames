@@ -22,7 +22,21 @@ It must not be placed directly behind live gameplay merely because it looks clos
 
 Before runtime integration, reconstruct the approved image as a production layer stack. A flattened DA image may be used at runtime only when its entire content is genuinely static decorative background and contains no baked gameplay/UI state.
 
-## 2. Single-owner rule
+## 2. Planche de traduction DA → jeu — validation avant production
+
+Avant de générer les assets ou de reconstruire tout l'écran, produire une ou plusieurs **planches visuelles de production** fondées sur la DA approuvée. Elles sont le contrat visible entre la DA et le jeu réel : elles évitent de découvrir une mauvaise lecture après une intégration entière.
+
+La planche contient, à l'échelle du stage et dans le langage visuel de la DA :
+
+- le master annoté : zones jouables, couches, éléments recadrables, profondeur et UI Core exclue ;
+- les éléments à produire/rechercher, avec leur rôle et leur séparation ;
+- les états et le storyboard des interactions déterminantes ;
+- les études FX/mouvement : repos, montée, impact et retour au calme quand ils existent ;
+- une légende brève pour chaque proposition : intention, recette Phaser, déclencheur, coût et priorité.
+
+La planche ne redessine pas le jeu dans un médium étranger. Les effets reprennent palette, matières, contours, échelle de détail et rythme de la DA. Toute idée nouvelle est identifiée comme proposition de l'agent. L'utilisateur valide ou corrige cette planche avant la production complète ; elle est archivée comme référence avec son statut dans `ART_DIRECTION.md` et son chemin est cité dans `ASSET_MANIFEST.md`.
+
+## 3. Single-owner rule
 
 Every visible element has exactly one production owner.
 
@@ -36,7 +50,7 @@ Never draw the same visual/function in both the background asset and Phaser. Nev
 
 If an approved master contains a baked element that must be dynamic, recreate/extract the surrounding art cleanly rather than masking the old element at runtime.
 
-## 3. Never bake mutable information
+## 4. Never bake mutable information
 
 A static asset must not contain information that can change during a run, including:
 
@@ -53,7 +67,7 @@ A static asset must not contain information that can change during a run, includ
 
 Icons that are universal and intentionally part of an isolated control-state sprite are allowed.
 
-## 4. Mandatory decomposition pass
+## 5. Mandatory decomposition pass
 
 Before producing final assets, classify the approved DA into five families.
 
@@ -94,9 +108,9 @@ Do not invent visually unrelated drawings for each state. States should share on
 
 Examples: numbers, formulas, paths, aim previews, node glows, particles, live result bubble, selection halo.
 
-Use Phaser when these are fundamentally stateful/procedural. Authored textures may support them, but engine state owns the result.
+Use Phaser when these are fundamentally stateful/procedural. Authored textures may support them, but engine state owns the result. Chaque FX notable a une vignette dans la planche et une recette : asset support éventuel, émetteur/tween/filtre/masque/caméra, déclencheur, durée, limites simultanées et version réduite. Ne jamais promettre une flamme, un laser, une lumière ou un impact sans décider comment il vit réellement dans le moteur.
 
-## 5. Asset-manifest requirement
+## 6. Asset-manifest requirement
 
 Once a DA is approved, create/update the game's `ASSET_MANIFEST.md` before runtime cutover.
 
@@ -112,10 +126,13 @@ For every production asset record at least:
 - state variants and shared base geometry;
 - what dynamic content Phaser draws above it;
 - whether it is required or optional.
+- référence de planche, états illustrés et décision utilisateur associée ;
+- pour un élément vivant : recette Phaser, déclencheur, durée, budget simultané et priorité visuelle ;
+- pour un asset externe : source, licence, preuve de compatibilité et éventuelles limites d'usage.
 
 The manifest must explicitly mark flattened concept/master images as `REFERENCE ONLY` when they contain baked dynamic/UI state.
 
-## 6. Reconstruction rules
+## 7. Reconstruction rules
 
 When deriving assets from an approved DA:
 
@@ -130,7 +147,7 @@ When deriving assets from an approved DA:
 
 A crop from a concept sheet is acceptable only if it is cleaned into an independent production asset. The concept sheet itself is never a runtime atlas unless it was intentionally authored as one with known frame coordinates and no labels/mockup contamination.
 
-## 7. Design for states, not for one screenshot
+## 8. Design for states, not for one screenshot
 
 Before calling gameplay art finished, inspect the canonical stage in representative states relevant to that game.
 
@@ -148,7 +165,7 @@ For a three-action puzzle this normally includes:
 
 The UI must remain coherent in every state. A beautiful screenshot representing only one state is insufficient.
 
-## 8. Design for motion during decomposition
+## 9. Design for motion during decomposition
 
 For every notable DA element ask:
 
@@ -160,9 +177,15 @@ For every notable DA element ask:
 
 If yes, isolate it or deliberately make the dynamic portion engine-owned.
 
-Animation planning happens before flattening/export, not after integration.
+Animation planning happens before flattening/export, not after integration. Les vignettes FX doivent permettre de voir la différence entre le repos, l'action et le moment fort : une liste seule ne suffit pas à valider le rendu.
 
-## 9. Fixed-stage composition remains authoritative
+### Règle de budget FX
+
+Faire vivre le jeu avec de nombreux détails légers : boucles de sprites courtes, oscillations ciblées, variations de teinte/alpha, petites particules bornées et tweens. Réserver les passes plus coûteuses — filtres, blur, glow étendu, éclairage d'image, masques dynamiques, grandes gerbes et secousses — aux événements qui changent réellement la sensation du joueur.
+
+Pour Phaser 4.2.1, préférer les émetteurs avec plafond/réservation de particules et les filtres internes localisés. Les filtres externes de caméra sont des passes écran plus coûteuses ; les tester sur l'appareil cible et ne pas les laisser actifs par habitude. Chaque proposition indique donc `léger`, `ponctuel` ou `coûteux`, ainsi que le gain attendu.
+
+## 10. Fixed-stage composition remains authoritative
 
 All assets are authored for the game's declared logical viewport, normally `390×844` portrait or `844×390` landscape.
 
@@ -170,7 +193,7 @@ Asset decomposition does not create mobile/desktop layout variants. Phaser/Core 
 
 HAUT and BAS are crop-sensitive parts of MASTER. Decorative extension can exist only in EXTRA HAUT/BAS outside MASTER on unusually tall mobile viewports. Lateral sidecars belong to Core, and gameplay-critical geometry never reflows because of device size.
 
-## 10. Localization rule
+## 11. Localization rule
 
 Avoid baking gameplay copy into image assets.
 
@@ -182,26 +205,27 @@ Prefer:
 
 Decorative fictional markings may be baked only when they are not functional instructions and do not create localization ambiguity.
 
-## 11. Integration order
+## 12. Integration order
 
 Use this order for a final DA implementation:
 
-1. freeze `ART_DIRECTION.md`;
-2. decompose the reference and update `ASSET_MANIFEST.md`;
-3. produce clean isolated assets;
-4. save directly under `public/assets/generated/<game-id>/...` in Codex, or upload through private `Fugg/<game-id>/...` in ChatGPT;
-5. verify local generated files or the Actions mirror under `public/assets/imported/...`, according to the entry route;
-6. preload assets in the engine;
-7. rebuild the runtime layer stack without the flattened mockup;
-8. wire state transitions and input feedback;
-9. verify all representative game states;
-10. verify normalized geometry across phone/tablet/desktop;
-11. build/typecheck;
-12. remove superseded runtime art/assets once nothing references them.
+1. freeze `ART_DIRECTION.md` and recover its approved/rejected references;
+2. produce the visual production board and obtain its validation/corrections;
+3. decompose the reference and update `ASSET_MANIFEST.md` with the board's FX/state decisions;
+4. produce or source clean isolated assets;
+5. save directly under `public/assets/generated/<game-id>/...` in Codex, or upload through private `Fugg/<game-id>/...` in ChatGPT;
+6. verify local generated files or the Actions mirror under `public/assets/imported/...`, according to the entry route;
+7. intégrer une mini-tranche représentative — décor, interaction, état et FX compris — et la comparer à la planche à taille de jeu;
+8. only then preload the complete pack and rebuild the remaining runtime layer stack without the flattened mockup;
+9. wire all state transitions and input feedback;
+10. verify all representative game states and the FX budgets;
+11. verify normalized geometry across phone/tablet/desktop;
+12. build/typecheck;
+13. remove superseded runtime art/assets once nothing references them.
 
 Never change code to an `/assets/imported/...` path before the file is verified in the repository.
 
-## 12. Production review checklist
+## 13. Production review checklist
 
 Before declaring the art pass complete, answer yes to all relevant items:
 
@@ -211,6 +235,8 @@ Before declaring the art pass complete, answer yes to all relevant items:
 - Are repeated components visibly from one family?
 - Are buttons and indicators isolated from the background?
 - Are likely animations supported by separate layers?
+- Is there a validated visual production board for composition, states and FX?
+- Do the implemented FX visibly match its approved intent while staying inside their declared budget?
 - Is there only one owner for each visible function?
 - Are all functional texts localizable or avoided?
 - Does the screen remain coherent at all gameplay states?
@@ -218,7 +244,7 @@ Before declaring the art pass complete, answer yes to all relevant items:
 - Are runtime assets verified through their documented local/Drive entry route?
 - Has the flattened DA/master been kept as reference-only when appropriate?
 
-## 13. Key principle
+## 14. Key principle
 
 Think like a game renderer, not like a poster compositor.
 

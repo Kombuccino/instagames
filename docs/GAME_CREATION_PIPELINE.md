@@ -1,6 +1,6 @@
 # MiniFugg — Notice unifiée de création d'un jeu
 
-Version 1 — 7 septembre 2026. Document vivant, destiné à ChatGPT, Codex et aux développeurs.
+Version 2 — 8 septembre 2026. Document vivant, destiné à ChatGPT, Codex et aux développeurs.
 
 Entrée commune pour chaque demande : [ACTIONS.md](ACTIONS.md), qui sélectionne les procédures et outils. Cette notice détaille le parcours du jeu ; elle ne remplace pas les briefs ciblés [DA_CORE](DA_CORE.md), [DA_GAME](DA_GAME.md) et [DA_COVER](DA_COVER.md).
 
@@ -71,6 +71,14 @@ Une bêta peut rester simple visuellement et recevoir juste les sons utiles au c
 
 **Sortie :** DA choisie, composition fonctionnelle vérifiée et premier plan de production. Une belle image ne valide ni ses assets runtime, ni le son, ni la fidélité du jeu implémenté.
 
+### Passage obligatoire : planche de traduction DA → jeu
+
+Avant toute intégration complète, transformer la DA validée en une **planche visuelle de production**. Elle ne remplace pas la DA : elle montre comment celle-ci devient un jeu vivant à l'échelle du stage réel.
+
+Elle comprend au minimum : composition et couches annotées, liste visuelle des assets/éléments à isoler, états représentatifs, storyboard des interactions centrales, et études de mouvements/FX. Chaque FX est représenté dans le même langage graphique que la DA et reçoit une légende courte : intention, recette Phaser ou asset envisagé, déclencheur, coût (`léger`, `ponctuel`, `coûteux`) et priorité. Les propositions inventées par l'agent sont identifiées comme telles.
+
+Cette planche est montrée à l'utilisateur et corrigée avant la production complète. Conserver son fichier et sa validation dans `ART_DIRECTION.md`; transcrire ses décisions de production dans `ASSET_MANIFEST.md`. La première intégration est ensuite une **mini-tranche** qui réunit décor, geste, états et FX d'un moment représentatif. Ne pas décliner toute la famille tant que cette tranche n'a pas été comparée à la planche à taille de jeu.
+
 ### Continuité obligatoire : ne pas faire répéter la DA
 
 Avant chaque lot d'assets, cover, animation ou son, l'agent relit cette notice, [Zones MiniFugg](MINIFUGG_ZONES.md), le suivi du jeu et les sections pertinentes des documents spécialisés. Il récupère dans `ART_DIRECTION.md` un **contrat artistique** court et durable :
@@ -104,7 +112,7 @@ Une sortie infidèle est corrigée ou rejetée avant la déclinaison du pack. Un
 
 ## 6. Concevoir la réalisation Phaser avant de générer
 
-L'agent fait une proposition technique au service de la DA. Il examine les capacités du moteur réellement installé, ses types/exemples et, si nécessaire, la documentation officielle de la même version. Ne pas transposer aveuglément une API Phaser 3 vers Phaser 4. Phaser Editor est un outil optionnel à essayer sur un composant concret ; le pipeline n'en dépend pas.
+L'agent fait une proposition technique au service de la DA et de la planche approuvée. Il examine les capacités du moteur réellement installé, ses types/exemples et, si nécessaire, la documentation officielle de la même version. Ne pas transposer aveuglément une API Phaser 3 vers Phaser 4. Phaser Editor est un outil optionnel à essayer sur un composant concret ; le pipeline n'en dépend pas.
 
 Pour chaque élément significatif, décider : **propriétaire, construction, mouvement, états, coût et test**. Appliquer [GAME_ART_PRODUCTION_PIPELINE.md](GAME_ART_PRODUCTION_PIPELINE.md).
 
@@ -117,13 +125,13 @@ Pour chaque élément significatif, décider : **propriétaire, construction, mo
 | Terrain/niveau en tuiles | Tilemap et tileset si la mécanique le justifie | Taille des tuiles, raccords, marges, couches visuelles et collisions séparées |
 | Personnage animé | Spritesheet/atlas ou pièces articulées selon le mouvement | Frames cohérentes, pivots, poses, durée et transitions ; éviter la décomposition inutile |
 | Éclairage/relief | Lumière supportée, reflets animés, masques ou shader ciblé | Si nécessaires, cartes de normales/masques/émission exactement alignées à l'image ; vérifier leur prise en charge avant production |
-| Énergie, poussière, impact | Particules, sprites en mélange additif, géométrie ou filtres ciblés | Petite texture de support, zone, déclenchement, durée, plafond de particules et version réduite |
+| Énergie, poussière, impact | Particules, sprites en mélange additif, géométrie, tween, lumière ou filtres ciblés | Vignette FX approuvée, texture de support, zone, déclenchement, durée, plafond de particules, coût et version réduite |
 | Texte/score/jauge | Données et rendu dynamiques | Police lisible/licenciée, glyphes utiles, longueurs maximales, emplacement réservé, états traduits |
 | Bouton | Composant avec base partagée et états | Hitbox distincte de l'alpha décoratif, icône, focus/pression/indisponible/prêt ; matrices cohérentes |
 
 Tous les jeux n'ont pas besoin de maps, de normales, de shaders, de physique ou de particules. Marquer les éléments inutiles « sans objet » avec une raison. Choisir quelques effets qui donnent du caractère : par exemple un mécanisme lent, une réaction tactile et un événement spectaculaire. Les effets ne doivent pas masquer les informations ni remplacer les matériaux illustrés promis.
 
-Pour une animation, noter le déclencheur, la durée, la couche, l'amplitude, la priorité visuelle et le comportement en pause/mouvement réduit. Pour une lumière, définir ce qu'elle éclaire et vérifier que les reflets déjà peints ne contredisent pas son mouvement. Un faux relief dessiné dans une image n'offre pas automatiquement un éclairage dynamique crédible.
+Pour une animation, noter le déclencheur, la durée, la couche, l'amplitude, la priorité visuelle et le comportement en pause/mouvement réduit. Pour une lumière, définir ce qu'elle éclaire et vérifier que les reflets déjà peints ne contredisent pas son mouvement. Un faux relief dessiné dans une image n'offre pas automatiquement un éclairage dynamique crédible. Pour tout effet qui change la sensation du jeu, chercher une solution/asset de qualité et de licence compatible avant de reconstruire un ersatz ; ne retenir une idée originale que si elle reste fidèle à la DA et améliore réellement le ressenti.
 
 ### Contrat de chaque asset
 
@@ -143,7 +151,7 @@ Une bande avec de grandes marges transparentes n'a pas la même taille utile que
 
 ## 7. Produire, importer et intégrer les assets
 
-1. Produire d'abord une tranche représentative : un élément jouable + son habillage + son feedback. La regarder à taille de jeu avant de décliner toute la famille.
+1. Produire d'abord la planche de traduction DA → jeu puis, après sa validation, une tranche représentative : un élément jouable + son habillage + ses états + son feedback/FX. La regarder à taille de jeu avant de décliner toute la famille.
 2. Générer/éditer depuis les références retenues, en précisant rôle, silhouette, ratio, alpha, zones vides et éléments exclus. Un générateur ne garantit pas les dimensions, transparences ou états exacts : contrôler les fichiers obtenus, corriger ou rejeter les sorties inadéquates.
 3. Vérifier visuellement alpha, bords, contenu, cohérence des matières, tailles utiles, alignement des états et lisibilité après réduction. Ne pas accepter une planche illustrée comme atlas sans frames et métadonnées explicitement préparées.
 4. Préserver les sources. Prévoir des résolutions adaptées dès la création ; les dérivés optimisés d'originaux existants suivent l'autorisation et les règles de [ASSET_PIPELINE.md](ASSET_PIPELINE.md), sans écraser la référence approuvée.
@@ -193,6 +201,7 @@ Faire une revue de bout en bout. Adapter les scénarios au jeu, sans multiplier 
 | États visuels | Vide, action en cours, progression, saturation, erreur, annulation, disponible/indisponible, fin selon le jeu |
 | Écrans/input | Petit téléphone, téléphone long, tablette, desktop dans sa surface Core, haut DPI ; tactile et souris/clavier/manette selon support annoncé |
 | Art et mouvement | Comparaison à la DA, contenus non occultés, effets lisibles et bornés, réduction de mouvement prévue |
+| Traçabilité produit | Version, date/heure, changelog, sources/validations visuelles et commit de livraison cohérents |
 | Audio | Écoute du mix final, transitions, mute, interruption/reprise et nettoyage |
 | Chargement/performance | Chargement à froid, fichiers disponibles, fluidité et coût sur cible mobile ou limite explicitement reconnue |
 | Accessibilité/localisation | Instructions et contrôles compréhensibles, symboles en plus des couleurs, textes non baked, formats longs/locaux nécessaires |
@@ -202,6 +211,25 @@ Faire une revue de bout en bout. Adapter les scénarios au jeu, sans multiplier 
 Présenter une version concrète à l'utilisateur pour la validation du plaisir et de la finition. Une autorisation déjà donnée vaut pour les opérations qu'elle couvre : ne pas redemander chaque intégration ou réglage. En revanche, une approbation de DA n'est pas une acceptation automatique du jeu fini.
 
 Promouvoir au statut `fugg` lorsqu'il satisfait ces critères et le choix de curation utilisateur, puis mettre à jour le registre et le suivi. Ne pas déclasser en masse le catalogue historique à la création de cette notice. Les shells Capacitor/Electron et la certification des stores restent des chantiers distincts ; conserver la portabilité sans en faire un obstacle artificiel à la sortie web.
+
+### Version, dernière mise à jour et changelog — obligatoire à la livraison
+
+Toute livraison de jeu sur `main` actualise les métadonnées produit, dans une source unique consommée par la fiche **Information** : `version`, `updatedAt` (date et heure Europe/Paris) et chemin vers `src/games/<id>/CHANGELOG.md`. Ne jamais laisser `PlatformCoverShell` ou un autre panneau afficher une version/date générique écrite en dur.
+
+Créer le changelog lors de la première livraison suivie d'un jeu, sans inventer l'historique antérieur. Chaque entrée contient : version, date/heure, résumé lisible des changements, décisions/références importantes, vérifications pertinentes et commit de livraison. La progression par défaut est simple : correction/polish `0.x.y`, évolution visible `0.y.0`, première sortie aboutie `1.0.0`. Une expérimentation non commitée ou non poussée ne change pas la version visible ; une fois livrée, aucune modification de jeu n'est considérée complète sans ces métadonnées.
+
+Format minimal :
+
+```markdown
+# <Jeu> — Changelog
+
+## [<version>] — <YYYY-MM-DD HH:mm Europe/Paris>
+- <changement lisible pour le joueur>
+- <autre évolution, correction ou décision importante>
+Références : <planche/DA/asset si utile>.
+Vérifié : <scénario ou build utile>.
+Livraison : `<commit>` sur `main`.
+```
 
 Après livraison, inscrire bugs observés, retours, décisions et prochain petit chantier. Un jeu peut être Fugg avec des améliorations optionnelles restantes ; elles ne doivent pas masquer un défaut bloquant.
 
@@ -222,7 +250,8 @@ Modèle compact à adapter :
 Mis à jour : <date>. Base inspectée : <commit>.
 Phase : <phase réelle>. Maturité : <prototype/bêta/Fugg et éventuelle réserve>.
 Statut registre : <valeur constatée>. Runtime/migration/cover : <valeurs>.
-Livraison : <local/branche/main/déployé, lien et preuve ou non vérifié>.
+Version livrée : <version, date/heure Europe/Paris, chemin CHANGELOG.md ou non encore livré>.
+Livraison : <local/branche/main/déployé, lien, commit et preuve ou non vérifié>.
 Séquence initiale : <N/10 en cours, terminée ou historique inconnu>.
 
 ## Intention et décisions retenues
@@ -237,6 +266,7 @@ Contrat artistique : <lien vers identité, références approuvées, rejets, mou
 | GD et équilibre | ... | ... | ... |
 | Composition et inputs | ... | ... | ... |
 | DA | ... | ... | ... |
+| Planche de traduction DA → jeu | ... | ... | ... |
 | Assets / intégration | ... | ... | ... |
 | Animations / éclairages / FX | ... | ... | ... |
 | SFX / musique / mix | ... | ... | ... |
@@ -280,7 +310,7 @@ Premiers enseignements de LineFugg :
 - un build réussi ne valide pas l'art, le responsive, le son ou le plaisir ;
 - toute conclusion d'audit doit distinguer observation, mesure, estimation et proposition.
 
-Journal : 2026-09-07 — première version, parcours progressif demandé par l'utilisateur, suivi par jeu, production guidée par le moteur et clarification du périmètre des dix prompts. Précision utilisateur : génération Codex locale → fichiers directs et commit ; Drive réservé au transfert depuis ChatGPT sans accès au dépôt.
+Journal : 2026-09-08 — version 2 : planche de traduction DA → jeu obligatoire, propositions FX visualisées et budgétées, mini-tranche validée avant déclinaison, et traçabilité produit par version/date/changelog à chaque livraison sur `main`. 2026-09-07 — première version, parcours progressif demandé par l'utilisateur, suivi par jeu, production guidée par le moteur et clarification du périmètre des dix prompts. Précision utilisateur : génération Codex locale → fichiers directs et commit ; Drive réservé au transfert depuis ChatGPT sans accès au dépôt.
 
 ## 12. Références spécialisées
 

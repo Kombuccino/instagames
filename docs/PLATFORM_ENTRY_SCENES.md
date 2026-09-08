@@ -109,6 +109,20 @@ Default grammar:
 
 Do not cut to a generic storefront grid.
 
+### Extended-screen branch — direction du 8 septembre 2026
+
+When the available viewport is wide enough for the extended Core experience, the phone does not leave the frame after its approach. It grows toward the maximum useful height, moves to the right and keeps the player's hand visible. The surrounding metro gives way to a bedroom desk scene; the phone is the continuous object joining both places.
+
+The preferred research direction uses the enlarging phone and hand as a natural foreground mask rather than a literal split screen or digital particle effect: the metro loses focus and exposure behind the device, warm desk light appears, then the bedroom resolves in its wake. Reduced motion uses a short background fade while keeping the phone fixed and readable.
+
+The left side then introduces a physical or semi-physical `MiniFugg Retro Gaming` magazine. It is closed first for roughly 4–5 seconds. Its cover is a fixed low-poly Fuggy composition with the exact MiniFugg-logo masthead and short funny English cover lines; it never selects a catalog game. It then opens almost flat and readable on the desk, with one active page and the rest curled underneath. Three physical tabs directly select `FEATURE`, `COMMENTS` and `RANKING` inside the same fixed page.
+
+The fixed cover has no Like, Favorite, selected-game or player-dependent state. The open spread and phone remain synchronized to the active game.
+
+In the stable state, the phone is an actual gameplay viewport rather than a prop: keep it at the extreme foreground on the right and use almost the entire useful height. Its uninterrupted fictional glass targets `390 × 884` and contains the canonical `390 × 844` game MASTER, with only background continuation outside that MASTER. The shell has no camera, notch, sensor, speaker island or large chin, and the holding hand never overlaps gameplay. The open magazine dominates the remaining width. Only a thin border of desk, lamp light and bedroom may remain visible.
+
+The magazine reflows the same live Core data into three reusable English editorial grids: `FEATURE`, `COMMENTS` and `RANKING`. Their visual grammar combines French editorial humour, bold US box-out hierarchy and Japanese density, small captures and clear color markers without copying a specific publication. The physical magazine itself uses the same faceted low-poly language as the room and hand. Handwriting, filler doodles, improvised mascots, dirty paper, artificial ageing, Like stickers and Favorite bookmarks are forbidden. Follow `DA_MAGAZINE.md` before any new magazine artwork or implementation.
+
 ## 9. Motion/audio
 
 Use a small number of authored ambient motions: carriage sway, sleepy head nod, hand micro-movement, passing light, fluorescent flicker, steam/rain, etc.
@@ -138,9 +152,9 @@ The live phone UI remains Core and should be composited/positioned so the canoni
 
 ## 11. Cross-screen invariant
 
-The mobile central composition is the reference. On tablet/desktop, the entry scene may reveal/add decorative environment around that central composition, but the phone/Core handoff target must remain the same canonical center.
+The complete-screen experience preserves the canonical portrait composition. On an extended screen, the authored exception above deliberately places the same phone surface on the right and gives the left side to the magazine. Content, game geometry and data remain shared; only the Core staging changes.
 
-Do not reposition the phone and Core controls into a different composition merely because more width exists.
+Choose complete or extended presentation from the useful container geometry, not from a desktop/mobile user-agent label. Intermediate widths must fall back to the complete composition instead of squeezing an unreadable magazine beside the phone.
 
 ## 12. Scene library / achievements
 
@@ -165,3 +179,19 @@ Concept/validation should show the whole interaction, not an isolated pretty pic
 7. details/community state.
 
 The interaction model remains authoritative while visual treatments evolve.
+
+### Extended-screen concept artwork v1 — not yet production-approved
+
+- `/assets/generated/platform/concepts/extended-screen-v1/metro-room-phone-occlusion-concept-v2.png`: preferred metro-to-bedroom midpoint, phone/hand used as the transition mask;
+- `/assets/generated/platform/concepts/extended-screen-v1/metro-room-transition-concept-v1.png`: superseded square-dissolve exploration retained for comparison;
+- `/assets/generated/platform/concepts/extended-screen-v1/room-magazine-closed-concept-v2.png`: selected cover-state direction, full-height blank phone and exact-logo magazine masthead;
+- `/assets/generated/platform/concepts/extended-screen-v1/room-magazine-info-concept-v3.png`: useful phone framing and Dossier structure, rejected final page DA;
+- `/assets/generated/platform/concepts/extended-screen-v1/room-magazine-comments-concept-v3.png`: useful Comments content study, rejected final page DA;
+- `/assets/generated/platform/concepts/extended-screen-v1/room-magazine-ladder-concept-v3.png`: useful ranking structure, rejected final page DA and obsolete two-page geometry;
+- `/assets/generated/platform/concepts/extended-screen-v1/room-magazine-dossier-clean-concept-v4.png`: first clean Dossier candidate following `DA_MAGAZINE.md`, pending user validation;
+- `/assets/generated/platform/concepts/extended-screen-v1/room-magazine-open-concept-v2.png`: superseded open-state study that compressed editorial, comments and scores;
+- `/assets/generated/platform/concepts/extended-screen-v1/minifugg-retro-gaming-masthead-v1.png`: exact MiniFugg-logo masthead study with separate `RETRO GAMING` descriptor;
+- `/assets/generated/platform/concepts/extended-screen-v1/single-page-tetramindfck-info-concept-v9.png`: current single-page physical direction, with stronger low-poly facets and a rounded cover fragment curled underneath;
+- `/assets/generated/platform/concepts/extended-screen-v1/room-magazine-open-concept-v1.png`: superseded first open-state study with too much room and insufficient phone scale.
+
+These are composition and atmosphere studies. They are flattened and must not be wired as runtime backgrounds. Production requires separate metro, dissolve, room, desk, magazine, hand/device and live screen ownership.

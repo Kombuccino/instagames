@@ -1,6 +1,6 @@
 # DA UI — Interfaces partagées MiniFugg
 
-Les écrans et masques Core emploient les noms de [Zones MiniFugg](MINIFUGG_ZONES.md). MONNAIE et JOUER restent dans le cadre horizontal de 390 unités ; RAIL reste à gauche sur CENTRE, y compris sur PC. GameOver et Ladder suivent leurs modèles dédiés.
+Les écrans et masques Core emploient les noms de [Zones MiniFugg](MINIFUGG_ZONES.md). MONNAIE et JOUER restent dans le cadre horizontal de 390 unités ; RAIL reste à gauche sur CENTRE, y compris sur PC. GameOver et Ladder suivent leurs modèles dédiés. Le magazine de l'écran étendu suit aussi [DA Magazine](DA_MAGAZINE.md).
 
 ## Mission et références
 
@@ -23,6 +23,18 @@ Fond graphite, blanc légèrement chaud, gris secondaires, rouge rare et fonctio
 Pas de dashboard gaming néon, de glassmorphism généralisé, de cartes arrondies partout, de boutons brillants standards ou de baseline décorative en bas des panneaux. Ne pas réintroduire une grosse barre supérieure ou inférieure pour « finir » la composition.
 
 L'expérience mobile centrale est complète. Elle garde sa géométrie lorsqu'elle est agrandie ; les éventuels sidecars desktop sont additionnels, jamais une raison de déplacer les contrôles centraux.
+
+Sur l'expérience **écran étendu** décrite dans `PLATFORM_REDESIGN.md`, le sidecar devient une mise en scène éditoriale persistante : une une de magazine `MiniFugg Retro Gaming` fermée pendant environ 4–5 secondes, puis un magazine ouvert presque à plat à gauche du téléphone. Le téléphone reste au premier plan, à pratiquement toute la hauteur utile. Son verre fictif vise `390 × 884` et accueille le MASTER de jeu `390 × 844`, avec au plus un prolongement de fond hors des éléments critiques. Il n'a ni caméra, encoche, capteur, haut-parleur ni menton décoratif ; la main ne recouvre jamais la surface jouable.
+
+Info, Comments et Leaderboard gardent leurs données, droits, états et actions canoniques. Sur écran étendu, ils deviennent trois rubriques dédiées dans une page de magazine unique et de taille fixe, accessibles directement par `FEATURE`, `COMMENTS`, `RANKING`. Le changement de rubrique ne modifie ni la taille, ni la perspective, ni la place du magazine. Ne jamais entasser les trois contenus dans la même vue.
+
+Le langage éditorial combine des principes de presse vidéoludique des années 1990 : ton et humour français, hiérarchie forte et encarts explicatifs américains, densité maîtrisée, petites captures et repères colorés japonais. Il reste original, propre et cohérent entre les Fuggs. Aucun manuscrit, gribouillis, mascotte improvisée, papier sale, fausse usure, macaron Like ou marque-page Favori. Les trois familles de mise en page sont `FEATURE`, `COMMENTS` et `RANKING` ; une future rubrique `SPECIAL` pourra être étudiée séparément.
+
+Cette exception de présentation ne s'applique pas à l'écran complet et ne duplique pas les composants métier. Les textes, commentaires, rangs, compteurs et états restent des composants HTML/CSS vivants posés sur les surfaces papier ; ils ne sont jamais cuits dans une image.
+
+Sur écran complet, le joueur conserve les panneaux MiniFugg Info, Comments et Leaderboard. Ils partagent les données du jeu avec le magazine, mais ne deviennent pas un faux site Web éditorial. Cette continuité maintient le joueur dans l'application et dans le contexte du jeu. Voir `DA_MAGAZINE.md`.
+
+La une est fixe : Fuggy canonique dans une pose amusante au sein du monde low-poly, avec des accroches courtes et drôles entièrement en anglais. Elle ne reprend aucun jeu, favori ou état du catalogue. Le masthead adapte le logo canonique uniquement par l'ajout séparé de `RETRO GAMING` ; ne pas régénérer ou redessiner le mot-symbole MiniFugg.
 
 ## Un système sémantique, pas un CSS par écran
 

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { GameFeed } from './core/GameFeed'
+import { HomeBisLab } from './core/HomeBisLab'
 import { LayoutLab, type LayoutTemplate } from './core/LayoutLab'
 import { MusicLab } from './core/MusicLab'
 import { PlatformEntryScene } from './core/PlatformEntryScene'
@@ -22,6 +23,12 @@ function opensLayoutLab() {
   return query.get('usr') === 'moigod' && query.get('lab') === 'layout'
 }
 
+function opensHomeBisLab() {
+  if (typeof window === 'undefined') return false
+  const query = new URL(window.location.href).searchParams
+  return query.get('usr') === 'moigod' && query.get('lab') === 'home-bis'
+}
+
 function layoutGuideView(): LayoutTemplate | null {
   if (typeof window === 'undefined') return null
   const query = new URL(window.location.href).searchParams
@@ -35,6 +42,7 @@ function layoutGuideView(): LayoutTemplate | null {
 export default function App() {
   const [entered, setEntered] = useState(() => opensDirectlyOnAGame())
 
+  if (opensHomeBisLab()) return <HomeBisLab />
   const guideView = layoutGuideView()
   if (guideView) return <LayoutLab focus={guideView} />
   if (opensLayoutLab()) return <LayoutLab />

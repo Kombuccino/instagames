@@ -18,6 +18,49 @@ L'application fonctionne, mais combine plusieurs générations de layout : Core 
 
 Les templates du laboratoire couvrent Home, Cover, CoverBeta, CoverCaca, Game, GameOver et Ladder. Ils constituent le banc d'essai commun ; ils ne valident pas encore l'expérience finale.
 
+## Deux familles d'expérience — direction du 8 septembre 2026
+
+La refonte doit partager les mêmes jeux, données, identité et composants entre deux familles, sans prétendre que leur mise en scène est identique.
+
+### Écran complet
+
+Le téléphone, la PWA installée et les fenêtres trop étroites emploient l'expérience centrale portrait. Home mène à Cover puis au jeu ; Info, Comments et Ladder conservent leurs panneaux MiniFugg. Ils partagent les données avec le magazine sans imiter un site Web externe. GameOver conserve sa surface dédiée et doit recevoir une DA Core spécifique. Le contrat détaillé vit dans `DA_MAGAZINE.md`.
+
+### Écran étendu
+
+Un écran suffisamment large emploie l'espace latéral comme partie de l'expérience Core :
+
+1. la scène Home low-poly s'étend sur le viewport entier ;
+2. après l'entrée, la main rapproche le téléphone au tout premier plan ; il se place à droite et utilise pratiquement toute la hauteur utile car cover et gameplay s'y déroulent réellement ; le verre est une surface `390 × 884` sans caméra, encoche, capteur ni menton, contenant le MASTER `390 × 844` intact, entourée d'un cadre fictif minimal ;
+3. le métro s'assombrit progressivement tandis qu'une chambre avec bureau apparaît ; le téléphone et la main forment le raccord visuel continu ; une fois arrivé, le décor de chambre ne subsiste qu'en bordure ;
+4. à gauche, le magazine `MiniFugg Retro Gaming` est d'abord fermé : sa première de couverture reste lisible pendant environ 4–5 secondes ;
+5. le magazine s'ouvre ensuite sur le premier Fugg, avec une seule page active posée presque à plat et réellement lisible ; le reste de l'objet est replié dessous et laisse deviner un fragment arrondi de la cover du jeu ; trois onglets donnent accès aux pages de même taille `FEATURE`, `COMMENTS` et `RANKING` ;
+6. cover puis gameplay restent dans le téléphone ; changer de Fugg tourne aussi la page du magazine.
+
+La une est toujours la même. Elle met en scène Fuggy canonique dans une pose amusante low-poly, avec le masthead MiniFugg exact et des accroches courtes en anglais. Elle ne sélectionne plus de jeu, de favori ou de contenu dynamique.
+
+Le magazine est une autre composition des mêmes données Core, pas un second système social. Ses pages fixes mêlent humour éditorial français, encarts et hiérarchie américains, densité maîtrisée, petites captures et repères colorés japonais. Les trois grilles sont `FEATURE`, `COMMENTS` et `RANKING`, en anglais. Aucun gribouillis, texte manuscrit, mascotte improvisée, papier sale, vieillissement artificiel, Like ou Favori. Le nom du jeu est recomposé en texte vivant dans la typographie éditoriale du magazine. Cette présentation n'impose pas une DA rétro aux jeux affichés dans le téléphone. Le contrat détaillé vit dans `DA_MAGAZINE.md`.
+
+La page `FEATURE` réserve sa surface à une description courte, une capture compacte d'une partie avancée, trois principes de jeu au maximum, la version, les dates disponibles et le meilleur score réel du joueur. `COMMENTS` donne la place aux conversations et réactions. `RANKING` emploie exactement le même gabarit pour le podium, le classement et la ligne du joueur. Chaque rubrique remplace la précédente dans la page active.
+
+Les onglets permettent de sauter directement à une rubrique ; le tourné de page reste court et peut être réduit ou supprimé selon les préférences de mouvement.
+
+Un marque-page ou contrôle discret permettant de revenir à Home peut être étudié plus tard. Il ne doit pas prendre de place dans la première validation de composition.
+
+Premières recherches raster, non validées comme production :
+
+- `/assets/generated/platform/concepts/extended-screen-v1/metro-room-phone-occlusion-concept-v2.png` — transition recommandée ;
+- `/assets/generated/platform/concepts/extended-screen-v1/metro-room-transition-concept-v1.png` — première étude conservée pour comparaison, dissolution carrée refusée ;
+- `/assets/generated/platform/concepts/extended-screen-v1/room-magazine-closed-concept-v2.png` — une fermée avec logo exact et coverlines ;
+- `/assets/generated/platform/concepts/extended-screen-v1/room-magazine-info-concept-v3.png` — cadrage téléphone et structure Dossier utiles, DA de page rejetée ;
+- `/assets/generated/platform/concepts/extended-screen-v1/room-magazine-comments-concept-v3.png` — structure Commentaires utile, DA de page rejetée ;
+- `/assets/generated/platform/concepts/extended-screen-v1/room-magazine-ladder-concept-v3.png` — meilleure structure Classement, DA de page rejetée ;
+- `/assets/generated/platform/concepts/extended-screen-v1/room-magazine-open-concept-v2.png` — étude ouverte antérieure, remplacée par les trois variantes v3 ;
+- `/assets/generated/platform/concepts/extended-screen-v1/room-magazine-dossier-clean-concept-v4.png` — première candidate propre conforme à `DA_MAGAZINE.md`, à valider avant déclinaisons ;
+- `/assets/generated/platform/concepts/extended-screen-v1/minifugg-retro-gaming-masthead-v1.png` — étude de masthead réutilisable fondée sur le logo exact.
+
+La transition recommandée emploie le téléphone et la main agrandis comme masque naturel : le métro perd netteté et exposition derrière eux, le centre passe presque au noir, puis la lumière chaude du bureau révèle la chambre dans leur sillage. La dissolution numérique en carrés de la première étude est écartée. Un fondu noir uniforme avec téléphone stable reste le repli à mouvement réduit.
+
 ## Legacy à éliminer après remplacement validé
 
 - `FIT` universel qui réduit un stage au lieu d'utiliser toute la largeur mobile ;

@@ -2,7 +2,7 @@
 
 Mis à jour : 8 septembre 2026 à 14:48 Europe/Paris. Version livrée : `0.2.0`. Changelog : `CHANGELOG.md`. Base initiale : `62947acacd03ecb3ae487160c9a2faa246417990`. Contrat réconcilié : `ART_DIRECTION.md`.
 
-Phase gameplay : migration Phaser 4 fonctionnelle, mais présentation visuelle refusée par l'utilisateur le 8 septembre 2026. Les validations locales ci-dessous couvrent le fonctionnement et ne constituent pas une approbation artistique. Une reprise de composition est requise avant une nouvelle revue. Registre : `fugg`, stage 390 × 844, runtime `phaser-2d`, migration `current` déverrouillée. Phase cover : C validée et à préserver ; A/B/D encore à explorer ; intégration Core des covers non faite.
+Phase gameplay : migration Phaser 4 fonctionnelle, mais présentation visuelle refusée par l'utilisateur le 8 septembre 2026. Les validations locales ci-dessous couvrent le fonctionnement et ne constituent pas une approbation artistique. Une reprise de composition est requise avant une nouvelle revue. Registre : `fugg`, stage 390 × 844, runtime `phaser-2d`, migration `current` déverrouillée. Phase cover : C validée, vérifiée et désormais disponible localement sous `public/assets/imported/vlads-skewers/welcome/vlad-cover-c-graphic-poster-approved-2026-09-07.png` ; A/B/D encore à explorer ; branchement Core non fait.
 
 Prompt de reprise préparé : `docs/prompts/VLAD_GAMEPLAY_RECOVERY.md`.
 
@@ -69,7 +69,7 @@ A/B/D doivent être trois masters portrait individuels plus simples, éditoriaux
 ## Prochaines actions
 
 1. Reprendre la composition avec `docs/prompts/VLAD_GAMEPLAY_RECOVERY.md`, puis présenter une nouvelle capture 390 × 844 comparée aux références ; ne considérer le gameplay approuvé qu'après validation explicite de l'utilisateur.
-2. Intégrer la cover C exacte au Core quand son asset de production est disponible localement, puis poursuivre A/B/D séparément.
+2. Intégrer la cover C exacte désormais disponible localement au Core, puis poursuivre A/B/D séparément.
 3. Valider gameplay et audio sur téléphone physique.
 
 Aucun blocage gameplay. La cover du registre reste `update-required` tant que le master C n'est pas branché au runtime.

@@ -71,10 +71,16 @@ Fiche : `GAME_IDEA_the_stomac.md`
 
 ## Planches d’inspiration sauvegardées sur Drive
 
-1. `game-concept-board-01-retro-eclectic.png` — boîtes rétro/indé éclectiques, fantasy, sci-fi, puzzles, bizarreries.
-2. `game-concept-board-02-cute-chaos.png` — univers mignons, débiles, crado, animaux, nourriture, bureau, jouets.
-3. `game-concept-board-03-constructivist-conceptual.png` — constructivisme / modernisme / géométrie / affiches conceptuelles.
-4. `game-concept-board-04-dark-strange.png` — univers sombres, étranges, bureaucratiques, occultes, surréalistes.
+1. `game-concept-board-01-retro-eclectic.png` — première exploration rétro/indé éclectique.
+2. `game-concept-board-02-cute-chaos.png` — univers mignons, débiles, objets et animaux.
+3. `game-concept-board-03-constructivist-conceptual.png` — constructivisme / modernisme / affiches conceptuelles.
+4. `game-concept-board-04-dark-strange.png` — première exploration sombre, trop proche par endroits de jaquettes narratives modernes.
+5. `game-concept-board-05-pixel-concepts.png` — pixel art et micro-mécaniques : objets, animaux, petites règles immédiatement lisibles.
+6. `game-concept-board-06-ordinary-objects.png` — quotidien détourné : objets banals transformés en mécaniques de petits jeux.
+7. `game-concept-board-07-strange-nature.png` — nature, organismes, comportements animaux, écosystèmes et thèmes rarement traités.
+8. `game-concept-board-08-abstract-systems.png` — systèmes, flux, équilibre, lignes, remplissage, boucles, gravité et règles abstraites.
+
+Les planches 05–08 répondent à la correction du 9 septembre 2026 : privilégier des **déclencheurs de game design pour petits jeux** plutôt que des univers narratifs ou des affiches façon AAA. Chercher des contre-points, systèmes, objets ordinaires, métiers, organismes, phénomènes physiques ou sociaux et sujets qui semblent a priori “impossibles à transformer en jeu”.
 
 ## Règle de reprise
 

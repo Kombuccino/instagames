@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/linefugg-dimension-flip.yml'
       - 'ops/linefugg-dimension-flip/apply.py'
+      - 'ops/linefugg-dimension-flip/fix_test.py'
 
 permissions:
   contents: write
@@ -27,7 +28,9 @@ jobs:
         with:
           node-version: 22
       - name: Apply targeted patch
-        run: python ops/linefugg-dimension-flip/apply.py
+        run: |
+          python ops/linefugg-dimension-flip/apply.py
+          python ops/linefugg-dimension-flip/fix_test.py
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Install Chromium

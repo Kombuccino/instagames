@@ -1,0 +1,20 @@
+{
+  "game_id": "vlads-skewers",
+  "purpose": "Record the five user-approved static cover masters and lossless runtime derivatives uploaded to the private production Drive. This receipt also triggers the existing Drive asset sync workflow on main.",
+  "approval": {
+    "date": "2026-09-10",
+    "scope": "Five selected Vlad covers approved for production/feed integration. Preserve their visual identity; no gameplay changes are part of this batch."
+  },
+  "transport": "Private Drive -> existing GitHub Actions importer",
+  "production_drive_path": "Fugg/vlads-skewers/welcome/variants",
+  "production_folder_id": "11ToHZj_UwANaQu6D9oHPPt79OKCsCFFA",
+  "repository_prefix": "public/assets/imported/vlads-skewers/welcome/variants/",
+  "master_contract": "Opaque PNG masters exactly 390x844 plus lossless WebP runtime derivatives.",
+  "assets": [
+    {"id":"chaos","png":"vlad-cover-01-chaos-master.png","webp":"vlad-cover-01-chaos.webp","width":390,"height":844,"png_sha256":"9d5412a37c95a47067b385631f02a97dfa6ad06041038d354745731f198558ef","webp_sha256":"82db537b95837c5d17004698e973bb8416e6c445899b04f820b93360e81038a7","png_drive_id":"19r8RRk61mzaoejCCG_aJAa7A0ut8Qsy0","webp_drive_id":"1PZI8ZJzYxvFKWDhwJ_PKElb59uO5FeGV"},
+    {"id":"still-life","png":"vlad-cover-02-still-life-master.png","webp":"vlad-cover-02-still-life.webp","width":390,"height":844,"png_sha256":"bde81a767942347add990debedda06e155db0275e87ce7234c79e402a2e5e802","webp_sha256":"fb28644be10a7baaab4d3eec47667e32c1857df1d3356e5ae1505cc22d3f4328","png_drive_id":"14yoPYAdJc75qkuA1k7ubWP-tpEY7RCAJ","webp_drive_id":"1SFqtI9YY7_w1B-CfM_WdMQ0YLs8MMlmu"},
+    {"id":"japanese-portrait","png":"vlad-cover-03-japanese-portrait-master.png","webp":"vlad-cover-03-japanese-portrait.webp","width":390,"height":844,"png_sha256":"bec5599086fc5ad9a79a8dea23ab1c22547b49888246a0b93a836abbb5600aa1","webp_sha256":"d25eeeb9216a39e9429893c9cb003233e346245465c4675598563edd4a9e6b3e","png_drive_id":"1RK62U-j0Y3DXK53MPSnKjIPDWS6TwxrX","webp_drive_id":"1WLy0T-BXm5lNVfkwH2Kj2-6IVG2Voc7b"},
+    {"id":"castle-sign","png":"vlad-cover-04-castle-sign-master.png","webp":"vlad-cover-04-castle-sign.webp","width":390,"height":844,"png_sha256":"61b7d8980eb26e97f745476d5455479336664197df6c5fad43735ec489364e55","webp_sha256":"e5e1ca46fc6a5483e549590a0ca9f808b3b84de9fd2b6f4d8a2b5c4f581a65e5","png_drive_id":"1XkU1sbbSiQMyW5BUx7ZQDd2leJcI5ck0","webp_drive_id":"1UN3x13_UVQiHDWF1_PiMOc7VWnOckjx3"},
+    {"id":"japanese-stall","png":"vlad-cover-05-japanese-stall-master.png","webp":"vlad-cover-05-japanese-stall.webp","width":390,"height":844,"png_sha256":"df6287b2715ea047d79c8afa78307ff2920bcdb9c106a3a3f35b810c03ccfcc3","webp_sha256":"fc266bca0ddf7d21ab57eb4eff291085308b6cca17a89879ee401776071bab2f","png_drive_id":"1sLrboJR0ZnxQHifaokajyrbHg1sEi-52","webp_drive_id":"1IZyaDfpWJgomZJmQ-sePgaw8gIEZjRkW"}
+  ]
+}

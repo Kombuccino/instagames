@@ -87,7 +87,6 @@ export type TetraMindFckSceneBridge = {
   renderPixelRatio?: number
   session: GameSessionApi
   onLevelChange?: (level: number) => void
-  onFinished?: () => void
 }
 
 const SHAPES: Record<ShapeId, ShapeDefinition> = {
@@ -215,14 +214,14 @@ function targetForLevel(level: number) {
   return level <= 1 ? 50 : (level - 1) * 100
 }
 
-function advanceObjective(level: number, bestAttempt: number, singleLineScore: number) {
+function advanceObjective(level: number, bestAttempt: number, clearScore: number) {
   let nextLevel = level
-  while (singleLineScore >= targetForLevel(nextLevel)) nextLevel += 1
+  while (clearScore >= targetForLevel(nextLevel)) nextLevel += 1
   const levelsGained = nextLevel - level
   return {
     level: nextLevel,
     levelsGained,
-    bestAttempt: levelsGained > 0 ? singleLineScore : Math.max(bestAttempt, singleLineScore),
+    bestAttempt: levelsGained > 0 ? clearScore : Math.max(bestAttempt, clearScore),
   }
 }
 
@@ -314,7 +313,7 @@ export class TetraMindFckScene extends Phaser.Scene {
         board: { x: BOARD_X, y: BOARD_Y, width: BOARD_WIDTH, height: BOARD_HEIGHT, cols: COLS, rows: ROWS },
         level: this.level,
         target: targetForLevel(this.level),
-        bestAttempt: this.bestAttempt,
+        bestClear: this.bestAttempt,
         score: this.score,
         lines: this.lines,
         pieceIndex: this.pieceIndex,
@@ -437,7 +436,7 @@ export class TetraMindFckScene extends Phaser.Scene {
     this.holdTimer = this.time.addEvent({
       delay: action === 'down' ? 55 : 100,
       loop: true,
-      callback: () => this.runAction(action),
+      callback: () => this.runAction(action, false),
     })
   }
 
@@ -479,10 +478,10 @@ export class TetraMindFckScene extends Phaser.Scene {
     this.consumeLockTick()
   }
 
-  private runAction(action: ActionName) {
+  private runAction(action: ActionName, playSound = true) {
     if (this.finished || this.pendingClear) return
     if (action === 'left' || action === 'right') {
-      void miniFuggAudio.playGameSfx(GAME_ID, 'move')
+      if (playSound) void miniFuggAudio.playGameSfx(GAME_ID, 'move')
       const moved = { ...this.active, x: this.active.x + (action === 'left' ? -1 : 1) }
       if (!this.canPlace(moved)) return
       this.active = moved
@@ -491,7 +490,7 @@ export class TetraMindFckScene extends Phaser.Scene {
       return
     }
     if (action === 'down') {
-      void miniFuggAudio.playGameSfx(GAME_ID, 'softDrop')
+      if (playSound) void miniFuggAudio.playGameSfx(GAME_ID, 'softDrop')
       const moved = { ...this.active, y: this.active.y + 1 }
       if (this.canPlace(moved)) {
         this.active = moved
@@ -503,7 +502,7 @@ export class TetraMindFckScene extends Phaser.Scene {
       return
     }
 
-    void miniFuggAudio.playGameSfx(GAME_ID, 'rotate')
+    if (playSound) void miniFuggAudio.playGameSfx(GAME_ID, 'rotate')
     const direction = action === 'rotateLeft' ? -1 : 1
     const nextRotation = this.active.rotation + direction
     for (const kick of [0, -1, 1, -2, 2]) {
@@ -579,8 +578,7 @@ export class TetraMindFckScene extends Phaser.Scene {
       ...Array.from({ length: pending.fullRows.length }, () => Array<Tile | null>(COLS).fill(null)),
       ...this.board.filter((_, rowIndex) => !pending.fullRows.includes(rowIndex)),
     ]
-    const singleLineScore = Math.max(...pending.reports.map((report) => report.points), 0)
-    const progression = advanceObjective(this.level, this.bestAttempt, singleLineScore)
+    const progression = advanceObjective(this.level, this.bestAttempt, pending.gained)
     const previousLevel = this.level
     this.level = progression.level
     this.bestAttempt = progression.bestAttempt
@@ -608,14 +606,13 @@ export class TetraMindFckScene extends Phaser.Scene {
     this.gravityTimer = null
     this.stopHold()
     void miniFuggAudio.playGameSfx(GAME_ID, 'fail', { intensity: 0.95 })
-    this.bridge.onFinished?.()
     this.bridge.session.finish({
       score: this.score,
       metadata: {
         level: this.level,
         lines: this.lines,
         target: targetForLevel(this.level),
-        bestSingleLine: this.bestAttempt,
+        bestClear: this.bestAttempt,
         standardLineMax: STANDARD_LINE_MAX,
       },
     })
@@ -746,7 +743,7 @@ export class TetraMindFckScene extends Phaser.Scene {
         }).setOrigin(0.5).setAlpha(0)
         rowContainer.add(step)
         this.time.delayedCall(70 + calculationOrder * 46, () => {
-          this.tweens.add({ targets: [cellContainer], scale: 1.18, duration: 90, yoyo: true })
+          this.tweens.add({ targets: cellContainer, scale: 1.18, duration: 90, yoyo: true })
           this.tweens.add({ targets: step, alpha: 1, y: rowY - 21, duration: 90, hold: 210, yoyo: true })
         })
       }

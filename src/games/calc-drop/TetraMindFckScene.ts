@@ -128,10 +128,10 @@ function shapeForIndex(seed: number, index: number) {
 
 function tokenFor(random: () => number): Tile {
   if (random() > 0.29) {
-    const value = Math.floor(random() * 10)
+    const value = 1 + Math.floor(random() * 9)
     return { kind: 'number', value, label: String(value) }
   }
-  const isMultiply = random() < 0.68
+  const isMultiply = random() < (2 / 3)
   const value = random() < 0.72 ? 2 : 3
   return { kind: isMultiply ? 'multiply' : 'divide', value, label: `${isMultiply ? '×' : '÷'}${value}` }
 }

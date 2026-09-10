@@ -1,5 +1,12 @@
 # LineFugg — Changelog
 
+## [0.5.1] — 2026-09-10 10:23 Europe/Paris
+
+- Les cases normales libres utilisent maintenant de façon nettement visible l'exacte couleur RGB de la ligne active : vermillon, violet ou or.
+- La teinte émaillée est renforcée sans masquer les chiffres ni modifier les couleurs propres aux multiplicateurs/diviseurs ; le flip en cascade reste inchangé.
+
+Vérifié : build/typecheck et smoke test LineFugg après correction de teinte.
+
 ## [0.5.0] — 2026-09-10 09:24 Europe/Paris
 
 - Les cases normales encore libres portent une teinte légère liée à la prochaine ligne : vermillon pour la première dimension, violet pour la deuxième, or pour la troisième.

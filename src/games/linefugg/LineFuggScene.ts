@@ -1070,9 +1070,13 @@ export class LineFuggScene extends Phaser.Scene {
       const dimensionSlot = this.cellDimensionSlots[index] ?? -1
 
       if (_cell.kind === 'add' && useCount === 0 && dimensionSlot >= 0 && dimensionSlot < MAX_LINES) {
-        // Normal free cells carry the color of the line/dimension currently being played.
-        this.boardOverlayGraphics.fillStyle(LINE_COLORS[dimensionSlot], 0.115)
+        // Use the exact RGB of the active line. The stronger translucent enamel wash
+        // keeps the cell artwork readable while making the current dimension unmistakable.
+        const activeLineColor = LINE_COLORS[dimensionSlot]
+        this.boardOverlayGraphics.fillStyle(activeLineColor, 0.30)
         this.boardOverlayGraphics.fillRoundedRect(x + 4, y + 4, CELL_SIZE - 8, CELL_SIZE - 8, 6)
+        this.boardOverlayGraphics.lineStyle(1.25, activeLineColor, 0.42)
+        this.boardOverlayGraphics.strokeRoundedRect(x + 4, y + 4, CELL_SIZE - 8, CELL_SIZE - 8, 6)
       }
 
       if (useCount > 0) {

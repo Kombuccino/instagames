@@ -1,6 +1,6 @@
 # LineFugg — Suivi de création
 
-Mis à jour : 10 septembre 2026 à 09:24 Europe/Paris. Version livrée : `0.5.0`. Changelog : `CHANGELOG.md`. Base inspectée avant édition : `63f6f8680a38c398dfea4a9efdf7ea33102a3112`. Intégration artistique gameplay réalisée ; revue visuelle finale gameplay à faire. Les quatre covers approuvées sont intégrées en images statiques.
+Mis à jour : 10 septembre 2026 à 10:23 Europe/Paris. Version livrée : `0.5.1`. Changelog : `CHANGELOG.md`. Base inspectée avant édition : `63f6f8680a38c398dfea4a9efdf7ea33102a3112`. Intégration artistique gameplay réalisée ; revue visuelle finale gameplay à faire. Les quatre covers approuvées sont intégrées en images statiques.
 
 Runtime Phaser 4.2.1, stage 390 × 844. Statut historique fugg conservé : il ne vaut pas acceptation de cette nouvelle réalisation gameplay. Cover runtime : current ; quatre masters de jaquette validés, sauvegardés et actifs. Animation des covers reportée à une future demande.
 
@@ -94,3 +94,8 @@ Test navigateur étendu : conservation des cellules de ligne, changement des cas
 Les cases d'addition libres indiquent maintenant la dimension courante par une teinte discrète : vermillon avant le premier trait, violet après le premier retirage, or après le deuxième. Les cases appartenant déjà à une ligne ne sont pas recolorées par les dimensions suivantes. Après le troisième trait, les cases libres reviennent à l'émail neutre : il n'y a plus de ligne suivante à annoncer.
 
 Le retirage n'est plus un échange visuel instantané. Les cases libres se replient rapidement sur leur axe vertical, en cascade déterministe partant approximativement de l'extrémité du trait avec un léger jitter dérivé de la même clé. Valeur, opérateur et teinte changent au point où la case est presque sur la tranche, puis elle se déplie. Durée visée : environ 0,3 s pour traverser toute la grille, avec mouvement réduit raccourci. Nouveau tracé, Annuler et Valider restent bloqués jusqu'à la fin du flip pour éviter de calculer sur un état intermédiaire.
+
+
+## Ajustement couleur de dimension — 10 septembre 2026
+
+Retour utilisateur : la teinte des cases normales doit être perçue comme exactement la couleur de la ligne en cours. Les cases libres utilisaient déjà `LINE_COLORS`, mais à 11,5 % d'opacité sur l'émail bleu, ce qui décalait fortement la perception. Passage à un lavis 30 % et un fin contour 42 %, toujours avec les RGB canoniques vermillon/violet/or. Aucun changement de logique de dimension, de reroll ou de flip.

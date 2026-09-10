@@ -1,6 +1,6 @@
 # LineFugg — Suivi de création
 
-Mis à jour : 10 septembre 2026 à 08:54 Europe/Paris. Version livrée : `0.4.0`. Changelog : `CHANGELOG.md`. Base inspectée avant édition : `63f6f8680a38c398dfea4a9efdf7ea33102a3112`. Intégration artistique gameplay réalisée ; revue visuelle finale gameplay à faire. Les quatre covers approuvées sont intégrées en images statiques.
+Mis à jour : 10 septembre 2026 à 09:24 Europe/Paris. Version livrée : `0.5.0`. Changelog : `CHANGELOG.md`. Base inspectée avant édition : `63f6f8680a38c398dfea4a9efdf7ea33102a3112`. Intégration artistique gameplay réalisée ; revue visuelle finale gameplay à faire. Les quatre covers approuvées sont intégrées en images statiques.
 
 Runtime Phaser 4.2.1, stage 390 × 844. Statut historique fugg conservé : il ne vaut pas acceptation de cette nouvelle réalisation gameplay. Cover runtime : current ; quatre masters de jaquette validés, sauvegardés et actifs. Animation des covers reportée à une future demande.
 
@@ -25,7 +25,7 @@ Références : [ART_DIRECTION.md](ART_DIRECTION.md), [ASSET_MANIFEST.md](ASSET_M
 | SFX / musique / mix | À vérifier | Musiques conservées ; écoute finale et audit des événements audio restants |
 | Cover / transition | Quatre covers statiques intégrées et testées | A/B/C/D dans Info → Cover selection ; placeholder débranché, badge retiré pour LineFugg ; animation ultérieure |
 | Performance / QA | Vérifiées en émulation | Build et matrices navigateur réussis ; profilage physique restant |
-| Livraison / curation | Livré sur main | Métadonnées produit `0.3.0` et changelog canonique inclus dans cette livraison ; déploiement et acceptation artistique gameplay à vérifier séparément |
+| Livraison / curation | Livré sur main | Métadonnées produit `0.5.0` et changelog canonique inclus dans cette livraison ; déploiement et acceptation artistique gameplay à vérifier séparément |
 
 ## Vérifications gameplay
 
@@ -87,3 +87,10 @@ Chaque ligne validée calcule désormais une clé `hashString` à partir du vect
 Annuler stocke/restaure la grille exacte qui précédait la ligne supprimée. Refaire exactement la même ligne depuis cet état produit la même clé et le même retirage. Les clés sont ajoutées aux métadonnées de fin de partie pour faciliter la reproduction d'une partie. Tirage : 68 % positifs, 16 % négatifs `−1…−4`, 12 % multiplicateurs, 4 % diviseurs.
 
 Test navigateur étendu : conservation des cellules de ligne, changement des cases libres, plage des négatifs, clé déterministe, restauration exacte par Annuler et reproductibilité après redraw, en plus des contrôles historiques de score/validation/replay. Validation CI à confirmer sur le commit fonctionnel.
+
+
+## Teinte de dimension et flip des cases — 10 septembre 2026
+
+Les cases d'addition libres indiquent maintenant la dimension courante par une teinte discrète : vermillon avant le premier trait, violet après le premier retirage, or après le deuxième. Les cases appartenant déjà à une ligne ne sont pas recolorées par les dimensions suivantes. Après le troisième trait, les cases libres reviennent à l'émail neutre : il n'y a plus de ligne suivante à annoncer.
+
+Le retirage n'est plus un échange visuel instantané. Les cases libres se replient rapidement sur leur axe vertical, en cascade déterministe partant approximativement de l'extrémité du trait avec un léger jitter dérivé de la même clé. Valeur, opérateur et teinte changent au point où la case est presque sur la tranche, puis elle se déplie. Durée visée : environ 0,3 s pour traverser toute la grille, avec mouvement réduit raccourci. Nouveau tracé, Annuler et Valider restent bloqués jusqu'à la fin du flip pour éviter de calculer sur un état intermédiaire.

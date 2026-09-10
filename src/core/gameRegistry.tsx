@@ -105,8 +105,8 @@ export const gameRegistry: InstagameDefinition[] = [
     welcome: LINEFUGG_WELCOME,
     component: LineFugg,
     release: {
-      version: '0.4.0',
-      updatedAt: '2026-09-10T08:54:00+02:00',
+      version: '0.5.0',
+      updatedAt: '2026-09-10T09:24:00+02:00',
       changelogPath: 'src/games/linefugg/CHANGELOG.md',
     },
     instructions: {

@@ -1,5 +1,13 @@
 # LineFugg — Changelog
 
+## [0.5.0] — 2026-09-10 09:24 Europe/Paris
+
+- Les cases normales encore libres portent une teinte légère liée à la prochaine ligne : vermillon pour la première dimension, violet pour la deuxième, or pour la troisième.
+- Chaque retirage se joue désormais comme un flip rapide en cascade depuis l'extrémité de la ligne : la case se met sur la tranche, change de valeur/dimension à l'abri du regard, puis se rouvre. Le décalage est court et déterministe pour éviter un changement simultané de toute la grille.
+- Les cases déjà prises par une ligne restent stables ; Annuler restaure aussi l'état exact des teintes de dimension. Après la troisième ligne, les cases libres redeviennent neutres pendant la validation.
+
+Vérifié : cascade non simultanée, états rouge/violet/or/neutre, blocage des entrées pendant le flip, restauration par Annuler, tirage déterministe, six formats navigateur et build/typecheck.
+
 ## [0.4.0] — 2026-09-10 08:54 Europe/Paris
 
 - Les cases négatives sont limitées à `−1`…`−4` et les diviseurs passent de 8 % à 4 % du tirage ; les 4 points libérés vont aux nombres positifs.

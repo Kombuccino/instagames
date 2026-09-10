@@ -76,7 +76,16 @@ try {
     await trace({ row: 0, col: 0 }, { row: 0, col: 4 }, true)
     assert.equal((await state()).drag.cells.length, 5)
     await capture('drag')
-    await release(); await page.waitForTimeout(350)
+    await release()
+    if (config.reducedMotion !== 'reduce') {
+      await page.waitForFunction(() => {
+        const value = JSON.parse(window.render_game_to_text())
+        return value.rerolling && value.dimensionSlots.includes(1) && value.dimensionSlots.includes(0)
+      }, null, { timeout: 1500 })
+      await capture('reroll-cascade')
+    }
+    await page.waitForFunction(() => !JSON.parse(window.render_game_to_text()).rerolling)
+    await page.waitForTimeout(80)
     const afterFirst = await state()
     assert.equal(afterFirst.lines.length, 1)
     assert.ok(Number.isInteger(afterFirst.lines[0].rerollKey), 'Placed line exposes a deterministic reroll key')
@@ -89,6 +98,10 @@ try {
       else if (JSON.stringify(afterFirst.board[index]) !== JSON.stringify(initial.board[index])) changedOutsideFirstLine += 1
     }
     assert.ok(changedOutsideFirstLine > 0, 'At least one cell outside the placed line is rerolled')
+    for (let index = 0; index < afterFirst.dimensionSlots.length; index++) {
+      const key = `${Math.floor(index / 7)}:${index % 7}`
+      if (!firstProtected.has(key)) assert.equal(afterFirst.dimensionSlots[index], 1, 'Free cells move to violet dimension after line one')
+    }
     await capture('one')
     if (!touch) {
       const control = (await state()).controls.undo
@@ -105,9 +118,13 @@ try {
     await trace({ row: 0, col: 0 }, { row: 0, col: 4 })
     assert.equal((await state()).lines.length, 1, 'Reject overlapping duplicate line')
     await trace({ row: 2, col: 1 }, { row: 6, col: 5 })
+    await page.waitForFunction(() => !JSON.parse(window.render_game_to_text()).rerolling)
     const afterSecond = await state()
+    assert.ok(afterSecond.dimensionSlots.includes(2), 'Free cells move to gold dimension after line two')
     await trace({ row: 6, col: 0 }, { row: 6, col: 4 })
+    await page.waitForFunction(() => !JSON.parse(window.render_game_to_text()).rerolling)
     const full = await state()
+    assert.ok(full.dimensionSlots.includes(-1), 'Free cells return neutral after the third line')
     assert.equal(full.lines.length, 3)
     assert.equal(full.validateEnabled, true)
     assert.equal(full.finished, false, 'Third line does not auto-submit')
@@ -138,7 +155,9 @@ try {
     assert.equal(undone.validateEnabled, false)
     assert.equal(undone.validateAppearance, 'disabled')
     assert.deepEqual(undone.board, afterSecond.board, 'Undo restores the exact board before the removed line reroll')
+    assert.deepEqual(undone.dimensionSlots, afterSecond.dimensionSlots, 'Undo restores the previous dimension tint state')
     await trace({ row: 6, col: 0 }, { row: 6, col: 4 })
+    await page.waitForFunction(() => !JSON.parse(window.render_game_to_text()).rerolling)
     const redrawn = await state()
     assert.equal(redrawn.lines[2].rerollKey, full.lines[2].rerollKey, 'Same ordered line produces the same reroll key')
     assert.deepEqual(redrawn.board, full.board, 'Same line and key reproduce the same rerolled board')

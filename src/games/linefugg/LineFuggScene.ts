@@ -80,6 +80,7 @@ type PlayedLine = {
   score: number
   rerollKey: number
   boardBefore: Cell[]
+  dimensionSlotsBefore: number[]
 }
 
 type DragState = {
@@ -258,7 +259,10 @@ export class LineFuggScene extends Phaser.Scene {
   private controlPulseGraphics!: Phaser.GameObjects.Graphics
 
   private cellTexts: Phaser.GameObjects.Text[] = []
+  private cellBaseImages: Phaser.GameObjects.Image[] = []
   private cellMaterialImages: Phaser.GameObjects.Image[] = []
+  private cellDimensionSlots: number[] = []
+  private rerolling = false
   private ambientStars: AmbientStar[] = []
 
   private liveContainer!: Phaser.GameObjects.Container
@@ -285,6 +289,7 @@ export class LineFuggScene extends Phaser.Scene {
     lines: this.lines.map((line) => ({
       start: line.start, end: line.end, cells: line.cells, score: line.score, rerollKey: line.rerollKey,
     })), total: this.totalScore(), drag: this.drag,
+    rerolling: this.rerolling, dimensionSlots: this.cellDimensionSlots,
     validating: this.validating, finished: this.finished,
     undoHovered: this.undoHovered, validateHovered: this.validateHovered, validateAppearance: !this.validateEnabled() ? "disabled" : this.validateHovered ? "amber" : "green", undoEnabled: this.undoEnabled(), validateEnabled: this.validateEnabled(),
     controls: { undo: { x: UNDO_X, y: CONTROL_Y }, validate: { x: VALIDATE_X, y: CONTROL_Y } },
@@ -356,7 +361,10 @@ export class LineFuggScene extends Phaser.Scene {
     this.undoPressed = false
     this.validatePressed = false
     this.cellTexts = []
+    this.cellBaseImages = []
     this.cellMaterialImages = []
+    this.cellDimensionSlots = Array(GRID_SIZE * GRID_SIZE).fill(0)
+    this.rerolling = false
     this.historyRows = []
     this.satellites = []
     this.effectTime = 0
@@ -426,9 +434,9 @@ export class LineFuggScene extends Phaser.Scene {
     ]
     corners.forEach((corner, index) => piece(`corner-${index}`, corner.rect, corner.x, corner.y, 43, 40))
     const tileFrame = artFrame(this, boardKey, 'enamel-cell', [158, 133, 139, 142], 1254)
-    this.board.forEach((_cell, index) => {
+    this.cellBaseImages = this.board.map((_cell, index) => {
       const position = cellCenter({ row: Math.floor(index / GRID_SIZE), col: index % GRID_SIZE })
-      this.add.image(position.x, position.y, boardKey, tileFrame)
+      return this.add.image(position.x, position.y, boardKey, tileFrame)
         .setDisplaySize(CELL_SIZE, CELL_SIZE).setDepth(9)
     })
 
@@ -626,11 +634,11 @@ export class LineFuggScene extends Phaser.Scene {
   }
 
   private undoEnabled() {
-    return !this.finished && !this.validating && !this.drag && this.lines.length > 0
+    return !this.finished && !this.validating && !this.rerolling && !this.drag && this.lines.length > 0
   }
 
   private validateEnabled() {
-    return !this.finished && !this.validating && !this.drag && this.lines.length === MAX_LINES
+    return !this.finished && !this.validating && !this.rerolling && !this.drag && this.lines.length === MAX_LINES
   }
 
   private handleUndoOver() {
@@ -686,7 +694,7 @@ export class LineFuggScene extends Phaser.Scene {
   }
 
   private handlePointerDown(pointer: Phaser.Input.Pointer) {
-    if (this.finished || this.validating || this.drag || this.lines.length >= MAX_LINES) return
+    if (this.finished || this.validating || this.rerolling || this.drag || this.lines.length >= MAX_LINES) return
 
     const nativeEvent = pointer.event
     if (typeof MouseEvent !== 'undefined' && nativeEvent instanceof MouseEvent && nativeEvent.button !== 0) return
@@ -736,10 +744,11 @@ export class LineFuggScene extends Phaser.Scene {
       score,
       rerollKey: this.rerollKeyForLine(finalDrag.start, end, finalDrag.cells, score),
       boardBefore: this.board.map((cell) => ({ ...cell })),
+      dimensionSlotsBefore: [...this.cellDimensionSlots],
     }
 
     this.lines.push(playedLine)
-    this.rerollUnplayedCells(playedLine.rerollKey)
+    this.rerollUnplayedCells(playedLine.rerollKey, end)
     this.bridge.session.setScore(this.totalScore())
     this.refreshPresentation()
     this.pulseNewLine(this.lines.length - 1)
@@ -751,6 +760,7 @@ export class LineFuggScene extends Phaser.Scene {
     const removed = this.lines.pop()
     if (removed) {
       this.board = removed.boardBefore.map((cell) => ({ ...cell }))
+      this.cellDimensionSlots = [...removed.dimensionSlotsBefore]
       this.refreshBoardCells()
     }
     this.bridge.session.setScore(this.totalScore())
@@ -910,39 +920,115 @@ export class LineFuggScene extends Phaser.Scene {
     return hashString(`dir:${rowStep},${colStep};cells:${orderedValues};score:${formatScore(score)}`)
   }
 
-  private rerollUnplayedCells(rerollKey: number) {
+  private rerollUnplayedCells(rerollKey: number, anchor: Point) {
     const protectedCells = new Set(this.lines.flatMap((line) => line.cells.map(pointKey)))
     const random = mulberry32(rerollKey || 1)
-
-    this.board = this.board.map((cell, index) => {
+    const nextBoard = this.board.map((cell, index) => {
       // Consume one deterministic candidate per board position so a key always maps
       // to the same 7x7 candidate field, independently from the protected cells.
       const candidate = createCell(random)
       const point = { row: Math.floor(index / GRID_SIZE), col: index % GRID_SIZE }
       return protectedCells.has(pointKey(point)) ? cell : candidate
     })
-    this.refreshBoardCells()
+    const freeIndices = nextBoard
+      .map((_cell, index) => index)
+      .filter((index) => {
+        const point = { row: Math.floor(index / GRID_SIZE), col: index % GRID_SIZE }
+        return !protectedCells.has(pointKey(point))
+      })
+    if (!freeIndices.length) return
+
+    // A short deterministic ripple starts near the line end. Cells fold to their edge,
+    // swap dimension/value while hidden, then unfold. This keeps the board readable
+    // while making the dimension change explicit without a simultaneous flash.
+    const orderRandom = mulberry32((rerollKey ^ 0x9e3779b9) >>> 0)
+    const ordered = freeIndices
+      .map((index) => {
+        const row = Math.floor(index / GRID_SIZE)
+        const col = index % GRID_SIZE
+        return { index, rank: Math.hypot(row - anchor.row, col - anchor.col) + orderRandom() * 0.7 }
+      })
+      .sort((a, b) => a.rank - b.rank)
+      .map(({ index }) => index)
+    const nextDimensionSlot = this.lines.length < MAX_LINES ? this.lines.length : -1
+    const foldDuration = this.reducedMotion ? 24 : 52
+    const unfoldDuration = this.reducedMotion ? 28 : 62
+    const stagger = this.reducedMotion ? 1 : 4
+    let remaining = ordered.length
+    this.rerolling = true
+    this.refreshPresentation()
+
+    ordered.forEach((index, orderIndex) => {
+      const fold = { value: 1 }
+      this.tweens.add({
+        targets: fold,
+        value: 0.035,
+        duration: foldDuration,
+        delay: orderIndex * stagger,
+        ease: 'Sine.easeIn',
+        onUpdate: () => this.setCellFlip(index, fold.value),
+        onComplete: () => {
+          this.board[index] = nextBoard[index]
+          this.cellDimensionSlots[index] = nextDimensionSlot
+          this.refreshBoardCell(index)
+          this.setCellFlip(index, 0.035)
+          this.renderBoardOverlays()
+
+          const unfold = { value: 0.035 }
+          this.tweens.add({
+            targets: unfold,
+            value: 1,
+            duration: unfoldDuration,
+            ease: 'Sine.easeOut',
+            onUpdate: () => this.setCellFlip(index, unfold.value),
+            onComplete: () => {
+              this.setCellFlip(index, 1)
+              remaining -= 1
+              if (remaining !== 0) return
+              this.rerolling = false
+              this.refreshPresentation()
+            },
+          })
+        },
+      })
+    })
+  }
+
+  private setCellFlip(index: number, factor: number) {
+    const widthFactor = Math.max(0.02, factor)
+    const base = this.cellBaseImages[index]
+    if (base) base.setScale((CELL_SIZE / base.width) * widthFactor, CELL_SIZE / base.height)
+    const material = this.cellMaterialImages[index]
+    if (material) material.setScale(((CELL_SIZE - 4) / material.width) * widthFactor, (CELL_SIZE - 4) / material.height)
+    const text = this.cellTexts[index]
+    if (text) text.setScale(widthFactor, 1)
+  }
+
+  private refreshBoardCell(index: number) {
+    const cell = this.board[index]
+    const material = this.cellMaterialImages[index]
+    if (material) {
+      if (cell.kind === 'add') material.setVisible(false)
+      else material
+        .setTexture(cell.kind === 'multiply' ? ASSETS.cellMultiply[0] : ASSETS.cellDivide[0])
+        .setDisplaySize(CELL_SIZE - 4, CELL_SIZE - 4)
+        .setVisible(true)
+    }
+
+    const text = this.cellTexts[index]
+    if (!text) return
+    const color = cell.kind === 'multiply'
+      ? '#fff1c9'
+      : cell.kind === 'divide'
+        ? '#f9ebff'
+        : '#f5e6c1'
+    text.setText(cell.label).setColor(color)
   }
 
   private refreshBoardCells() {
-    this.board.forEach((cell, index) => {
-      const material = this.cellMaterialImages[index]
-      if (material) {
-        if (cell.kind === 'add') material.setVisible(false)
-        else material
-          .setTexture(cell.kind === 'multiply' ? ASSETS.cellMultiply[0] : ASSETS.cellDivide[0])
-          .setDisplaySize(CELL_SIZE - 4, CELL_SIZE - 4)
-          .setVisible(true)
-      }
-
-      const text = this.cellTexts[index]
-      if (!text) return
-      const color = cell.kind === 'multiply'
-        ? '#fff1c9'
-        : cell.kind === 'divide'
-          ? '#f9ebff'
-          : '#f5e6c1'
-      text.setText(cell.label).setColor(color)
+    this.board.forEach((_cell, index) => {
+      this.refreshBoardCell(index)
+      this.setCellFlip(index, 1)
     })
   }
 
@@ -981,6 +1067,13 @@ export class LineFuggScene extends Phaser.Scene {
       const y = BOARD_Y + row * CELL_SIZE
       const key = `${row}:${col}`
       const useCount = usedCounts.get(key) ?? 0
+      const dimensionSlot = this.cellDimensionSlots[index] ?? -1
+
+      if (_cell.kind === 'add' && useCount === 0 && dimensionSlot >= 0 && dimensionSlot < MAX_LINES) {
+        // Normal free cells carry the color of the line/dimension currently being played.
+        this.boardOverlayGraphics.fillStyle(LINE_COLORS[dimensionSlot], 0.115)
+        this.boardOverlayGraphics.fillRoundedRect(x + 4, y + 4, CELL_SIZE - 8, CELL_SIZE - 8, 6)
+      }
 
       if (useCount > 0) {
         this.boardOverlayGraphics.fillStyle(0xffffff, 0.045 + Math.min(useCount, 2) * 0.025)

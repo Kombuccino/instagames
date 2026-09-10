@@ -23,6 +23,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -53,4 +54,6 @@ jobs:
           git add src/games/linefugg/LineFuggScene.ts scripts/test-linefugg-browser.mjs src/core/gameRegistry.tsx src/games/linefugg/CHANGELOG.md src/games/linefugg/GAME_STATUS.md
           git diff --cached --check
           git commit -m "feat(linefugg): reroll free cells from each played line"
+          git fetch origin main
+          git rebase origin/main
           git push origin HEAD:main

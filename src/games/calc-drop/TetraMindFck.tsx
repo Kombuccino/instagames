@@ -1,54 +1,63 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { GameComponentProps } from '../../core/types'
+import { PhaserGameHost } from '../../core/runtime/PhaserGameHost'
+import { DEFAULT_LOGICAL_VIEWPORTS } from '../../core/runtime/gameRuntimePolicy'
 import { useTetraMindFckMusic } from '../../music/reactiveGameMusic'
-import { CalcDrop } from './CalcDrop'
-import { useTetraMindFckSfx } from './useTetraSfx'
+import { TETRAMINDFCK_SCENE_KEY, TetraMindFckScene } from './TetraMindFckScene'
 
-export function TetraMindFck(props: GameComponentProps) {
-  const shellRef = useRef<HTMLDivElement>(null)
+export function TetraMindFck({ active, seed, restartToken, session }: GameComponentProps) {
+  const renderPixelRatio = useRef(Math.min(2, Math.max(1, window.devicePixelRatio || 1))).current
+  const sessionRef = useRef(session)
+  sessionRef.current = session
+
   const [runFinished, setRunFinished] = useState(false)
-  const gameplayActive = props.active && !runFinished
+  const [level, setLevel] = useState(1)
+  const gameplayActive = active && !runFinished
 
   const music = useTetraMindFckMusic({
-    rootRef: shellRef,
-    armed: props.active,
+    level,
+    armed: active,
     playing: gameplayActive,
-    seed: props.seed,
-    restartToken: props.restartToken,
+    seed,
+    restartToken,
   })
-
-  useTetraMindFckSfx({
-    rootRef: shellRef,
-    armed: props.active,
-    playing: gameplayActive,
-    runFinished,
-    restartToken: props.restartToken,
-  })
+  const musicIdRef = useRef(music.compositionId)
+  musicIdRef.current = music.compositionId
 
   useEffect(() => {
     setRunFinished(false)
-  }, [props.restartToken, props.seed])
+    setLevel(1)
+  }, [restartToken, seed])
 
-  const session = useMemo(() => ({
-    setScore: props.session.setScore,
-    finish: (payload: Parameters<GameComponentProps['session']['finish']>[0]) => {
-      setRunFinished(true)
-      props.session.finish({
-        ...payload,
-        metadata: {
-          ...(payload.metadata ?? {}),
-          musicId: music.compositionId ?? 'none',
-        },
-      })
+  const createScene = useCallback(() => new TetraMindFckScene({
+    seed,
+    renderPixelRatio,
+    onLevelChange: setLevel,
+    session: {
+      setScore: (score) => sessionRef.current.setScore(score),
+      finish: (payload) => {
+        setRunFinished(true)
+        sessionRef.current.finish({
+          ...payload,
+          metadata: {
+            ...(payload.metadata ?? {}),
+            musicId: musicIdRef.current ?? 'none',
+          },
+        })
+      },
     },
-  }), [music.compositionId, props.session])
+  }), [renderPixelRatio, seed])
 
   return (
-    <div ref={shellRef} style={{ display: 'contents' }}>
-      <CalcDrop
-        {...props}
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#f2efe6' }}>
+      <PhaserGameHost
         active={gameplayActive}
-        session={session}
+        restartToken={restartToken}
+        logicalViewport={DEFAULT_LOGICAL_VIEWPORTS.portrait}
+        sceneKey={TETRAMINDFCK_SCENE_KEY}
+        createScene={createScene}
+        renderPixelRatio={renderPixelRatio}
+        ariaLabel="TetraMindFck. Complète des lignes et atteins l’objectif avec le score total d’un seul clear."
       />
     </div>
   )

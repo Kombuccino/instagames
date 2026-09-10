@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/linefugg-reroll-patch.yml'
       - 'ops/linefugg-reroll/apply.py'
+      - 'ops/linefugg-reroll/fix_test.py'
 
 permissions:
   contents: write
@@ -26,7 +27,9 @@ jobs:
         with:
           node-version: 22
       - name: Apply targeted patch
-        run: python ops/linefugg-reroll/apply.py
+        run: |
+          python ops/linefugg-reroll/apply.py
+          python ops/linefugg-reroll/fix_test.py
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Install Chromium

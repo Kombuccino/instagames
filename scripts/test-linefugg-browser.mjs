@@ -42,7 +42,7 @@ try {
       await page.screenshot({ path }); report.screenshots.push(path)
     }
     const pixel = async (x, y) => {
-      const box = await page.locator('.mf-phaser-host canvas').boundingBox()
+      const box = await page.locator('.game-card[aria-label="LineFugg"] .mf-phaser-host canvas').boundingBox()
       return { x: box.x + x / 390 * box.width, y: box.y + y / 844 * box.height }
     }
     const trace = async (start, end, hold = false) => {
@@ -71,12 +71,24 @@ try {
     assert.equal(initial.lines.length, 0)
     assert.equal(initial.validateEnabled, false)
     assert.equal(initial.reducedMotion, config.reducedMotion === 'reduce')
+    assert.ok(initial.board.every(cell => cell.kind !== 'add' || cell.value >= 0 || (cell.value >= -4 && cell.value <= -1)), 'Negative cells stay between -1 and -4')
     await capture('empty')
     await trace({ row: 0, col: 0 }, { row: 0, col: 4 }, true)
     assert.equal((await state()).drag.cells.length, 5)
     await capture('drag')
     await release(); await page.waitForTimeout(350)
-    assert.equal((await state()).lines.length, 1)
+    const afterFirst = await state()
+    assert.equal(afterFirst.lines.length, 1)
+    assert.ok(Number.isInteger(afterFirst.lines[0].rerollKey), 'Placed line exposes a deterministic reroll key')
+    assert.ok(afterFirst.board.every(cell => cell.kind !== 'add' || cell.value >= 0 || (cell.value >= -4 && cell.value <= -1)), 'Rerolled negatives stay between -1 and -4')
+    const firstProtected = new Set(afterFirst.lines[0].cells.map(cell => `${cell.row}:${cell.col}`))
+    let changedOutsideFirstLine = 0
+    for (let index = 0; index < initial.board.length; index++) {
+      const key = `${Math.floor(index / 7)}:${index % 7}`
+      if (firstProtected.has(key)) assert.deepEqual(afterFirst.board[index], initial.board[index], 'Line cells survive their reroll')
+      else if (JSON.stringify(afterFirst.board[index]) !== JSON.stringify(initial.board[index])) changedOutsideFirstLine += 1
+    }
+    assert.ok(changedOutsideFirstLine > 0, 'At least one cell outside the placed line is rerolled')
     await capture('one')
     if (!touch) {
       const control = (await state()).controls.undo
@@ -93,6 +105,7 @@ try {
     await trace({ row: 0, col: 0 }, { row: 0, col: 4 })
     assert.equal((await state()).lines.length, 1, 'Reject overlapping duplicate line')
     await trace({ row: 2, col: 1 }, { row: 6, col: 5 })
+    const afterSecond = await state()
     await trace({ row: 6, col: 0 }, { row: 6, col: 4 })
     const full = await state()
     assert.equal(full.lines.length, 3)
@@ -120,10 +133,15 @@ try {
       assert.equal((await state()).validateAppearance, 'green')
     }
     await clickControl('undo')
-    assert.equal((await state()).lines.length, 2)
-    assert.equal((await state()).validateEnabled, false)
-    assert.equal((await state()).validateAppearance, 'disabled')
+    const undone = await state()
+    assert.equal(undone.lines.length, 2)
+    assert.equal(undone.validateEnabled, false)
+    assert.equal(undone.validateAppearance, 'disabled')
+    assert.deepEqual(undone.board, afterSecond.board, 'Undo restores the exact board before the removed line reroll')
     await trace({ row: 6, col: 0 }, { row: 6, col: 4 })
+    const redrawn = await state()
+    assert.equal(redrawn.lines[2].rerollKey, full.lines[2].rerollKey, 'Same ordered line produces the same reroll key')
+    assert.deepEqual(redrawn.board, full.board, 'Same line and key reproduce the same rerolled board')
     const frameIntervals = await page.evaluate(() => new Promise(resolve => {
       const samples = []; let previous
       const step = t => { if (previous) samples.push(t - previous); previous = t
@@ -140,7 +158,7 @@ try {
     assert.deepEqual((await state()).board, initial.board, 'Daily board unchanged by restart/art')
     await page.getByRole('button', { name: 'Return to cover', exact: true }).click()
     await page.waitForTimeout(600)
-    assert.equal(await page.locator('.mf-phaser-host canvas').count(), 1)
+    assert.equal(await page.locator('.game-card[aria-label="LineFugg"] .mf-phaser-host canvas').count(), 1)
     assert.equal(await page.locator('.game-card[data-phase="playing"]').count(), 0)
     assert.equal(await page.evaluate(() => typeof window.render_game_to_text), 'undefined', 'Destroyed scene removes its debug hook')
     report.scenarios.push({ name: config.name, passed: true, logicalBoard: initial.boardBounds,

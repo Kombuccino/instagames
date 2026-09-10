@@ -78,6 +78,8 @@ type PlayedLine = {
   end: Point
   cells: Point[]
   score: number
+  rerollKey: number
+  boardBefore: Cell[]
 }
 
 type DragState = {
@@ -143,17 +145,19 @@ function pickInt(random: () => number, min: number, max: number) {
 function createCell(random: () => number): Cell {
   const roll = random()
 
-  if (roll < 0.64) {
+  // Distribution: 68% positive, 16% negative, 12% multiplier, 4% divider.
+  // Dividers are half as frequent as before; negative values are deliberately mild.
+  if (roll < 0.68) {
     const value = pickInt(random, 1, 9)
     return { kind: 'add', value, label: String(value) }
   }
 
-  if (roll < 0.80) {
-    const value = -pickInt(random, 1, 9)
+  if (roll < 0.84) {
+    const value = -pickInt(random, 1, 4)
     return { kind: 'add', value, label: `−${Math.abs(value)}` }
   }
 
-  if (roll < 0.92) {
+  if (roll < 0.96) {
     const value = random() < 0.78 ? 2 : 3
     return { kind: 'multiply', value, label: `×${value}` }
   }
@@ -254,6 +258,7 @@ export class LineFuggScene extends Phaser.Scene {
   private controlPulseGraphics!: Phaser.GameObjects.Graphics
 
   private cellTexts: Phaser.GameObjects.Text[] = []
+  private cellMaterialImages: Phaser.GameObjects.Image[] = []
   private ambientStars: AmbientStar[] = []
 
   private liveContainer!: Phaser.GameObjects.Container
@@ -277,7 +282,9 @@ export class LineFuggScene extends Phaser.Scene {
   private stateReader = () => JSON.stringify({
     game: GAME_ID, coordinateSystem: '390x844; origin top-left; x right, y down',
     boardId: this.dayId, board: this.board, boardBounds: { x: BOARD_X, y: BOARD_Y, size: BOARD_SIZE },
-    lines: this.lines, total: this.totalScore(), drag: this.drag,
+    lines: this.lines.map((line) => ({
+      start: line.start, end: line.end, cells: line.cells, score: line.score, rerollKey: line.rerollKey,
+    })), total: this.totalScore(), drag: this.drag,
     validating: this.validating, finished: this.finished,
     undoHovered: this.undoHovered, validateHovered: this.validateHovered, validateAppearance: !this.validateEnabled() ? "disabled" : this.validateHovered ? "amber" : "green", undoEnabled: this.undoEnabled(), validateEnabled: this.validateEnabled(),
     controls: { undo: { x: UNDO_X, y: CONTROL_Y }, validate: { x: VALIDATE_X, y: CONTROL_Y } },
@@ -349,6 +356,7 @@ export class LineFuggScene extends Phaser.Scene {
     this.undoPressed = false
     this.validatePressed = false
     this.cellTexts = []
+    this.cellMaterialImages = []
     this.historyRows = []
     this.satellites = []
     this.effectTime = 0
@@ -424,17 +432,15 @@ export class LineFuggScene extends Phaser.Scene {
         .setDisplaySize(CELL_SIZE, CELL_SIZE).setDepth(9)
     })
 
-    this.board.forEach((cell, index) => {
-      if (cell.kind === 'add') return
-
+    this.cellMaterialImages = this.board.map((cell, index) => {
       const row = Math.floor(index / GRID_SIZE)
       const col = index % GRID_SIZE
-      const key = cell.kind === 'multiply' ? ASSETS.cellMultiply[0] : ASSETS.cellDivide[0]
-      this.add.image(
+      const key = cell.kind === 'divide' ? ASSETS.cellDivide[0] : ASSETS.cellMultiply[0]
+      return this.add.image(
         BOARD_X + (col + 0.5) * CELL_SIZE,
         BOARD_Y + (row + 0.5) * CELL_SIZE,
         key,
-      ).setDisplaySize(CELL_SIZE - 4, CELL_SIZE - 4).setDepth(10)
+      ).setDisplaySize(CELL_SIZE - 4, CELL_SIZE - 4).setDepth(10).setVisible(cell.kind !== 'add')
     })
 
     this.boardOverlayGraphics = this.add.graphics().setDepth(18)
@@ -722,14 +728,18 @@ export class LineFuggScene extends Phaser.Scene {
       return
     }
 
+    const score = scoreCells(finalDrag.cells, this.board)
     const playedLine: PlayedLine = {
       start: finalDrag.start,
       end,
       cells: finalDrag.cells,
-      score: scoreCells(finalDrag.cells, this.board),
+      score,
+      rerollKey: this.rerollKeyForLine(finalDrag.start, end, finalDrag.cells, score),
+      boardBefore: this.board.map((cell) => ({ ...cell })),
     }
 
     this.lines.push(playedLine)
+    this.rerollUnplayedCells(playedLine.rerollKey)
     this.bridge.session.setScore(this.totalScore())
     this.refreshPresentation()
     this.pulseNewLine(this.lines.length - 1)
@@ -738,7 +748,11 @@ export class LineFuggScene extends Phaser.Scene {
   private undo() {
     if (!this.undoEnabled()) return
 
-    this.lines.pop()
+    const removed = this.lines.pop()
+    if (removed) {
+      this.board = removed.boardBefore.map((cell) => ({ ...cell }))
+      this.refreshBoardCells()
+    }
     this.bridge.session.setScore(this.totalScore())
     this.refreshPresentation()
   }
@@ -778,6 +792,7 @@ export class LineFuggScene extends Phaser.Scene {
           gridSize: GRID_SIZE,
           lineLimit: MAX_LINE_CELLS,
           runtimeSeed: this.bridge.seed,
+          rerollKeys: this.lines.map((line) => line.rerollKey).join(','),
           artDirection: 'orbital-accounting',
         },
       })
@@ -882,6 +897,53 @@ export class LineFuggScene extends Phaser.Scene {
         && cells.length <= MAX_LINE_CELLS
         && !overlapsMoreThanOnce(cells, this.lines),
     }
+  }
+
+  private rerollKeyForLine(start: Point, end: Point, cells: Point[], score: number) {
+    const rowStep = Math.sign(end.row - start.row)
+    const colStep = Math.sign(end.col - start.col)
+    const orderedValues = cells.map((point) => {
+      const cell = this.board[point.row * GRID_SIZE + point.col]
+      return `${cell.kind}:${cell.value}`
+    }).join('|')
+
+    return hashString(`dir:${rowStep},${colStep};cells:${orderedValues};score:${formatScore(score)}`)
+  }
+
+  private rerollUnplayedCells(rerollKey: number) {
+    const protectedCells = new Set(this.lines.flatMap((line) => line.cells.map(pointKey)))
+    const random = mulberry32(rerollKey || 1)
+
+    this.board = this.board.map((cell, index) => {
+      // Consume one deterministic candidate per board position so a key always maps
+      // to the same 7x7 candidate field, independently from the protected cells.
+      const candidate = createCell(random)
+      const point = { row: Math.floor(index / GRID_SIZE), col: index % GRID_SIZE }
+      return protectedCells.has(pointKey(point)) ? cell : candidate
+    })
+    this.refreshBoardCells()
+  }
+
+  private refreshBoardCells() {
+    this.board.forEach((cell, index) => {
+      const material = this.cellMaterialImages[index]
+      if (material) {
+        if (cell.kind === 'add') material.setVisible(false)
+        else material
+          .setTexture(cell.kind === 'multiply' ? ASSETS.cellMultiply[0] : ASSETS.cellDivide[0])
+          .setDisplaySize(CELL_SIZE - 4, CELL_SIZE - 4)
+          .setVisible(true)
+      }
+
+      const text = this.cellTexts[index]
+      if (!text) return
+      const color = cell.kind === 'multiply'
+        ? '#fff1c9'
+        : cell.kind === 'divide'
+          ? '#f9ebff'
+          : '#f5e6c1'
+      text.setText(cell.label).setColor(color)
+    })
   }
 
   private totalScore() {

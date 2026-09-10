@@ -1,12 +1,12 @@
 # LineFugg — Suivi de création
 
-Mis à jour : 8 septembre 2026 à 16:34 Europe/Paris. Version livrée : `0.3.0`. Changelog : `CHANGELOG.md`. Base inspectée avant édition : `63f6f8680a38c398dfea4a9efdf7ea33102a3112`. Intégration artistique gameplay réalisée ; revue visuelle finale gameplay à faire. Les quatre covers approuvées sont intégrées en images statiques.
+Mis à jour : 10 septembre 2026 à 08:54 Europe/Paris. Version livrée : `0.4.0`. Changelog : `CHANGELOG.md`. Base inspectée avant édition : `63f6f8680a38c398dfea4a9efdf7ea33102a3112`. Intégration artistique gameplay réalisée ; revue visuelle finale gameplay à faire. Les quatre covers approuvées sont intégrées en images statiques.
 
 Runtime Phaser 4.2.1, stage 390 × 844. Statut historique fugg conservé : il ne vaut pas acceptation de cette nouvelle réalisation gameplay. Cover runtime : current ; quatre masters de jaquette validés, sauvegardés et actifs. Animation des covers reportée à une future demande.
 
 ## Décisions acquises
 
-Validation utilisateur : « Proto, GD et équilibre sont trés bons, ils sont validés ». Règles et paramètres préservés : trois lignes droites de cinq cases maximum, une case partagée maximum par paire, calcul dans le sens du tracé, grille quotidienne déterministe, annulation après trois lignes et validation explicite pour terminer.
+Validation utilisateur : « Proto, GD et équilibre sont trés bons, ils sont validés ». Règles conservées : trois lignes droites de cinq cases maximum, une case partagée maximum par paire, calcul dans le sens du tracé, grille quotidienne déterministe, annulation après trois lignes et validation explicite pour terminer. Évolution GD du 10 septembre : négatifs limités à −1…−4, diviseurs deux fois moins fréquents, et retirage déterministe des cases libres après chaque ligne à partir d'une clé construite avec son sens, ses valeurs ordonnées et son score.
 
 DA Orbital Accounting : laiton, bleu encre, parchemin, nombres prioritaires ; trois indicateurs avec cinq points chacun. Conserver cette direction pour les animations gameplay, sans nouveau rendu générique. Les covers suivent DA_COVER.md : interprétations éditoriales distinctes, pas une copie du rendu gameplay. Musiques acquises : MF-MUS-0008 et MF-MUS-0009.
 
@@ -78,3 +78,12 @@ Le premier test a révélé que le cover-crop global amputait les titres sur té
 Validation reproductible : `node scripts/test-linefugg-covers.mjs`. CI [34143179734](https://github.com/Kombuccino/instagames/actions/runs/34143179734) réussie sur le commit 240c215f7543239e01a3f222ca9c9f88c56969fc, avec build/typecheck. Contrôles : intégrité SHA-256 et dimensions des quatre PNG, 16 affichages (4 éditions × 360×640, 390×844, 768×1024, 1440×900), sélections tactiles/souris, titre non recadré, absence de canvas/animation cover, entrée dans le jeu puis retour, conservation du marqueur de Train Fighter et de la largeur desktop 520px. Aucune erreur JavaScript ni ressource cover manquante. Captures téléchargées et inspectées après correction, notamment les quatre sur téléphone long. Tests en émulation Chromium, pas sur appareil physique.
 
 Le workflow `.github/workflows/linefugg-covers.yml` conserve captures/rapport en artifact `linefugg-static-covers` et protège ces comportements lors des prochaines modifications. Publication sur main vérifiée ; déploiement Dokploy non contrôlé par cette passe.
+
+
+## Retirage déterministe après chaque ligne — 10 septembre 2026
+
+Chaque ligne validée calcule désormais une clé `hashString` à partir du vecteur de sens normalisé, de la suite ordonnée des cellules (`add` / `multiply` / `divide` + valeur) et du score de la ligne. Cette clé alimente un PRNG `mulberry32` qui génère un nouveau candidat pour chacune des 49 positions ; seules les cases qui ne font partie d'aucune ligne déjà posée prennent ce nouveau candidat. Ce gel des lignes jouées est volontaire : leurs chiffres, leur historique et leur score restent cohérents visuellement pendant les retirages suivants.
+
+Annuler stocke/restaure la grille exacte qui précédait la ligne supprimée. Refaire exactement la même ligne depuis cet état produit la même clé et le même retirage. Les clés sont ajoutées aux métadonnées de fin de partie pour faciliter la reproduction d'une partie. Tirage : 68 % positifs, 16 % négatifs `−1…−4`, 12 % multiplicateurs, 4 % diviseurs.
+
+Test navigateur étendu : conservation des cellules de ligne, changement des cases libres, plage des négatifs, clé déterministe, restauration exacte par Annuler et reproductibilité après redraw, en plus des contrôles historiques de score/validation/replay. Validation CI à confirmer sur le commit fonctionnel.

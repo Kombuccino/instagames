@@ -1,5 +1,13 @@
 # LineFugg — Changelog
 
+## [0.4.0] — 2026-09-10 08:54 Europe/Paris
+
+- Les cases négatives sont limitées à `−1`…`−4` et les diviseurs passent de 8 % à 4 % du tirage ; les 4 points libérés vont aux nombres positifs.
+- Chaque ligne posée produit une clé déterministe issue de son sens, de ses valeurs ordonnées et de son score, puis retire toutes les cases encore libres.
+- Les cases déjà engagées par une ligne restent stables pour préserver la lecture des calculs ; Annuler restaure exactement la grille précédant le dernier retirage, et redessiner la même ligne reproduit la même grille.
+
+Vérifié : distribution négative, retirage hors lignes, reproductibilité de la clé, restauration par Annuler, scoring des trois lignes, replay et build/typecheck.
+
 ## [0.3.0] — 2026-09-08 16:34 Europe/Paris
 
 - Les quatre jaquettes approuvées A/B/C/D remplacent le placeholder et sont sélectionnables dans Information, sans badge « A METTRE A JOUR ».

@@ -18,7 +18,8 @@ type Catalog = { compositions: readonly Composition[] }
 type SourceNode = OscillatorNode | AudioBufferSourceNode
 
 type Options = {
-  rootRef: RefObject<HTMLElement>
+  rootRef?: RefObject<HTMLElement>
+  level?: number
   armed: boolean
   playing: boolean
   seed: number
@@ -110,28 +111,34 @@ function levelFromRoot(root: HTMLElement | null) {
   return Number.isFinite(value) && value > 0 ? Math.floor(value) : 1
 }
 
-export function useTetraMindFckMusic({ rootRef, armed, playing, seed, restartToken }: Options) {
-  const [level, setLevel] = useState(1)
+export function useTetraMindFckMusic({ rootRef, level: explicitLevel, armed, playing, seed, restartToken }: Options) {
+  const [observedLevel, setObservedLevel] = useState(1)
+  const level = explicitLevel ?? observedLevel
   const levelRef = useRef(level)
   levelRef.current = level
+
   const composition = useMemo(() => {
     const choices = TETRA_IDS.map(id => musicCatalog.compositions.find(c => c.id === id)).filter((c): c is Composition => Boolean(c))
     return choices[Math.abs((seed ^ Math.imul(restartToken + 1, 0x45d9f3b)) | 0) % choices.length] ?? null
   }, [seed, restartToken])
+
   useEffect(() => {
-    const root = rootRef.current
+    if (explicitLevel !== undefined) return
+    const root = rootRef?.current ?? null
     if (!root) return
-    const sync = () => setLevel(levelFromRoot(root))
+    const sync = () => setObservedLevel(levelFromRoot(root))
     sync()
     const observer = new MutationObserver(sync)
     observer.observe(root, { subtree: true, childList: true, characterData: true })
     return () => observer.disconnect()
-  }, [rootRef, restartToken])
+  }, [explicitLevel, rootRef, restartToken])
+
   const playerRef = useRef<SymbolicMusicPlayer | null>(null)
   useEffect(() => {
     if (!composition) return
     const player = new SymbolicMusicPlayer({
-      composition, gain: .8,
+      composition,
+      gain: .8,
       filters: [{ type: 'lowpass', frequency: 8200, Q: .25 }],
       getStageIndex: () => levelRef.current - 1,
       customNoteScheduler: ({ context, output, noise, track, note, start, beatSeconds, sources }) => {
@@ -141,11 +148,16 @@ export function useTetraMindFckMusic({ rootRef, armed, playing, seed, restartTok
       },
     })
     playerRef.current = player
-    return () => { player.destroy(); if (playerRef.current === player) playerRef.current = null }
+    return () => {
+      player.destroy()
+      if (playerRef.current === player) playerRef.current = null
+    }
   }, [composition])
+
   useEffect(() => {
     if (armed && playing) void playerRef.current?.start()
     else playerRef.current?.pause()
   }, [armed, playing, composition])
+
   return { compositionId: composition?.id ?? null, level }
 }

@@ -1,12 +1,11 @@
 # Les Brochettes de Vlad — Direction artistique
 
-Mise à jour : 8 septembre 2026. Ce fichier réconcilie les décisions acquises pour le gameplay et les covers. Les procédures de référence sont `docs/ACTIONS.md`, `docs/DA_CORE.md`, `docs/DA_GAME.md` et `docs/DA_COVER.md`.
+Mise à jour : 11 septembre 2026. Ce fichier réconcilie les décisions acquises pour le gameplay et les covers. Les procédures de référence sont `docs/ACTIONS.md`, `docs/DA_CORE.md`, `docs/DA_GAME.md` et `docs/DA_COVER.md`.
 
 ## État des validations
 
 - **Gameplay :** migration Phaser fonctionnelle, mais présentation visuelle actuelle refusée par l'utilisateur le 8 septembre 2026. Reprise de composition requise avant une nouvelle revue.
-- **Cover C :** validée explicitement par l'utilisateur le 7 septembre 2026 (« vraiment superbe », à conserver absolument).
-- **Covers A/B/D :** encore à explorer. Les versions trop proches du gameplay, trop riches ou trop « ChatGPT/mobile key art » sont rejetées.
+- **Covers :** cinq jaquettes validées explicitement par l'utilisateur le 10 septembre 2026 et désormais branchées dans le feed MiniFugg. Elles sont figées comme références approuvées : pas de régénération globale, recoloration ou « nettoyage » automatique.
 
 ## Références gameplay approuvées
 
@@ -69,23 +68,21 @@ Les aliments à yeux/pattes ne sont pas un motif obligatoire de cover. Ils peuve
 
 Les familles restent celles de `DA_COVER.md` : A pulp européen/franco-belge ; B boîte micro-ordinateur européenne ; C affiche graphique/éditoriale d'Europe de l'Est ; D réinterprétation culturelle.
 
-## Cover C — VALIDÉE
+## Covers du feed — VALIDÉES
 
-Fichier exact : `vlad-cover-c-graphic-poster-approved-2026-09-07.png`, 941 × 1672 RGB PNG, 2 709 942 octets, SHA-256 `582db78b3abd6d9724cb6261fa6c1563f3e5a4542ed5a3d639c982dabb5c1872`.
+Validation utilisateur : 10 septembre 2026 (« Très bien je valide tout ça. Tu peux les implémenter dans notre feed. »). Les cinq fichiers exacts ci-dessous sont les références de production :
 
-Archive : `MiniFugg - Graphic Archive/Games/vlads-skewers/covers-validated/`, Drive fichier `1blXf0mUKernZn8eQpa8oWXEpFQTOehKM`, dossier `1o5SBto8zGF_fx7FaUTvn9wcEjBpaF7OZ`.
+1. `vlad-cover-01-chaos-approved-2026-09-10.png` — cover explosive / brochette jaillissante ;
+2. `vlad-cover-02-still-life-approved-2026-09-10.png` — nature morte gothique, peinture ancienne ;
+3. `vlad-cover-03-japanese-portrait-approved-2026-09-10.png` — portrait japonais graphique ;
+4. `vlad-cover-04-castle-sign-approved-2026-09-10.png` — scène classique de film de vampire avec enseigne de brochettes ;
+5. `vlad-cover-05-japanese-stall-approved-2026-09-10.png` — estampe japonaise / comptoir nocturne.
 
-Sont validés : composition graphique, grands aplats noir/rouge/crème, contraste, respiration, qualité d'affiche imprimée, silhouette dominante de Vlad, château/pleine lune et titre intégré. Les petits aliments anthropomorphes présents sont acceptés dans cette cover précise seulement.
+Production GitHub : `public/assets/imported/vlads-skewers/welcome/variants/`. Le feed utilise les PNG approuvés exacts avec `fit: contain`, `runtime: static`, `selection: seeded` et `unlockScore: 0` pour les cinq variantes. Les dérivés `masters/` et `runtime/` existent comme préparations techniques mais ne remplacent pas ces références.
 
-Ne pas régénérer ou « améliorer » ce master. Une future animation/décomposition doit partir de lui et produire des couches séparées sans le remplacer.
+Conserver la matière du médium : grain de papier, irrégularités d'impression, trame, coups de pinceau, accidents d'encre ou texture picturale propres à chaque édition. **Ne pas ajouter d'usure artificielle aux coins ou bords** ; la patine peut vivre dans le papier ou l'impression, pas comme un effet de cadre systématique.
 
-## Covers A/B/D — contrainte de recherche
-
-Les premières propositions sont rejetées : trop proches du gameplay, mêmes personnages, même foule d'aliments, grill infernal, trop de détails et d'explication. Pour A/B/D, partir d'une métaphore, ambiance ou objet éditorial unique. Abandonner la brochette comme sujet central et ne pas montrer systématiquement les légumes.
-
-A doit sentir l'illustration commerciale européenne faite à la main ; B une vraie boîte/annonce micro-ordinateur européenne de l'époque, sans pixel art ni UI fictive ; D une édition régionale précise sans pseudo-texte ni clichés touristiques. C reste la référence de force et de qualité, pas un template.
-
-Les rejets sont archivés dans `MiniFugg - Graphic Archive/Games/vlads-skewers/covers-rejected/` (Drive `1dltj7yUcGScWUoiQwOKpkcIgz07cIrjL`). Les planches comparatives produites par erreur sont dans `round3-generator-boards/` (`1jzIFuR4-xUJC-vJpsobIBCnnarLE4EJf`) et ne sont pas des masters.
+Le précédent master C du 7 septembre reste archivé comme étape validée historique, mais la collection de feed canonique est désormais le lot des cinq covers approuvées le 10 septembre. Les rejets restent archivés dans `MiniFugg - Graphic Archive/Games/vlads-skewers/covers-rejected/` et ne doivent pas être réintroduits.
 
 ## À éviter
 
@@ -93,4 +90,4 @@ Les rejets sont archivés dans `MiniFugg - Graphic Archive/Games/vlads-skewers/c
 - cacher la pointe dorée ou rendre une autre partie de la broche interactive ;
 - effets plein écran permanents, particules non plafonnées ou labels critiques minuscules ;
 - utiliser une référence aplatie comme fond avec score, vies, clients ou ingrédients déjà cuits ;
-- restaurer les covers rejetées ou altérer le master C validé.
+- restaurer les covers rejetées ou altérer les cinq masters validés.

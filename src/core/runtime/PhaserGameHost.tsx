@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import Phaser from 'phaser'
 import type { GameLogicalViewport } from '../types'
+import { clampRenderPixelRatio, fitMiniFuggGameplayViewport } from './gameRuntimePolicy'
 
 export type PhaserSceneFactory = () => Phaser.Scene
 
@@ -19,11 +20,12 @@ type PhaserGameHostProps = {
 }
 
 /**
- * Minimal React -> Phaser boundary for MiniFugg 2D games.
+ * React -> Phaser boundary for MiniFugg 2D games.
  *
- * React owns the host element and lifecycle. Phaser owns the complete authored
- * game stage. The stage always keeps its fixed logical size and is uniformly
- * fitted/centered inside the host.
+ * Phaser keeps a fixed authored logical stage. Core sizes that stage according
+ * to MiniFugg Zones: canonical portrait gameplay is width-driven on mobile,
+ * CENTRE-driven on wider screens, and only crop-sensitive HAUT/BAS may leave
+ * the visible viewport.
  */
 export function PhaserGameHost({
   active,
@@ -36,6 +38,7 @@ export function PhaserGameHost({
   renderPixelRatio = 1,
   pixelArt = false,
 }: PhaserGameHostProps) {
+  const viewportRef = useRef<HTMLDivElement>(null)
   const mountRef = useRef<HTMLDivElement>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
   const activeRef = useRef(active)
@@ -44,22 +47,46 @@ export function PhaserGameHost({
   activeRef.current = active
 
   useEffect(() => {
+    const viewport = viewportRef.current
     const parent = mountRef.current
-    if (!parent) return
-    const density = Math.max(1, Math.min(2, renderPixelRatio))
+    if (!viewport || !parent) return
 
-    const game = new Phaser.Game({
+    const density = clampRenderPixelRatio(renderPixelRatio)
+    const renderWidth = Math.round(logicalViewport.width * density)
+    const renderHeight = Math.round(logicalViewport.height * density)
+    let game: Phaser.Game | null = null
+
+    const layoutStage = () => {
+      const bounds = viewport.getBoundingClientRect()
+      const available = {
+        width: bounds.width || logicalViewport.width,
+        height: bounds.height || logicalViewport.height,
+      }
+      const layout = fitMiniFuggGameplayViewport(logicalViewport, available)
+
+      parent.style.width = `${layout.width}px`
+      parent.style.height = `${layout.height}px`
+      parent.style.left = `${layout.offsetX}px`
+      parent.style.top = `${layout.offsetY}px`
+      game?.scale.refresh()
+    }
+
+    // Give Phaser the correct parent geometry before it measures Scale.FIT.
+    layoutStage()
+
+    game = new Phaser.Game({
       type: Phaser.AUTO,
       audio: { noAudio: true },
       parent,
-      width: logicalViewport.width * density,
-      height: logicalViewport.height * density,
+      width: renderWidth,
+      height: renderHeight,
       transparent: true,
       scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: logicalViewport.width * density,
-        height: logicalViewport.height * density,
+        width: renderWidth,
+        height: renderHeight,
+        expandParent: false,
       },
       input: {
         activePointers: 1,
@@ -82,10 +109,18 @@ export function PhaserGameHost({
 
     gameRef.current = game
     restartRef.current = restartToken
+    layoutStage()
+
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(layoutStage)
+    observer?.observe(viewport)
+    window.addEventListener('resize', layoutStage)
 
     return () => {
+      observer?.disconnect()
+      window.removeEventListener('resize', layoutStage)
       gameRef.current = null
-      game.destroy(true)
+      game?.destroy(true)
+      game = null
     }
   }, [createScene, logicalViewport.height, logicalViewport.width, pixelArt, renderPixelRatio])
 
@@ -110,7 +145,7 @@ export function PhaserGameHost({
 
   return (
     <div
-      ref={mountRef}
+      ref={viewportRef}
       className={className ? `mf-phaser-host ${className}` : 'mf-phaser-host'}
       role="application"
       aria-label={ariaLabel}
@@ -122,6 +157,19 @@ export function PhaserGameHost({
         overflow: 'hidden',
         touchAction: 'none',
       }}
-    />
+    >
+      <div
+        ref={mountRef}
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: '100%',
+          height: '100%',
+          overflow: 'hidden',
+        }}
+      />
+    </div>
   )
 }

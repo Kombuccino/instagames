@@ -64,18 +64,18 @@ function drawHarpoonHead(internals: RuntimeInternals) {
   const graphics = internals.tipGlow
   graphics.clear().setDepth(48)
 
-  // Dark pixel outline, warm metal core and two backward barbs. This is the
-  // visible harpoon artwork; the collision remains the invisible apex point.
+  // The top pixel at (x,y) is the real collision apex. Everything else grows
+  // downward from it, so the visible harpoon and the invisible hit point agree.
   graphics.fillStyle(0x1b0807, 1)
-  graphics.fillTriangle(x, y - 11, x - 6, y + 5, x + 6, y + 5)
-  graphics.fillTriangle(x - 2, y + 2, x - 11, y + 10, x - 2, y + 8)
-  graphics.fillTriangle(x + 2, y + 2, x + 11, y + 10, x + 2, y + 8)
+  graphics.fillTriangle(x, y, x - 6, y + 16, x + 6, y + 16)
+  graphics.fillTriangle(x - 2, y + 10, x - 11, y + 20, x - 2, y + 16)
+  graphics.fillTriangle(x + 2, y + 10, x + 11, y + 20, x + 2, y + 16)
   graphics.fillStyle(0xe0b14b, 1)
-  graphics.fillTriangle(x, y - 8, x - 3, y + 3, x + 3, y + 3)
+  graphics.fillTriangle(x, y + 2, x - 3, y + 13, x + 3, y + 13)
   graphics.fillStyle(0xb96827, 1)
-  graphics.fillTriangle(x - 2, y + 3, x - 8, y + 8, x - 2, y + 6)
-  graphics.fillTriangle(x + 2, y + 3, x + 8, y + 8, x + 2, y + 6)
-  graphics.fillStyle(0xffdb72, 1).fillRect(x - 1, y - 5, 2, 5)
+  graphics.fillTriangle(x - 2, y + 11, x - 8, y + 17, x - 2, y + 15)
+  graphics.fillTriangle(x + 2, y + 11, x + 8, y + 17, x + 2, y + 15)
+  graphics.fillStyle(0xffdb72, 1).fillRect(x - 1, y + 4, 2, 6)
 }
 
 /**

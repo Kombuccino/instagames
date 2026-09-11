@@ -96,3 +96,9 @@ The initial storage pass did not activate the covers. The later explicit integra
 The registry marks only LineFugg's cover migration current. The shared CSS keys the migration marker to that metadata, so no global badge removal or game-specific CSS override is needed. The historical placeholder is not referenced by the registry.
 
 The reproducible browser check is scripts/test-linefugg-covers.mjs. It verifies preserved PNG master SHA-256/dimensions, WebP runtime paths and natural dimensions, all four selections, still rendering, marker removal, launch/return and unchanged pending-game markers. No gameplay rule, Core column sizing or music changed in the optimization pass.
+
+## Runtime WebP cutover — 2026-09-11
+
+Tous les assets actuellement chargés par le gameplay utilisent désormais un dérivé WebP lossless dimensionné pour l'usage réel. Les PNG documentés plus haut restent des sources conservées, pas des URLs runtime. Chemins actifs principaux : `backgrounds/orbital-environment.webp`, `ui/orbital-board.webp`, `props/orbital-armillary-key.webp`, `ui/orbital-cell-*-v3.webp`, `ui/orbital-validate-*-v5.webp`, `ui/orbital-history-row-v5.webp` et `public/assets/generated/linefugg/ui/runtime/*.webp`.
+
+Budget réseau des 11 images gameplay actives : **4 573 098 octets (4,57 Mo / 4,36 Mio)**. Les quatre covers WebP sont exclues de ce budget : elles appartiennent au feed et ne sont pas un prérequis du chargement Phaser. Les trois dérivés `generated/ui/runtime/` sont 1024×683 / 681 024 octets, 1024×1024 / 671 796 octets et 256×256 / 89 910 octets. La génération technique a vérifié alpha et pixels visibles après décodage lossless. `OrbitalImageFile` n'est plus utilisé : aucune source surdimensionnée n'est téléchargée pour être réduite côté client.

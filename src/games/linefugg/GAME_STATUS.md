@@ -1,6 +1,6 @@
 # LineFugg — Suivi de création
 
-Mis à jour : 11 septembre 2026 à 20:01 Europe/Paris. Version livrée : `0.5.2`. Changelog : `CHANGELOG.md`.
+Mis à jour : 11 septembre 2026 à 20:43 Europe/Paris. Version livrée : `0.5.3`. Changelog : `CHANGELOG.md`.
 
 Runtime Phaser 4.2.1, stage 390 × 844. Prototype, game design et équilibre validés par l'utilisateur. Direction gameplay : **Orbital Accounting**. Cover runtime : current ; quatre jaquettes statiques approuvées, masters PNG conservés et dérivés WebP lossless actifs.
 
@@ -51,3 +51,9 @@ Le coût RGBA des textures gameplay après décodage reste de l'ordre de la mesu
 3. Convertir les trois textures générées locales en dérivés runtime lossless depuis un checkout local, sans toucher aux masters.
 
 Aucun blocage technique connu. Ne pas rouvrir le gameplay validé pour une simple optimisation de fichiers.
+
+## Optimisation images runtime terminée — 11 septembre 2026
+
+Le gameplay ne référence plus de PNG lourds. Fond CSS, plateau, armillaire, cases spéciales, boutons Valider, ornements du registre, console, indicateurs et verre orange sont tous servis en WebP lossless pré-dimensionné. Les PNG sources restent conservés hors chemin actif. Le payload image nécessaire au gameplay est de **4 573 098 octets (4,57 Mo / 4,36 Mio)**, covers exclues car elles appartiennent au feed et sont chargées séparément.
+
+Les trois derniers assets locaux ont été dérivés sans régénération : `accounting-panels.webp` 681 024 octets (1024×683), `glass-indicators.webp` 671 796 octets (1024²), `validate-amber-source.webp` 89 910 octets (256²). Leur alpha et leurs pixels visibles après décodage sont identiques à la version runtime redimensionnée avant encodage. Le redimensionnement navigateur `OrbitalImageFile` est retiré ; Phaser charge directement les textures préparées.

@@ -1,5 +1,13 @@
 # LineFugg — Changelog
 
+## [0.5.3] — 2026-09-11 20:43 Europe/Paris
+
+- Tous les visuels chargés au lancement du gameplay utilisent maintenant des WebP lossless déjà dimensionnés pour le runtime ; aucun gros PNG n'est téléchargé puis réduit dans le navigateur.
+- Les trois dernières textures locales passent de 5,73 Mo de PNG à 1,44 Mo de WebP pré-dimensionnés. Le payload image du gameplay complet est maintenant de 4,57 Mo (4,36 Mio), fond compris ; les covers sont chargées séparément.
+- Le chargeur Phaser de redimensionnement à la volée est supprimé pour LineFugg : les textures arrivent directement à leur taille de travail. Les masters PNG restent conservés comme sources et références.
+
+Vérifié : pixels visibles/alpha des trois nouveaux dérivés lossless, budget de fichiers, build/typecheck et scénario navigateur LineFugg.
+
 ## [0.5.2] — 2026-09-11 20:01 Europe/Paris
 
 - Les quatre covers actives, le fond Orbital et les principaux assets Phaser importés chargent désormais des dérivés WebP lossless dimensionnés pour leur usage runtime ; les PNG masters approuvés restent inchangés et conservés.

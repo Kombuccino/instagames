@@ -1,5 +1,10 @@
 # Les Brochettes de Vlad — Changelog
 
+## [0.3.1] — 2026-09-11 19:48 Europe/Paris
+
+- Le feed utilise maintenant les cinq dérivés runtime lossless exactement `390 × 844` avec `fit: cover`, au lieu des sources grand format affichées en `contain`.
+- Chaque ingrédient embroché reçoit immédiatement l'orientation qu'il avait au moment du percement ; le dernier ingrédient d'une recette complète ne peut plus être remis à plat avant la livraison automatique.
+
 ## [0.3.0] — 2026-09-11 19:05 Europe/Paris
 
 - Mise en production des cinq covers validées le 10 septembre 2026 dans le feed MiniFugg.

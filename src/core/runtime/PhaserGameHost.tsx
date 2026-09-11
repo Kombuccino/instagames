@@ -1,7 +1,12 @@
 import { useEffect, useRef } from 'react'
 import Phaser from 'phaser'
 import type { GameLogicalViewport } from '../types'
-import { clampRenderPixelRatio, fitMiniFuggGameplayViewport } from './gameRuntimePolicy'
+import {
+  clampRenderPixelRatio,
+  fitMiniFuggGameplayViewport,
+  MINIFUGG_DESKTOP_BREAKPOINT,
+  type MiniFuggVerticalAnchor,
+} from './gameRuntimePolicy'
 
 export type PhaserSceneFactory = () => Phaser.Scene
 
@@ -15,6 +20,8 @@ type PhaserGameHostProps = {
   className?: string
   /** Raster density only. The scene keeps its logical stage via camera zoom. */
   renderPixelRatio?: number
+  /** Which edge keeps priority when MASTER is taller than the useful viewport. */
+  verticalAnchor?: MiniFuggVerticalAnchor
   /** Crisp nearest-neighbour sampling for authored pixel-art games. */
   pixelArt?: boolean
 }
@@ -24,8 +31,8 @@ type PhaserGameHostProps = {
  *
  * Phaser keeps a fixed authored logical stage. Core sizes that stage according
  * to MiniFugg Zones: canonical portrait gameplay is width-driven on mobile,
- * CENTRE-driven on wider screens, and only crop-sensitive HAUT/BAS may leave
- * the visible viewport.
+ * CENTRE-height driven on wider screens, and individual games may anchor the
+ * vertical crop to top, center or bottom without changing their 390-wide world.
  */
 export function PhaserGameHost({
   active,
@@ -36,6 +43,7 @@ export function PhaserGameHost({
   ariaLabel,
   className,
   renderPixelRatio = 1,
+  verticalAnchor = 'center',
   pixelArt = false,
 }: PhaserGameHostProps) {
   const viewportRef = useRef<HTMLDivElement>(null)
@@ -62,7 +70,11 @@ export function PhaserGameHost({
         width: bounds.width || logicalViewport.width,
         height: bounds.height || logicalViewport.height,
       }
-      const layout = fitMiniFuggGameplayViewport(logicalViewport, available)
+      const scaleAxis = window.innerWidth >= MINIFUGG_DESKTOP_BREAKPOINT ? 'height' : 'width'
+      const layout = fitMiniFuggGameplayViewport(logicalViewport, available, {
+        verticalAnchor,
+        scaleAxis,
+      })
 
       parent.style.width = `${layout.width}px`
       parent.style.height = `${layout.height}px`
@@ -122,7 +134,7 @@ export function PhaserGameHost({
       game?.destroy(true)
       game = null
     }
-  }, [createScene, logicalViewport.height, logicalViewport.width, pixelArt, renderPixelRatio])
+  }, [createScene, logicalViewport.height, logicalViewport.width, pixelArt, renderPixelRatio, verticalAnchor])
 
   useEffect(() => {
     const game = gameRef.current

@@ -44,13 +44,11 @@ Fugg/<game-id>/
   ui/
   props/
   fx/
-  concepts/
-  production-boards/
 ```
 
-A feature may add a useful level below that, for example `welcome/variants/` or `welcome/parallax/v1/`. Avoid deep or decorative folder trees.
+A feature may add a useful level below that, for example `welcome/variants/`. Avoid deep or decorative folder trees. New covers are static; do not create a new parallax layer folder for them.
 
-`production-boards/` contains approved visual translation boards and FX/storyboard studies; it is an archive/reference location, not a runtime texture folder. Keep runtime-ready FX textures in `fx/` and record the link between the two in `ASSET_MANIFEST.md`.
+`concepts/` and `production-boards/` belong in the private graphic archive, outside the synchronized `Fugg` root; see `GRAPHIC_ARCHIVE.md`. They may contain comparisons, annotated translation boards and FX/storyboard studies, not runtime textures. Explicitly approved public reference copies can be tracked separately when useful, but are never treated as runtime assets. Keep runtime-ready FX textures in `fx/` and link their clean sources and reference boards from `ASSET_MANIFEST.md`. Existing mirrored references are not deleted by this documentation change.
 
 Use the game's real registry ID when one exists. Current IDs include `train-fighter`, `linefugg`, `shoot-the-shooter`, `vlads-skewers`, `hari-rotten-teeth`, `tetramindfck`, `crazy-papers` and `debth-of-life`.
 
@@ -122,3 +120,7 @@ The Drive folder remains private. The application never fetches assets from Goog
 ## Runtime backgrounds and transparency
 
 Prefer genuine alpha for isolated art, especially soft edges and glow; PNG and WebP can carry alpha. Opaque images also work in Phaser. If an asset needs its surrounding background removed, use a deliberately uniform key color with a supported local filter, or an appropriate measured geometry mask for a simple silhouette. Do not mistake a painted checkerboard for transparency. When only a clean interior region is consumed, exclude all background pixels through explicit source frames/masks and document that choice. The source image format alone does not guarantee transparency.
+
+## Local checks before transport
+
+Follow the three distinct checks in `DA_CORE.md` and the `minifugg-art` skill. Its optional `art_files.py inspect` measures decoding, dimensions, alpha, content bounds and file size without changing the source; `assemble` creates an unlabelled PNG comparison with separate source coordinates. This does not replace importer validation, visual review, proof of lossless encoding or shell decode tests. Keep technical reports with the existing pass trace, not in the runtime texture tree.

@@ -28,6 +28,8 @@ Pour plusieurs besoins, enchaîner les routes nécessaires dans leur ordre de d�
 
 ## 3. Choisir les outils disponibles
 
+Pour les demandes graphiques, suivre le skill commun [minifugg-art](../.agents/skills/minifugg-art/SKILL.md). Il sélectionne l'une des quatre routes DA et utilise le [micro-brief unique](DA_CORE.md#structure-obligatoire-du-micro-brief), avec une liste fermée des textes autorisés. Son outillage local contrôle les fichiers et assemble des comparaisons sans habillage ; il ne remplace ni le générateur ni l'examen artistique.
+
 - **Codex local :** lire le dépôt, inspecter le code, lancer le jeu et prendre les captures utiles. Utiliser les skills disponibles correspondant à la tâche : `imagegen` pour produire/éditer des images, `develop-web-game` pour la boucle de tests. Pour Phaser, lire obligatoirement [phaser-minifugg](../.agents/skills/phaser-minifugg/SKILL.md), puis les seules références officielles pertinentes.
 - **ChatGPT :** utiliser le connecteur GitHub pour les mêmes sources sur `main`, les discussions et images accessibles, puis les outils de génération, navigateur et Drive disponibles. Un skill présent dans le dépôt reste lisible comme procédure même sans mécanisme d'activation natif ; il ne crée pas d'outil absent.
 - **Images :** appliquer [ASSET_PIPELINE](ASSET_PIPELINE.md) et [l'archive graphique](GRAPHIC_ARCHIVE.md). Génération locale Codex et transfert depuis ChatGPT ont des routes distinctes. Ne pas imposer Drive à Codex local.
@@ -39,7 +41,7 @@ Avant une recherche de DA gameplay, capturer le jeu réel et fixer la compositio
 
 Avant présentation, vérifier : bonne référence, contenu demandé, textes autorisés, lisibilité et faisabilité. Comparer aussi les propositions entre elles : idée, cadrage, médium, hiérarchie. Des étiquettes de styles différentes ne suffisent pas ; des motifs communs ne rendent pas automatiquement les images identiques. Corriger les erreurs manifestes sans faire porter ce contrôle à l'utilisateur. En cas d'échecs répétés, diagnostiquer le brief ou l'outil plutôt que régénérer indéfiniment.
 
-Après validation d'une DA gameplay, produire la **planche de traduction DA → jeu** avant l'intégration complète : composition annotée, couches, états, storyboard des interactions et planche FX/mouvement dans le style de la DA. La montrer avec une légende courte (recette Phaser, déclencheur, coût, priorité). Ne pas remplacer cette étape par une longue description ou par une intégration aveugle.
+Après validation d'une DA gameplay, produire la **planche de traduction DA → jeu** avant l'intégration complète : composition annotée, couches, états, storyboard des interactions et planche FX/mouvement dans le style de la DA. La montrer avec une légende courte (recette Phaser, déclencheur, coût, priorité), ajoutée sur une copie/couche distincte des images sources. Les assets et comparaisons propres ne portent aucun habillage de présentation. Ne pas remplacer cette étape par une longue description ou par une intégration aveugle.
 
 Après validation, conserver les originaux et noter la portée du choix. Ne pas régénérer une série approuvée pour la rendre « finale ». Réaliser et vérifier une mini-tranche représentative en jeu avant de décliner toute la production. Avant livraison, comparer aux références et tester les états, écrans et interactions utiles ; un build vert ne valide pas l'art.
 
@@ -52,6 +54,8 @@ Après une décision ou une passe significative, actualiser la fiche et le docum
 Avant d'écrire, vérifier le dernier `main` et les modifications en cours. Signaler dans le suivi les lots actifs quand plusieurs discussions travaillent en parallèle ; ne pas écraser un travail concurrent. Livrer les changements autorisés sur `main`, vérifier la publication Git et distinguer celle-ci du déploiement de l'application.
 
 En fin de réalisation, noter brièvement ce qui a réussi, échoué et pourquoi. Garder les détails dans le jeu ; corriger la procédure existante seulement si l'enseignement est général. Ne pas fabriquer une nouvelle procédure concurrente à chaque incident.
+
+Pour une passe graphique, utiliser la [trace courte](DA_CORE.md#trace-courte-par-passe) dans le suivi existant : brief/référence, sorties, essais, erreurs, contrôles et validation distincts. Les tests du skill sont suivis dans sa [validation](../.agents/skills/minifugg-art/references/VALIDATION.md), sans créer une autre autorité DA. Le bilan hebdomadaire est reporté par l'utilisateur le 11 septembre 2026 : aucune récurrence ni skill de revue à installer dans ce lot.
 
 ## 6. Communication
 

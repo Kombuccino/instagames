@@ -38,9 +38,9 @@ Le wagon peut trembler légèrement ; Fuggy assis et ses yeux suivent ce mouveme
 
 La transition se valide en quelques états : repos, activation, approche, raccord avec le feed. Elle doit être brève, compréhensible et sans retour parasite au wagon après le raccord. Une lumière de transition n'est pas un cache-misère pour une destination non prête. Prévoir une alternative à mouvement réduit et un accès clavier approprié.
 
-Conserver la composition centrale entre téléphone et desktop ; l'espace supplémentaire peut prolonger le décor, pas réinventer la position du téléphone. Choisir la réalisation canonique la plus légère qui préserve le résultat : couches raster pour une ambiance 2,5D simple, Three.js pour une vraie scène 3D.
+Conserver la composition centrale entre téléphone et desktop. Les prolongements de décor respectent les zones Home ; les espaces latéraux appartiennent à la composition Core validée et ne justifient pas une variante du téléphone. Choisir la réalisation canonique la plus légère qui préserve le résultat : couches raster pour une ambiance 2,5D simple, Three.js pour une vraie scène 3D.
 
-Covers et scènes d'entrée doivent tendre vers un vocabulaire de réglages commun : taille, position, pivot, amplitude, vitesse, vibration, flottement, balancement et effets utiles. Cela ne signifie pas qu'elles possèdent la même interface ou que tout est déjà implémenté. Ne pas restaurer l'ancien FuggWelcome/Parallax Lab pour simuler cette unification.
+Les scènes d'entrée animées peuvent partager entre elles un vocabulaire de réglages : taille, position, pivot, amplitude, vitesse, vibration, flottement, balancement et effets utiles. Les covers sont désormais statiques : ne pas leur imposer ce moteur et ne pas restaurer l'ancien FuggWelcome/Parallax Lab pour simuler une unification.
 
 La musique d'ambiance et son passage vers le feed utilisent le Core Audio, sans lecteur ou contexte audio concurrent.
 
@@ -53,5 +53,7 @@ Un accès futur au compte, aux favoris globaux ou aux réglages relève du Core.
 Préserver le travail parallèle sur la scène existante : lire les derniers fichiers avant toute modification. Les assets suivent `ASSET_PIPELINE.md`, les décisions sont enregistrées dans `PLATFORM_ENTRY_SCENES.md`, les références de marque dans leurs registres canoniques.
 
 ## Micro-brief à remplir
+
+Remplir le modèle unique de [DA_CORE.md](DA_CORE.md#structure-obligatoire-du-micro-brief), y compris les textes autorisés. Ne pas inventer des enseignes dans le décor ou des labels sur une planche. Exemple de spécialisation :
 
 > Produire [vue / couche / état de transition] de l'entrée MiniFugg dans [lieu]. Référence principale : [scène validée disponible] ; référence d'identité supplémentaire seulement si Fuggy doit être représenté. Low-poly [formes, matériaux mats, palette, lumière], composition [cadrage et zones calmes]. Préserver [bras/téléphone, identité et géométrie]. Le téléphone contient [graphisme de démarrage], pas un autre jeu ou feed. Sortie [format, alpha, couche]. Aucun catalogue de jeux, nouveau logo, réalisme photographique ou écran supplémentaire.

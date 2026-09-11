@@ -50,13 +50,13 @@ Le système envisagé pour un Fugg comporte quatre éditions complémentaires : 
 
 Les Bêta/Caca n'utilisent pas automatiquement cette collection premium. Employer leur template commun, un titre/logo de jeu et éventuellement un petit élément spécifique. L'explication du statut et le CTA restent des textes traduisibles, hors image.
 
-Pour une cover finale : illustration autonome portrait, plein cadre, généralement proche du 9:16, avec le ratio exact du contrat de cover. Un sujet dominant, titre lisible, détails sélectifs, espace négatif volontaire. Varier les fonds, couleurs et cadrages entre jeux et éditions. Ni sunset universel, ni cartouche physique obligatoire, ni même composition répétée.
+Pour une cover finale : illustration autonome portrait, plein cadre, master PNG lossless exactement `390 × 844` (pas un 9:16 approximatif). Un sujet dominant, titre lisible, détails sélectifs, espace négatif volontaire. Varier les fonds, couleurs et cadrages entre jeux et éditions. Ni sunset universel, ni cartouche physique obligatoire, ni même composition répétée.
 
 Une planche comparative ou une boîte/cartouche en volume est un livrable de recherche distinct, seulement lorsqu'il est demandé. Ce n'est pas le master de production.
 
 ## Texte et interface : ne pas les confondre
 
-Les jaquettes sont en anglais par défaut, sauf édition localisée ou titre propre déjà établi. Respecter l'orthographe exacte du jeu. Le titre peut être illustré et séparé en couche. Une petite signature MiniFugg canonique peut être intégrée discrètement ; ne pas redessiner son logo.
+Les jaquettes sont en anglais par défaut, sauf édition localisée ou titre propre déjà établi. Respecter l'orthographe exacte du jeu. Le titre peut être illustré et séparé en couche. Une petite signature MiniFugg canonique peut être conservée lorsqu'elle est explicitement approuvée et listée dans les textes/éléments autorisés du brief. Ne pas l'ajouter par défaut ni redessiner son logo.
 
 Ne pas dessiner dans le raster les coins du joueur, boutons sociaux, compteurs, prix, `INSERT COIN`, `CHANGE GAME` ou autres contrôles. **Ne plus inscrire `SWIPE TO PLAY`**, malgré les anciennes formulations du catalogue. Prévoir l'espace des overlays validés sans ajouter de bande noire permanente. Leur composition dépend de `DA_UI.md`.
 
@@ -70,6 +70,8 @@ Ne pas créer de nouvelle cover animée. Les covers Phaser/CSS existantes sont l
 
 ## Micro-brief à remplir
 
+Remplir le modèle unique de [DA_CORE.md](DA_CORE.md#structure-obligatoire-du-micro-brief), notamment la liste fermée des textes. Exemple de spécialisation :
+
 > Produire [une cover finale / une étude précise] pour [titre exact]. Le jeu consiste à [mécanique réelle] ; l'image doit exprimer [idée unique]. Référence principale : [image disponible, rôle]. Famille [A/B/C/D], réalisée visuellement en [médium], avec [palette, cadrage, matière, zones calmes]. Préserver [identités et invariants]. Texte illustré autorisé : [texte exact]. Aucun contrôle Core ni SWIPE TO PLAY dans l'image. Sortie statique : master PNG lossless `390 × 844`, puis dérivé WebP lossless ou AVIF validé. Ne pas produire de mockup, couche animée, autre jeu ou écran supplémentaire non demandé.
 
 ## Acceptation et sources
@@ -78,8 +80,8 @@ Pour une recherche comparative, contrôler la diversité avant présentation : i
 
 Cas réussi : les [quatre masters LineFugg approuvés](../src/games/linefugg/ASSET_MANIFEST.md), décision conservée dans [GAME_STATUS.md](../src/games/linefugg/GAME_STATUS.md). Savant en action, instrument contemplé, affiche de trajectoires et aventure illustrée partagent un univers mais changent d'intention. Conserver ces originaux ; ne pas recopier leur astronomie sur les autres jeux. La densité et les motifs communs sont acceptables quand le regard reste guidé. Ne pas imposer le style gameplay à la cover ; ne pas imposer non plus une rupture artificielle si l'utilisateur valide une parenté.
 
-Après validation, sauvegarder l'image exacte et la portée du choix avant toute préparation technique. La décomposition conserve le master ; elle ne justifie pas une nouvelle génération globale.
+Après validation, sauvegarder l'image exacte et la portée du choix avant toute préparation technique. La fabrication de dérivés statiques conserve le master ; elle ne justifie pas une nouvelle génération globale ni un lot de couches animées.
 
-Vérifier à taille téléphone : sujet juste, titre lisible, parti pris identifiable, fond spécifique, absence de finition générique, overlays compatibles et décomposition exploitable. Une patine ne suffit pas à rendre une image personnelle.
+Vérifier à taille téléphone : sujet juste, titre lisible, parti pris identifiable, fond spécifique, absence de finition générique, overlays compatibles et fichiers statiques exploitables. Une patine ne suffit pas à rendre une image personnelle.
 
 Catalogue détaillé des médiums : `WELCOME_ART_STYLES.md`. Contrat runtime : `WELCOME_ILLUSTRATIONS.md`. Transport et archive : `ASSET_PIPELINE.md` et `DA_CORE.md`. Les anciennes instructions de CTA du catalogue ne s'appliquent plus.

@@ -1,11 +1,25 @@
 import Phaser from 'phaser'
 
-/** Decode the canonical source once, upload only the useful display resolution.
- * Source files stay untouched. Scene restarts reuse the texture cache.
+const IMPORTED_WEBP_RUNTIME = new Set([
+  '/assets/imported/linefugg/ui/orbital-board.png',
+  '/assets/imported/linefugg/props/orbital-armillary-key.png',
+  '/assets/imported/linefugg/ui/orbital-cell-multiply-v3.png',
+  '/assets/imported/linefugg/ui/orbital-cell-divide-v3.png',
+  '/assets/imported/linefugg/ui/orbital-validate-ready-v5.png',
+  '/assets/imported/linefugg/ui/orbital-validate-disabled-v5.png',
+  '/assets/imported/linefugg/ui/orbital-history-row-v5.png',
+])
+
+function runtimeAssetUrl(url: string) {
+  return IMPORTED_WEBP_RUNTIME.has(url) ? url.replace(/\.png$/i, '.webp') : url
+}
+
+/** Load the optimized runtime derivative when one exists, then keep the same
+ * display-resolution cap for generated PNG fallbacks. Canonical sources stay untouched.
  */
 export class OrbitalImageFile extends Phaser.Loader.FileTypes.ImageFile {
   constructor(loader: Phaser.Loader.LoaderPlugin, key: string, url: string, private readonly maxEdge: number) {
-    super(loader, key, url)
+    super(loader, key, runtimeAssetUrl(url))
   }
 
   onProcess() {

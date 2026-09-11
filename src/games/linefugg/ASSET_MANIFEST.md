@@ -6,20 +6,31 @@ The approved concepts/orbital-stage-master-v1.png is reference-only. The user sc
 
 ## Loaded assets
 
-All paths relative to /assets/imported/linefugg/. New environment, board and armillary were verified through Drive/Actions before the local-transport clarification. Keep existing paths; future Codex art can go directly to public/assets/generated/linefugg/ and Git.
+All paths relative to /assets/imported/linefugg/. New environment, board and armillary were verified through Drive/Actions before the local-transport clarification. Keep existing masters; future Codex art can go directly to public/assets/generated/linefugg/ and Git.
 
-| Image | Preparation / ownership |
+| Canonical source | Runtime derivative / preparation |
 | --- | --- |
-| backgrounds/orbital-environment.png | 887 × 1774 opaque quiet backdrop; Core surface cover crop; no mutable UI |
-| ui/orbital-board.png | 1254², verified real alpha; cropped rails, corners and shared enamel tile reconstruct an exact 7×7 board |
-| props/orbital-armillary-key.png | 1774 × 887 keyed sheet; separate ring and globe; native Phaser Key alpha 1, threshold .72, feather .14; small local filters; omitted in Canvas fallback |
-| ui/orbital-cell-multiply-v3.png, ui/orbital-cell-divide-v3.png | Special material overlays; dynamic glyphs |
-| ui/orbital-history-row-v5.png | Cropped NineSlice used as one parchment ledger, three dynamic chip rows and results |
-| ui/orbital-total-plate-v5.png | Cropped NineSlice; live sigma and total |
-| ui/orbital-control-dock-v5.png | Shared measured anchors for three orbs and five pips each |
-| ui/orbital-undo-idle-v5.png, ui/orbital-validate-ready-v5.png | Single texture per control; disabled state via tint/alpha/grayscale |
+| backgrounds/orbital-environment.png | `backgrounds/orbital-environment.webp`, 844 × 1688 lossless; CSS cover crop; no mutable UI |
+| ui/orbital-board.png | `ui/orbital-board.webp`, 1024² lossless with real alpha; cropped rails, corners and shared enamel tile reconstruct an exact 7×7 board |
+| props/orbital-armillary-key.png | `props/orbital-armillary-key.webp`, 1024 × 512 lossless keyed sheet; separate ring and globe; native Phaser Key alpha 1, threshold .72, feather .14 |
+| ui/orbital-cell-multiply-v3.png, ui/orbital-cell-divide-v3.png | same-size 128² lossless WebP runtime derivatives; special material overlays; dynamic glyphs |
+| ui/orbital-history-row-v5.png | `ui/orbital-history-row-v5.webp`, 1024 × 341 lossless; cropped parchment ornaments used behind dynamic rows |
+| ui/orbital-validate-ready-v5.png, ui/orbital-validate-disabled-v5.png | 256² lossless WebP derivatives; complete authored button states |
+| generated accounting-panels.png, glass-indicators.png, validate-amber-source.png | still PNG on network; Phaser keeps the existing useful-resolution upload cap; separate local conversion remains possible later |
 
-Previous background, board panel and disabled button files are no longer loaded. They remain mirrored source material, not alternative runtime implementations. Preserve source originals; archive/retention of these Drive sources remains separate.
+Previous background, board panel and unused control files are no longer loaded. They remain mirrored source material, not alternative runtime implementations. Preserve source originals; archive/retention of these Drive sources remains separate.
+
+## Runtime derivative optimization — 2026-09-11
+
+ChatGPT prepared and visually checked lossless WebP derivatives from the existing approved/source PNGs, then used the documented private Drive → Actions importer. The importer run succeeded before code cutover. No master PNG was overwritten or regenerated.
+
+The 12 active imported images covered by this pass — background, board, armillary, ×/÷ cells, ready/disabled Validate, ledger ornament and four covers — totalled **21,578,385 bytes** as PNG sources and **9,083,568 bytes** as runtime WebP derivatives: **57.9 % less network transfer** for this set. This number is file-transfer size, not decoded GPU memory.
+
+The Phaser derivatives intentionally match the dimensions the previous `OrbitalImageFile` loader was already uploading to the texture cache, so gameplay geometry and decoded texture footprint remain essentially unchanged while the browser stops downloading oversized imported PNGs first. `orbitalArt.ts` remaps only the seven known imported LineFugg Phaser sources; generated local PNGs are left untouched.
+
+The four cover runtime derivatives are 780 × 1386 opaque WebP lossless files, preserving the approved 941 × 1672 compositions and aspect ratio at up to 2× a 390-wide cover column. `welcome.ts` points only to `welcome/variants/runtime/*.webp`; the approved PNGs remain the canonical art masters and archive references. The Core still uses `fit: contain`, seeded selection, no timed rotation and no cover animation.
+
+Local checks confirmed decode, dimensions and `VP8L` lossless WebP chunks. Browser cover CI verifies that the runtime requests WebP derivatives, preserves all four selections/titles across phone/tablet/desktop and does not request the approved PNG masters during normal cover rendering.
 
 ## Geometry and dynamic ownership
 
@@ -31,13 +42,13 @@ Phaser owns values, signs, paths, arrows, halos, calculations, totals, pips and 
 
 Slow armillary tilt/orbits, local brass glints, line energy, short ledger reveal, pooled sparks capped at 32 particles / 24 alive. No fullscreen bloom or camera shake. Reduced motion disables nonessential ambient motion and placement particles. Scene cleanup removes listeners and development hooks.
 
-Runtime uploads capped at longest edge 1024, controls256; cache reused on restart. Sources and network bytes unchanged. Gameplay texture RGBA estimate: 11,137,024 bytes (10.62 MiB), excluding CSS background, text textures and render/filter buffers. This is not total GPU memory. Render density capped at2 without changing logical coordinates or pointer geometry.
+Runtime textures are capped at the useful display size; scene restarts reuse the texture cache. Current source texture RGBA estimate after illustrated-state restoration remains 15,597,568 bytes (14.875 MiB), excluding CSS background, text and framebuffer/filter storage. WebP reduces transfer/storage, not the RGBA cost of the decoded textures. Render density remains capped at2 without changing logical coordinates or pointer geometry.
 
 ## Verification
 
-Six browser scenarios passed: small/standard/tall phone, tablet, desktop, reduced motion. Touch traces on phones; tests cover invalid overlap, three lines without auto-submit, sequential scoring, undo, explicit submit, replay and return to cover. Build and skill smoke test pass. Physical-device profiling and user acceptance of final art remain open. See GAME_STATUS.md.
+Six browser scenarios passed historically: small/standard/tall phone, tablet, desktop, reduced motion. Touch traces on phones; tests cover invalid overlap, three lines without auto-submit, sequential scoring, undo, explicit submit, replay and return to cover. The optimized cover workflow also passed its WebP path/dimension/selection checks. Physical-device profiling and user acceptance of final gameplay art remain open. See GAME_STATUS.md.
 
-Cover is now current as a static collection; animation is deferred. Validated gameplay and canonical music choices are preserved.
+Cover is current as a static collection. Validated gameplay and canonical music choices are preserved.
 
 ## DA2 lower-console replacement — 2026-09-07
 
@@ -74,14 +85,14 @@ Repository destination: public/assets/imported/linefugg/welcome/variants/.
 | C — Graphic poster | linefugg-cover-c-graphic-poster-approved-2026-09-07.png | Red/blue/yellow paths over a numbered world; flat observatory silhouette |
 | D — Japanese edition | linefugg-cover-d-japanese-edition-approved-2026-09-07.png | Young illustrated astronomer on a balcony above clouds |
 
-All four originals are 941×1672 RGB PNGs, opaque, stored without resize, crop, recompression or regeneration. No optimized derivative or animation layers were produced. Source filenames, generation IDs, Drive/archive file IDs, byte lengths and expected SHA-256/Git blob hashes are recorded in [the import receipt](../../../ops/drive-asset-sync/imports/linefugg-covers-2026-09-07.json).
+All four originals are 941×1672 RGB PNGs, opaque, stored without resize, crop, recompression or regeneration. At the time of their 7 September archival pass no optimized derivative had yet been produced. Source filenames, generation IDs, Drive/archive file IDs, byte lengths and expected SHA-256/Git blob hashes are recorded in [the import receipt](../../../ops/drive-asset-sync/imports/linefugg-covers-2026-09-07.json).
 
-The initial storage pass did not activate the covers. The later explicit integration request at 13:31:32 UTC authorizes the static cutover below; it does not authorize replacing or regenerating these masters. Future animation must preserve them and produce separate layers rather than substituting new compositions.
+The initial storage pass did not activate the covers. The later explicit integration request at 13:31:32 UTC authorized the static cutover; it did not authorize replacing or regenerating these masters.
 
-## Active static cover collection — 2026-09-07
+## Active static cover collection
 
-[welcome.ts](welcome.ts) exports LINEFUGG_WELCOME, consumed by the LineFugg registry entry. All four original PNG paths above are active static variants in the existing Core Cover selection panel. No LineFugg unlock thresholds existed; all four remain available at score zero for this integration, without changing another game's unlock rules. Core's existing seed-based selection chooses a stable edition for each feed slot; the first edition supplies the creator/catalog thumbnail. No timed slideshow, animation layers or Phaser cover instance is added.
+[welcome.ts](welcome.ts) exports LINEFUGG_WELCOME, consumed by the LineFugg registry entry. The four approved artworks remain the canonical collection, but runtime now loads the lossless WebP derivatives in `welcome/variants/runtime/` rather than downloading the 941×1672 PNG masters. All four remain available at score zero; Core's seed-based selection chooses a stable edition for each feed slot, and the first edition supplies the creator/catalog thumbnail. No timed slideshow, animation layers or Phaser cover instance is added.
 
-The registry marks only LineFugg's cover migration current. The shared CSS already keys the migration marker to that metadata, so no global badge removal or game-specific CSS override is needed. The LineFugg placeholder is no longer referenced by the registry; its historical mirrored source is not an active alternate edition.
+The registry marks only LineFugg's cover migration current. The shared CSS keys the migration marker to that metadata, so no global badge removal or game-specific CSS override is needed. The historical placeholder is not referenced by the registry.
 
-Imported Git blob hashes were compared with the receipt and the four locally available originals before cutover. The reproducible browser check is scripts/test-linefugg-covers.mjs; it additionally checks PNG SHA-256/dimensions, all four selections, still rendering, marker removal, launch/return and unchanged pending-game markers. See GAME_STATUS.md for execution results. No gameplay, Core column sizing, image bytes or music changed.
+The reproducible browser check is scripts/test-linefugg-covers.mjs. It verifies preserved PNG master SHA-256/dimensions, WebP runtime paths and natural dimensions, all four selections, still rendering, marker removal, launch/return and unchanged pending-game markers. No gameplay rule, Core column sizing or music changed in the optimization pass.

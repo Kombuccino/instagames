@@ -70,11 +70,14 @@ Do not let generic Phaser examples override these:
 
 ### Portrait zones and scaling
 
-- canonical width: `390`; art envelope: `390 × 844`; guaranteed CENTRE: `390 × 662`
-- mobile: width controls uniform scale; PC/big screen: CENTRE's 662-unit height controls uniform scale
-- HAUT and BAS are crop-sensitive parts of MASTER; EXTRA HAUT/BAS exist only outside MASTER on unusually tall mobile viewports
+- canonical width: `390`; art envelope: `390 × 844`; reference gameplay window: `390 × 662`
+- each game declares the vertical crop priority that matches its mechanic: `top`, `center` or `bottom`; `center` is the default, Vlad is bottom-anchored
+- mobile: width controls uniform scale and the useful height only changes vertical crop/reveal; it must not silently shrink the 390-wide game
+- PC/big screen: the 662-unit reference window controls uniform scale, capped by available width
+- the world always remains one `390 × 844` coordinate system; vertical anchoring is a viewport decision, never a second mobile/desktop layout
+- EXTRA HAUT/BAS exist only outside MASTER on unusually tall mobile viewports
 - do not add game-owned decorative width outside the 390-wide composition
-- keep Core currency and CTA inside the 390-wide frame; keep the cover rail at the left over CENTRE
+- keep Core currency and CTA inside the 390-wide frame; keep the cover rail at the left over the portrait composition
 - do not reflow gameplay for desktop vs mobile
 - do not use critical `vw` / `vh` world geometry
 
@@ -118,7 +121,8 @@ Check:
 
 - the relevant official 4.2.1 skill was consulted;
 - game geometry is stable at canonical logical size;
-- input works in logical coordinates;
+- vertical crop follows the declared game anchor on short and tall viewports without changing the 390-wide world;
+- input works in logical coordinates, including when the authored canvas overflows vertically;
 - Core/game ownership boundaries remain intact;
 - audio remains Core-owned;
 - inactive/unmounted lifecycle is clean;

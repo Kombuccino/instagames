@@ -1,5 +1,12 @@
 # Les Brochettes de Vlad — Changelog
 
+## [0.3.0] — 2026-09-11 19:05 Europe/Paris
+
+- Mise en production des cinq covers validées le 10 septembre 2026 dans le feed MiniFugg.
+- Les cinq éditions utilisent les PNG approuvés exacts synchronisés par le pipeline Drive → GitHub ; aucune régénération, recoloration ou compression destructive n'est appliquée.
+- Présentation statique Core avec `fit: contain`, rotation `seeded`, toutes les éditions disponibles immédiatement.
+- Migration cover passée de `update-required` à `current`.
+
 ## [0.2.0] — 2026-09-08 14:48 Europe/Paris
 
 - L'embrochement ne fonctionne plus qu'en remontant par dessous et conserve exactement le point de pénétration : une prise excentrée produit une brochette visiblement bancale.

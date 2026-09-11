@@ -6,7 +6,7 @@ Ce fichier organise le travail ; les documents liés portent les règles détail
 
 Lire la version actuelle sur `main` de ce fichier et des [règles du projet](../AGENTS.md) au démarrage ; à chaque demande suivante, réévaluer la route et actualiser les sources si elles ont changé. Pour un simple échange, aucune lecture ni cérémonie inutile.
 
-Pour un jeu, retrouver son entrée dans [le registre](../src/core/gameRegistry.tsx), qui renvoie désormais à son `src/games/<dossier>/definition.ts`, puis `GAME_STATUS.md`, `ART_DIRECTION.md` et `ASSET_MANIFEST.md` dans ce même dossier lorsqu'ils existent. TetraMindFck garde le dossier `calc-drop`. Ouvrir les images pertinentes et consulter les discussions liées pour récupérer les corrections non transcrites. Une affirmation ancienne de l'agent n'est pas une validation utilisateur ni une preuve de livraison.
+Pour un jeu, retrouver son entrée dans [le registre](../src/core/gameRegistry.tsx), qui renvoie désormais à son `src/games/<dossier>/definition.ts`, puis `GAME_STATUS.md`, `TODO.md`, `ART_DIRECTION.md` et `ASSET_MANIFEST.md` dans ce même dossier lorsqu'ils existent. TetraMindFck garde le dossier `calc-drop`. Ouvrir les images pertinentes et consulter les discussions liées pour récupérer les corrections non transcrites. Une affirmation ancienne de l'agent n'est pas une validation utilisateur ni une preuve de livraison.
 
 Annoncer en une ou deux phrases le travail choisi, la procédure utilisée et pourquoi. Si deux interprétations changent réellement le livrable ou si les procédures se contredisent sans décision permettant de trancher, expliquer le doute et poser une question courte. Choisir soi-même les détails techniques courants ; ne pas demander de recopier un brief.
 
@@ -21,6 +21,8 @@ Annoncer en une ou deux phrases le travail choisi, la procédure utilisée et po
 | Créer / corriger une interface ou une entrée MiniFugg | [Refonte par blockouts](PLATFORM_REDESIGN.md), [DA UI](DA_UI.md) ou [DA Welcome](DA_WELCOME.md), [DA commune](DA_CORE.md), [Zones MiniFugg](MINIFUGG_ZONES.md), [validation plateforme](PLATFORM_VISUAL_VALIDATION.md) | Blockout validé avant reprise générale, puis réutilisation des références, composants et zones canoniques |
 | Coder, migrer ou corriger le gameplay / les contrôles | [Architecture](GAME_ENGINE_ARCHITECTURE.md), [migration](GAME_MIGRATION_PLAN.md), [layout](GAME_LAYOUT_SYSTEM.md), [Zones MiniFugg](MINIFUGG_ZONES.md), [gestes](INPUT_GESTURES.md), [orientation](ORIENTATION_LAYOUT.md) | Correction dans le moteur canonique, vérifiée sur les états et écrans utiles |
 | Musique ou sons | [Core Audio](AUDIO_SYSTEM.md), [Music Lab](MUSIC_LAB.md), [validation audio](AUDIO_VALIDATION.md) | Références et pistes acquises conservées, écoute et cycle de vie vérifiés |
+| Noter une idée / ajouter à la TODO | [Notes & TODO](TODO_NOTES.md), puis `TODO.md` du jeu ou [TODO Core](CORE_TODO.md) | Idée classée et sauvegardée, sans lancer de chantier |
+| Que contient la TODO ? / qu'avait-on noté ? | `TODO.md` du jeu ; `GAME_STATUS.md` seulement si une prochaine action est demandée | Topo bref de la TODO actuelle, sans modifier le jeu |
 | Passer en Fugg, livrer, faire le bilan | [Création : revue finale et bilan](GAME_CREATION_PIPELINE.md), [curation](GAME_CURATION.md) ; [exports](PLATFORM_EXPORTS.md) si packaging | Qualité vérifiée, acceptation utilisateur et état de livraison explicites |
 | Où en est le jeu ? | Sa fiche `GAME_STATUS.md` et preuves actuelles | Fait, reste et prochaine action, sans modifier le jeu |
 
@@ -48,6 +50,8 @@ Après validation, conserver les originaux et noter la portée du choix. Ne pas 
 ## 5. Transmettre et apprendre
 
 Après une décision ou une passe significative, actualiser la fiche et le document concernés : choix daté, référence exacte et rôle, refus, réalisé / reste, preuves, prochaine action. Séparer proposition, validation artistique, fichier sauvegardé, intégration et test. GitHub partage ces traces, pas automatiquement toute la mémoire des conversations.
+
+Les idées futures vont dans le `TODO.md` du jeu ou `docs/CORE_TODO.md`, selon [TODO_NOTES.md](TODO_NOTES.md). Ne pas confondre backlog, travail actif (`GAME_STATUS.md`) et historique livré (`CHANGELOG.md`). Une discussion Notes peut ajouter au backlog pendant qu'un chantier code ; un agent de code ne modifie pas la TODO pour un travail sans rapport.
 
 À chaque livraison d'un jeu qui atteint `main`, mettre à jour ses métadonnées produit dans son `definition.ts` : version, date/heure Europe/Paris et entrée de changelog dans son dossier. La fiche Information doit lire cette source unique, jamais une valeur écrite en dur. Une passe non livrée reste un travail en cours : elle ne doit pas annoncer une fausse version au joueur. Une réorganisation purement technique du catalogue à valeurs identiques ne crée pas une nouvelle version de chaque jeu.
 

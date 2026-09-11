@@ -1,0 +1,52 @@
+name: Temporary LineFugg runtime cutover
+
+on:
+  push:
+    branches: [tmp-linefugg-runtime-opt-20260911]
+    paths:
+      - '.github/workflows/tmp-linefugg-runtime-cutover.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  cutover:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: python3 scripts/tmp-linefugg-cutover.py
+      - run: npm install --no-audit --no-fund
+      - run: node scripts/test-linefugg-runtime-assets.mjs
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Run representative LineFugg browser scenario
+        run: |
+          npx vite --host 127.0.0.1 --port 5175 >/tmp/linefugg-vite.log 2>&1 &
+          VITE_PID=$!
+          trap 'kill $VITE_PID 2>/dev/null || true' EXIT
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:5175/ >/dev/null; then break; fi
+            sleep .5
+          done
+          LINEFUGG_QUICK=1 node scripts/test-linefugg-browser.mjs
+      - name: Save browser proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linefugg-optimized-runtime-proof
+          path: artifacts/linefugg/
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Commit tested cutover to temporary branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/games/linefugg/LineFuggScene.ts src/games/linefugg/orbitalArt.ts src/games/linefugg/definition.ts src/games/linefugg/CHANGELOG.md src/games/linefugg/GAME_STATUS.md src/games/linefugg/ASSET_MANIFEST.md scripts/test-linefugg-runtime-assets.mjs
+          git diff --cached --check
+          git commit -m 'perf(linefugg): finish runtime image optimization'
+          git push origin HEAD:${GITHUB_REF_NAME}

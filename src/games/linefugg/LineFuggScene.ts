@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 import type { GameSessionApi } from '../../core/types'
 import { DEFAULT_LOGICAL_VIEWPORTS } from '../../core/runtime/gameRuntimePolicy'
-import { OrbitalImageFile, artFrame, fitText, centerTextInk } from './orbitalArt'
+import { artFrame, fitText, centerTextInk } from './orbitalArt'
 
 export const LINEFUGG_SCENE_KEY = 'linefugg-main'
 
@@ -34,16 +34,16 @@ const VALIDATE_X = 327
 const ASSET_ROOT = '/assets/imported/linefugg'
 
 const ASSETS = {
-  boardPanel: ['linefugg-orbital-board', `${ASSET_ROOT}/ui/orbital-board.png`],
-  armillary: ['linefugg-armillary', `${ASSET_ROOT}/props/orbital-armillary-key.png`],
-  cellMultiply: ['linefugg-orbital-cell-multiply', `${ASSET_ROOT}/ui/orbital-cell-multiply-v3.png`],
-  cellDivide: ['linefugg-orbital-cell-divide', `${ASSET_ROOT}/ui/orbital-cell-divide-v3.png`],
-  validateReady: ['linefugg-validate-ready', `${ASSET_ROOT}/ui/orbital-validate-ready-v5.png`],
-  validateDisabled: ['linefugg-validate-disabled', `${ASSET_ROOT}/ui/orbital-validate-disabled-v5.png`],
-  validateAmber: ['linefugg-validate-amber', '/assets/generated/linefugg/ui/validate-amber-source.png'],
-  indicators: ['linefugg-glass-indicators', '/assets/generated/linefugg/ui/glass-indicators.png'],
-  ledgerDecor: ['linefugg-ledger-decor', `${ASSET_ROOT}/ui/orbital-history-row-v5.png`],
-  console: ['linefugg-accounting-panels', '/assets/generated/linefugg/ui/accounting-panels.png'],
+  boardPanel: ['linefugg-orbital-board', `${ASSET_ROOT}/ui/orbital-board.webp`],
+  armillary: ['linefugg-armillary', `${ASSET_ROOT}/props/orbital-armillary-key.webp`],
+  cellMultiply: ['linefugg-orbital-cell-multiply', `${ASSET_ROOT}/ui/orbital-cell-multiply-v3.webp`],
+  cellDivide: ['linefugg-orbital-cell-divide', `${ASSET_ROOT}/ui/orbital-cell-divide-v3.webp`],
+  validateReady: ['linefugg-validate-ready', `${ASSET_ROOT}/ui/orbital-validate-ready-v5.webp`],
+  validateDisabled: ['linefugg-validate-disabled', `${ASSET_ROOT}/ui/orbital-validate-disabled-v5.webp`],
+  validateAmber: ['linefugg-validate-amber', '/assets/generated/linefugg/ui/runtime/validate-amber-source.webp'],
+  indicators: ['linefugg-glass-indicators', '/assets/generated/linefugg/ui/runtime/glass-indicators.webp'],
+  ledgerDecor: ['linefugg-ledger-decor', `${ASSET_ROOT}/ui/orbital-history-row-v5.webp`],
+  console: ['linefugg-accounting-panels', '/assets/generated/linefugg/ui/runtime/accounting-panels.webp'],
 } as const
 
 const INK_NAVY = 0x061424
@@ -307,8 +307,8 @@ export class LineFuggScene extends Phaser.Scene {
 
   preload() {
     this.load.maxParallelDownloads = 2
-    Object.entries(ASSETS).forEach(([name, [key, url]]) => {
-      if (!this.textures.exists(key)) this.load.addFile(new OrbitalImageFile(this.load, key, url, /undo|validate/i.test(name) ? 256 : 1024))
+    Object.values(ASSETS).forEach(([key, url]) => {
+      if (!this.textures.exists(key)) this.load.image(key, url)
     })
   }
 

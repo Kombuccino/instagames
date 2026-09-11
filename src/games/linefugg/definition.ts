@@ -23,7 +23,7 @@ export const gameDefinition: InstagameDefinition = {
   component: LineFugg,
   release: {
     version: '0.5.3',
-    updatedAt: '2026-09-11T20:52:00+02:00',
+    updatedAt: '2026-09-11T23:08:00+02:00',
     changelogPath: 'src/games/linefugg/CHANGELOG.md',
   },
   instructions: {

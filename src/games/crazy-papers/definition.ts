@@ -20,6 +20,11 @@ export const gameDefinition: InstagameDefinition = {
   },
   welcome: placeholderWelcome('crazy-papers'),
   component: CrazyPapers,
+  release: {
+    version: '0.4.0',
+    updatedAt: '2026-09-11T18:45:00+02:00',
+    changelogPath: 'src/games/crazy-papers/CHANGELOG.md',
+  },
   instructions: {
     goal: 'Épuise chaque charge de travail, monte en grade et traite un maximum de documents avant que la paperasse ne recouvre le bureau.',
     rules: [

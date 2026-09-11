@@ -35,7 +35,7 @@ Engine migration state and cover migration state are independent. A game may be 
 | 4 | TetraMindFck | legacy DOM/CSS | Phaser 2D | mobile/desktop geometry drift + current legacy cover/parallax pilot |
 | 5 | Shoot the Shooter | legacy DOM/CSS | Phaser 2D | timing/hit-testing/input consistency across screen sizes |
 | 6 | DebthOfLife | legacy DOM/CSS | Phaser 2D | runner architecture naturally fits an engine scene/camera |
-| 7 | CrazyPapers | legacy DOM/CSS | Phaser 2D | visually document-heavy but benefits from one standard runtime |
+| 7 | CrazyPapers | **Phaser 2D migration in progress** | Phaser 2D | renderer migrated and hybrid paper-pressure system integrated; build green, interactive geometry/input validation still required before unlock |
 | 8 | HARI les dents pourries | legacy DOM/CSS | Phaser 2D | beta-quality prototype; migrate after the shared engine recipe is proven elsewhere |
 
 This order is a recommended implementation sequence, not a statement about game quality.
@@ -70,7 +70,7 @@ LineFugg establishes the minimal shared recipe for subsequent 2D migrations:
 - The game reports outward only through the existing MiniFugg session contract.
 - Game-specific geometry remains explicit in the scene rather than being hidden behind a speculative layout framework.
 
-Reuse these primitives for the next migrations, extending the shared host only when another real game demonstrates a common need.
+Reuse these primitives for the next migrations, extending the shared host only when another real game demonstrates the same need.
 
 ## Cover migration
 

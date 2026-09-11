@@ -1,6 +1,6 @@
 # LineFugg — Suivi de création
 
-Mis à jour : 11 septembre 2026 à 20:01 Europe/Paris. Version livrée : `0.5.2`. Changelog : `CHANGELOG.md`.
+Mis à jour : 11 septembre 2026 à 20:52 Europe/Paris. Version : `0.5.3`. Changelog : `CHANGELOG.md`.
 
 Runtime Phaser 4.2.1, stage 390 × 844. Prototype, game design et équilibre validés par l'utilisateur. Direction gameplay : **Orbital Accounting**. Cover runtime : current ; quatre jaquettes statiques approuvées, masters PNG conservés et dérivés WebP lossless actifs.
 
@@ -23,31 +23,28 @@ Références : [ART_DIRECTION.md](ART_DIRECTION.md), [ASSET_MANIFEST.md](ASSET_M
 | Animations / FX | Intégrés et bornés | Aucun changement demandé |
 | Audio | Musiques conservées | Écoute finale du mix/SFX restant à faire |
 | Covers | 4 statiques intégrées | Aucune animation prévue dans le contrat actuel |
-| Assets runtime | Optimisés partiellement | 12 images importées passées en WebP lossless ; 3 textures générées locales restent PNG |
-| Livraison | `0.5.2` sur `main` | Déploiement applicatif distinct de GitHub |
+| Assets runtime | Optimisés | Tous les visuels gameplay actifs sont en WebP lossless pré-dimensionné ; PNG sources conservés hors chemin actif |
+| Livraison | `0.5.3` | Déploiement applicatif distinct de la publication GitHub |
 
-## Optimisation images — 11 septembre 2026
+## Optimisation images runtime — 11 septembre 2026
 
-Les 12 images importées actives couvertes par cette passe — fond, plateau, armillaire, cellules ×/÷, boutons Valider actif/inactif, décor du registre et quatre covers — ont désormais des dérivés **WebP lossless** synchronisés via le Drive privé puis utilisés par le runtime.
+Le gameplay ne référence plus de PNG lourds. Fond CSS, plateau, armillaire, cases spéciales, boutons Valider, ornements du registre, console, indicateurs et verre orange sont tous servis en **WebP lossless pré-dimensionné**. Les PNG sources et les masters approuvés restent conservés ; aucune illustration n'a été régénérée.
 
-Poids cumulé de ces 12 sources PNG : **21,578,385 octets**. Poids cumulé des dérivés runtime : **9,083,568 octets**, soit **57,9 % de transfert en moins** sur ce lot. Les PNG sources et masters approuvés n'ont pas été écrasés ni régénérés.
+Le payload des **11 images nécessaires au gameplay est de 4 573 098 octets (4,57 Mo / 4,36 Mio)**, fond compris. Les quatre covers ne sont pas comptées : elles appartiennent au feed Core et sont chargées séparément du lancement Phaser.
 
-Le fond CSS utilise directement `orbital-environment.webp`. `orbitalArt.ts` redirige uniquement les sept imports Phaser concernés vers leurs WebP ; les coordonnées de frames et le plafond de résolution restent identiques. Les quatre covers utilisent `welcome/variants/runtime/*.webp` en `fit: contain`, sans changement de sélection, d'overlay Core ou de composition.
+Les trois derniers assets locaux ont été dérivés sans régénération : `accounting-panels.webp` 681 024 octets (1024×683), `glass-indicators.webp` 671 796 octets (1024²), `validate-amber-source.webp` 89 910 octets (256²), contre 5,73 Mo pour leurs trois PNG sources. Leur alpha et leurs pixels visibles après décodage sont identiques à la version runtime redimensionnée avant encodage lossless.
 
-Contrôles effectués : décodage des dérivés, dimensions, présence d'encodage WebP lossless `VP8L`, inspection visuelle des principaux dérivés, synchronisation Drive → GitHub réussie. Le workflow **LineFugg static covers** a exécuté avec succès le build puis `scripts/test-linefugg-covers.mjs`, qui vérifie notamment que les PNG masters restent intacts mais ne sont plus demandés par le runtime. Le build global GitHub est également réussi sur la livraison.
+`OrbitalImageFile` et son redimensionnement Canvas au chargement sont retirés : Phaser charge directement les textures préparées. `scripts/test-linefugg-runtime-assets.mjs` verrouille le format des 11 fichiers, leur budget cumulé et l'absence de PNG dans les URLs Phaser actives.
 
-Les textures locales `public/assets/generated/linefugg/ui/accounting-panels.png`, `glass-indicators.png` et `validate-amber-source.png` restent en PNG. Elles sont toujours réduites à la résolution utile après chargement Phaser, mais leur poids réseau pourra encore être diminué lors d'une passe locale/Codex sans régénérer leur art.
+## Vérifications
 
-## Vérifications de référence
+Passe finale sur état combiné : test de budget/formats réussi, `npm run build` réussi, puis scénario navigateur LineFugg 390×844 DPR2 tactile réussi sans erreur HTTP/JavaScript. Les captures `empty`, `drag`, `reroll`, une ligne, trois lignes et résultat ont été produites ; contrôle visuel de `empty` et `three` conforme à la DA, sans asset manquant ni dégradation évidente.
 
-`scripts/test-linefugg-browser.mjs` couvre la boucle gameplay, le tracé tactile, l'annulation, la validation, le reroll déterministe, les états visuels et plusieurs formats d'écran. `scripts/test-linefugg-covers.mjs` couvre les quatre covers, téléphone/tablette/desktop, sélection, lancement/retour, intégrité des masters et chargement des WebP.
-
-Le coût RGBA des textures gameplay après décodage reste de l'ordre de la mesure précédente (~14,875 Mio hors fond CSS, textes et buffers) : la conversion WebP réduit surtout **transfert et stockage**, pas la mémoire RGBA d'une texture déjà décodée.
+Les matrices historiques plus larges de `scripts/test-linefugg-browser.mjs` et `scripts/test-linefugg-covers.mjs` restent les références de non-régression multi-écrans. Le coût RGBA après décodage n'est pas réduit par WebP à dimensions identiques ; cette passe cible surtout réseau, stockage et suppression du redimensionnement client.
 
 ## Prochaines actions
 
 1. Revue utilisateur du rendu gameplay final si elle n'a pas encore été donnée.
-2. Profilage sur téléphone physique et écoute du mix audio.
-3. Convertir les trois textures générées locales en dérivés runtime lossless depuis un checkout local, sans toucher aux masters.
+2. Profilage sur téléphone physique et écoute finale du mix/SFX.
 
-Aucun blocage technique connu. Ne pas rouvrir le gameplay validé pour une simple optimisation de fichiers.
+Aucun blocage technique connu. L'optimisation des images runtime de LineFugg est terminée ; ne pas rouvrir gameplay ou DA pour une simple optimisation de fichiers.

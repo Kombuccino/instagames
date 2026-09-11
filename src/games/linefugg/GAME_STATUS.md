@@ -1,6 +1,6 @@
 # LineFugg — Suivi de création
 
-Mis à jour : 11 septembre 2026 à 20:52 Europe/Paris. Version : `0.5.3`. Changelog : `CHANGELOG.md`.
+Mis à jour : 11 septembre 2026 à 23:08 Europe/Paris. Version : `0.5.3`. Changelog : `CHANGELOG.md`.
 
 Runtime Phaser 4.2.1, stage 390 × 844. Prototype, game design et équilibre validés par l'utilisateur. Direction gameplay : **Orbital Accounting**. Cover runtime : current ; quatre jaquettes statiques approuvées, masters PNG conservés et dérivés WebP lossless actifs.
 

@@ -48,7 +48,7 @@ Pour une modification locale, garder le reste intact. Si une contrainte techniqu
 
 ### Planche de traduction DA → jeu — obligatoire avant la grande intégration
 
-Une DA validée est suivie d'une **planche de production visuelle**, pas d'un long rapport ni d'une intégration directe. Elle réemploie la DA approuvée et montre, à l'échelle du stage :
+Une DA validée est suivie d'une **planche de production visuelle**, pas d'un long rapport ni d'une intégration directe. Assembler des images sources propres ; ajouter les annotations techniques sur une copie ou dans une couche/document séparé selon `DA_CORE.md`. Aucun habillage décoratif de board ni légende incrustée dans les assets. Elle réemploie la DA approuvée et montre, à l'échelle du stage :
 
 - la composition annotée : zones de jeu, couches, éléments cachés au crop et ordre de profondeur ;
 - les éléments isolés à produire ou à rechercher ;
@@ -87,5 +87,7 @@ Les styles du jeu restent dans son dossier et ne ciblent pas les interfaces, con
 Intégrer d'abord un échantillon représentatif, le comparer à la référence, puis étendre le pack. Vérifier tous les états utiles et les écrans normalisés, la lisibilité tactile, l'absence de doubles dessins, les animations hors écran et le coût sur mobile. Un build vert ne prouve pas la fidélité artistique.
 
 ## Micro-brief à remplir
+
+Remplir le modèle unique de [DA_CORE.md](DA_CORE.md#structure-obligatoire-du-micro-brief). Pour un asset isolé, textes autorisés = aucun sauf symbole expressément requis. Exemple de spécialisation :
 
 > Produire [étude de gameplay / asset précis / état] pour [jeu]. Mécanique et situation : [résumé utile]. Référence approuvée : [image disponible et rôle]. Conserver [géométrie, nombre d'objets, identité]. Traitement : [famille, palette, médium, silhouettes, lumière]. Zone logique : [dimensions/ancrages]. Partie dynamique laissée au moteur : [éléments]. Sortie : [composant isolé, alpha, états nécessaires]. Aucun overlay Core ni information variable dessinée dans le fond. Ne pas changer les règles ou produire une cover à la place.

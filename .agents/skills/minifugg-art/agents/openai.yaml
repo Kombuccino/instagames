@@ -1,0 +1,6 @@
+interface:
+  display_name: "MiniFugg Art"
+  short_description: "Graphismes ciblés, sources propres et contrôles"
+  default_prompt: "Utilise $minifugg-art pour traiter cette demande graphique MiniFugg, récupérer les références exactes, préparer le micro-brief et vérifier les sorties sans modifier les décisions validées."
+policy:
+  allow_implicit_invocation: true

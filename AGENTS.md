@@ -20,6 +20,8 @@ For project history, product intent and the current DOM/CSS/Canvas → Phaser tr
 
 ## Art-direction brief routing — mandatory
 
+Use `.agents/skills/minifugg-art/SKILL.md` for graphic requests. It routes to the existing DA documents and their single micro-brief template, including the closed list of allowed text. Keep comparison/technical annotations separate from clean originals; measure files without treating a technical pass as artistic approval. ChatGPT may read the skill as a procedure even without native activation. Record each significant pass in the existing surface/game follow-up. No periodic review is activated (user decision, 11 September 2026).
+
 Before any graphic research, image request, visual redesign or art integration, read the latest `main` version of `docs/DA_CORE.md`, then the file for the requested surface:
 
 - `docs/DA_COVER.md` — authored game covers and collectible editions;
@@ -105,7 +107,7 @@ When migration becomes canonical, delete the superseded renderer/code in the sam
 
 The approved target is static covers rendered by Core. Current Phaser/CSS animated cover implementations are legacy until replaced and removed. A cover remains **A METTRE A JOUR** until its static asset, crop behavior and Core overlays are validated and its registry state is `current`.
 
-Do not expand the legacy CSS parallax/FuggWelcome system. Existing TetraMindFck layered work may be used as visual/data reference while migrating to the shared Phaser cover runtime.
+Do not expand the legacy CSS parallax/FuggWelcome system. Existing TetraMindFck layered work may be used as visual reference when preparing an approved static replacement rendered by Core; do not migrate to or expand an animated cover runtime.
 
 ## 6. New game 10-prompt rule
 

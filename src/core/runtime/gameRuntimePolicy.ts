@@ -7,6 +7,15 @@ export const DEFAULT_LOGICAL_VIEWPORTS = {
 
 export const DEFAULT_RENDER_PIXEL_RATIO_CAP = 2
 export const MINIFUGG_PORTRAIT_CENTRE_HEIGHT = 662
+export const MINIFUGG_DESKTOP_BREAKPOINT = 760
+
+export type MiniFuggVerticalAnchor = 'top' | 'center' | 'bottom'
+export type MiniFuggScaleAxis = 'auto' | 'width' | 'height'
+
+export type MiniFuggGameplayViewportOptions = {
+  verticalAnchor?: MiniFuggVerticalAnchor
+  scaleAxis?: MiniFuggScaleAxis
+}
 
 export function clampRenderPixelRatio(value = 1) {
   if (!Number.isFinite(value)) return 1
@@ -28,26 +37,47 @@ export function fitLogicalViewport(logical: GameLogicalViewport, available: Game
 /**
  * MiniFugg gameplay framing for the canonical portrait master.
  *
- * Mobile is width-driven: the 390-wide stage keeps its intended scale and
- * crop-sensitive HAUT/BAS may leave the viewport. On wider screens the
- * always-visible 390×662 CENTRE limits the scale instead. If a viewport is
- * exceptionally short, CENTRE still fits even if that means lateral margins.
+ * Mobile is width-driven: 390 logical units always consume the useful width.
+ * Desktop is CENTRE-height driven, still capped by available width. The game may
+ * choose which vertical edge absorbs the crop: top, center or bottom. This lets
+ * a bottom-anchored game such as Vlad keep its hand/grill fixed while allowing
+ * extra or cropped scenery above, without changing horizontal gameplay geometry.
  */
-export function fitMiniFuggGameplayViewport(logical: GameLogicalViewport, available: GameLogicalViewport) {
+export function fitMiniFuggGameplayViewport(
+  logical: GameLogicalViewport,
+  available: GameLogicalViewport,
+  options: MiniFuggGameplayViewportOptions = {},
+) {
   const availableWidth = Math.max(1, available.width)
   const availableHeight = Math.max(1, available.height)
   const canonicalPortrait = logical.width === DEFAULT_LOGICAL_VIEWPORTS.portrait.width
     && logical.height === DEFAULT_LOGICAL_VIEWPORTS.portrait.height
   const protectedHeight = canonicalPortrait ? MINIFUGG_PORTRAIT_CENTRE_HEIGHT : logical.height
-  const scale = Math.min(availableWidth / logical.width, availableHeight / protectedHeight)
+  const widthScale = availableWidth / logical.width
+  const protectedHeightScale = availableHeight / protectedHeight
+  const scaleAxis = options.scaleAxis ?? 'auto'
+
+  const scale = !canonicalPortrait || scaleAxis === 'auto'
+    ? Math.min(widthScale, protectedHeightScale)
+    : scaleAxis === 'width'
+      ? widthScale
+      : Math.min(protectedHeightScale, widthScale)
+
   const width = logical.width * scale
   const height = logical.height * scale
+  const verticalRemainder = availableHeight - height
+  const verticalAnchor = options.verticalAnchor ?? 'center'
+  const offsetY = verticalAnchor === 'top'
+    ? 0
+    : verticalAnchor === 'bottom'
+      ? verticalRemainder
+      : verticalRemainder / 2
 
   return {
     scale,
     width,
     height,
     offsetX: (availableWidth - width) / 2,
-    offsetY: (availableHeight - height) / 2,
+    offsetY,
   }
 }

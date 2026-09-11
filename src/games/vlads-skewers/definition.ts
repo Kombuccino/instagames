@@ -22,8 +22,8 @@ export const gameDefinition: InstagameDefinition = {
   welcome: VLADS_SKEWERS_WELCOME,
   component: VladsSkewers,
   release: {
-    version: '0.3.0',
-    updatedAt: '2026-09-11T19:05:00+02:00',
+    version: '0.3.1',
+    updatedAt: '2026-09-11T19:48:00+02:00',
     changelogPath: 'src/games/vlads-skewers/CHANGELOG.md',
   },
   instructions: {

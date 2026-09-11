@@ -8,6 +8,14 @@ import './VladsSkewers.css'
 
 const GAME_ID = 'vlads-skewers'
 
+type StackRotationInternals = {
+  stack: Array<{
+    baseRotation: number
+    visual: { root: { setRotation: (rotation: number) => unknown } }
+  }>
+  addStackFood: (...args: unknown[]) => void
+}
+
 export function VladsSkewers({ active, seed, restartToken, session }: GameComponentProps) {
   const renderPixelRatio = useRef(Math.min(2, Math.max(1, window.devicePixelRatio || 1))).current
   const sessionRef = useRef(session)
@@ -19,14 +27,29 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
     return () => miniFuggAudio.stopGameSfx(GAME_ID)
   }, [active])
 
-  const createScene = useCallback(() => new VladsSkewersScene({
-    seed: runSeed,
-    renderPixelRatio,
-    session: {
-      setScore: (score) => sessionRef.current.setScore(score),
-      finish: (payload) => sessionRef.current.finish(payload),
-    },
-  }), [renderPixelRatio, runSeed])
+  const createScene = useCallback(() => {
+    const scene = new VladsSkewersScene({
+      seed: runSeed,
+      renderPixelRatio,
+      session: {
+        setScore: (score) => sessionRef.current.setScore(score),
+        finish: (payload) => sessionRef.current.finish(payload),
+      },
+    })
+
+    // A complete recipe can auto-dispatch in the same frame as its last impalement.
+    // Apply the captured angle immediately when an item joins the stack, rather than
+    // waiting for the next scene update, so every ingredient keeps its impact rotation.
+    const internals = scene as unknown as StackRotationInternals
+    const addStackFood = internals.addStackFood.bind(scene)
+    internals.addStackFood = (...args: unknown[]) => {
+      addStackFood(...args)
+      const latest = internals.stack[internals.stack.length - 1]
+      if (latest) latest.visual.root.setRotation(latest.baseRotation)
+    }
+
+    return scene
+  }, [renderPixelRatio, runSeed])
 
   return (
     <div className="vlad-skewers-game" style={{

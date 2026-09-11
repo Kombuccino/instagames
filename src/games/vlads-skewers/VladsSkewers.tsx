@@ -4,17 +4,10 @@ import { PhaserGameHost } from '../../core/runtime/PhaserGameHost'
 import { DEFAULT_LOGICAL_VIEWPORTS } from '../../core/runtime/gameRuntimePolicy'
 import { miniFuggAudio } from '../../audio'
 import { VLADS_SKEWERS_SCENE_KEY, VladsSkewersScene } from './VladsSkewersScene'
+import { applyVladRuntimeTuning } from './VladsSkewersRuntime'
 import './VladsSkewers.css'
 
 const GAME_ID = 'vlads-skewers'
-
-type StackRotationInternals = {
-  stack: Array<{
-    baseRotation: number
-    visual: { root: { setRotation: (rotation: number) => unknown } }
-  }>
-  addStackFood: (...args: unknown[]) => void
-}
 
 export function VladsSkewers({ active, seed, restartToken, session }: GameComponentProps) {
   const renderPixelRatio = useRef(Math.min(2, Math.max(1, window.devicePixelRatio || 1))).current
@@ -36,18 +29,7 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
         finish: (payload) => sessionRef.current.finish(payload),
       },
     })
-
-    // A complete recipe can auto-dispatch in the same frame as its last impalement.
-    // Apply the captured angle immediately when an item joins the stack, rather than
-    // waiting for the next scene update, so every ingredient keeps its impact rotation.
-    const internals = scene as unknown as StackRotationInternals
-    const addStackFood = internals.addStackFood.bind(scene)
-    internals.addStackFood = (...args: unknown[]) => {
-      addStackFood(...args)
-      const latest = internals.stack[internals.stack.length - 1]
-      if (latest) latest.visual.root.setRotation(latest.baseRotation)
-    }
-
+    applyVladRuntimeTuning(scene)
     return scene
   }, [renderPixelRatio, runSeed])
 
@@ -62,6 +44,7 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
         sceneKey={VLADS_SKEWERS_SCENE_KEY}
         createScene={createScene}
         renderPixelRatio={renderPixelRatio}
+        verticalAnchor="bottom"
         pixelArt
         ariaLabel="Les Brochettes de Vlad. Maintiens et glisse pour déplacer la brochette et empale la commande dans l'ordre. Une brochette complète est validée automatiquement."
       />

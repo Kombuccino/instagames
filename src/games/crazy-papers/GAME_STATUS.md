@@ -1,6 +1,6 @@
 # CrazyPapers — Suivi de création
 
-Mis à jour : 11 septembre 2026 à 18:45 Europe/Paris. Version livrable : `0.4.0`. Base inspectée avant édition : `6e0b51c727fdb16fc47a2d8e4fcd08d65cca1e21` (`main`).
+Mis à jour : 11 septembre 2026 à 20:20 Europe/Paris. Version livrable : `0.4.0`. Base inspectée avant la passe DA : `2eb9b93ac82175a725f5139edaa698fb1ebf86b8` (`main`).
 
 ## Décision active
 
@@ -20,7 +20,27 @@ Mécaniques conservées : 5 services, 20 familles de documents, indices dégress
 - à 24 dossiers, les inputs sont gelés, le rideau finit de couvrir CENTRE en environ 0,5 s, puis `session.finish` est appelé ;
 - la pression est dérivée de la queue réelle : erreurs, liasses, urgence et photocopieuse peuvent accélérer visuellement la submersion.
 
-## Vérification
+## Recherche DA gameplay — nouveau pipeline MiniFugg — 11 septembre 2026
+
+Date / lot / base Git : 11 septembre 2026, recherche DA gameplay, base `2eb9b93ac82175a725f5139edaa698fb1ebf86b8`.
+
+Demande et référence : relancer une recherche de DA gameplay avec `docs/DA_CORE.md`, `docs/DA_GAME.md`, `docs/MINIFUGG_ZONES.md` et `.agents/skills/minifugg-art/SKILL.md`. Aucune nouvelle DA gameplay n'est validée à ce stade. Géométrie de référence récupérée dans `CrazyPapersScene.ts` : stage `390 × 844`, document central `300 × 318`, cinq tampons `COMPTA / CIVIL / URBA / RH / JURID.` en `3 + 2`, piles physiques et vague de submersion.
+
+Brief / outil / contexte observable : exploration uniquement ; même état fonctionnel et même géométrie entre pistes ; aucun titre de jeu, slogan, logo ou annotation décorative dans les études propres ; cinq services obligatoires ; pression visible par la matière papier. Génération effectuée avec l'outil image de ChatGPT, sans possibilité observable de lui imposer un prompt interne distinct du contexte de conversation.
+
+Sorties : quatre planches générées pendant cette tentative et archivées dans `MiniFugg - Graphic Archive/Games/crazy-papers/Gameplay DA Explorations - 2026-09-11/` sous `crazy-papers-gameplay-da-research-rejected-01.png` à `-04.png`.
+
+Essais et écarts : **4 générations rejetées par l'agent avant validation utilisateur**. Défauts récurrents : l'outil transforme la recherche en planche/collage, réintroduit le titre CrazyPapers et des slogans, remplace les cinq services par trois boutons de type approve/reject/review, ajoute des textes nationaux parasites et ne respecte pas suffisamment le même état fonctionnel. La cause probable est le contexte de génération trop large / l'inférence automatique de l'outil ; ce n'est pas une validation de ces visuels.
+
+Contrôles : artistique `non conforme` ; technique `images PNG générées et archivées` ; usage `non conforme` car elles ne peuvent pas servir de référence de production du gameplay réel.
+
+Validation utilisateur : **en attente** ; aucune des sorties de cette passe n'est candidate à validation.
+
+Livraison : généré oui / archivé oui / importé production non / intégré non / testé gameplay non.
+
+Suite : refaire les pistes comme **écrans indépendants** à partir d'un contexte de génération plus étroit ou d'une capture géométrique exploitable, puis seulement présenter 4–5 directions réellement comparables. Ne pas modifier `ART_DIRECTION.md` tant qu'une piste n'est pas choisie.
+
+## Vérification migration
 
 PR de validation : `#4`. Commit candidat : `a8c4754b0335243c80aaab426142f004f96a2fc7`.
 
@@ -32,4 +52,6 @@ Cover : `update-required`, indépendamment de cette migration gameplay. La phase
 
 ## Prochaine action
 
-Test utilisateur du jeu en ligne : lisibilité du document, taille des 5 tampons, vitesse de la montée des piles, seuil de débordement et descente de la vague. Après validation de ces points, passer `migration.state` à `current` et `locked` à `false` sans réintroduire de renderer parallèle.
+1. Refaire une vraie recherche DA gameplay conforme : 4–5 écrans indépendants, même géométrie et même état fonctionnel, sans titre/logo/texte parasite.
+2. Puis test utilisateur du gameplay en ligne : lisibilité du document, taille des 5 tampons, vitesse de la montée des piles, seuil de débordement et descente de la vague.
+3. Après validation technique de la migration, passer `migration.state` à `current` et `locked` à `false` sans réintroduire de renderer parallèle.

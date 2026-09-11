@@ -8,6 +8,7 @@ Backlog transversal de la plateforme. Voir `docs/TODO_NOTES.md`.
 
 - [ ] Prévoir un petit écran de loading au lancement des jeux lorsque le chargement réel provoque une attente perceptible, afin d’éviter les temps morts avant l’affichage du jeu.
 - [ ] Faire défiler le feed de jeux Fugg comme une boucle complète sans répétition prématurée : chaque jeu Fugg doit être présenté une fois avant qu’un jeu déjà vu réapparaisse ; après le dernier jeu de la séquence, reboucler sur le premier.
+- [ ] Intercaler dans le feed des publications éditoriales façon réseau social pour faire découvrir les jeux : tips, astuces, petites infos ou mécaniques à connaître sur un jeu, présentés comme de vrais posts explorables entre les entrées de jeux plutôt que comme de simples écrans de chargement.
 
 ## Core / architecture
 

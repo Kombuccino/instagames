@@ -1,6 +1,6 @@
 # LineFugg — Changelog
 
-## [0.5.3] — 2026-09-11 20:52 Europe/Paris
+## [0.5.3] — 2026-09-11 23:08 Europe/Paris
 
 - Tous les visuels chargés au lancement du gameplay utilisent maintenant des WebP lossless déjà dimensionnés pour le runtime ; aucun gros PNG n'est téléchargé puis réduit dans le navigateur.
 - Les trois dernières textures locales passent de 5,73 Mo de PNG à 1,44 Mo de WebP pré-dimensionnés. Le payload image du gameplay complet est maintenant de 4,57 Mo (4,36 Mio), fond compris ; les covers sont chargées séparément.

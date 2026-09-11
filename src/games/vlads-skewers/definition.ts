@@ -1,6 +1,7 @@
 import type { InstagameDefinition } from '../../core/types'
-import { STANDARD_FEATURES, placeholderWelcome } from '../../core/gameDefinitionDefaults'
+import { STANDARD_FEATURES } from '../../core/gameDefinitionDefaults'
 import { VladsSkewers } from './VladsSkewers'
+import { VLADS_SKEWERS_WELCOME } from './welcome'
 
 /** Game-owned catalog data. Core only assembles these definitions. */
 export const gameDefinition: InstagameDefinition = {
@@ -16,13 +17,13 @@ export const gameDefinition: InstagameDefinition = {
     state: 'current',
     targetRuntime: 'phaser-2d',
     locked: false,
-    cover: 'update-required',
+    cover: 'current',
   },
-  welcome: placeholderWelcome('vlads-skewers'),
+  welcome: VLADS_SKEWERS_WELCOME,
   component: VladsSkewers,
   release: {
-    version: '0.2.0',
-    updatedAt: '2026-09-08T14:48:00+02:00',
+    version: '0.3.0',
+    updatedAt: '2026-09-11T19:05:00+02:00',
     changelogPath: 'src/games/vlads-skewers/CHANGELOG.md',
   },
   instructions: {

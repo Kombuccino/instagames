@@ -1,5 +1,13 @@
 # Les Brochettes de Vlad — Changelog
 
+## [0.3.2] — 2026-09-11 23:06 Europe/Paris
+
+- Vlad est désormais ancré sur le bas du stage : la largeur logique reste fixe à `390`, tandis que les différences de hauteur navigateur/PWA/app sont absorbées au-dessus du grill et de la main.
+- Les ingrédients apparaissent hors écran au-dessus du MASTER avant d'entrer naturellement dans le champ de chute.
+- La pique adapte sa longueur à la recette (`170 / 215 / 260 / 300` pour `2 / 3 / 4 / 5` ingrédients), avec une tige plus fine et une pointe en petit harpon pixel art.
+- Le marqueur jaune de hitbox a disparu : seule l'extrémité logique invisible du harpon conserve la collision d'empalement.
+- Le Core Phaser accepte maintenant un ancrage vertical `top | center | bottom` réutilisable par les autres Fuggs sans changer leur monde logique ni leur largeur canonique.
+
 ## [0.3.1] — 2026-09-11 19:48 Europe/Paris
 
 - Le feed utilise maintenant les cinq dérivés runtime lossless exactement `390 × 844` avec `fit: cover`, au lieu des sources grand format affichées en `contain`.

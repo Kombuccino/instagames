@@ -20,4 +20,6 @@ Backlog transversal de la plateforme. Voir `docs/TODO_NOTES.md`.
 
 ## Bugs / technique
 
+- [ ] Revoir le flux de génération des conversations, encore instable et source de problèmes récurrents ; reproduire et observer précisément son comportement avec Codex ou Work avant de corriger.
+
 ## À explorer / idées

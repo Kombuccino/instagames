@@ -5,6 +5,7 @@ const LEGACY_SKEWER_HEIGHT = 300
 const SKEWER_BOTTOM_OFFSET = 35
 const SKEWER_WIDTH = 14
 const OFFSCREEN_SPAWN_SHIFT = 240
+const ARM_SPRITE_Y_OFFSET = 24
 
 type RuntimeCustomer = {
   order: unknown[]
@@ -24,6 +25,7 @@ type RuntimeInternals = {
   skewerX: number
   skewerY: number
   skewer: Phaser.GameObjects.Image
+  arm: Phaser.GameObjects.Image
   tipGlow: Phaser.GameObjects.Graphics
   spawnDrop: (y?: number) => void
   findTipContact: (previous: Phaser.Math.Vector2, tip: Phaser.Math.Vector2) => unknown
@@ -126,6 +128,11 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
     internals.skewer
       .setPosition(internals.skewerX, internals.skewerY - SKEWER_BOTTOM_OFFSET)
       .setDisplaySize(SKEWER_WIDTH, height)
+
+    // Keep the gameplay grip untouched, but push the decorative arm further
+    // below the bottom edge so the source raster's hard lower boundary never
+    // becomes visible on bottom-anchored mobile viewports.
+    internals.arm.setPosition(internals.skewerX + 23, internals.skewerY - 92 + ARM_SPRITE_Y_OFFSET)
 
     drawHarpoonHead(internals)
 

@@ -1,5 +1,10 @@
 # Les Brochettes de Vlad — Changelog
 
+## [0.3.3] — 2026-09-11 23:38 Europe/Paris
+
+- Le sprite décoratif du bras de Vlad est descendu de `24` unités pour que sa bordure basse reste masquée sous l'écran sur les viewports ancrés en bas.
+- La main, la zone de prise, la brochette, les collisions et la portée de gameplay restent strictement inchangées.
+
 ## [0.3.2] — 2026-09-11 23:06 Europe/Paris
 
 - Vlad est désormais ancré sur le bas du stage : la largeur logique reste fixe à `390`, tandis que les différences de hauteur navigateur/PWA/app sont absorbées au-dessus du grill et de la main.

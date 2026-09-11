@@ -4,12 +4,13 @@ import fs from 'node:fs/promises'
 import { createServer } from 'vite'
 import { chromium } from 'playwright'
 
-// Self-contained: starts Vite, checks original bytes and exercises the actual
-// Core cover UI. No production API writes; no image generation or optimization.
+// Self-contained: starts Vite, verifies preserved PNG masters and exercises the
+// optimized static WebP runtime covers. No production API writes or image generation.
 const output = 'artifacts/linefugg-covers'
 await fs.mkdir(output, { recursive: true })
 const receipt = JSON.parse(await fs.readFile('ops/drive-asset-sync/imports/linefugg-covers-2026-09-07.json', 'utf8'))
-const expected = receipt.assets.map(asset => `/assets/imported/linefugg/welcome/variants/${asset.file}`)
+const runtimeFile = edition => `linefugg-cover-${edition}.webp`
+const expected = receipt.assets.map(asset => `/assets/imported/linefugg/welcome/variants/runtime/${runtimeFile(asset.edition)}`)
 const report = { assets: [], scenarios: [], errors: [], screenshots: [] }
 for (const asset of receipt.assets) {
   const bytes = await fs.readFile(`${receipt.repository_prefix}${asset.file}`)
@@ -32,6 +33,7 @@ try {
     assert.equal(variant.unlockScore, 0)
     assert.equal(variant.fit, 'contain')
     assert.ok(!variant.layers?.length)
+    assert.match(variant.image, /\/runtime\/.*\.webp$/)
   }
   await server.listen()
   browser = await chromium.launch({ headless: true })
@@ -45,9 +47,13 @@ try {
     const context = await browser.newContext({ viewport: { width: format.width, height: format.height },
       deviceScaleFactor: format.deviceScaleFactor, hasTouch: Boolean(format.hasTouch) })
     const page = await context.newPage()
+    const coverRequests = []
     // Exercise the client's existing unavailable-API fallback, not live services.
     await page.route('**/api/**', route => route.fulfill({ status: 503, contentType: 'application/json', body: '{"error":"isolated browser test"}' }))
     page.on('pageerror', error => report.errors.push(`${format.name}: ${error.message}`))
+    page.on('request', request => {
+      if (request.url().includes('/assets/imported/linefugg/welcome/variants/')) coverRequests.push(request.url())
+    })
     page.on('response', response => {
       if (response.status() >= 400 && response.url().includes('/assets/imported/linefugg/welcome/variants/')) {
         report.errors.push(`${format.name}: ${response.status()} ${response.url()}`)
@@ -70,7 +76,7 @@ try {
       })
       assert.ok(expected.includes(value.src), `Unexpected cover ${value.src}`)
       if (expectedSrc) assert.equal(value.src, expectedSrc)
-      assert.deepEqual([value.width, value.height], [941, 1672])
+      assert.deepEqual([value.width, value.height], [780, 1386])
       assert.equal(value.fit, 'contain', 'Never crop a title baked into the approved master')
       assert.equal(value.overflow, 'hidden', 'Decorative extension stays inside the cover slot')
       assert.ok(value.paintedWidth <= value.boxWidth + .01 && value.paintedHeight <= value.boxHeight + .01)
@@ -96,6 +102,8 @@ try {
       await page.screenshot({ path })
       report.screenshots.push(path)
     }
+    assert.ok(coverRequests.some(url => url.endsWith('.webp')), 'Runtime must request optimized WebP covers')
+    assert.equal(coverRequests.some(url => /approved-2026-09-07\.png(?:\?|$)/.test(url)), false, 'Runtime must not request preserved PNG masters')
     const box = await card.boundingBox()
     if (format.width >= 760) assert.ok(box.width <= 520.1, 'Do not widen the Core desktop column')
     await click(shell.locator('.mf-insert-coin'))
@@ -111,7 +119,7 @@ try {
     assert.equal(await pending.getAttribute('data-cover-migration'), 'update-required')
     assert.match(await pending.evaluate(element => getComputedStyle(element, '::after').content), /A METTRE A JOUR/)
     assert.equal(await pending.locator('.mf-core-selected-cover > img').evaluate(image => getComputedStyle(image).objectFit), 'cover')
-    report.scenarios.push({ name: format.name, passed: true, editions: 4, input: format.hasTouch ? 'touch' : 'mouse', launchAndReturn: true, otherBadgesPreserved: true, fullFramePreserved: true })
+    report.scenarios.push({ name: format.name, passed: true, editions: 4, input: format.hasTouch ? 'touch' : 'mouse', launchAndReturn: true, otherBadgesPreserved: true, fullFramePreserved: true, optimizedRuntime: true })
     await context.close()
   }
   assert.deepEqual(report.errors, [])

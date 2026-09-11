@@ -28,7 +28,6 @@ jobs:
           from pathlib import Path
           from PIL import Image
           import json
-          import numpy as np
 
           jobs = [
               ('public/assets/generated/linefugg/ui/accounting-panels.png', 'public/assets/generated/linefugg/ui/runtime/accounting-panels.webp', 1024),
@@ -49,11 +48,17 @@ jobs:
               with Image.open(output_path) as decoded:
                   decoded.load()
                   decoded_rgba = decoded.convert('RGBA')
-              a = np.asarray(target, dtype=np.int16)
-              b = np.asarray(decoded_rgba, dtype=np.int16)
-              alpha_equal = np.array_equal(a[...,3], b[...,3])
-              visible = a[...,3] > 0
-              visible_equal = np.array_equal(a[visible], b[visible])
+              if decoded_rgba.size != target.size:
+                  raise SystemExit(f'dimension mismatch for {output_name}')
+              alpha_equal = True
+              visible_equal = True
+              for expected, actual in zip(target.getdata(), decoded_rgba.getdata()):
+                  if expected[3] != actual[3]:
+                      alpha_equal = False
+                      break
+                  if expected[3] and expected != actual:
+                      visible_equal = False
+                      break
               if not alpha_equal or not visible_equal:
                   raise SystemExit(f'lossless visible-pixel verification failed for {output_name}')
               source_bytes = source_path.stat().st_size
@@ -69,7 +74,6 @@ jobs:
                   'alpha_equal': alpha_equal,
                   'visible_pixels_equal': visible_equal,
               })
-          Path('/tmp/linefugg-runtime-optimization.json').write_text(json.dumps(report, indent=2) + '\n')
           print(json.dumps(report, indent=2))
           PY
       - name: Commit generated derivatives to temporary branch

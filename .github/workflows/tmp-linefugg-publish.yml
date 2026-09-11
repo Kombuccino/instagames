@@ -1,0 +1,35 @@
+name: Temporary LineFugg publish verification
+
+on:
+  push:
+    branches: [tmp-linefugg-publish-20260911]
+    paths:
+      - '.github/workflows/tmp-linefugg-publish.yml'
+      - 'src/games/linefugg/**'
+      - 'public/assets/generated/linefugg/**'
+      - 'scripts/test-linefugg-runtime-assets.mjs'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npm run test:repository
+      - run: node scripts/test-linefugg-runtime-assets.mjs
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Verify LineFugg on combined current-main state
+        run: |
+          npx vite --host 127.0.0.1 --port 5175 >/tmp/linefugg-vite.log 2>&1 &
+          VITE_PID=$!
+          trap 'kill $VITE_PID 2>/dev/null || true' EXIT
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:5175/ >/dev/null; then break; fi
+            sleep .5
+          done
+          LINEFUGG_QUICK=1 node scripts/test-linefugg-browser.mjs

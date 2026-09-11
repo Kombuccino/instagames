@@ -1,5 +1,13 @@
 # LineFugg — Changelog
 
+## [0.5.2] — 2026-09-11 20:01 Europe/Paris
+
+- Les quatre covers actives, le fond Orbital et les principaux assets Phaser importés chargent désormais des dérivés WebP lossless dimensionnés pour leur usage runtime ; les PNG masters approuvés restent inchangés et conservés.
+- Le lot optimisé passe de 21,58 Mo de PNG actifs à 9,08 Mo de WebP runtime, soit environ 57,9 % de trafic image en moins sur ces 12 fichiers.
+- Les trois textures générées localement de la console restent en PNG pour l'instant ; elles gardent leur réduction de taille au décodage dans Phaser et pourront être converties séparément depuis un checkout local.
+
+Vérifié : dérivés décodés, dimensions et encodage WebP lossless contrôlés ; synchronisation Drive → GitHub réussie. Validation navigateur/CI du runtime optimisé attachée à cette livraison.
+
 ## [0.5.1] — 2026-09-10 10:23 Europe/Paris
 
 - Les cases normales libres utilisent maintenant de façon nettement visible l'exacte couleur RGB de la ligne active : vermillon, violet ou or.
@@ -10,7 +18,7 @@ Vérifié : build/typecheck et smoke test LineFugg après correction de teinte.
 ## [0.5.0] — 2026-09-10 09:24 Europe/Paris
 
 - Les cases normales encore libres portent une teinte légère liée à la prochaine ligne : vermillon pour la première dimension, violet pour la deuxième, or pour la troisième.
-- Chaque retirage se joue désormais comme un flip rapide en cascade depuis l'extrémité de la ligne : la case se met sur la tranche, change de valeur/dimension à l'abri du regard, puis se rouvre. Le décalage est court et déterministe pour éviter un changement simultané de toute la grille.
+- Chaque retirage se joue désormais comme un flip rapide en cascade depuis l'extrémité du trait : la case se met sur la tranche, change de valeur/dimension à l'abri du regard, puis se rouvre. Le décalage est court et déterministe pour éviter un changement simultané de toute la grille.
 - Les cases déjà prises par une ligne restent stables ; Annuler restaure aussi l'état exact des teintes de dimension. Après la troisième ligne, les cases libres redeviennent neutres pendant la validation.
 
 Vérifié : cascade non simultanée, états rouge/violet/or/neutre, blocage des entrées pendant le flip, restauration par Annuler, tirage déterministe, six formats navigateur et build/typecheck.

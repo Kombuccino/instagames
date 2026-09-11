@@ -76,19 +76,19 @@ Do not create new bespoke raw Canvas/WebGL/WebGPU gameplay renderers unless the 
 
 ## 3. Canonical logical stage — mandatory
 
-Gameplay has a canonical portrait width of `390` logical units. The authored MASTER is `390 × 844`. The reference gameplay window is `390 × 662`, but it can be vertically anchored `top`, `center` or `bottom` inside the MASTER according to the mechanic; `center` is the default. Exact windows, terminology and screen behavior are defined in `docs/MINIFUGG_ZONES.md`.
+Gameplay has a canonical portrait width of `390` logical units. The authored MASTER is `390 × 844`. The reference gameplay window is `390 × 662`, but it can be vertically anchored `top`, `center` or `bottom` inside the MASTER according to the mechanic ; `center` is the default. Exact windows, terminology and screen behavior are defined in `docs/MINIFUGG_ZONES.md`.
 
 **Current product scope (decision of 8 September 2026):** all new game, gameplay-DA and cover production is portrait-only until the user explicitly reopens landscape. Do not propose, generate or implement a second landscape composition. Existing landscape catalog entries remain supported only for maintenance and migration of their current behavior.
 
 On mobile, scale uniformly **from the useful width**. The 390 logical units must use the full intended game width; a shorter browser/app viewport changes only the vertical crop and must not silently shrink the game horizontally. On PC or big screen, scale uniformly from the 662-unit reference window height, capped by available width. Do not redesign or reflow critical gameplay geometry for PC vs phone. Do not position important game objects primarily with `vw`/`vh`.
 
-A phone is the complete reference experience, but different browsers/PWA/Capacitor shells expose different useful heights. The game therefore chooses which vertical edge has priority: `top` keeps the upper gameplay stable, `center` distributes crop around the reference centre, `bottom` keeps the lower gameplay stable. The world remains one `390 × 844` coordinate system in every case. EXTRA HAUT/BAS may extend decoration beyond MASTER on unusually tall mobile viewports; they never carry required gameplay. Tablet/desktop lateral space belongs to Core; do not author extra left/right game or cover decoration. Core currency and CTA remain inside the 390-wide frame, while the rail stays over the portrait composition at the left.
+A phone is the complete reference experience, but different browsers/PWA/Capacitor shells expose different useful heights. The game therefore chooses which vertical edge has priority: `top` keeps the upper gameplay stable, `center` distributes crop around the reference centre, `bottom` keeps the lower gameplay stable. The world remains one `390 × 844` coordinate system in every case. EXTRA HAUT/BAS may extend decoration beyond MASTER on unusually tall mobile viewports ; they never carry required gameplay. Tablet/desktop lateral space belongs to Core; do not author extra left/right game or cover decoration. Core currency and CTA remain inside the 390-wide frame, while the rail stays over the portrait composition at the left.
 
 Device pixel ratio may improve render resolution but never changes logical coordinates.
 
 ## 4. Existing games are frozen for migration
 
-Each game's `src/games/<folder>/definition.ts` owns its `runtime`, `logicalViewport`, `migration`, instructions and release metadata. `src/core/gameRegistry.tsx` only assembles these definitions. Edit the game's own definition, not a central copy; TetraMindFck keeps the folder `calc-drop` and id `tetramindfck`.
+Each game's `src/games/<folder>/definition.ts` owns its `runtime`, `logicalViewport`, `migration`, instructions and release metadata. `src/core/gameRegistry.tsx` only assembles these definitions. Edit the game's own definition, not a central copy; TetraMindFck keeps le dossier `calc-drop` et id `tetramindfck`.
 
 When `migration.locked === true`:
 
@@ -162,7 +162,7 @@ A purchased game may be playable offline. Offline local state is untrusted by de
 - local coins may be tampered with;
 - offline score never enters an official ladder;
 - offline play grants no official server reward;
-- reconnecting never overwrites le serveur wallet avec a client wallet.
+- reconnecting never overwrites the server wallet with a client wallet.
 
 Do not build fragile invasive DRM merely to protect local offline values.
 

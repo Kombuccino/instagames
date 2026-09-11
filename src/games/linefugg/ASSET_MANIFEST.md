@@ -1,6 +1,6 @@
 # LineFugg — Production asset manifest
 
-État canonique : 11 septembre 2026, version `0.5.3`, direction **Orbital Accounting**. Appliquer `docs/GAME_ART_PRODUCTION_PIPELINE.md` et `docs/ASSET_PIPELINE.md`.
+État canonique : 11 septembre 2026, version `0.5.4`, direction **Orbital Accounting**. Appliquer `docs/GAME_ART_PRODUCTION_PIPELINE.md` et `docs/ASSET_PIPELINE.md`.
 
 Les PNG approuvés et sources de travail sont conservés. **Le runtime gameplay ne charge plus aucun de ces gros PNG : ses 11 images actives sont des dérivés WebP lossless pré-dimensionnés.** Les quatre covers suivent le même principe, avec masters PNG distincts et dérivés WebP Core.
 
@@ -32,7 +32,7 @@ SHA-256 des trois nouveaux dérivés :
 
 ## Géométrie et ownership dynamique
 
-Stage logique `390×844`. Plateau `(34,155)`, taille `322²`, cellules `46²`. Registre `y=520`, hauteur de ligne `49` ; total centre `y=698` ; contrôles centre `y=776`. Les coordonnées exactes restent dans `LineFuggScene.ts`.
+Stage logique `390×844`. Plateau `(34,155)`, taille `322²`, cellules `46²`. Registre `y=507`, trois lignes de `40` ; total centre `y=647` ; contrôles centre `y=703`. Le contenu essentiel tient ainsi dans la zone CENTRE PC `y=91…753`, avec 14 unités sous les boutons. Les coordonnées exactes restent dans `LineFuggScene.ts`.
 
 `artFrame()` reçoit toujours les largeurs des **sources de mesure** (plateau 1254, armillaire 1774, registre 2172, console 1536, indicateurs/verre 1254) et calcule le ratio vers le dérivé chargé. Le passage aux WebP n'altère donc ni les frames ni la géométrie du jeu.
 

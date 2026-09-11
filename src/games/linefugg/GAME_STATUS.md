@@ -1,6 +1,6 @@
 # LineFugg — Suivi de création
 
-Mis à jour : 11 septembre 2026 à 23:08 Europe/Paris. Version : `0.5.3`. Changelog : `CHANGELOG.md`.
+Mis à jour : 11 septembre 2026 à 23:59 Europe/Paris. Version : `0.5.4`. Changelog : `CHANGELOG.md`.
 
 Runtime Phaser 4.2.1, stage 390 × 844. Prototype, game design et équilibre validés par l'utilisateur. Direction gameplay : **Orbital Accounting**. Cover runtime : current ; quatre jaquettes statiques approuvées, masters PNG conservés et dérivés WebP lossless actifs.
 
@@ -24,7 +24,7 @@ Références : [ART_DIRECTION.md](ART_DIRECTION.md), [ASSET_MANIFEST.md](ASSET_M
 | Audio | Musiques conservées | Écoute finale du mix/SFX restant à faire |
 | Covers | 4 statiques intégrées | Aucune animation prévue dans le contrat actuel |
 | Assets runtime | Optimisés | Tous les visuels gameplay actifs sont en WebP lossless pré-dimensionné ; PNG sources conservés hors chemin actif |
-| Livraison | `0.5.3` | Déploiement applicatif distinct de la publication GitHub |
+| Livraison | `0.5.4` | Déploiement applicatif distinct de la publication GitHub |
 
 ## Optimisation images runtime — 11 septembre 2026
 
@@ -37,6 +37,8 @@ Les trois derniers assets locaux ont été dérivés sans régénération : `acc
 `OrbitalImageFile` et son redimensionnement Canvas au chargement sont retirés : Phaser charge directement les textures préparées. `scripts/test-linefugg-runtime-assets.mjs` verrouille le format des 11 fichiers, leur budget cumulé et l'absence de PNG dans les URLs Phaser actives.
 
 ## Vérifications
+
+La version `0.5.4` replace la console basse dans la zone CENTRE minimale `390 × 662` : sur PC, le plateau complet, le registre à trois lignes, le total et les deux boutons restent visibles. Une assertion navigateur verrouille désormais les limites haute et basse de cette composition sur téléphone, tablette et PC.
 
 Passe finale sur état combiné : test de budget/formats réussi, `npm run build` réussi, puis scénario navigateur LineFugg 390×844 DPR2 tactile réussi sans erreur HTTP/JavaScript. Les captures `empty`, `drag`, `reroll`, une ligne, trois lignes et résultat ont été produites ; contrôle visuel de `empty` et `three` conforme à la DA, sans asset manquant ni dégradation évidente.
 

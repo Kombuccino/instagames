@@ -1,5 +1,13 @@
 # LineFugg — Changelog
 
+## [0.5.4] — 2026-09-11 23:59 Europe/Paris
+
+- La console basse est recomposée pour que le plateau, les trois lignes, le total, Annuler et Valider restent tous visibles dans la zone CENTRE minimale `390 × 662` utilisée sur PC.
+- Le recadrage partagé MiniFugg reste inchangé : la correction appartient à LineFugg et conserve le haut du plateau ainsi que la géométrie mobile du stage `390 × 844`.
+- Le test navigateur vérifie désormais explicitement que le plateau et le bas des boutons ne sortent pas de la fenêtre gameplay visible.
+
+Vérifié : matrice navigateur téléphone/tablette/PC, contrôle visuel PC et téléphone, build/typecheck.
+
 ## [0.5.3] — 2026-09-11 23:08 Europe/Paris
 
 - Tous les visuels chargés au lancement du gameplay utilisent maintenant des WebP lossless déjà dimensionnés pour le runtime ; aucun gros PNG n'est téléchargé puis réduit dans le navigateur.

@@ -72,6 +72,12 @@ try {
     assert.equal(initial.validateEnabled, false)
     assert.equal(initial.reducedMotion, config.reducedMotion === 'reduce')
     assert.ok(initial.board.every(cell => cell.kind !== 'add' || cell.value >= 0 || (cell.value >= -4 && cell.value <= -1)), 'Negative cells stay between -1 and -4')
+    const canvasBox = await page.locator('.game-card[aria-label="LineFugg"] .mf-phaser-host canvas').boundingBox()
+    const hostBox = await page.locator('.game-card[aria-label="LineFugg"] .mf-phaser-host').boundingBox()
+    assert.ok(canvasBox && hostBox, 'Gameplay host and canvas are measurable')
+    const logicalY = y => canvasBox.y + y / 844 * canvasBox.height
+    assert.ok(logicalY(initial.essentialBounds.top) >= hostBox.y - 1, `${config.name}: board stays inside the visible MiniFugg zone`)
+    assert.ok(logicalY(initial.essentialBounds.bottom) <= hostBox.y + hostBox.height + 1, `${config.name}: lower controls stay inside the visible MiniFugg zone`)
     await capture('empty')
     await trace({ row: 0, col: 0 }, { row: 0, col: 4 }, true)
     assert.equal((await state()).drag.cells.length, 5)

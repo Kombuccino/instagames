@@ -197,7 +197,7 @@ See `ASSET_MANIFEST.md` for the concrete production inventory.
 
 User supplied GFX/crea-chatgpt/game/LineFugg-DA2.png as the latest approved lower-console reference. Keep the existing environment and board. Replace the earlier score/ledger/control styling with thin brass borders, one three-row parchment, a restrained total plaque, and two circular controls flanking the centered indicators. Three indicators retain red/violet/gold colors and five cell-count pips each. Undo hover must be visible only when enabled and must never trigger an undo.
 
-Canonical lower geometry: ledger center (195,593.5), 342×153; total center (195,698), 342×49, fixed sigma and independent numeric value. Controls centers (63,776) and (327,776), diameter72. Indicator backing 194×72, centered (195,776); orb centers x137/195/253 at y764, pips y791. All uniformly scaled with the 390×844 stage.
+Canonical lower geometry: ledger center (195,567), 342×120 with three 40-high rows; total center (195,647), 342×40, fixed sigma and independent numeric value. Controls centers (63,703) and (327,703), diameter72. Indicator backing 194×72, centered (195,703); orb centers x137/195/253 at y691, pips y718. This compact composition keeps every essential control inside the PC CENTRE window (logical y91…753), with a 14-unit lower margin, while all elements remain uniformly scaled with the 390×844 stage.
 
 ## Fidélité illustrée — correction du 7 septembre 2026
 

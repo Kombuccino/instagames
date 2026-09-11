@@ -19,10 +19,12 @@ const CELL_SIZE = BOARD_SIZE / GRID_SIZE
 const BOARD_CENTER_X = BOARD_X + BOARD_SIZE / 2
 const BOARD_CENTER_Y = BOARD_Y + BOARD_SIZE / 2
 
-const HISTORY_Y = 520
-const HISTORY_ROW_HEIGHT = 49
-const TOTAL_Y = 698
-const CONTROL_Y = 776
+const HISTORY_Y = 507
+const HISTORY_ROW_HEIGHT = 40
+const HISTORY_PANEL_HEIGHT = HISTORY_ROW_HEIGHT * MAX_LINES
+const TOTAL_Y = 647
+const TOTAL_HEIGHT = 40
+const CONTROL_Y = 703
 const CONTROL_BUTTON_SIZE = 72
 // Shared canonical lower-console geometry, matched to DA2.
 const INDICATOR_CENTERS = [137, 195, 253]
@@ -293,6 +295,7 @@ export class LineFuggScene extends Phaser.Scene {
     validating: this.validating, finished: this.finished,
     undoHovered: this.undoHovered, validateHovered: this.validateHovered, validateAppearance: !this.validateEnabled() ? "disabled" : this.validateHovered ? "amber" : "green", undoEnabled: this.undoEnabled(), validateEnabled: this.validateEnabled(),
     controls: { undo: { x: UNDO_X, y: CONTROL_Y }, validate: { x: VALIDATE_X, y: CONTROL_Y } },
+    essentialBounds: { top: BOARD_Y, bottom: CONTROL_Y + CONTROL_BUTTON_SIZE / 2 },
     reducedMotion: this.reducedMotion, paused: this.game.isPaused, effectTime: this.effectTime,
     textures: Object.values(ASSETS).map(([key]) => {
       const source = this.textures.get(key).getSourceImage()
@@ -502,7 +505,8 @@ export class LineFuggScene extends Phaser.Scene {
   private createHistory() {
     const key = ASSETS.console[0]
     const panel = artFrame(this, key, 'ledger', [92, 8, 1354, 491], 1536)
-    this.add.image(195, HISTORY_Y + 73.5, key, panel).setDisplaySize(342, 153).setDepth(40)
+    this.add.image(195, HISTORY_Y + HISTORY_PANEL_HEIGHT / 2, key, panel)
+      .setDisplaySize(342, HISTORY_PANEL_HEIGHT).setDepth(40)
     const decorKey = ASSETS.ledgerDecor[0]
     const leftDecor = artFrame(this, decorKey, 'left-ornament', [8, 167, 235, 367], 2172)
     const rightDecor = artFrame(this, decorKey, 'right-ornament', [1928, 167, 235, 367], 2172)
@@ -537,7 +541,7 @@ export class LineFuggScene extends Phaser.Scene {
       this.historyRows.push({ container, arrow, tiles, values, score })
     }
     const totalFrame = artFrame(this, key, 'total', [80, 518, 1376, 176], 1536)
-    this.add.image(195, TOTAL_Y, key, totalFrame).setDisplaySize(342, 49).setDepth(40)
+    this.add.image(195, TOTAL_Y, key, totalFrame).setDisplaySize(342, TOTAL_HEIGHT).setDepth(40)
     const sigma = this.add.text(151, TOTAL_Y, 'Σ', {
       fontFamily: 'Georgia, serif', fontSize: '34px', color: '#f5e5b9', resolution: 2,
     }).setOrigin(0.5).setDepth(42)

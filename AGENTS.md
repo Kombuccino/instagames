@@ -188,7 +188,7 @@ MiniFugg gameplay must not settle for a generic “small HTML5 game” presentat
 
 A Fugg-quality game needs deliberate art direction, authored assets where appropriate, readable silhouettes, motion, sound, feedback and enough visual/emotional character that the cover-to-game transition is not a major quality drop.
 
-Do not confuse engine complexity with polish: simple pixel art, paper art ou low-poly/blockout can be excellent if intentionally finished.
+Do not confuse engine complexity with polish: simple pixel art, paper art or low-poly/blockout can be excellent if intentionally finished.
 
 ## 12. Repository discipline
 

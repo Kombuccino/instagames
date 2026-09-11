@@ -1,101 +1,53 @@
 # LineFugg — Suivi de création
 
-Mis à jour : 10 septembre 2026 à 10:23 Europe/Paris. Version livrée : `0.5.1`. Changelog : `CHANGELOG.md`. Base inspectée avant édition : `63f6f8680a38c398dfea4a9efdf7ea33102a3112`. Intégration artistique gameplay réalisée ; revue visuelle finale gameplay à faire. Les quatre covers approuvées sont intégrées en images statiques.
+Mis à jour : 11 septembre 2026 à 20:01 Europe/Paris. Version livrée : `0.5.2`. Changelog : `CHANGELOG.md`.
 
-Runtime Phaser 4.2.1, stage 390 × 844. Statut historique fugg conservé : il ne vaut pas acceptation de cette nouvelle réalisation gameplay. Cover runtime : current ; quatre masters de jaquette validés, sauvegardés et actifs. Animation des covers reportée à une future demande.
+Runtime Phaser 4.2.1, stage 390 × 844. Prototype, game design et équilibre validés par l'utilisateur. Direction gameplay : **Orbital Accounting**. Cover runtime : current ; quatre jaquettes statiques approuvées, masters PNG conservés et dérivés WebP lossless actifs.
 
 ## Décisions acquises
 
-Validation utilisateur : « Proto, GD et équilibre sont trés bons, ils sont validés ». Règles conservées : trois lignes droites de cinq cases maximum, une case partagée maximum par paire, calcul dans le sens du tracé, grille quotidienne déterministe, annulation après trois lignes et validation explicite pour terminer. Évolution GD du 10 septembre : négatifs limités à −1…−4, diviseurs deux fois moins fréquents, et retirage déterministe des cases libres après chaque ligne à partir d'une clé construite avec son sens, ses valeurs ordonnées et son score.
+Règles validées : trois lignes droites de cinq cases maximum, une case partagée maximum par paire, calcul dans le sens du tracé, grille quotidienne déterministe, annulation possible après trois lignes, puis validation explicite pour terminer. Depuis le 10 septembre : négatifs limités à −1…−4, diviseurs plus rares, retirage déterministe des cases libres après chaque ligne, flip en cascade et teinte des cases libres selon la prochaine ligne.
 
-DA Orbital Accounting : laiton, bleu encre, parchemin, nombres prioritaires ; trois indicateurs avec cinq points chacun. Conserver cette direction pour les animations gameplay, sans nouveau rendu générique. Les covers suivent DA_COVER.md : interprétations éditoriales distinctes, pas une copie du rendu gameplay. Musiques acquises : MF-MUS-0008 et MF-MUS-0009.
+DA gameplay : laiton, bleu encre, parchemin, nombres prioritaires, mécanisme céleste, trois indicateurs de cinq points. Les quatre covers restent des interprétations éditoriales distinctes du gameplay. Musiques acquises : MF-MUS-0008 et MF-MUS-0009.
 
-Références : [ART_DIRECTION.md](ART_DIRECTION.md), [ASSET_MANIFEST.md](ASSET_MANIFEST.md), [notice commune](../../../docs/GAME_CREATION_PIPELINE.md), discussion [Game : LineFugg](https://chatgpt.com/c/6a96d2e6-ad54-83eb-9d9e-c74fe69d955d).
+Références : [ART_DIRECTION.md](ART_DIRECTION.md), [ASSET_MANIFEST.md](ASSET_MANIFEST.md), [CHANGELOG.md](CHANGELOG.md), [pipeline commun](../../../docs/GAME_CREATION_PIPELINE.md).
 
-## Avancement
+## État actuel
 
-| Lot | État | Réalisé / reste |
+| Lot | État | Reste |
 | --- | --- | --- |
-| Prototype, GD, équilibre | Validés utilisateur | Conservés |
-| Core / non-régression | Vérifiés navigateur | Tracé, refus de chevauchement invalide, score, annulation, validation, replay, retour cover |
-| Composition / inputs | Réalisés et testés | Grille de 282 à 322 unités, cases46² ; même géométrie sur six configurations, tracé tactile sur téléphones émulés |
-| DA | Direction validée | Acceptation visuelle du nouveau rendu gameplay restant à recueillir |
-| Assets / intégration | Réalisés | Fond calme, grille reconstruite depuis l'art, registre parchemin, textes et indicateurs alignés |
-| Animations / FX | Réalisés | Mécanisme séparé, orbites lentes, reflets, énergie, particules bornées, mouvement réduit |
-| SFX / musique / mix | À vérifier | Musiques conservées ; écoute finale et audit des événements audio restants |
-| Cover / transition | Quatre covers statiques intégrées et testées | A/B/C/D dans Info → Cover selection ; placeholder débranché, badge retiré pour LineFugg ; animation ultérieure |
-| Performance / QA | Vérifiées en émulation | Build et matrices navigateur réussis ; profilage physique restant |
-| Livraison / curation | Livré sur main | Métadonnées produit `0.5.0` et changelog canonique inclus dans cette livraison ; déploiement et acceptation artistique gameplay à vérifier séparément |
+| Prototype / GD / équilibre | Validés utilisateur | Rien à rouvrir sans nouvelle demande |
+| Gameplay Phaser | Fonctionnel et vérifié | Profilage téléphone physique seulement |
+| DA gameplay | Intégrée | Acceptation visuelle finale utilisateur toujours distincte |
+| Inputs / responsive | Vérifiés en émulation | Contrôle appareil réel recommandé |
+| Animations / FX | Intégrés et bornés | Aucun changement demandé |
+| Audio | Musiques conservées | Écoute finale du mix/SFX restant à faire |
+| Covers | 4 statiques intégrées | Aucune animation prévue dans le contrat actuel |
+| Assets runtime | Optimisés partiellement | 12 images importées passées en WebP lossless ; 3 textures générées locales restent PNG |
+| Livraison | `0.5.2` sur `main` | Déploiement applicatif distinct de GitHub |
 
-## Vérifications gameplay
+## Optimisation images — 11 septembre 2026
 
-Test reproductible : scripts/test-linefugg-browser.mjs. Captures et rapport locaux : artifacts/linefugg/. Six scénarios réussis : 360×640 DPR2, 390×844 DPR2, 430×932 DPR3, 768×1024 DPR2, 1440×900 DPR1 et mouvement réduit. Aucune erreur du jeu ; avertissement favicon404 plateforme séparé. Smoke test du skill web-game également exécuté lors de la passe gameplay.
+Les 12 images importées actives couvertes par cette passe — fond, plateau, armillaire, cellules ×/÷, boutons Valider actif/inactif, décor du registre et quatre covers — ont désormais des dérivés **WebP lossless** synchronisés via le Drive privé puis utilisés par le runtime.
 
-Textures gameplay : estimation initiale RGBA 10,62 Mio, hors fond CSS, textes et buffers, remplacée par les mesures de restauration ci-dessous. Ce n'est pas une mesure GPU totale. Intervalles rAF sur machine hôte : médiane environ16,7 ms et P95 environ16,8 ms ; aucune garantie matérielle mobile tirée de l'émulation. Densité plafonnée à2, géométrie inchangée. Sources préservées : la réduction à l'upload ne réduit pas leur poids réseau.
+Poids cumulé de ces 12 sources PNG : **21,578,385 octets**. Poids cumulé des dérivés runtime : **9,083,568 octets**, soit **57,9 % de transfert en moins** sur ce lot. Les PNG sources et masters approuvés n'ont pas été écrasés ni régénérés.
 
-Build réussi avec avertissement existant sur la taille du bundle.
+Le fond CSS utilise directement `orbital-environment.webp`. `orbitalArt.ts` redirige uniquement les sept imports Phaser concernés vers leurs WebP ; les coordonnées de frames et le plafond de résolution restent identiques. Les quatre covers utilisent `welcome/variants/runtime/*.webp` en `fit: contain`, sans changement de sélection, d'overlay Core ou de composition.
+
+Contrôles effectués : décodage des dérivés, dimensions, présence d'encodage WebP lossless `VP8L`, inspection visuelle des principaux dérivés, synchronisation Drive → GitHub réussie. Le workflow **LineFugg static covers** a exécuté avec succès le build puis `scripts/test-linefugg-covers.mjs`, qui vérifie notamment que les PNG masters restent intacts mais ne sont plus demandés par le runtime. Le build global GitHub est également réussi sur la livraison.
+
+Les textures locales `public/assets/generated/linefugg/ui/accounting-panels.png`, `glass-indicators.png` et `validate-amber-source.png` restent en PNG. Elles sont toujours réduites à la résolution utile après chargement Phaser, mais leur poids réseau pourra encore être diminué lors d'une passe locale/Codex sans régénérer leur art.
+
+## Vérifications de référence
+
+`scripts/test-linefugg-browser.mjs` couvre la boucle gameplay, le tracé tactile, l'annulation, la validation, le reroll déterministe, les états visuels et plusieurs formats d'écran. `scripts/test-linefugg-covers.mjs` couvre les quatre covers, téléphone/tablette/desktop, sélection, lancement/retour, intégrité des masters et chargement des WebP.
+
+Le coût RGBA des textures gameplay après décodage reste de l'ordre de la mesure précédente (~14,875 Mio hors fond CSS, textes et buffers) : la conversion WebP réduit surtout **transfert et stockage**, pas la mémoire RGBA d'une texture déjà décodée.
 
 ## Prochaines actions
 
-1. Revue utilisateur du rendu gameplay par rapport au master conservé, ajustements ciblés si nécessaire.
-2. Profilage sur téléphone physique et écoute du mix/feedback audio.
-3. Sur demande ultérieure, préparer l'animation des covers à partir des quatre masters exacts, avec couches séparées et runtime Phaser partagé. La livraison statique est terminée ; ne pas la remettre en attente de l'animation.
+1. Revue utilisateur du rendu gameplay final si elle n'a pas encore été donnée.
+2. Profilage sur téléphone physique et écoute du mix audio.
+3. Convertir les trois textures générées locales en dérivés runtime lossless depuis un checkout local, sans toucher aux masters.
 
-Aucun blocage technique connu. Ne pas remettre en attente le gameplay déjà validé.
-
-## Enseignements
-
-La capture initiale montrait une grille trop petite, des bandes écrasées et des ancrages désaccordés. Utiliser les régions utiles et extensibles des images, partager les coordonnées entre art et indicateurs, séparer environnement, pièces animables et état dynamique. Vérifier l'alpha réel ; refuser les fausses transparences.
-
-Décision transport : Codex génère directement dans le dépôt puis commit ; Drive sert au transfert depuis ChatGPT. Les images déjà synchronisées gardent leurs chemins. Les anciens assets remplacés ne sont plus chargés et restent conservés comme sources.
-
-## Reprise du bas selon DA2 — 7 septembre 2026
-
-Retour utilisateur : cartouche total trop ornementé, calculs peu lisibles et mauvaise disposition des commandes. Nouvelle référence LineFugg-DA2.png enregistrée dans ART_DIRECTION.md. Fond et grille conservés. Nouveau parchemin à trois rangées, total sobre avec sigma fixe, boutons rapprochés autour du panneau des trois indicateurs. Survol Annuler : teinte/contour dorés et rotation légère de la flèche quand l'action est disponible. Aucun changement de calcul ou d'équilibrage.
-
-Nouvel atlas produit directement dans public/assets/generated/linefugg/ui/accounting-panels.png. Estimation RGBA gameplay désormais 8,79 Mio, mêmes exclusions ; remplace la mesure précédente. Test tactile de la boucle réussi. Matrice complète des six formats et survol souris vérifiés ; build et smoke test réussis. Acceptation visuelle utilisateur toujours distincte.
-
-## Correction de fidélité illustrée
-
-Après retour utilisateur, restauration des boutons Valider illustrés actif/inactif ; ajout du verre orange au survol. Nouveaux globes et billes raster, décors latéraux du parchemin restaurés, chips × orange / ÷ violet avec leurs textures réelles. Total centré sur les pixels visibles. Les formes plates ne sont plus la représentation des indicateurs. Six configurations navigateur réussies, tactile et survol orange compris ; build/typecheck et smoke test réussis. Estimation textures gameplay : 14,875 Mio RGBA, hors fond CSS, textes et buffers, remplaçant la mesure précédente. Acceptation artistique utilisateur toujours ouverte.
-
-## Covers validées — conservation du 7 septembre 2026
-
-La série individuelle approuvée à 12:50:57 UTC est celle du savant rouge qui trace, du cartographe de dos avec compas, des trois routes en affiche graphique et du jeune astronome en édition japonaise. La demande de 12:58:37 UTC portait sur leur enregistrement ; la demande ultérieure de 13:31:32 UTC autorise leur intégration statique et la suppression du marqueur provisoire.
-
-Originaux PNG 941×1672 conservés sans modification dans Fugg/linefugg/welcome/variants/, avec copies dans MiniFugg - Graphic Archive/Games/linefugg/covers-validated/. Noms exacts, provenance et empreintes : [ASSET_MANIFEST.md](ASSET_MANIFEST.md) et [reçu d'import](../../../ops/drive-asset-sync/imports/linefugg-covers-2026-09-07.json). Miroir public/assets/imported/linefugg/welcome/variants/ vérifié contre ces empreintes avant intégration.
-
-Décisions cover : très peu de texte hors titre ; anglais par défaut, japonais pour l'édition concernée ; sujets, médiums et cadrages réellement distincts. Les premières études centrées sur le même astrolabe/planètes ne remplacent pas cette série approuvée. Les quatre fichiers sont des masters aplatis ; aucune couche animable n'a été produite.
-
-## Intégration statique — 7 septembre 2026
-
-[welcome.ts](welcome.ts) remplace placeholderWelcome('linefugg') dans le registre. Les quatre éditions sont statiques, accessibles dans le sélecteur Core existant, sans nouveau palier de score. Aucun seuil spécifique à LineFugg n'était défini ; unlockScore reste à zéro pour les quatre. Sélection initiale par la graine de l'emplacement du feed, sans diaporama ni changement automatique dans une cover ouverte. La sélection manuelle utilise le comportement Core existant ; cette passe ne crée pas de préférence persistante supplémentaire.
-
-migration.cover passe à current pour LineFugg uniquement : le badge A METTRE A JOUR disparaît par le mécanisme conditionnel commun. Le placeholder historique n'est plus chargé par son entrée de registre. Aucun autre jeu, règle, son ou dimension du Core n'est modifié.
-
-Le premier test a révélé que le cover-crop global amputait les titres sur téléphone long. Correction locale au mode de présentation des masters : fit:'contain' conserve l'image opaque entière, uniformément réduite ; un fond très diffus tiré du même visuel remplit uniquement l'extérieur, en cover/crop, et reste découpé aux limites de la colonne Core. Aucun pixel du PNG n'est modifié, aucune géométrie gameplay n'est touchée. Les autres covers conservent leur cadrage existant.
-
-Validation reproductible : `node scripts/test-linefugg-covers.mjs`. CI [34143179734](https://github.com/Kombuccino/instagames/actions/runs/34143179734) réussie sur le commit 240c215f7543239e01a3f222ca9c9f88c56969fc, avec build/typecheck. Contrôles : intégrité SHA-256 et dimensions des quatre PNG, 16 affichages (4 éditions × 360×640, 390×844, 768×1024, 1440×900), sélections tactiles/souris, titre non recadré, absence de canvas/animation cover, entrée dans le jeu puis retour, conservation du marqueur de Train Fighter et de la largeur desktop 520px. Aucune erreur JavaScript ni ressource cover manquante. Captures téléchargées et inspectées après correction, notamment les quatre sur téléphone long. Tests en émulation Chromium, pas sur appareil physique.
-
-Le workflow `.github/workflows/linefugg-covers.yml` conserve captures/rapport en artifact `linefugg-static-covers` et protège ces comportements lors des prochaines modifications. Publication sur main vérifiée ; déploiement Dokploy non contrôlé par cette passe.
-
-
-## Retirage déterministe après chaque ligne — 10 septembre 2026
-
-Chaque ligne validée calcule désormais une clé `hashString` à partir du vecteur de sens normalisé, de la suite ordonnée des cellules (`add` / `multiply` / `divide` + valeur) et du score de la ligne. Cette clé alimente un PRNG `mulberry32` qui génère un nouveau candidat pour chacune des 49 positions ; seules les cases qui ne font partie d'aucune ligne déjà posée prennent ce nouveau candidat. Ce gel des lignes jouées est volontaire : leurs chiffres, leur historique et leur score restent cohérents visuellement pendant les retirages suivants.
-
-Annuler stocke/restaure la grille exacte qui précédait la ligne supprimée. Refaire exactement la même ligne depuis cet état produit la même clé et le même retirage. Les clés sont ajoutées aux métadonnées de fin de partie pour faciliter la reproduction d'une partie. Tirage : 68 % positifs, 16 % négatifs `−1…−4`, 12 % multiplicateurs, 4 % diviseurs.
-
-Test navigateur étendu : conservation des cellules de ligne, changement des cases libres, plage des négatifs, clé déterministe, restauration exacte par Annuler et reproductibilité après redraw, en plus des contrôles historiques de score/validation/replay. Validation CI à confirmer sur le commit fonctionnel.
-
-
-## Teinte de dimension et flip des cases — 10 septembre 2026
-
-Les cases d'addition libres indiquent maintenant la dimension courante par une teinte discrète : vermillon avant le premier trait, violet après le premier retirage, or après le deuxième. Les cases appartenant déjà à une ligne ne sont pas recolorées par les dimensions suivantes. Après le troisième trait, les cases libres reviennent à l'émail neutre : il n'y a plus de ligne suivante à annoncer.
-
-Le retirage n'est plus un échange visuel instantané. Les cases libres se replient rapidement sur leur axe vertical, en cascade déterministe partant approximativement de l'extrémité du trait avec un léger jitter dérivé de la même clé. Valeur, opérateur et teinte changent au point où la case est presque sur la tranche, puis elle se déplie. Durée visée : environ 0,3 s pour traverser toute la grille, avec mouvement réduit raccourci. Nouveau tracé, Annuler et Valider restent bloqués jusqu'à la fin du flip pour éviter de calculer sur un état intermédiaire.
-
-
-## Ajustement couleur de dimension — 10 septembre 2026
-
-Retour utilisateur : la teinte des cases normales doit être perçue comme exactement la couleur de la ligne en cours. Les cases libres utilisaient déjà `LINE_COLORS`, mais à 11,5 % d'opacité sur l'émail bleu, ce qui décalait fortement la perception. Passage à un lavis 30 % et un fin contour 42 %, toujours avec les RGB canoniques vermillon/violet/or. Aucun changement de logique de dimension, de reroll ou de flip.
+Aucun blocage technique connu. Ne pas rouvrir le gameplay validé pour une simple optimisation de fichiers.

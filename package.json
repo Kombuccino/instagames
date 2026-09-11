@@ -11,7 +11,9 @@
     "typecheck": "tsc --noEmit --pretty false",
     "test:audio": "node scripts/test-core-audio.mjs",
     "test:audio:browser": "node scripts/test-audio-browser.mjs",
-    "vendor:phaser-skills": "node scripts/vendor-phaser-skills.mjs"
+    "vendor:phaser-skills": "node scripts/vendor-phaser-skills.mjs",
+    "repo:check": "node scripts/repository-preflight.mjs",
+    "test:repository": "node --test scripts/test-repository-preflight.mjs scripts/test-game-definitions.mjs"
   },
   "dependencies": {
     "@breezystack/lamejs": "^1.2.7",

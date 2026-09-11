@@ -10,6 +10,12 @@ Répondre en français naturel et concis : résultat d'abord, raison utile, pas 
 
 Dans ce projet, une demande de **commit** signifie : créer le commit puis le pousser sur GitHub vers la branche distante correspondante, car le parcours de test courant se fait en ligne. Ne conserver le commit uniquement sur la machine que si l'utilisateur demande explicitement un **commit local** ou interdit le push.
 
+### Livraison sûre, sans consignes Git à répéter
+
+Avant modification et avant chaque commit/publication, y compris dans une session déjà ouverte, relire [docs/REPOSITORY_WORKFLOW.md](docs/REPOSITORY_WORKFLOW.md), section 0. Codex utilise `npm run repo:check` pour inspecter branche, modifications locales et dernier `main`. Il ne committe que les fichiers/hunks autorisés, préserve les travaux préexistants, vérifie tous les commits sortants, intègre le dernier `main` sur un espace propre et teste le résultat combiné. Avant livraison à `main`, `npm run repo:check -- --publish` doit réussir. Une copie sale ne se « nettoie » jamais en supprimant ou embarquant le travail d'autrui : isoler la livraison si nécessaire.
+
+ChatGPT applique les mêmes garanties via les lectures de head/fichiers/SHA récents et les commits atomiques pour les fichiers interdépendants. Un push ou SHA refusé impose une relecture/réconciliation, jamais un forçage ou le renvoi d'une ancienne copie complète. Pas de branche permanente par jeu, de PR imposée à l'utilisateur ou de nouvel orchestrateur ; branches/worktrees temporaires seulement quand l'isolation est nécessaire. Le contrôle est une aide aux agents, pas un verrou distant ni une preuve de test. Ne pas annoncer un déploiement sur la seule foi d'un commit/push.
+
 For project history, product intent and the current DOM/CSS/Canvas → Phaser transition context, also read root `codex.md`. `codex.md` is an onboarding/handoff document; when it conflicts with a newer normative file, the normative file wins.
 
 ## Art-direction brief routing — mandatory
@@ -80,7 +86,7 @@ Device pixel ratio may improve render resolution but never changes logical coord
 
 ## 4. Existing games are frozen for migration
 
-All current games are explicitly marked in `src/core/gameRegistry.tsx` with `runtime`, `logicalViewport` and `migration` metadata.
+Each game's `src/games/<folder>/definition.ts` owns its `runtime`, `logicalViewport`, `migration`, instructions and release metadata. `src/core/gameRegistry.tsx` only assembles these definitions. Edit the game's own definition, not a central copy; TetraMindFck keeps the folder `calc-drop` and id `tetramindfck`.
 
 When `migration.locked === true`:
 
@@ -184,14 +190,14 @@ Do not confuse engine complexity with polish: simple pixel art, paper art or low
 
 ## 12. Repository discipline
 
-- Inspect `main` before editing.
+- Inspect `main` before editing and again before delivery; apply section 0 of `docs/REPOSITORY_WORKFLOW.md`.
 - Keep one canonical implementation.
 - Do not create avoidable duplicate files (`V2`, `final-final`, backups, etc.).
 - Delete obsolete production code/assets once replacement is canonical and safe.
 - Keep user-approved visual references unchanged unless explicitly asked.
-- Run/build/typecheck where tools permit.
+- Run/build/typecheck where tools permit, on the combined delivery state after synchronization.
 - `main` is the deployable source of truth; do not leave the accepted state only on an abandoned branch.
-- On every game delivery to `main`, update the game release metadata, version, Europe/Paris last-update timestamp and per-game changelog in the same commit. Core Information reads that metadata; never leave a generic hardcoded version/date.
+- On every game delivery to `main`, update `release` in its own `definition.ts`, with version, Europe/Paris last-update timestamp and per-game changelog in the same commit. Core Information reads that metadata; never leave a generic hardcoded version/date. A pure catalog-file reorganization with unchanged values does not invent new game releases.
 
 ## 13. Distribution portability
 

@@ -6,7 +6,7 @@ Ce fichier organise le travail ; les documents liés portent les règles détail
 
 Lire la version actuelle sur `main` de ce fichier et des [règles du projet](../AGENTS.md) au démarrage ; à chaque demande suivante, réévaluer la route et actualiser les sources si elles ont changé. Pour un simple échange, aucune lecture ni cérémonie inutile.
 
-Pour un jeu, retrouver son entrée dans [le registre](../src/core/gameRegistry.tsx), puis `src/games/<id>/GAME_STATUS.md`, `ART_DIRECTION.md` et `ASSET_MANIFEST.md` lorsqu'ils existent. Ouvrir les images pertinentes et consulter les discussions liées pour récupérer les corrections non transcrites. Une affirmation ancienne de l'agent n'est pas une validation utilisateur ni une preuve de livraison.
+Pour un jeu, retrouver son entrée dans [le registre](../src/core/gameRegistry.tsx), qui renvoie désormais à son `src/games/<dossier>/definition.ts`, puis `GAME_STATUS.md`, `ART_DIRECTION.md` et `ASSET_MANIFEST.md` dans ce même dossier lorsqu'ils existent. TetraMindFck garde le dossier `calc-drop`. Ouvrir les images pertinentes et consulter les discussions liées pour récupérer les corrections non transcrites. Une affirmation ancienne de l'agent n'est pas une validation utilisateur ni une preuve de livraison.
 
 Annoncer en une ou deux phrases le travail choisi, la procédure utilisée et pourquoi. Si deux interprétations changent réellement le livrable ou si les procédures se contredisent sans décision permettant de trancher, expliquer le doute et poser une question courte. Choisir soi-même les détails techniques courants ; ne pas demander de recopier un brief.
 
@@ -47,9 +47,11 @@ Après validation, conserver les originaux et noter la portée du choix. Ne pas 
 
 Après une décision ou une passe significative, actualiser la fiche et le document concernés : choix daté, référence exacte et rôle, refus, réalisé / reste, preuves, prochaine action. Séparer proposition, validation artistique, fichier sauvegardé, intégration et test. GitHub partage ces traces, pas automatiquement toute la mémoire des conversations.
 
-À chaque livraison qui atteint `main`, mettre à jour les métadonnées produit du jeu : version, date/heure Europe/Paris et entrée de changelog. La fiche Information doit lire cette source unique, jamais une valeur écrite en dur. Une passe non livrée reste un travail en cours : elle ne doit pas annoncer une fausse version au joueur.
+À chaque livraison d'un jeu qui atteint `main`, mettre à jour ses métadonnées produit dans son `definition.ts` : version, date/heure Europe/Paris et entrée de changelog dans son dossier. La fiche Information doit lire cette source unique, jamais une valeur écrite en dur. Une passe non livrée reste un travail en cours : elle ne doit pas annoncer une fausse version au joueur. Une réorganisation purement technique du catalogue à valeurs identiques ne crée pas une nouvelle version de chaque jeu.
 
-Avant d'écrire, vérifier le dernier `main` et les modifications en cours. Signaler dans le suivi les lots actifs quand plusieurs discussions travaillent en parallèle ; ne pas écraser un travail concurrent. Livrer les changements autorisés sur `main`, vérifier la publication Git et distinguer celle-ci du déploiement de l'application.
+**Avant modification et avant chaque commit/publication**, même dans une discussion déjà ouverte, appliquer [REPOSITORY_WORKFLOW.md](REPOSITORY_WORKFLOW.md), section 0. Codex inspecte avec `npm run repo:check`, sélectionne uniquement ses changements, sauvegarde son lot, intègre le dernier `main`, teste le résultat combiné puis utilise `npm run repo:check -- --publish` avant livraison. Ne jamais embarquer/effacer le travail inachevé d'une autre session ou forcer un push. Une publication concurrente impose une nouvelle synchronisation, pas une consigne supplémentaire demandée à l'utilisateur.
+
+ChatGPT relit les fichiers et SHA actuels avant ses écritures ; un lot de fichiers interdépendants arrive en un seul commit avec mise à jour de ref sans force. Un SHA obsolète impose de réconcilier le contenu, pas de republier une vieille copie. Signaler les lots actifs dans le suivi existant, sans imposer une branche permanente par jeu ni un nouvel orchestrateur. Vérifier la publication Git et la distinguer du déploiement de l'application.
 
 En fin de réalisation, noter brièvement ce qui a réussi, échoué et pourquoi. Garder les détails dans le jeu ; corriger la procédure existante seulement si l'enseignement est général. Ne pas fabriquer une nouvelle procédure concurrente à chaque incident.
 

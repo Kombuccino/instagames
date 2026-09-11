@@ -1,4 +1,4 @@
-name: Temporary LineFugg runtime optimization
+name: Temporary LineFugg optimized runtime cutover
 
 on:
   push:
@@ -10,77 +10,143 @@ permissions:
   contents: write
 
 jobs:
-  optimize:
+  cutover:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-node@v4
         with:
-          python-version: '3.13'
-      - run: python -m pip install --disable-pip-version-check --no-cache-dir Pillow==11.3.0
-      - name: Build compact lossless runtime textures
+          node-version: 22
+      - name: Apply runtime asset cutover and release trace
         run: |
-          python - <<'PY'
-          from __future__ import annotations
-          from hashlib import sha256
+          python3 - <<'PY'
           from pathlib import Path
-          from PIL import Image
-          import json
 
-          jobs = [
-              ('public/assets/generated/linefugg/ui/accounting-panels.png', 'public/assets/generated/linefugg/ui/runtime/accounting-panels.webp', 1024),
-              ('public/assets/generated/linefugg/ui/glass-indicators.png', 'public/assets/generated/linefugg/ui/runtime/glass-indicators.webp', 1024),
-              ('public/assets/generated/linefugg/ui/validate-amber-source.png', 'public/assets/generated/linefugg/ui/runtime/validate-amber-source.webp', 256),
-          ]
-          report = []
-          for source_name, output_name, max_edge in jobs:
-              source_path = Path(source_name)
-              output_path = Path(output_name)
-              output_path.parent.mkdir(parents=True, exist_ok=True)
-              with Image.open(source_path) as source:
-                  source.load()
-                  ratio = min(1.0, max_edge / max(source.size))
-                  size = (round(source.width * ratio), round(source.height * ratio))
-                  target = source.convert('RGBA').resize(size, Image.Resampling.LANCZOS)
-              target.save(output_path, 'WEBP', lossless=True, method=6, quality=100, exact=True)
-              with Image.open(output_path) as decoded:
-                  decoded.load()
-                  decoded_rgba = decoded.convert('RGBA')
-              if decoded_rgba.size != target.size:
-                  raise SystemExit(f'dimension mismatch for {output_name}')
-              alpha_equal = True
-              visible_equal = True
-              for expected, actual in zip(target.getdata(), decoded_rgba.getdata()):
-                  if expected[3] != actual[3]:
-                      alpha_equal = False
-                      break
-                  if expected[3] and expected != actual:
-                      visible_equal = False
-                      break
-              if not alpha_equal or not visible_equal:
-                  raise SystemExit(f'lossless visible-pixel verification failed for {output_name}')
-              source_bytes = source_path.stat().st_size
-              output_bytes = output_path.stat().st_size
-              report.append({
-                  'source': source_name,
-                  'output': output_name,
-                  'source_bytes': source_bytes,
-                  'output_bytes': output_bytes,
-                  'saving_percent': round((1 - output_bytes / source_bytes) * 100, 2),
-                  'size': list(size),
-                  'sha256': sha256(output_path.read_bytes()).hexdigest(),
-                  'alpha_equal': alpha_equal,
-                  'visible_pixels_equal': visible_equal,
-              })
-          print(json.dumps(report, indent=2))
+          scene_path = Path('src/games/linefugg/LineFuggScene.ts')
+          scene = scene_path.read_text()
+          scene = scene.replace("import { OrbitalImageFile, artFrame, fitText, centerTextInk } from './orbitalArt'", "import { artFrame, fitText, centerTextInk } from './orbitalArt'")
+          replacements = {
+            "`${ASSET_ROOT}/ui/orbital-board.png`": "`${ASSET_ROOT}/ui/orbital-board.webp`",
+            "`${ASSET_ROOT}/props/orbital-armillary-key.png`": "`${ASSET_ROOT}/props/orbital-armillary-key.webp`",
+            "`${ASSET_ROOT}/ui/orbital-cell-multiply-v3.png`": "`${ASSET_ROOT}/ui/orbital-cell-multiply-v3.webp`",
+            "`${ASSET_ROOT}/ui/orbital-cell-divide-v3.png`": "`${ASSET_ROOT}/ui/orbital-cell-divide-v3.webp`",
+            "`${ASSET_ROOT}/ui/orbital-validate-ready-v5.png`": "`${ASSET_ROOT}/ui/orbital-validate-ready-v5.webp`",
+            "`${ASSET_ROOT}/ui/orbital-validate-disabled-v5.png`": "`${ASSET_ROOT}/ui/orbital-validate-disabled-v5.webp`",
+            "'/assets/generated/linefugg/ui/validate-amber-source.png'": "'/assets/generated/linefugg/ui/runtime/validate-amber-source.webp'",
+            "'/assets/generated/linefugg/ui/glass-indicators.png'": "'/assets/generated/linefugg/ui/runtime/glass-indicators.webp'",
+            "`${ASSET_ROOT}/ui/orbital-history-row-v5.png`": "`${ASSET_ROOT}/ui/orbital-history-row-v5.webp`",
+            "'/assets/generated/linefugg/ui/accounting-panels.png'": "'/assets/generated/linefugg/ui/runtime/accounting-panels.webp'",
+          }
+          for old, new in replacements.items():
+              if old not in scene:
+                  raise SystemExit(f'missing expected LineFuggScene source: {old}')
+              scene = scene.replace(old, new)
+          old_preload = """  preload() {\n    this.load.maxParallelDownloads = 2\n    Object.entries(ASSETS).forEach(([name, [key, url]]) => {\n      if (!this.textures.exists(key)) this.load.addFile(new OrbitalImageFile(this.load, key, url, /undo|validate/i.test(name) ? 256 : 1024))\n    })\n  }"""
+          new_preload = """  preload() {\n    this.load.maxParallelDownloads = 2\n    Object.values(ASSETS).forEach(([key, url]) => {\n      if (!this.textures.exists(key)) this.load.image(key, url)\n    })\n  }"""
+          if old_preload not in scene:
+              raise SystemExit('missing expected LineFugg preload block')
+          scene = scene.replace(old_preload, new_preload)
+          scene_path.write_text(scene)
+
+          art_path = Path('src/games/linefugg/orbitalArt.ts')
+          art = art_path.read_text()
+          start = art.index("/** Decode the canonical source once")
+          end = art.index("/** Frame coordinates", start)
+          art = art[:start] + art[end:]
+          art_path.write_text(art)
+
+          definition_path = Path('src/games/linefugg/definition.ts')
+          definition = definition_path.read_text()
+          definition = definition.replace("version: '0.5.2'", "version: '0.5.3'")
+          definition = definition.replace("updatedAt: '2026-09-11T20:01:00+02:00'", "updatedAt: '2026-09-11T20:43:00+02:00'")
+          definition_path.write_text(definition)
+
+          changelog_path = Path('src/games/linefugg/CHANGELOG.md')
+          changelog = changelog_path.read_text()
+          entry = """## [0.5.3] — 2026-09-11 20:43 Europe/Paris\n\n- Tous les visuels chargés au lancement du gameplay utilisent maintenant des WebP lossless déjà dimensionnés pour le runtime ; aucun gros PNG n'est téléchargé puis réduit dans le navigateur.\n- Les trois dernières textures locales passent de 5,73 Mo de PNG à 1,44 Mo de WebP pré-dimensionnés. Le payload image du gameplay complet est maintenant de 4,57 Mo (4,36 Mio), fond compris ; les covers sont chargées séparément.\n- Le chargeur Phaser de redimensionnement à la volée est supprimé pour LineFugg : les textures arrivent directement à leur taille de travail. Les masters PNG restent conservés comme sources et références.\n\nVérifié : pixels visibles/alpha des trois nouveaux dérivés lossless, budget de fichiers, build/typecheck et scénario navigateur LineFugg.\n\n"""
+          marker = '# LineFugg — Changelog\n\n'
+          if entry not in changelog:
+              changelog = changelog.replace(marker, marker + entry, 1)
+          changelog_path.write_text(changelog)
+
+          status_path = Path('src/games/linefugg/GAME_STATUS.md')
+          status = status_path.read_text()
+          status = status.replace("Mis à jour : 11 septembre 2026 à 20:01 Europe/Paris. Version livrée : `0.5.2`.", "Mis à jour : 11 septembre 2026 à 20:43 Europe/Paris. Version livrée : `0.5.3`.")
+          note = """\n## Optimisation images runtime terminée — 11 septembre 2026\n\nLe gameplay ne référence plus de PNG lourds. Fond CSS, plateau, armillaire, cases spéciales, boutons Valider, ornements du registre, console, indicateurs et verre orange sont tous servis en WebP lossless pré-dimensionné. Les PNG sources restent conservés hors chemin actif. Le payload image nécessaire au gameplay est de **4 573 098 octets (4,57 Mo / 4,36 Mio)**, covers exclues car elles appartiennent au feed et sont chargées séparément.\n\nLes trois derniers assets locaux ont été dérivés sans régénération : `accounting-panels.webp` 681 024 octets (1024×683), `glass-indicators.webp` 671 796 octets (1024²), `validate-amber-source.webp` 89 910 octets (256²). Leur alpha et leurs pixels visibles après décodage sont identiques à la version runtime redimensionnée avant encodage. Le redimensionnement navigateur `OrbitalImageFile` est retiré ; Phaser charge directement les textures préparées.\n"""
+          if '## Optimisation images runtime terminée — 11 septembre 2026' not in status:
+              status += note
+          status_path.write_text(status)
+
+          manifest_path = Path('src/games/linefugg/ASSET_MANIFEST.md')
+          manifest = manifest_path.read_text()
+          section = """\n## Runtime WebP cutover — 2026-09-11\n\nTous les assets actuellement chargés par le gameplay utilisent désormais un dérivé WebP lossless dimensionné pour l'usage réel. Les PNG ci-dessus restent des sources conservées, pas des URLs runtime. Chemins actifs principaux : `backgrounds/orbital-environment.webp`, `ui/orbital-board.webp`, `props/orbital-armillary-key.webp`, `ui/orbital-cell-*-v3.webp`, `ui/orbital-validate-*-v5.webp`, `ui/orbital-history-row-v5.webp` et `public/assets/generated/linefugg/ui/runtime/*.webp`.\n\nBudget réseau des 11 images gameplay actives : **4 573 098 octets (4,57 Mo / 4,36 Mio)**. Les quatre covers WebP sont exclues de ce budget : elles appartiennent au feed et ne sont pas un prérequis du chargement Phaser. Les trois dérivés `generated/ui/runtime/` sont 1024×683 / 681 024 octets, 1024×1024 / 671 796 octets et 256×256 / 89 910 octets. La génération technique a vérifié alpha et pixels visibles après décodage lossless. `OrbitalImageFile` n'est plus utilisé : aucune source surdimensionnée n'est téléchargée pour être réduite côté client.\n"""
+          if '## Runtime WebP cutover — 2026-09-11' not in manifest:
+              manifest += section
+          manifest_path.write_text(manifest)
           PY
-      - name: Commit generated derivatives to temporary branch
+
+          cat > scripts/test-linefugg-runtime-assets.mjs <<'EOF'
+          import assert from 'node:assert/strict'
+          import fs from 'node:fs/promises'
+
+          const assets = [
+            'public/assets/imported/linefugg/backgrounds/orbital-environment.webp',
+            'public/assets/imported/linefugg/ui/orbital-board.webp',
+            'public/assets/imported/linefugg/props/orbital-armillary-key.webp',
+            'public/assets/imported/linefugg/ui/orbital-cell-multiply-v3.webp',
+            'public/assets/imported/linefugg/ui/orbital-cell-divide-v3.webp',
+            'public/assets/imported/linefugg/ui/orbital-validate-ready-v5.webp',
+            'public/assets/imported/linefugg/ui/orbital-validate-disabled-v5.webp',
+            'public/assets/imported/linefugg/ui/orbital-history-row-v5.webp',
+            'public/assets/generated/linefugg/ui/runtime/validate-amber-source.webp',
+            'public/assets/generated/linefugg/ui/runtime/glass-indicators.webp',
+            'public/assets/generated/linefugg/ui/runtime/accounting-panels.webp',
+          ]
+          let total = 0
+          for (const file of assets) {
+            const bytes = await fs.readFile(file)
+            assert.equal(bytes.subarray(0, 4).toString('ascii'), 'RIFF', `${file}: RIFF`)
+            assert.equal(bytes.subarray(8, 12).toString('ascii'), 'WEBP', `${file}: WEBP`)
+            total += bytes.length
+          }
+          assert.equal(total, 4_573_098)
+          assert.ok(total < 4_600_000)
+          const scene = await fs.readFile('src/games/linefugg/LineFuggScene.ts', 'utf8')
+          assert.ok(!scene.includes('OrbitalImageFile'))
+          assert.ok(!/ASSETS[\s\S]*?\.png/.test(scene), 'active Phaser ASSETS must not reference PNG')
+          const shell = await fs.readFile('src/games/linefugg/LineFugg.tsx', 'utf8')
+          assert.match(shell, /orbital-environment\.webp/)
+          console.log(JSON.stringify({ files: assets.length, bytes: total, megabytes: total / 1e6, mebibytes: total / 1024 / 1024 }, null, 2))
+          EOF
+      - run: npm install --no-audit --no-fund
+      - run: node scripts/test-linefugg-runtime-assets.mjs
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Run representative LineFugg browser scenario
+        run: |
+          npx vite --host 127.0.0.1 --port 5175 >/tmp/linefugg-vite.log 2>&1 &
+          VITE_PID=$!
+          trap 'kill $VITE_PID 2>/dev/null || true' EXIT
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:5175/ >/dev/null; then break; fi
+            sleep .5
+          done
+          LINEFUGG_QUICK=1 node scripts/test-linefugg-browser.mjs
+      - name: Save browser proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linefugg-optimized-runtime-proof
+          path: artifacts/linefugg/
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Commit tested cutover to temporary branch
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add public/assets/generated/linefugg/ui/runtime/*.webp
+          git add src/games/linefugg/LineFuggScene.ts src/games/linefugg/orbitalArt.ts src/games/linefugg/definition.ts src/games/linefugg/CHANGELOG.md src/games/linefugg/GAME_STATUS.md src/games/linefugg/ASSET_MANIFEST.md scripts/test-linefugg-runtime-assets.mjs
           git diff --cached --check
-          git commit -m 'assets(linefugg): generate compact runtime textures'
+          git commit -m 'perf(linefugg): finish runtime image optimization'
           git push origin HEAD:${GITHUB_REF_NAME}

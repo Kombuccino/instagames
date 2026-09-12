@@ -1,6 +1,6 @@
 # LineFugg — Production asset manifest
 
-État canonique : 11 septembre 2026, version `0.5.4`, direction **Orbital Accounting**. Appliquer `docs/GAME_ART_PRODUCTION_PIPELINE.md` et `docs/ASSET_PIPELINE.md`.
+État canonique : 12 septembre 2026, version `0.5.5`, direction **Orbital Accounting**. Appliquer `docs/GAME_ART_PRODUCTION_PIPELINE.md` et `docs/ASSET_PIPELINE.md`.
 
 Les PNG approuvés et sources de travail sont conservés. **Le runtime gameplay ne charge plus aucun de ces gros PNG : ses 11 images actives sont des dérivés WebP lossless pré-dimensionnés.** Les quatre covers suivent le même principe, avec masters PNG distincts et dérivés WebP Core.
 
@@ -13,8 +13,8 @@ Les PNG approuvés et sources de travail sont conservés. **Le runtime gameplay 
 | Armillaire | `imported/linefugg/props/orbital-armillary-key.png` | `/assets/imported/linefugg/props/orbital-armillary-key.webp` — 1024×512 | 423 420 | sheet keyed ; ring/globe, filtre Key Phaser local |
 | Case × | `imported/linefugg/ui/orbital-cell-multiply-v3.png` | `/assets/imported/linefugg/ui/orbital-cell-multiply-v3.webp` — 128² | 9 540 | matériau de case ; valeur/glyphe dynamique |
 | Case ÷ | `imported/linefugg/ui/orbital-cell-divide-v3.png` | `/assets/imported/linefugg/ui/orbital-cell-divide-v3.webp` — 128² | 9 968 | matériau de case ; valeur/glyphe dynamique |
-| Valider prêt | `imported/linefugg/ui/orbital-validate-ready-v5.png` | `/assets/imported/linefugg/ui/orbital-validate-ready-v5.webp` — 256² | 76 242 | bouton illustré complet, alpha réel |
-| Valider inactif | `imported/linefugg/ui/orbital-validate-disabled-v5.png` | `/assets/imported/linefugg/ui/orbital-validate-disabled-v5.webp` — 256² | 69 864 | état illustré complet, alpha réel |
+| Valider prêt | `imported/linefugg/ui/orbital-validate-ready-v5.png` | `/assets/imported/linefugg/ui/orbital-validate-ready-v5.webp` — 256² | 76 242 | bouton illustré, alpha réel ; cadre runtime recadré à la zone visible 244² |
+| Valider inactif | `imported/linefugg/ui/orbital-validate-disabled-v5.png` | `/assets/imported/linefugg/ui/orbital-validate-disabled-v5.webp` — 256² | 69 864 | bouton illustré, alpha réel ; cadre runtime recadré à la zone visible 244² |
 | Décor du registre | `imported/linefugg/ui/orbital-history-row-v5.png` | `/assets/imported/linefugg/ui/orbital-history-row-v5.webp` — 1024×341 | 209 858 | ornements gauche/droite ; calculs live au-dessus |
 | Console basse | `generated/linefugg/ui/accounting-panels.png` | `/assets/generated/linefugg/ui/runtime/accounting-panels.webp` — 1024×683 | 681 024 | ledger, total, dock, bouton Undo ; masques géométriques pour les boutons |
 | Indicateurs verre | `generated/linefugg/ui/glass-indicators.png` | `/assets/generated/linefugg/ui/runtime/glass-indicators.webp` — 1024² | 671 796 | trois globes + billes ; états et dimming Phaser |
@@ -32,7 +32,7 @@ SHA-256 des trois nouveaux dérivés :
 
 ## Géométrie et ownership dynamique
 
-Stage logique `390×844`. Plateau `(34,155)`, taille `322²`, cellules `46²`. Registre `y=507`, trois lignes de `40` ; total centre `y=647` ; contrôles centre `y=703`. Le contenu essentiel tient ainsi dans la zone CENTRE PC `y=91…753`, avec 14 unités sous les boutons. Les coordonnées exactes restent dans `LineFuggScene.ts`.
+Stage logique `390×844`. Plateau `(55,180)`, taille `280²`, cellules `40²`. Registre `y=488`, trois lignes de `42` ; total centre `y=638` ; contrôles centre `y=695`, diamètre visuel `48`. Le bouton Retour Core adopte la même taille CSS effective que ces commandes sur PC. Les coordonnées exactes restent dans `LineFuggScene.ts`.
 
 `artFrame()` reçoit toujours les largeurs des **sources de mesure** (plateau 1254, armillaire 1774, registre 2172, console 1536, indicateurs/verre 1254) et calcule le ratio vers le dérivé chargé. Le passage aux WebP n'altère donc ni les frames ni la géométrie du jeu.
 

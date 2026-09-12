@@ -78,6 +78,16 @@ try {
     const logicalY = y => canvasBox.y + y / 844 * canvasBox.height
     assert.ok(logicalY(initial.essentialBounds.top) >= hostBox.y - 1, `${config.name}: board stays inside the visible MiniFugg zone`)
     assert.ok(logicalY(initial.essentialBounds.bottom) <= hostBox.y + hostBox.height + 1, `${config.name}: lower controls stay inside the visible MiniFugg zone`)
+    assert.equal(initial.controls.undo.visualSize, initial.controls.validate.visualSize, 'Undo and Validate share one visual diameter')
+    if (config.width >= 760) {
+      const returnBox = await page.locator('.mf-game-close-box').boundingBox()
+      assert.ok(returnBox, `${config.name}: Core return control is measurable`)
+      const gameplayControlCssSize = initial.controls.validate.visualSize / 844 * canvasBox.height
+      assert.ok(
+        Math.abs(returnBox.width - gameplayControlCssSize) <= 3,
+        `${config.name}: Core Return (${returnBox.width}px) and Validate (${gameplayControlCssSize}px) have the same optical size`,
+      )
+    }
     await capture('empty')
     await trace({ row: 0, col: 0 }, { row: 0, col: 4 }, true)
     assert.equal((await state()).drag.cells.length, 5)

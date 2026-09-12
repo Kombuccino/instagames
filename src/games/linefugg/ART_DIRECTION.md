@@ -12,7 +12,7 @@ Follow [the unified creation notice](../../../docs/GAME_CREATION_PIPELINE.md) an
 - Preserve: celestial brass instrument, ink-blue depth, parchment calculations, clear numbers, three colored lines and restrained mechanical movement. Existing canonical music choices below remain acquired.
 - Rejected: generic sci-fi/neon HUD, interchangeable generated mobile-game finish, distorted ornamental strips, duplicated or misaligned controls and decoration that shrinks or obscures gameplay. The user's 2026-09-07 instruction against generic “ChatGPT style” reinforces these constraints; it does not ban the specifically approved violet line or node glow.
 - Agent autonomy: prepare asset decomposition, align geometry, select supported engine techniques and tune restrained feedback within this direction. Record significant compromises; ask only for unresolved GD or DA decisions. Do not reopen the whole visual exploration.
-- Implemented 2026-09-07: 322-unit usable board, 46-unit square cells, one parchment ledger with three chip rows, shared dock anchors and a separate animated armillary. This enlarges the former 282-unit grid while keeping its brass frame and the complete controls visible on a small phone. Visual acceptance of this implementation remains distinct from the approved direction.
+- Revised 2026-09-12 after user feedback: 280-unit usable board, 40-unit square cells, one parchment ledger with three chip rows, shared dock anchors and a separate animated armillary. The lighter composition preserves the brass material and readable numbers while restoring breathing room around the board and controls.
 
 ## Core concept
 
@@ -29,7 +29,7 @@ Do not place the LineFugg name, logo, slogans, lore copy or decorative prose ins
 - The same authored composition is uniformly scaled on all devices.
 - No PC/mobile reflow, no critical vw/vh, no media-query layout variants.
 - Preserve Core close-box clearance at the upper-left; do not put essential game information underneath it.
-- Grid remains visually dominant: 322 logical units of playable cells at (34, 155), approximately 370 including its brass frame. Cells remain exactly 46 × 46 units.
+- Grid remains visually dominant without filling the whole stage: 280 logical units of playable cells at (55, 180), with exactly 40 × 40 unit cells.
 
 Target vertical composition:
 
@@ -197,7 +197,7 @@ See `ASSET_MANIFEST.md` for the concrete production inventory.
 
 User supplied GFX/crea-chatgpt/game/LineFugg-DA2.png as the latest approved lower-console reference. Keep the existing environment and board. Replace the earlier score/ledger/control styling with thin brass borders, one three-row parchment, a restrained total plaque, and two circular controls flanking the centered indicators. Three indicators retain red/violet/gold colors and five cell-count pips each. Undo hover must be visible only when enabled and must never trigger an undo.
 
-Canonical lower geometry: ledger center (195,567), 342×120 with three 40-high rows; total center (195,647), 342×40, fixed sigma and independent numeric value. Controls centers (63,703) and (327,703), diameter72. Indicator backing 194×72, centered (195,703); orb centers x137/195/253 at y691, pips y718. This compact composition keeps every essential control inside the PC CENTRE window (logical y91…753), with a 14-unit lower margin, while all elements remain uniformly scaled with the 390×844 stage.
+Canonical lower geometry after the 2026-09-12 spacing pass: ledger center `(195,551)`, `320×126` with three 42-high rows; total center `(195,638)`, `320×40`, fixed sigma and independent numeric value. Controls centers `(59,695)` and `(331,695)`, diameter `48`. Indicator backing `180×58`, centered `(195,695)` ; orb centers x139/195/251 at y686, pips y709. Every essential control remains inside the PC CENTRE window while all elements scale uniformly with the `390×844` stage.
 
 ## Fidélité illustrée — correction du 7 septembre 2026
 

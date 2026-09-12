@@ -6,7 +6,7 @@ Before a cover pass, follow [GAME_CREATION_PIPELINE.md](GAME_CREATION_PIPELINE.m
 
 ## Current migration status
 
-TetraMindFck's three validated covers now run as static Core raster art. The former Phaser cover host and TetraMindFck layer bundles were retired with this cutover. LineFugg and Vlad's Skewers also use static full-height Core collections; their approved original references remain preserved separately from the `390 × 844` restorations.
+TetraMindFck's four validated covers now run as static Core raster art. The former Phaser cover host and TetraMindFck layer bundles were retired with this cutover. LineFugg and Vlad's Skewers also use static full-height Core collections; their approved original references remain preserved separately from the `390 × 844` restorations.
 
 The registry tracks this with `migration.cover`. Until a game's cover state is `current`, the cover is considered transitional even when the current artwork itself is useful/beautiful.
 
@@ -14,13 +14,13 @@ The registry tracks this with `migration.cover`. Until a game's cover state is `
 
 | Game | Approved standalone originals found | Current cover state | Next action |
 | --- | ---: | --- | --- |
-| TetraMindFck | 3 | `current` | Japanese candidate remains outside production pending explicit artistic acceptance |
+| TetraMindFck | 4 | `current` | Four static editions active; Japanese master accepted and promoted on 12 September 2026 |
 | LineFugg | 4 | `current` | Full-height restorations active and browser-checked on three reference heights; final user review remains distinct |
 | Vlad's Skewers | 5 | `current` | Full-height restorations active and browser-checked on three reference heights; final user review remains distinct |
 | Train Fighter | 0 | `update-required` | Recover or validate a real original before any cover production |
 | Shoot the Shooter | 0 | `update-required` | Recover or validate a real original before any cover production |
 | HARI les dents pourries | 0 | `update-required` | Recover or validate a real original before any cover production |
-| CrazyPapers | 0 | `update-required` | Recover or validate a real original before any cover production |
+| CrazyPapers | 0 | `update-required` | Four new standalone research sources (pulp, micro, graphic, Japanese) await artistic validation; no runtime import yet |
 | DebthOfLife | 0 | `update-required` | Recover or validate a real original before any cover production |
 
 The audit covers repository history and the accessible local `GFX/crea-chatgpt/` archive. A screenshot, gameplay DA or contact-sheet tile is not counted as a standalone approved cover master. Missing originals are reported rather than reconstructed from memory.

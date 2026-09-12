@@ -31,5 +31,14 @@ export const TETRAMINDFCK_WELCOME: GameWelcomeConfig = {
       fit: 'cover',
       objectPosition: 'top center',
     },
+    {
+      id: 'japanese-edition',
+      label: 'Édition japonaise',
+      image: '/assets/generated/tetramindfck/welcome/variants/runtime/v4-japanese-edition.webp',
+      unlockScore: 30_000,
+      runtime: 'static',
+      fit: 'cover',
+      objectPosition: 'top center',
+    },
   ],
 }

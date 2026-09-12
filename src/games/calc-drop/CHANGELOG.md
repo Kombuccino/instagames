@@ -1,5 +1,11 @@
 # TetraMindFck — Changelog
 
+## 0.6.0 — 2026-09-12 18:56 Europe/Paris
+
+- Ajout de l’édition japonaise validée à la collection de covers statiques.
+- Le master conserve uniquement le titre localisé `テトラマインドファック`, avec une composition manga violet/orange prolongée naturellement jusque dans BAS.
+- La nouvelle édition utilise un master PNG `390 × 844` et un dérivé WebP lossless `780 × 1688`, sans CTA, logo Core, faux cadre ni animation.
+
 ## 0.5.0 — 2026-09-12
 
 - Mise en production des trois covers statiques validées : pulp européen, boîte micro 90s et affiche graphique.

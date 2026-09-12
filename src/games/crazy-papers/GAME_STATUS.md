@@ -1,6 +1,6 @@
 # CrazyPapers — Suivi de création
 
-Mis à jour : 11 septembre 2026 à 20:20 Europe/Paris. Version livrable : `0.4.0`. Base inspectée avant la passe DA : `2eb9b93ac82175a725f5139edaa698fb1ebf86b8` (`main`).
+Mis à jour : 12 septembre 2026 à 19:08 Europe/Paris. Version livrable : `0.4.0`. Base inspectée avant la passe cover : `4ac3928` (`origin/main`).
 
 ## Décision active
 
@@ -50,8 +50,28 @@ Pour cette raison, le jeu est bien passé sur `runtime: phaser-2d` mais reste pr
 
 Cover : `update-required`, indépendamment de cette migration gameplay. La phase jaquettes reste séparée.
 
+## Recherche cover — quatre écritures TetraMindFck transposées — 12 septembre 2026
+
+Demande : reprendre pour CrazyPapers le niveau d'écriture, l'écart au rendu générique et la diversité des meilleures recherches TetraMindFck, sans reprendre leurs pièces, personnages ni compositions. La fiction reste celle d'un employé submergé par une bureaucratie physique.
+
+Micro-brief commun : cover verticale plein cadre, pensée pour un recadrage final `390 × 844` ancré en haut ; titre `CrazyPapers` seul ; personnage, menace papier et point focal dans CENTRE ; bureau, corps, dossiers et feuilles poursuivis naturellement dans BAS. Interdits : CTA, `SWIPE TO PLAY`, logo MiniFugg, UI Core, texte lisible sur les formulaires, faux cadre de vieille boîte, coins abîmés, néon et key art numérique générique.
+
+Sorties locales, une génération indépendante par piste :
+
+- `GFX/crea-chatgpt/game/crazy-papers/cover-research-2026-09-12/crazy-papers-cover-a-pulp-source.png` — encre/gouache pulp européenne ; SHA-256 `724fe85692ee303a02f1095c3b4eed8df7eb44a6e54b62dd0b1a2b0a0b56bbe3` ;
+- `.../crazy-papers-cover-b-micro-source.png` — boîte micro européenne et machine d'archives ; SHA-256 `26046bd8f2d74404fddcd4a52c164892b10a6df24b83cce952173c23c4304ebe` ;
+- `.../crazy-papers-cover-c-graphic-source.png` — affiche éditoriale graphique ; SHA-256 `3a533a3c98191852169ee4fa88f629d476cfe992d675802e8069f958280df7f3` ;
+- `.../crazy-papers-cover-d-japanese-source.png` — manga commercial nerveux ; SHA-256 `98e032d1e27d92bc31b5b6061e39a2f193634776d4c42c0c393739c131d15ef4`.
+
+Contrôle technique : les quatre sources sont des PNG opaques, plein cadre, une seule image, `853 × 1844`; aucune source n'a été redimensionnée ou recadrée. Une comparaison sans labels ni redimensionnement est conservée sous `.../crazy-papers-cover-comparison.png`.
+
+Contrôle visuel agent : les quatre pistes sont propres, autonomes et nettement différenciées ; le titre est exact et aucun CTA, logo, UI ou faux cadre n'est présent. Les traits de formulaires restent abstraits. Statut artistique : **candidates à la validation utilisateur**, non validées. Statut d'usage : **hors production** ; aucun fichier n'est ajouté au runtime et `migration.cover` reste `update-required`.
+
+Essais connus : **4 générations pour 4 pistes présentables**. L'archive locale est faite ; la copie vers la Graphic Archive privée reste en attente faute de connexion Drive dans cette passe.
+
 ## Prochaine action
 
-1. Refaire une vraie recherche DA gameplay conforme : 4–5 écrans indépendants, même géométrie et même état fonctionnel, sans titre/logo/texte parasite.
-2. Puis test utilisateur du gameplay en ligne : lisibilité du document, taille des 5 tampons, vitesse de la montée des piles, seuil de débordement et descente de la vague.
-3. Après validation technique de la migration, passer `migration.state` à `current` et `locked` à `false` sans réintroduire de renderer parallèle.
+1. Faire choisir/valider séparément les nouvelles pistes cover ; adapter seulement la ou les retenues en master `390 × 844` et dérivé runtime lossless avant intégration Core.
+2. Refaire une vraie recherche DA gameplay conforme : 4–5 écrans indépendants, même géométrie et même état fonctionnel, sans titre/logo/texte parasite.
+3. Puis test utilisateur du gameplay en ligne : lisibilité du document, taille des 5 tampons, vitesse de la montée des piles, seuil de débordement et descente de la vague.
+4. Après validation technique de la migration, passer `migration.state` à `current` et `locked` à `false` sans réintroduire de renderer parallèle.

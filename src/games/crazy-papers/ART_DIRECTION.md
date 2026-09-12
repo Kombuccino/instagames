@@ -6,6 +6,19 @@
 - Historical reference: the administrative tension of *Papers, Please* without copying its interface, assets, characters, emblems or exact palette.
 - Gameplay renderer is Phaser 4 on the canonical `390 × 844` stage. Dynamic gameplay state stays engine-owned; do not rebuild a DOM/CSS interface inside the scene.
 
+## Cover research — 12 September 2026 — not yet approved
+
+The TetraMindFck cover collection is the reference for the **degree of authorship and stylistic distance**, not for its tetromino motifs, characters or compositions. CrazyPapers must remain its own oppressive bureaucracy fiction: an ordinary clerk, physical files, loose forms, stamps and an accumulating paper threat.
+
+Four independent source covers were produced, one image per generation and one TetraMindFck edition used only as a style-family reference:
+
+1. `pulp` — expressive European ink-and-gouache disaster scene;
+2. `micro` — late-1980s European micro-computer box art and oppressive records machine;
+3. `graphic` — asymmetric Eastern-European editorial poster and a single bureaucratic metaphor;
+4. `japanese` — nervous early-1990s commercial manga print and diagonal paper avalanche.
+
+All four are exploratory. They may be compared and validated independently, but none is a runtime asset until the user chooses it. The closed text list is `CrazyPapers` only: no CTA, slogan, readable form copy, MiniFugg mark, platform UI or decorative pseudo-writing. Covers remain full bleed, without fake old-box frame or damaged corners. The lower desk, body and paper mass must continue naturally into an expendable BAS so Core can crop from the bottom while keeping the useful width fixed.
+
 ## Palette
 
 - Wall / office grime: `#504b3d`, `#302d25`

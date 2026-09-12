@@ -21,15 +21,13 @@ Approved full-resolution production directions so far:
 1. `pulp-euro` — hand-painted / ink-pulp psychological overload;
 2. `micro-euro` — believable European micro-computer cover language;
 3. `graphic-poster` — authored graphic/poster interpretation.
+4. `japanese-edition` — nervous violet/orange commercial manga print.
 
 These exact flat originals are the visual authority for the static-cover migration. The migration is a technical adaptation, not a new art pass: preserve the subject, title, framing, palette, medium and global composition. Only remove non-title copy and extend the existing subject or environment below the original when the `390 × 844` canvas requires it. The extension must read as continuous authored artwork, never as a blank or featureless dark band.
 
 General paper grain, worn ink or paint texture may remain part of an edition's medium. Do not add a simulated old-box frame, distressed perimeter or damaged corners: the artwork must remain full bleed so responsive crops do not reveal a fake physical edge.
 
-Foreign-edition candidates being explored:
-
-- Japanese edition;
-- Chinese edition.
+The Chinese edition remains a possible later exploration. It is not part of the current production set.
 
 Only promote a cultural edition into the production variant list once a proper standalone full-resolution master has been created and verified through the current asset pipeline. Do not use cropped concept boards as production artwork.
 
@@ -45,11 +43,11 @@ On 2026-09-12 the user approved, as style references, the full first row of that
 
 The boards `(2)` through `(6)` of the same `19_27_48` series were also recovered. Their Japanese studies range from magenta/blue frontal manga to cream ink, blue/red psychological collapse and orange/violet manga pulp. They document the breadth of the regional family but do not supersede board `(1)`, top-row variant 4, as the primary composition.
 
-A first faithful standalone reconstruction candidate now exists locally in `GFX/crea-chatgpt/game/tetramindfck/japanese-research/`. It keeps only the exact localized title `テトラマインドファック`, removes the former side copy, CTA, arrow, MiniFugg mark and physical frame, and continues the orange figure through the expendable lower crop zone. Its artistic acceptance and production promotion remain pending; do not add it to `welcome.ts` before explicit user validation.
+The standalone reconstruction in `GFX/crea-chatgpt/game/tetramindfck/japanese-research/` was explicitly accepted by the user on 2026-09-12. It keeps only the exact localized title `テトラマインドファック`, removes the former side copy, CTA, arrow, MiniFugg mark and physical frame, and continues the orange figure through the expendable lower crop zone. The verified source, master and runtime derivative are now the fourth production edition.
 
 ## Static cover migration
 
-TetraMindFck covers are static raster art rendered by Core. The former animated layer bundles and runtime were removed after the three static editions were accepted. For `pulp-euro` and `micro-euro`, the exact approved flat poster remains the authority rather than any reconstruction from the old layer stack.
+TetraMindFck covers are static raster art rendered by Core. The former animated layer bundles and runtime were removed after the original three static editions were accepted. The fourth Japanese edition is also a single static raster. For `pulp-euro` and `micro-euro`, the exact approved flat poster remains the authority rather than any reconstruction from the old layer stack.
 
 ## Interaction
 
@@ -74,7 +72,7 @@ Current pilot thresholds:
 - pulp-euro: default;
 - micro-euro: 5,000 best score;
 - graphic-poster: 15,000 best score;
-- future foreign edition: target 30,000 best score.
+- japanese-edition: 30,000 best score.
 
 The pilot currently stores best-score unlock state locally. A future platform/profile implementation may sync unlocks across devices.
 

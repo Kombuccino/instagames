@@ -36,7 +36,8 @@ const ASSET_ROOT = '/assets/imported/platform/entry-scenes/metro-moment-v1'
 const WAGON_ART = `${ASSET_ROOT}/wagon-reader-fuggy.png`
 const METRO_SCENE_ROOT = '/assets/generated/platform/entry-scenes/metro-sunset'
 const CITY_ART = `${ASSET_ROOT}/city-loop-sunset.png`
-const ARM_VARIANTS = Array.from({ length: 8 }, (_, index) => `${ASSET_ROOT}/arms/arm-${String(index + 1).padStart(2, '0')}.png`)
+const ARM_ROOT = `${METRO_SCENE_ROOT}/arms`
+const ARM_VARIANTS = Array.from({ length: 8 }, (_, index) => `${ARM_ROOT}/arm-${String(index + 1).padStart(2, '0')}.png`)
 const ARM_STORAGE_KEY = 'minifugg:entry-arm:v1'
 
 type Matrix3 = [number, number, number, number, number, number, number, number, number]
@@ -129,7 +130,7 @@ function chooseArm() {
   if (typeof window === 'undefined') return ARM_VARIANTS[0]
 
   const forcedVariant = new URL(window.location.href).searchParams.get('entryArm')
-  if (/^0[1-8]$/.test(forcedVariant ?? '')) return `${ASSET_ROOT}/arms/arm-${forcedVariant}.png`
+  if (/^0[1-8]$/.test(forcedVariant ?? '')) return `${ARM_ROOT}/arm-${forcedVariant}.png`
 
   let previous = -1
   try {
@@ -153,7 +154,6 @@ function chooseArm() {
 export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEntrySceneProps) {
   const [entering, setEntering] = useState(false)
   const [arm] = useState(chooseArm)
-  const armVariant = arm.match(/arm-(\d{2})\.png$/)?.[1] ?? '01'
   const [metroCameraDistance] = useState(() => {
     if (typeof window === 'undefined') return '20'
     return new URL(window.location.href).searchParams.get('metroDistance') === '30' ? '30' : '20'
@@ -337,9 +337,11 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
         {handoff === 'home-bis' && <span className="mf-entry-scene__handoff-blackout" aria-hidden="true" />}
 
         <div ref={phoneRigRef} className="mf-entry-scene__phone-rig" aria-hidden="true">
-          <div className={`mf-entry-scene__hand-group is-arm-${armVariant}`}>
-            <span className="mf-entry-scene__arm-continuation" />
-            <img className="mf-entry-scene__arm" src={arm} alt="" draggable={false} decoding="sync" />
+          <div className="mf-entry-scene__hand-group">
+            <picture className="mf-entry-scene__arm-picture">
+              <source srcSet={arm.replace('.png', '.webp')} type="image/webp" />
+              <img className="mf-entry-scene__arm" src={arm} alt="" draggable={false} decoding="sync" />
+            </picture>
             <ProjectiveDomSurface
               className="mf-entry-scene__phone-projective"
               planeClassName="mf-entry-scene__phone-ui"

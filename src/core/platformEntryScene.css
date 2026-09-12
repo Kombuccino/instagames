@@ -98,8 +98,12 @@
 .mf-entry-scene__arm {
   z-index: 1;
   inset: 0;
-  width: 100%;
+  width: 133.37%;
   height: 100%;
+}
+
+.mf-entry-scene__arm-picture {
+  display: contents;
 }
 
 /*

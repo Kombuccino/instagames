@@ -69,7 +69,7 @@
 .mf-home-bis-ranking span { padding-left:15px; font:900 13px/1 Arial,sans-serif; }
 .mf-home-bis-ranking strong { font:900 17px/1 Impact,sans-serif; letter-spacing:.04em; }
 
-.mf-home-bis-phone-wrap { position:absolute; z-index:3; right:5.5%; top:2.5%; height:95svh; aspect-ratio:390/844; }
+.mf-home-bis-phone-wrap { position:absolute; z-index:3; right:5.5%; top:-13.746svh; height:127.492svh; aspect-ratio:390/844; }
 .mf-home-bis-phone { position:absolute; z-index:2; inset:0; padding:6px; border-radius:24px; background:linear-gradient(145deg,#68757e 0 18%,#20272c 18% 72%,#869199 72%); box-shadow:0 28px 50px rgba(0,0,0,.48),inset 0 0 0 2px rgba(255,255,255,.25); }
 .mf-home-bis-phone-screen { position:relative; width:100%; height:100%; overflow:hidden; border-radius:18px; background:#090908; animation:mf-phone-content-in 260ms ease-out both; }
 @keyframes mf-phone-content-in { from { opacity:.35; transform:translateY(1.5%); } }
@@ -84,8 +84,10 @@
 .mf-home-bis-phone .mf-insert-coin b { font-size:17px; }
 .mf-home-bis-phone .mf-insert-coins { transform:scale(.82); transform-origin:center; }
 .mf-home-bis-phone .mf-change-game { width:52px; font-size:8px; }
-.mf-home-bis-phone .mf-cover-bottom { left:12px; right:12px; }
+.mf-home-bis-phone .mf-coin-balance { top:calc(10.782% + 18px); }
+.mf-home-bis-phone .mf-cover-bottom { left:12px; right:12px; bottom:calc(10.782% + 15px); }
 .mf-home-bis-phone .mf-cover-rail { left:11px; }
+.mf-home-bis-phone .mf-home-bis-return { top:calc(10.782% + 10px); }
 .mf-home-bis-hand { position:absolute; z-index:4; top:-46.5%; right:-119%; width:308%; height:235%; max-width:none; pointer-events:none; filter:drop-shadow(0 12px 12px rgba(0,0,0,.2)); }
 .mf-home-bis-hand img { display:block; width:100%; height:100%; }
 
@@ -100,7 +102,7 @@
 @media (max-width:1050px) {
   .mf-home-bis-layout { width:100vw; }
   .mf-home-bis-magazine-stack { left:6%; width:55%; }
-  .mf-home-bis-phone-wrap { right:1.5%; height:88svh; top:6svh; }
+  .mf-home-bis-phone-wrap { right:1.5%; }
   .mf-home-bis-nav { left:5px; width:48px; }
   .mf-home-bis-nav button { font-size:0; }
 }
@@ -112,6 +114,9 @@
   .mf-home-bis-phone { inset:0; padding:0; border-radius:0; }
   .mf-home-bis-phone-screen { border-radius:0; }
   .mf-home-bis-hand { display:none; }
+  .mf-home-bis-phone .mf-coin-balance { top:max(18px,env(safe-area-inset-top)); }
+  .mf-home-bis-phone .mf-cover-bottom { bottom:max(15px,env(safe-area-inset-bottom)); }
+  .mf-home-bis-phone .mf-home-bis-return { top:10px; }
 }
 
 @media (prefers-reduced-motion:reduce) {

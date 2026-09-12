@@ -29,6 +29,12 @@ function opensHomeBisLab() {
   return query.get('usr') === 'moigod' && query.get('lab') === 'home-bis'
 }
 
+function opensHomeBisEntryTest() {
+  if (typeof window === 'undefined') return false
+  const query = new URL(window.location.href).searchParams
+  return query.get('usr') === 'moigod' && query.get('lab') === 'home-bis' && query.get('entry') === '1'
+}
+
 function layoutGuideView(): LayoutTemplate | null {
   if (typeof window === 'undefined') return null
   const query = new URL(window.location.href).searchParams
@@ -41,8 +47,14 @@ function layoutGuideView(): LayoutTemplate | null {
 
 export default function App() {
   const [entered, setEntered] = useState(() => opensDirectlyOnAGame())
+  const [homeBisEntered, setHomeBisEntered] = useState(() => !opensHomeBisEntryTest())
 
-  if (opensHomeBisLab()) return <HomeBisLab />
+  if (opensHomeBisLab()) return (
+    <>
+      <HomeBisLab />
+      {!homeBisEntered && <PlatformEntryScene handoff="home-bis" onLaunch={() => setHomeBisEntered(true)} />}
+    </>
+  )
   const guideView = layoutGuideView()
   if (guideView) return <LayoutLab focus={guideView} />
   if (opensLayoutLab()) return <LayoutLab />

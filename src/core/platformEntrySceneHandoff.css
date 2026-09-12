@@ -59,6 +59,117 @@
   }
 }
 
+/* The wide pilot uses one viewport for both rooms. The portrait artwork is a
+ * separate phone rig, while the metro plate fills the desktop stage. */
+@media (min-width: 761px) {
+  .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__stage {
+    width: 100vw;
+    height: 100dvh;
+  }
+
+  .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__wagon {
+    inset: -2%;
+    width: 104%;
+    height: 104%;
+    object-fit: cover;
+    object-position: 50% 49%;
+  }
+
+  .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__phone-rig {
+    inset: auto 8% 0 auto;
+    width: 56.28dvh;
+    height: 100dvh;
+    will-change: transform;
+  }
+
+  .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__hand-group {
+    transform: none;
+    animation: none;
+  }
+
+  .mf-entry-scene.is-home-bis-handoff.is-entering .mf-entry-scene__phone-rig {
+    animation: mf-entry-rig-to-home-bis 1700ms cubic-bezier(.2,.72,.18,1) forwards;
+  }
+
+  .mf-entry-scene.is-home-bis-handoff.is-entering .mf-entry-scene__hand-group {
+    animation: none;
+  }
+}
+
+.mf-entry-scene.is-home-bis-handoff.is-entering .mf-entry-scene__flash {
+  animation: none;
+}
+
+.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__stage {
+  overflow: visible;
+}
+
+.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__handoff-blackout {
+  position: absolute;
+  inset: -100vmax;
+  z-index: 2;
+  pointer-events: none;
+  background: #050607;
+  opacity: 0;
+}
+
+.mf-entry-scene.is-home-bis-handoff.is-entering .mf-entry-scene__handoff-blackout {
+  animation: mf-entry-blackout-to-home-bis 1700ms ease both;
+}
+
+.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__loading {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: grid;
+  place-content: center;
+  color: rgba(255,255,255,.94);
+  background: #07090b;
+  font: 800 5px/1 Arial,sans-serif;
+  letter-spacing: .14em;
+  opacity: 0;
+}
+
+.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__loading > span {
+  display: block;
+  margin-top: 4px;
+  color: #ffc629;
+  letter-spacing: .24em;
+  text-align: center;
+}
+
+.mf-entry-scene.is-home-bis-handoff.is-entering .mf-entry-scene__loading {
+  animation: mf-entry-loading-to-home-bis 1700ms ease both;
+}
+
+.mf-entry-scene.is-home-bis-handoff.is-entering,
+.mf-entry-scene.is-home-bis-handoff.is-entering .mf-entry-scene__stage {
+  transition-delay: 1240ms;
+}
+
+.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__city,
+.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__carriage {
+  transition: opacity 260ms ease 1240ms;
+}
+
+@keyframes mf-entry-rig-to-home-bis {
+  0%, 18% { opacity:1; transform:none; }
+  72%, 99% { opacity:1; transform:var(--mf-entry-final-transform); }
+  100% { opacity:0; transform:var(--mf-entry-final-transform); }
+}
+
+@keyframes mf-entry-blackout-to-home-bis {
+  0%, 24% { opacity: 0; }
+  43%, 99% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes mf-entry-loading-to-home-bis {
+  0%, 28% { opacity: 0; }
+  40%, 99% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .mf-entry-scene.is-entering,
   .mf-entry-scene.is-entering .mf-entry-scene__stage {
@@ -68,7 +179,7 @@
 
   .mf-entry-scene.is-entering .mf-entry-scene__city,
   .mf-entry-scene.is-entering .mf-entry-scene__carriage,
-  .mf-entry-scene.is-entering .mf-entry-scene__hand-group {
+  .mf-entry-scene.is-entering .mf-entry-scene__phone-rig {
     opacity: 0;
     transition: none;
   }

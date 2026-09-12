@@ -89,9 +89,11 @@ function CloseIcon() {
 function ReturnToCoverIcon() {
   return (
     <svg className="mf-platform-icon mf-platform-icon-return-cover" viewBox="0 0 24 24" aria-hidden="true" fill="none">
-      <path d="M5 4.5h11.5a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5V4.5Z" />
-      <path d="M15.5 7v10" />
-      <path d="m9 8.5 3.5 3.5L9 15.5" />
+      <g transform="translate(-6.6 -6.6) scale(1.55)">
+        <path d="M5 4.5h11.5a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5V4.5Z" />
+        <path d="M15.5 7v10" />
+        <path d="m9 8.5 3.5 3.5L9 15.5" />
+      </g>
     </svg>
   )
 }

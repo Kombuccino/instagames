@@ -1,5 +1,13 @@
 # LineFugg — Changelog
 
+## [0.5.5] — 2026-09-12 09:57 Europe/Paris
+
+- La composition respire davantage : plateau ramené à `280 × 280`, mécanisme céleste et console basse recalés, registre élargi verticalement et hiérarchie typographique réduite sans toucher aux règles ni au score.
+- Annuler et Valider partagent désormais un diamètre visuel de `48` unités. Le cadre transparent des sprites Valider est neutralisé et le bouton Retour Core suit la même échelle effective sur PC.
+- Les tracés, nœuds, flèches, indicateurs et retours d'interaction sont redimensionnés avec le plateau pour préserver la lisibilité de la DA Orbital Accounting.
+
+Vérifié : matrice navigateur tactile/souris sur six profils téléphone, tablette, PC et mouvement réduit, contrôle visuel des états vide et trois lignes, build/typecheck.
+
 ## [0.5.4] — 2026-09-11 23:59 Europe/Paris
 
 - La console basse est recomposée pour que le plateau, les trois lignes, le total, Annuler et Valider restent tous visibles dans la zone CENTRE minimale `390 × 662` utilisée sur PC.

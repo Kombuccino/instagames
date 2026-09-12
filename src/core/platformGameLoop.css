@@ -1,11 +1,15 @@
 /* Active gameplay keeps one exceptional Core affordance: close the box. */
+.game-card[data-phase='playing'] {
+  container-type: size;
+}
+
 .mf-game-close-box {
   position: absolute;
   z-index: 170;
   top: max(8px, calc(env(safe-area-inset-top, 0px) + 6px));
   left: max(8px, calc(env(safe-area-inset-left, 0px) + 6px));
-  width: 48px;
-  height: 48px;
+  width: clamp(48px, min(12.3077cqw, 7.2508cqh), 72px);
+  height: clamp(48px, min(12.3077cqw, 7.2508cqh), 72px);
   opacity: .82;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -21,8 +25,8 @@
 .mf-game-close-box:active { transform: scale(.93); }
 
 .mf-game-close-box .mf-platform-icon-return-cover {
-  width: 28px;
-  height: 28px;
+  width: 100%;
+  height: 100%;
   stroke-width: 1.8;
 }
 

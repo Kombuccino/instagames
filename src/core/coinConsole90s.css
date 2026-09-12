@@ -13,6 +13,9 @@
   display: block;
   filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .55));
   text-shadow: 0 2px 3px rgba(0, 0, 0, .9);
+  animation: none;
+  transition: none;
+  transform: none;
 }
 
 .mf-coin-balance-90s > img {
@@ -100,8 +103,7 @@
 .mf-console-nav:disabled,
 .mf-console-play:disabled { cursor: default; }
 
-.mf-console-nav img,
-.mf-console-play img {
+.mf-console-nav img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -133,14 +135,22 @@
   height: 70.79%;
 }
 
-.mf-console-play img { opacity: 0; }
-.mf-console-play .is-idle { opacity: 1; }
-.mf-console-play .is-glow-medium { animation: mf-play-glow-medium 2.2s ease-in-out infinite; }
-.mf-console-play .is-glow-peak { animation: mf-play-glow-peak 2.2s ease-in-out infinite; }
-.mf-console-play.is-pressed .is-idle,
-.mf-console-play.is-pressed .is-glow-medium,
-.mf-console-play.is-pressed .is-glow-peak { opacity: 0; animation: none; }
-.mf-console-play.is-pressed .is-pressed { opacity: 1; }
+.mf-console-play-atlas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background-image: url('/assets/generated/platform/ui/coin-console-90s/play-states-atlas.webp');
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-size: 400% 100%;
+  animation: mf-play-atlas-breathe 2.2s steps(1, end) infinite;
+  transform: none;
+}
+
+.mf-console-play.is-pressed .mf-console-play-atlas {
+  background-position: 100% 0;
+  animation: none;
+}
 .mf-console-play:focus-visible { outline: 2px solid #fff4b4; outline-offset: -9px; border-radius: 16px; }
 
 .mf-local-insert-coin {
@@ -186,14 +196,10 @@
   text-shadow: 0 2px 5px #000;
 }
 
-@keyframes mf-play-glow-medium {
-  0%, 18%, 82%, 100% { opacity: 0; }
-  38%, 68% { opacity: 1; }
-}
-
-@keyframes mf-play-glow-peak {
-  0%, 39%, 65%, 100% { opacity: 0; }
-  50%, 56% { opacity: .92; }
+@keyframes mf-play-atlas-breathe {
+  0%, 18%, 82%, 100% { background-position: 0 0; }
+  38%, 68% { background-position: 33.333333% 0; }
+  50%, 56% { background-position: 66.666667% 0; }
 }
 
 @keyframes mf-local-coin-travel {
@@ -216,9 +222,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mf-console-play .is-glow-medium,
-  .mf-console-play .is-glow-peak { animation: none; }
-  .mf-console-play .is-glow-medium { opacity: .55; }
+  .mf-console-play-atlas {
+    background-position: 33.333333% 0;
+    animation: none;
+  }
   .mf-coin-console-90s.is-inserting .mf-local-insert-coin,
   .mf-coin-console-system:has(.mf-coin-console-90s.is-inserting) .mf-coin-debit { animation-duration: 1ms; }
 }

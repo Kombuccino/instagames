@@ -99,10 +99,7 @@ export function CoinConsole90s({ coins, cost, free, launchError, onPlay, onChang
           aria-label={free ? 'Play free' : `Play for ${price} coin${price === 1 ? '' : 's'}`}
           data-testid="coin-console-play"
         >
-          <img className="is-idle" src={`${ASSET_ROOT}/play-idle.webp`} alt="PLAY" />
-          <img className="is-glow-medium" src={`${ASSET_ROOT}/play-glow-medium.webp`} alt="" />
-          <img className="is-glow-peak" src={`${ASSET_ROOT}/play-glow-peak.webp`} alt="" />
-          <img className="is-pressed" src={`${ASSET_ROOT}/play-pressed.webp`} alt="" />
+          <span className="mf-console-play-atlas" aria-hidden="true" />
         </button>
 
         {Array.from({ length: Math.min(price, 2) }, (_, index) => (

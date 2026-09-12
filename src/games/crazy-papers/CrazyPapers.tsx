@@ -5,7 +5,6 @@ import { DEFAULT_LOGICAL_VIEWPORTS } from '../../core/runtime/gameRuntimePolicy'
 import { CRAZY_PAPERS_SCENE_KEY, CrazyPapersScene } from './CrazyPapersScene'
 
 export function CrazyPapers({ active, seed, restartToken, session }: GameComponentProps) {
-  const renderPixelRatio = useRef(Math.min(2, Math.max(1, window.devicePixelRatio || 1))).current
   const sessionRef = useRef(session)
   sessionRef.current = session
 
@@ -25,7 +24,10 @@ export function CrazyPapers({ active, seed, restartToken, session }: GameCompone
         logicalViewport={DEFAULT_LOGICAL_VIEWPORTS.portrait}
         sceneKey={CRAZY_PAPERS_SCENE_KEY}
         createScene={createScene}
-        renderPixelRatio={renderPixelRatio}
+        // CrazyPapers currently authors its scene directly in 390×844 logical units.
+        // Unlike the other high-DPI Phaser scenes it has no camera DPR compensation,
+        // so a 2× backbuffer made the gameplay occupy only the top-left quarter.
+        renderPixelRatio={1}
         ariaLabel="CrazyPapers. Trie les dossiers vers cinq services avec les tampons. Les piles montent et une vague de paperasse descend quand le bureau sature."
       />
     </div>

@@ -93,8 +93,13 @@
 .mf-home-bis-handoff-rig { display:none; }
 
 @media (min-width:761px) {
-  .mf-home-bis-handoff-rig { position:fixed; z-index:4; right:8%; top:0; display:block; width:56.28dvh; height:100dvh; pointer-events:none; transform:var(--mf-entry-home-final-transform); transform-origin:0 0; }
+  .mf-home-bis-handoff-rig { position:fixed; z-index:4; right:8%; top:0; display:block; width:56.28dvh; height:100dvh; pointer-events:none; transform:var(--mf-entry-home-final-transform); transform-origin:0 0; animation:mf-home-bis-release-handoff-hand 420ms ease-out 80ms forwards; }
   .mf-home-bis-handoff-rig picture,.mf-home-bis-handoff-rig img { position:absolute; inset:0; display:block; width:100%; height:100%; max-width:none; }
+}
+
+@keyframes mf-home-bis-release-handoff-hand {
+  0%,35% { opacity:1; }
+  100% { opacity:0; }
 }
 
 .mf-home-bis-nav { position:fixed; z-index:20; left:17px; top:50%; display:grid; gap:8px; width:68px; transform:translateY(-50%); }
@@ -127,4 +132,5 @@
 
 @media (prefers-reduced-motion:reduce) {
   .mf-home-bis-magazine,.mf-home-bis-phone-screen { animation:none!important; }
+  .mf-home-bis-handoff-rig { display:none; }
 }

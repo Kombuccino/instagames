@@ -34,7 +34,7 @@ const TAP_SLOP_PX = 14
 const SWIPE_THRESHOLD_PX = 42
 const ASSET_ROOT = '/assets/imported/platform/entry-scenes/metro-moment-v1'
 const WAGON_ART = `${ASSET_ROOT}/wagon-reader-fuggy.png`
-const WAGON_WIDE_ROOT = '/assets/generated/platform/entry-scenes/metro-wide-tests'
+const METRO_SCENE_ROOT = '/assets/generated/platform/entry-scenes/metro-sunset'
 const CITY_ART = `${ASSET_ROOT}/city-loop-sunset.png`
 const ARM_VARIANTS = Array.from({ length: 8 }, (_, index) => `${ASSET_ROOT}/arms/arm-${String(index + 1).padStart(2, '0')}.png`)
 const ARM_STORAGE_KEY = 'minifugg:entry-arm:v1'
@@ -150,9 +150,9 @@ function chooseArm() {
 export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEntrySceneProps) {
   const [entering, setEntering] = useState(false)
   const [arm] = useState(chooseArm)
-  const [wideWagonVariant] = useState(() => {
-    if (typeof window === 'undefined') return 'b'
-    return new URL(window.location.href).searchParams.get('metro') === 'a' ? 'a' : 'b'
+  const [metroCameraDistance] = useState(() => {
+    if (typeof window === 'undefined') return '20'
+    return new URL(window.location.href).searchParams.get('metroDistance') === '30' ? '30' : '20'
   })
   const enteringRef = useRef(false)
   const pointerRef = useRef<PointerStart | null>(null)
@@ -290,35 +290,44 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
       onKeyDown={handleKeyDown}
     >
       <div className="mf-entry-scene__stage">
-        <div className="mf-entry-scene__city" aria-hidden="true">
-          <PerspectiveTextureCanvas
-            src={CITY_ART}
-            className="mf-entry-scene__city-canvas"
-            paused={entering}
-            speed={116}
-            slices={260}
-            nearX={-0.16}
-            farX={1.02}
-            nearTop={-0.34}
-            nearBottom={0.78}
-            farTop={0.365}
-            farBottom={0.425}
-            xCurve={3.6}
-            depthCurve={1.18}
-          />
-        </div>
+        {handoff !== 'home-bis' && (
+          <div className="mf-entry-scene__city" aria-hidden="true">
+            <PerspectiveTextureCanvas
+              src={CITY_ART}
+              className="mf-entry-scene__city-canvas"
+              paused={entering}
+              speed={116}
+              slices={260}
+              nearX={-0.16}
+              farX={1.02}
+              nearTop={-0.34}
+              nearBottom={0.78}
+              farTop={0.365}
+              farBottom={0.425}
+              xCurve={3.6}
+              depthCurve={1.18}
+            />
+          </div>
+        )}
 
         <div className="mf-entry-scene__carriage" aria-hidden="true">
           {handoff === 'home-bis' ? (
             <picture>
-              <source media="(min-width: 761px)" srcSet={`${WAGON_WIDE_ROOT}/metro-wide-${wideWagonVariant}.webp`} type="image/webp" />
-              <source media="(min-width: 761px)" srcSet={`${WAGON_WIDE_ROOT}/metro-wide-${wideWagonVariant}.png`} type="image/png" />
-              <img className="mf-entry-scene__wagon mf-entry-scene__wagon--wide" src={WAGON_ART} alt="" draggable={false} decoding="sync" />
+              <source srcSet={`${METRO_SCENE_ROOT}/camera-distance-${metroCameraDistance}.webp`} type="image/webp" />
+              <img
+                className="mf-entry-scene__wagon mf-entry-scene__wagon--wide"
+                src={`${METRO_SCENE_ROOT}/camera-distance-${metroCameraDistance}.png`}
+                alt=""
+                draggable={false}
+                decoding="async"
+                loading="eager"
+              />
             </picture>
           ) : (
             <img className="mf-entry-scene__wagon" src={WAGON_ART} alt="" draggable={false} decoding="sync" />
           )}
-          <FuggyEyes className="mf-entry-scene__fuggy-eyes" />
+          {handoff !== 'home-bis' && <FuggyEyes className="mf-entry-scene__fuggy-eyes" />}
+          {handoff === 'home-bis' && <span className="mf-entry-scene__floor-light" aria-hidden="true" />}
         </div>
 
         {handoff === 'home-bis' && <span className="mf-entry-scene__handoff-blackout" aria-hidden="true" />}

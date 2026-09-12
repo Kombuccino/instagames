@@ -34,6 +34,8 @@ Le cadrage portrait validé reste une sous-partie exacte du décor large : on pr
 
 Dans la scène métro retenue, Fuggy ne doit plus être assis sur le banc. Le point de vue doit identifier immédiatement le joueur comme assis et placer le lecteur en face de lui avec une posture crédible. Le bras visible est continu depuis le bord du cadre jusqu'au poignet. La composition large doit rester exploitable en trois plans séparables — premier plan du joueur, intérieur et passagers, extérieur par les fenêtres — afin de permettre un parallaxe à vitesses distinctes.
 
+Le cadrage validé le 12 septembre 2026 avance la caméra de 20 % vers la banquette opposée. Sa source est `public/assets/generated/platform/concepts/metro-geometry-v2/06-camera-moins-20.png` et son dérivé runtime est `public/assets/generated/platform/entry-scenes/metro-sunset/camera-distance-20.webp`. La version 30 % reste une alternative de réglage ; elle ne remplace pas la valeur active sans nouvelle décision. Le même asset large est recadré sur les écrans complets.
+
 La surface du téléphone doit suivre exactement son cadrage et sa perspective. Écran, bras et téléphone partagent les transformations utiles ; ne pas superposer un rectangle approximatif qui glisse séparément. Prévoir les occultations par la main, le cadre et les limites du zoom.
 
 Pour le raccord vers l'écran étendu, mesurer les quatre coins du verre dans l'asset source et les projeter sur les quatre coins du verre final. La transformation doit redresser la perspective et fixer simultanément la taille et la position. Le raccord ne se règle pas avec une succession empirique de rotations et de zooms. À l'arrivée, CENTRE remplit la hauteur utile ; HAUT et BAS du MASTER se prolongent hors du viewport.

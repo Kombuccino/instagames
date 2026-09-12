@@ -76,10 +76,10 @@
 .mf-cover-rail {
   position: absolute;
   z-index: 3;
-  left: 18px;
+  left: max(18px, 4.6154cqw);
   top: 50%;
   display: grid;
-  gap: 17px;
+  gap: max(17px, 4.359cqw);
   transform: translateY(-45%);
 }
 
@@ -88,8 +88,8 @@
   display: grid;
   justify-items: center;
   gap: 3px;
-  width: 42px;
-  min-height: 37px;
+  width: max(42px, 10.7692cqw);
+  min-height: max(37px, 9.4872cqw);
   padding: 0;
   border: 0;
   border-radius: 0;
@@ -101,7 +101,7 @@
 }
 
 .mf-cover-rail button small {
-  min-height: 10px;
+  min-height: max(10px, 2.5641cqw);
   font-size: var(--mf-ui-type-meta);
   font-weight: var(--mf-ui-weight-strong);
   line-height: 1;
@@ -138,40 +138,40 @@
 
 .mf-panel-tabs {
   display: grid;
-  grid-template-columns: 92px 118px 1fr 42px;
+  grid-template-columns: max(92px, 23.5897cqw) max(118px, 30.2564cqw) 1fr max(42px, 10.7692cqw);
   align-items: end;
-  min-height: 70px;
-  padding: max(18px, env(safe-area-inset-top)) 17px 0;
+  min-height: max(70px, 17.9487cqw);
+  padding: max(max(18px, 4.6154cqw), env(safe-area-inset-top)) max(17px, 4.359cqw) 0;
   border-bottom: 1px solid var(--mf-ui-line);
 }
 
 .mf-panel-tabs > button {
-  height: 39px;
-  padding: 0 4px 13px;
+  height: max(39px, 10cqw);
+  padding: 0 max(4px, 1.0256cqw) max(13px, 3.3333cqw);
   letter-spacing: .14em;
 }
 
 .mf-panel-tabs .mf-panel-close {
   grid-column: 4;
   align-self: center;
-  width: 36px;
-  height: 36px;
+  width: max(36px, 9.2308cqw);
+  height: max(36px, 9.2308cqw);
 }
 
 .mf-panel-tabs .mf-panel-close .mf-platform-icon {
-  width: 25px;
-  height: 25px;
+  width: max(25px, 6.4103cqw);
+  height: max(25px, 6.4103cqw);
   stroke-width: 1.6;
 }
 
 .mf-panel-scroll {
   min-height: 0;
   overflow-y: auto;
-  padding: 0 18px max(28px, env(safe-area-inset-bottom));
+  padding: 0 max(18px, 4.6154cqw) max(max(28px, 7.1795cqw), env(safe-area-inset-bottom));
 }
 
 .mf-cover-selection {
-  padding: 15px 0 13px;
+  padding: max(15px, 3.8462cqw) 0 max(13px, 3.3333cqw);
   border-bottom: 1px solid var(--mf-ui-line);
 }
 
@@ -180,7 +180,7 @@
 .mf-cover-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 7px;
+  gap: max(7px, 1.7949cqw);
 }
 
 .mf-cover-grid button {
@@ -256,7 +256,7 @@
 }
 
 .mf-game-info-head {
-  padding: 14px 0 12px;
+  padding: max(14px, 3.5897cqw) 0 max(12px, 3.0769cqw);
   border-bottom: 1px solid var(--mf-ui-line);
 }
 
@@ -269,8 +269,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  padding: 12px 0;
+  gap: max(14px, 3.5897cqw);
+  padding: max(12px, 3.0769cqw) 0;
   border-bottom: 1px solid var(--mf-ui-line);
 }
 
@@ -289,12 +289,12 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  height: 37px;
+  height: max(37px, 9.4872cqw);
   padding: 0 11px;
 }
 
 .mf-how-to-play {
-  padding: 13px 0 12px;
+  padding: max(13px, 3.3333cqw) 0 max(12px, 3.0769cqw);
   border-bottom: 1px solid var(--mf-ui-line);
 }
 
@@ -338,8 +338,8 @@
 
 /* Large creator portrait is a distinct functional size from small social avatars. */
 .mf-creator-card .mf-comment-avatar {
-  width: 52px;
-  height: 52px;
+  width: max(52px, 13.3333cqw);
+  height: max(52px, 13.3333cqw);
 }
 
 .mf-creator-card p { margin: 4px 0; }
@@ -407,8 +407,8 @@
   position: relative;
   display: grid;
   grid-template-columns: 42px minmax(0, 1fr);
-  column-gap: 10px;
-  padding: 7px 0 13px;
+  column-gap: max(10px, 2.5641cqw);
+  padding: max(7px, 1.7949cqw) 0 max(13px, 3.3333cqw);
 }
 
 .mf-comment-thread.is-reply {
@@ -484,8 +484,8 @@
 }
 
 .mf-comment-composer .mf-comment-avatar {
-  width: 34px;
-  height: 34px;
+  width: max(34px, 8.7179cqw);
+  height: max(34px, 8.7179cqw);
 }
 
 .mf-comment-nickname {
@@ -499,8 +499,8 @@
 .mf-comment-composer textarea {
   grid-column: 2;
   width: 100%;
-  height: 38px;
-  min-height: 38px;
+  height: max(38px, 9.7436cqw);
+  min-height: max(38px, 9.7436cqw);
   max-height: 76px;
   padding: 9px 13px;
   border-radius: 20px;
@@ -508,8 +508,8 @@
 }
 
 .mf-comment-composer > button {
-  width: 34px;
-  height: 34px;
+  width: max(34px, 8.7179cqw);
+  height: max(34px, 8.7179cqw);
 }
 
 .mf-comment-composer > button:disabled {

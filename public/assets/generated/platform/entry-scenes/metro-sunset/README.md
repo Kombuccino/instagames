@@ -9,4 +9,11 @@ Approved entry-scene plate selected on 12 September 2026.
 
 The runtime defaults to the 20% closer camera. `?metroDistance=30` switches the entry pilot to the 30% alternate without changing layout or handoff geometry.
 
-The existing MiniFugg phone shell and live projected phone screen remain independent Core layers. `arms/` and `arms-screen-cutout/` contain the eight production derivatives on a wider transparent canvas. Their original hand, phone and accessories are preserved; only the faceted sleeve continues naturally beyond the former vertical cut. PNG files are the lossless masters and lossless WebP files are served at runtime with PNG fallback. The plate contains the carriage, passengers and exterior view. The current integration adds only a restrained dynamic floor reflection; genuine three-plane parallax still requires authored foreground/interior/exterior separation and must not be faked by stretching this flattened master.
+The existing MiniFugg phone shell and live projected phone screen remain independent Core layers. `arms/` and `arms-screen-cutout/` contain the eight production derivatives on a wider transparent canvas. The original 941-pixel-wide source remains pixel-identical. Only the missing right-side sleeve is extended, using mirrored raster material from that same arm and clipped to a continuous low-poly sleeve silhouette. No shared recoloured extension is used. PNG files are the lossless masters and lossless WebP files are served at runtime with PNG fallback.
+
+`parallax/` contains the active 20% scene split:
+
+- `carriage-foreground.png` / `.webp`: exact approved carriage and passenger pixels with transparent window openings;
+- `exterior-panorama.png` / `.webp`: independent low-poly sunset, skyline and water panorama.
+
+Core clips the outdoor panorama into three moving bands (sky/sun, city, water) while the carriage plate stays fixed. The floor-light layer adds the interior response. Reduced-motion freezes all parallax. Source studies and the alpha-matte extraction are documented under `concepts/metro-parallax-v1/`; `scripts/build-metro-entry-parallax-assets.py` deterministically rebuilds the production files and every arm derivative.

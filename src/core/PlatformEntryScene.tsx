@@ -35,6 +35,7 @@ const SWIPE_THRESHOLD_PX = 42
 const ASSET_ROOT = '/assets/imported/platform/entry-scenes/metro-moment-v1'
 const WAGON_ART = `${ASSET_ROOT}/wagon-reader-fuggy.png`
 const METRO_SCENE_ROOT = '/assets/generated/platform/entry-scenes/metro-sunset'
+const METRO_PARALLAX_ROOT = `${METRO_SCENE_ROOT}/parallax`
 const CITY_ART = `${ASSET_ROOT}/city-loop-sunset.png`
 const ARM_ROOT = `${METRO_SCENE_ROOT}/arms`
 const ARM_VARIANTS = Array.from({ length: 8 }, (_, index) => `${ARM_ROOT}/arm-${String(index + 1).padStart(2, '0')}.png`)
@@ -315,7 +316,29 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
         )}
 
         <div className="mf-entry-scene__carriage" aria-hidden="true">
-          {handoff === 'home-bis' ? (
+          {handoff === 'home-bis' && metroCameraDistance === '20' ? (
+            <>
+              <div className="mf-entry-scene__metro-parallax">
+                {(['sky', 'city', 'water'] as const).map((layer) => (
+                  <picture key={layer} className={`mf-entry-scene__metro-layer mf-entry-scene__metro-layer--${layer}`}>
+                    <source srcSet={`${METRO_PARALLAX_ROOT}/exterior-panorama.webp`} type="image/webp" />
+                    <img src={`${METRO_PARALLAX_ROOT}/exterior-panorama.png`} alt="" draggable={false} decoding="async" loading="eager" />
+                  </picture>
+                ))}
+              </div>
+              <picture>
+                <source srcSet={`${METRO_PARALLAX_ROOT}/carriage-foreground.webp`} type="image/webp" />
+                <img
+                  className="mf-entry-scene__wagon mf-entry-scene__wagon--wide mf-entry-scene__wagon--foreground"
+                  src={`${METRO_PARALLAX_ROOT}/carriage-foreground.png`}
+                  alt=""
+                  draggable={false}
+                  decoding="async"
+                  loading="eager"
+                />
+              </picture>
+            </>
+          ) : handoff === 'home-bis' ? (
             <picture>
               <source srcSet={`${METRO_SCENE_ROOT}/camera-distance-${metroCameraDistance}.webp`} type="image/webp" />
               <img

@@ -120,6 +120,62 @@
   object-position: 50% 50%;
 }
 
+.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-parallax {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  background: #f59b78;
+}
+
+.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer img {
+  position: absolute;
+  left: -8%;
+  top: -18%;
+  display: block;
+  width: 116%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  will-change: transform, filter;
+}
+
+.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer--sky {
+  clip-path: inset(0 0 66% 0);
+}
+
+.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer--sky img {
+  animation: mf-entry-metro-sky-drift 18s ease-in-out infinite alternate;
+}
+
+.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer--city {
+  clip-path: inset(25% 0 60% 0);
+}
+
+.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer--city img {
+  animation: mf-entry-metro-city-drift 13s ease-in-out infinite alternate;
+}
+
+.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer--water {
+  clip-path: inset(34% 0 49% 0);
+}
+
+.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer--water img {
+  animation: mf-entry-metro-water-drift 7s ease-in-out infinite alternate;
+}
+
+.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__wagon--foreground {
+  z-index: 2;
+}
+
 /* A restrained moving reflection gives the approved static plate some train
  * life. It stays on the floor and remains independent from the authored art. */
 .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__floor-light {
@@ -215,6 +271,21 @@
   100% { opacity: .12; transform: translate3d(9%,0,0); }
 }
 
+@keyframes mf-entry-metro-sky-drift {
+  0% { transform: translate3d(-.35%,0,0) scale(1.002); filter: saturate(.98) brightness(.99); }
+  100% { transform: translate3d(.35%,.18%,0) scale(1.006); filter: saturate(1.03) brightness(1.02); }
+}
+
+@keyframes mf-entry-metro-city-drift {
+  0% { transform: translate3d(1.4%,0,0) scale(1.01); }
+  100% { transform: translate3d(-1.4%,0,0) scale(1.01); }
+}
+
+@keyframes mf-entry-metro-water-drift {
+  0% { transform: translate3d(2.5%,.1%,0) scale(1.015,1.005); filter: brightness(.98) saturate(1); }
+  100% { transform: translate3d(-2.5%,-.15%,0) scale(1.015,1.012); filter: brightness(1.05) saturate(1.06); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .mf-entry-scene.is-entering,
   .mf-entry-scene.is-entering .mf-entry-scene__stage {
@@ -230,6 +301,10 @@
   }
 
   .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__floor-light {
+    animation: none;
+  }
+
+  .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer img {
     animation: none;
   }
 }

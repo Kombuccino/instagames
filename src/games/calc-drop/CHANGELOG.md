@@ -1,5 +1,10 @@
 # TetraMindFck — Changelog
 
+## 0.7.1 — 2026-09-12 21:44 Europe/Paris
+
+- Rétablissement immédiat du cadrage `cover` validé pour les quatre affiches : elles remplissent de nouveau le cadre à leur échelle normale.
+- Suppression du rendu `contain` et de ses marges diffuses, qui réduisaient visuellement les jaquettes sur PC.
+
 ## 0.7.0 — 2026-09-12 21:35 Europe/Paris
 
 - Première mini-tranche de la refonte gameplay rétro portable / CRT directement dans la scène Phaser.

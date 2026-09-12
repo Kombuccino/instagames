@@ -121,7 +121,7 @@ try {
       assert.equal(await shell.getAttribute('data-cover-migration'), 'current')
       assert.equal(await shell.locator('canvas').count(), 0)
 
-      const playBox = await shell.locator('.mf-insert-coin').boundingBox()
+      const playBox = await shell.locator('.mf-coin-console-90s').boundingBox()
       const coverBox = await art.boundingBox()
       assert.ok(playBox && coverBox && playBox.y > coverBox.y + coverBox.height * 0.72,
         'JOUER must overlap only the expendable lower cover zone')

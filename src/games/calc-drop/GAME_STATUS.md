@@ -57,6 +57,11 @@ Gameplay Phaser migration + gameplay art production mini-slice.
 - Verify especially: controls, 7-bag previews including I-piece width, O-piece token rotation, reverse calculation, simultaneous line clear animation, 3-tick lock, bonus injection, total-clear target skipping, `1–9` generation, `2:1` operator split, long score display, game-over/restart and reactive music level changes.
 - After mini-slice acceptance: produce clean source masters and WebP-lossless runtime derivatives for the shell/button/background family through the documented asset pipeline, then replace temporary Phaser structural geometry without changing gameplay positions.
 
+## Cover size regression correction — 2026-09-12
+
+- The `contain` presentation introduced in 0.6.1 was rejected because it visibly shrank the covers and added exterior margins.
+- All four editions return to their approved top-anchored `cover` presentation; the Core console remains an overlay over expendable BAS.
+
 ## Static cover pilot — 2026-09-12
 
 - Base Git: `cc19fbd903ba2e9324c3789be195a3f68c6ba129`.

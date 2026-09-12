@@ -4,6 +4,7 @@ import { PhaserGameHost } from '../../core/runtime/PhaserGameHost'
 import { DEFAULT_LOGICAL_VIEWPORTS } from '../../core/runtime/gameRuntimePolicy'
 import { useTetraMindFckMusic } from '../../music/reactiveGameMusic'
 import { TETRAMINDFCK_SCENE_KEY, TetraMindFckScene } from './TetraMindFckScene'
+import { installTetraMindFckSkin } from './TetraMindFckSkin'
 
 export function TetraMindFck({ active, seed, restartToken, session }: GameComponentProps) {
   const renderPixelRatio = useRef(Math.min(2, Math.max(1, window.devicePixelRatio || 1))).current
@@ -29,7 +30,7 @@ export function TetraMindFck({ active, seed, restartToken, session }: GameCompon
     setLevel(1)
   }, [restartToken, seed])
 
-  const createScene = useCallback(() => new TetraMindFckScene({
+  const createScene = useCallback(() => installTetraMindFckSkin(new TetraMindFckScene({
     seed,
     renderPixelRatio,
     onLevelChange: setLevel,
@@ -46,10 +47,10 @@ export function TetraMindFck({ active, seed, restartToken, session }: GameCompon
         })
       },
     },
-  }), [renderPixelRatio, seed])
+  })), [renderPixelRatio, seed])
 
   return (
-    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#f2efe6' }}>
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#211a16' }}>
       <PhaserGameHost
         active={gameplayActive}
         restartToken={restartToken}

@@ -1,5 +1,15 @@
 # TetraMindFck — Changelog
 
+## 0.7.0 — 2026-09-12 21:35 Europe/Paris
+
+- Première mini-tranche de la refonte gameplay rétro portable / CRT directement dans la scène Phaser.
+- Nouveau shell crème temporaire, écran principal vert, rail gauche `LEVEL / TARGET / NEXT / NEXT+1` et score total large au-dessus de la grille.
+- Les chiffres `1–9` utilisent désormais une même famille phosphore vert lavé ; les multiplicateurs, diviseurs et bonus ne se distinguent que par des accents CRT retenus.
+- Les cases restent strictement carrées et alignées sur la grille `10 × 20`; les previews sont centrées par leurs vraies dimensions et acceptent la pièce I de quatre cases.
+- Les quatre commandes principales sont alignées sur une seule rangée basse avec espacement serré ; `DOWN` est plus petit et placé sous les déplacements.
+- L’animation de clear conserve la grille figée pendant le calcul et reprend la palette CRT.
+- Aucun nouvel asset raster runtime n’est introduit dans cette tranche : PNG reste réservé aux sources/masters et les futurs dérivés runtime seront WebP lossless par défaut.
+
 ## 0.6.1 — 2026-09-12 21:17 Europe/Paris
 
 - Conservation intégrale des quatre affiches statiques sur les cadres PC plus larges, avec prolongement diffus à l’extérieur du master.

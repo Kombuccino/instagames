@@ -36,6 +36,7 @@ type RuntimeInternals = {
   updateSkewer: (dt: number) => void
   dispatchCompletedSkewer: (customer: RuntimeCustomer) => void
   stateReader: () => string
+  runTestAction?: (action: string) => string
 }
 
 type ImageFactory = (...args: any[]) => Phaser.GameObjects.Image
@@ -126,9 +127,18 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
   const internals = scene as unknown as RuntimeInternals
   let completedRecipeLocked = false
 
-  const originalBlood = internals.createBloodVisual.bind(scene)
-  void originalBlood
   internals.createBloodVisual = (x, y) => createReadableBloodDrop(scene, x, y)
+
+  const runTestAction = internals.runTestAction?.bind(scene)
+  if (runTestAction) {
+    internals.runTestAction = (action: string) => {
+      if (action === 'blood-visual') {
+        internals.createBloodVisual(195, 350)
+        return internals.stateReader()
+      }
+      return runTestAction(action)
+    }
+  }
 
   const spawnDrop = internals.spawnDrop.bind(scene)
   internals.spawnDrop = (y = 145) => {

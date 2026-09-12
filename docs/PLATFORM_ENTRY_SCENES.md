@@ -117,6 +117,10 @@ The wide metro is a horizontal continuation of the validated portrait framing, n
 
 The preferred research direction uses the enlarging phone and hand as a natural foreground mask rather than a literal split screen or digital particle effect: the metro loses focus and exposure behind the device, warm desk light appears, then the bedroom resolves in its wake. Reduced motion uses a short background fade while keeping the phone fixed and readable.
 
+Current metro revision constraints: the player reads as seated, the reader sits naturally opposite the player, the forearm is complete, and Fuggy is removed from the bench. The scene should feel inhabited without clutter and be authored as three separable parallax planes: foreground player/phone/poles, middle carriage/reader/passengers, and exterior city. Three unvalidated composition studies and their exact `390 × 844` crop guides live under `/assets/generated/platform/concepts/metro-rework-v1/`.
+
+Keeping the hand through the approach proves object continuity, but the enlarged fingers currently cover too much of the magazine. The preferred next test lets the hand move mostly outside the viewport as the phone settles, retaining at most a discreet thumb or palm contact. This remains a visual choice pending validation.
+
 The left side then introduces a physical or semi-physical `MiniFugg Retro Gaming` magazine. It is closed first for roughly 4–5 seconds. Its cover is a fixed low-poly Fuggy composition with the exact MiniFugg-logo masthead and short funny English cover lines; it never selects a catalog game. It then opens almost flat and readable on the desk, with one active page and the rest curled underneath. Three physical tabs directly select `FEATURE`, `COMMENTS` and `RANKING` inside the same fixed page.
 
 The fixed cover has no Like, Favorite, selected-game or player-dependent state. The open spread and phone remain synchronized to the active game.

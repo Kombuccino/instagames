@@ -32,6 +32,8 @@ Sur écran étendu, la scène de départ et la scène d'arrivée occupent le mê
 
 Le cadrage portrait validé reste une sous-partie exacte du décor large : on prolonge le wagon latéralement, surtout dans l'espace disponible à gauche, sans agrandir ni recadrer le garçon, Fuggy, le siège ou les portes. La même variante de bras et de téléphone traverse tout le raccord. Après le changement de pièce, son verre est évidé et le véritable viewport Core apparaît dans cette ouverture ; aucune seconde main ne doit remplacer la première.
 
+Dans la scène métro retenue, Fuggy ne doit plus être assis sur le banc. Le point de vue doit identifier immédiatement le joueur comme assis et placer le lecteur en face de lui avec une posture crédible. Le bras visible est continu depuis le bord du cadre jusqu'au poignet. La composition large doit rester exploitable en trois plans séparables — premier plan du joueur, intérieur et passagers, extérieur par les fenêtres — afin de permettre un parallaxe à vitesses distinctes.
+
 La surface du téléphone doit suivre exactement son cadrage et sa perspective. Écran, bras et téléphone partagent les transformations utiles ; ne pas superposer un rectangle approximatif qui glisse séparément. Prévoir les occultations par la main, le cadre et les limites du zoom.
 
 Pour le raccord vers l'écran étendu, mesurer les quatre coins du verre dans l'asset source et les projeter sur les quatre coins du verre final. La transformation doit redresser la perspective et fixer simultanément la taille et la position. Le raccord ne se règle pas avec une succession empirique de rotations et de zooms. À l'arrivée, CENTRE remplit la hauteur utile ; HAUT et BAS du MASTER se prolongent hors du viewport.

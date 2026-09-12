@@ -59,14 +59,41 @@
   }
 }
 
-/*
- * Extended-home experiment: use the original metro hand as an optical wipe.
- * At the closest point its measured inner glass is approximately 390 × 844
- * on the canonical desktop stage. The bezel therefore leaves the viewport
- * before the bedroom phone is revealed underneath.
- */
-.mf-entry-scene.is-home-bis-handoff.is-entering .mf-entry-scene__hand-group {
-  animation: mf-entry-hand-to-home-bis 1700ms cubic-bezier(.18,.74,.2,1) forwards;
+/* The wide pilot uses one viewport for both rooms. The portrait artwork is a
+ * separate phone rig, while the metro plate fills the desktop stage. */
+@media (min-width: 761px) {
+  .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__stage {
+    width: 100vw;
+    height: 100dvh;
+  }
+
+  .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__wagon {
+    inset: -2%;
+    width: 104%;
+    height: 104%;
+    object-fit: cover;
+    object-position: 50% 49%;
+  }
+
+  .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__phone-rig {
+    inset: auto 8% 0 auto;
+    width: 56.28dvh;
+    height: 100dvh;
+    will-change: transform;
+  }
+
+  .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__hand-group {
+    transform: none;
+    animation: none;
+  }
+
+  .mf-entry-scene.is-home-bis-handoff.is-entering .mf-entry-scene__phone-rig {
+    animation: mf-entry-rig-to-home-bis 1700ms cubic-bezier(.2,.72,.18,1) forwards;
+  }
+
+  .mf-entry-scene.is-home-bis-handoff.is-entering .mf-entry-scene__hand-group {
+    animation: none;
+  }
 }
 
 .mf-entry-scene.is-home-bis-handoff.is-entering .mf-entry-scene__flash {
@@ -125,31 +152,10 @@
   transition: opacity 260ms ease 1240ms;
 }
 
-@keyframes mf-entry-hand-to-home-bis {
-  0% {
-    opacity: 1;
-    transform: translate3d(15%,20%,0) scale(.91) rotate(-1.6deg);
-  }
-  42% {
-    opacity: 1;
-    transform: translate3d(8%,7%,0) scale(2.1) rotate(-5deg);
-  }
-  70% {
-    opacity: 1;
-    transform: translate3d(3%,0,0) scale(3.56) rotate(-11deg);
-  }
-  84% {
-    opacity: 1;
-    transform: translate3d(30vw,0,0) scale(3.56) rotate(-11deg);
-  }
-  99% {
-    opacity: 1;
-    transform: translate3d(30vw,0,0) scale(3.56) rotate(-11deg);
-  }
-  100% {
-    opacity: 0;
-    transform: translate3d(30vw,0,0) scale(3.56) rotate(-11deg);
-  }
+@keyframes mf-entry-rig-to-home-bis {
+  0%, 18% { opacity:1; transform:none; }
+  72%, 99% { opacity:1; transform:var(--mf-entry-final-transform); }
+  100% { opacity:0; transform:var(--mf-entry-final-transform); }
 }
 
 @keyframes mf-entry-blackout-to-home-bis {
@@ -173,7 +179,7 @@
 
   .mf-entry-scene.is-entering .mf-entry-scene__city,
   .mf-entry-scene.is-entering .mf-entry-scene__carriage,
-  .mf-entry-scene.is-entering .mf-entry-scene__hand-group {
+  .mf-entry-scene.is-entering .mf-entry-scene__phone-rig {
     opacity: 0;
     transition: none;
   }

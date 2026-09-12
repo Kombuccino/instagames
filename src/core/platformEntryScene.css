@@ -54,6 +54,13 @@
   animation: mf-entry-carriage-motion 5.2s linear infinite;
 }
 
+.mf-entry-scene__phone-rig {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  transform-origin: 0 0;
+}
+
 .mf-entry-scene__wagon,
 .mf-entry-scene__arm {
   position: absolute;

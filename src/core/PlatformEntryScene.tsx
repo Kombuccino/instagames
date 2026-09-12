@@ -128,6 +128,9 @@ const PHONE_SCREEN_QUAD = [
 function chooseArm() {
   if (typeof window === 'undefined') return ARM_VARIANTS[0]
 
+  const forcedVariant = new URL(window.location.href).searchParams.get('entryArm')
+  if (/^0[1-8]$/.test(forcedVariant ?? '')) return `${ASSET_ROOT}/arms/arm-${forcedVariant}.png`
+
   let previous = -1
   try {
     previous = Number(window.sessionStorage.getItem(ARM_STORAGE_KEY))
@@ -150,6 +153,7 @@ function chooseArm() {
 export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEntrySceneProps) {
   const [entering, setEntering] = useState(false)
   const [arm] = useState(chooseArm)
+  const armVariant = arm.match(/arm-(\d{2})\.png$/)?.[1] ?? '01'
   const [metroCameraDistance] = useState(() => {
     if (typeof window === 'undefined') return '20'
     return new URL(window.location.href).searchParams.get('metroDistance') === '30' ? '30' : '20'
@@ -333,7 +337,8 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
         {handoff === 'home-bis' && <span className="mf-entry-scene__handoff-blackout" aria-hidden="true" />}
 
         <div ref={phoneRigRef} className="mf-entry-scene__phone-rig" aria-hidden="true">
-          <div className="mf-entry-scene__hand-group">
+          <div className={`mf-entry-scene__hand-group is-arm-${armVariant}`}>
+            <span className="mf-entry-scene__arm-continuation" />
             <img className="mf-entry-scene__arm" src={arm} alt="" draggable={false} decoding="sync" />
             <ProjectiveDomSurface
               className="mf-entry-scene__phone-projective"

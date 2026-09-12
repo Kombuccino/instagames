@@ -285,6 +285,7 @@ export function HomeBisLab({ handoffArm = null }: HomeBisLabProps) {
   const item = HOME_BIS_GAMES[activeIndex]
   const game = labGames[activeIndex]
   const handoffCutout = handoffArm?.replace('/arms/', '/arms-screen-cutout/') ?? null
+  const handoffArmVariant = handoffArm?.match(/arm-(\d{2})\.png$/)?.[1] ?? '01'
   const previousItem = previousIndex === null ? null : HOME_BIS_GAMES[previousIndex]
   if (!game) return null
 
@@ -330,7 +331,8 @@ export function HomeBisLab({ handoffArm = null }: HomeBisLabProps) {
           </div>
         </div>
         {handoffCutout && (
-          <div className="mf-home-bis-handoff-rig" aria-hidden="true">
+          <div className={`mf-home-bis-handoff-rig is-arm-${handoffArmVariant}`} aria-hidden="true">
+            <span className="mf-entry-scene__arm-continuation" />
             <picture>
               <source srcSet={handoffCutout.replace('.png', '.webp')} type="image/webp" />
               <img src={handoffCutout} alt="" draggable={false} />

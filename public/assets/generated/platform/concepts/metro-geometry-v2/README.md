@@ -37,6 +37,7 @@ Hypothèses de travail à vérifier visuellement, et non présentées comme des 
 7. `05-rendu-peuple-corrige-mobile.png` contrôle cette nouvelle composition dans le cadre mobile commun.
 8. `06-camera-moins-20.png` avance la caméra de 20 % vers la banquette opposée, à focale et hauteur constantes. C'est le cadrage de production validé.
 9. `07-camera-moins-30.png` teste le même mouvement avec 30 % de distance en moins. Il reste une alternative compatible, sans être le cadrage actif.
+10. `08-rendu-lowpoly-casque-fuggy.png` conserve le cadrage −20 %, renforce les facettes sur toute la scène et ajoute au casque du lecteur deux petites oreilles corail inspirées de Fuggy. Il devient la source du runtime −20 %.
 
 Les barres dorées sont des segments verticaux dont le pied et le sommet possèdent le même `(x, y)`. Les poignées sont des objets identiques distribués sur un seul rail 3D. Leur alignement et leur changement d'échelle proviennent donc de la projection, et non d'un placement manuel dans l'image.
 

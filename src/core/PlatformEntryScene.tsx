@@ -179,6 +179,8 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
           <FuggyEyes className="mf-entry-scene__fuggy-eyes" />
         </div>
 
+        {handoff === 'home-bis' && <span className="mf-entry-scene__handoff-blackout" aria-hidden="true" />}
+
         <div className="mf-entry-scene__hand-group" aria-hidden="true">
           <img className="mf-entry-scene__arm" src={arm} alt="" draggable={false} decoding="sync" />
           <ProjectiveDomSurface

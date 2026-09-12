@@ -77,6 +77,19 @@
   overflow: visible;
 }
 
+.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__handoff-blackout {
+  position: absolute;
+  inset: -100vmax;
+  z-index: 2;
+  pointer-events: none;
+  background: #050607;
+  opacity: 0;
+}
+
+.mf-entry-scene.is-home-bis-handoff.is-entering .mf-entry-scene__handoff-blackout {
+  animation: mf-entry-blackout-to-home-bis 1700ms ease both;
+}
+
 .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__loading {
   position: absolute;
   inset: 0;
@@ -119,29 +132,35 @@
   }
   42% {
     opacity: 1;
-    transform: translate3d(8%,7%,0) scale(2.05) rotate(-.7deg);
+    transform: translate3d(8%,7%,0) scale(2.1) rotate(-5deg);
   }
   70% {
     opacity: 1;
-    transform: translate3d(3%,1%,0) scale(3.25) rotate(0deg);
+    transform: translate3d(3%,0,0) scale(3.56) rotate(-11deg);
   }
   84% {
     opacity: 1;
-    transform: translate3d(36vw,1%,0) scale(2.78) rotate(0deg);
+    transform: translate3d(30vw,0,0) scale(3.56) rotate(-11deg);
   }
-  94% {
-    opacity: .92;
-    transform: translate3d(36vw,1%,0) scale(2.66) rotate(0deg);
+  99% {
+    opacity: 1;
+    transform: translate3d(30vw,0,0) scale(3.56) rotate(-11deg);
   }
   100% {
     opacity: 0;
-    transform: translate3d(36vw,1%,0) scale(2.66) rotate(0deg);
+    transform: translate3d(30vw,0,0) scale(3.56) rotate(-11deg);
   }
+}
+
+@keyframes mf-entry-blackout-to-home-bis {
+  0%, 24% { opacity: 0; }
+  43%, 99% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 @keyframes mf-entry-loading-to-home-bis {
   0%, 28% { opacity: 0; }
-  40%, 96% { opacity: 1; }
+  40%, 99% { opacity: 1; }
   100% { opacity: 0; }
 }
 

@@ -9,6 +9,8 @@ const ARM_SPRITE_Y_OFFSET = 24
 const COMPLETED_HOLD_MS = 1000
 const STACK_GAP = 43
 const GUARD_STACK_CLEARANCE = 38
+const MAX_JOINT_SPEED = 5.5
+const MAX_END_SPEED = 7
 
 type RuntimeCustomer = {
   order: unknown[]
@@ -69,10 +71,6 @@ type RuntimeInternals = {
 }
 
 type ImageFactory = (...args: any[]) => Phaser.GameObjects.Image
-
-function clamp(value: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, value))
-}
 
 function skewerHeightForRecipe(count: number) {
   if (count <= 2) return 110
@@ -217,6 +215,15 @@ function drawPhysicalLimb(
   }
 }
 
+function capMatterVelocity(scene: VladsSkewersScene, body: any, maxSpeed: number) {
+  const vx = body.velocity?.x ?? 0
+  const vy = body.velocity?.y ?? 0
+  const speed = Math.hypot(vx, vy)
+  if (!Number.isFinite(speed) || speed <= maxSpeed) return
+  const scale = maxSpeed / speed
+  scene.matter.body.setVelocity(body, { x: vx * scale, y: vy * scale })
+}
+
 function createMatterLimbs(scene: VladsSkewersScene, item: RuntimeStackItem) {
   if (item.matterLimbs) return item.matterLimbs
   const size = item.visual.size
@@ -235,13 +242,13 @@ function createMatterLimbs(scene: VladsSkewersScene, item: RuntimeStackItem) {
     const secondLength = hang * .53
     const initialSide = spec.side * (spec.leg ? 4 : 6)
     const joint = scene.matter.add.circle(shoulder.x + initialSide, shoulder.y + firstLength, 2, {
-      frictionAir: .018,
+      frictionAir: .055,
       restitution: 0,
       collisionFilter: { mask: 0 },
       label: `vlad-limb-joint-${spec.index}`,
     })
     const end = scene.matter.add.circle(shoulder.x + initialSide * 1.4, shoulder.y + firstLength + secondLength, 2, {
-      frictionAir: .012,
+      frictionAir: .045,
       restitution: 0,
       collisionFilter: { mask: 0 },
       label: `vlad-limb-end-${spec.index}`,
@@ -251,8 +258,8 @@ function createMatterLimbs(scene: VladsSkewersScene, item: RuntimeStackItem) {
       collisionFilter: { mask: 0 },
       label: `vlad-limb-anchor-${spec.index}`,
     })
-    const upper = scene.matter.add.constraint(anchor, joint, firstLength, .94, { damping: .035 })
-    const lower = scene.matter.add.constraint(joint, end, secondLength, .92, { damping: .025 })
+    const upper = scene.matter.add.constraint(anchor, joint, firstLength, .78, { damping: .12 })
+    const lower = scene.matter.add.constraint(joint, end, secondLength, .72, { damping: .1 })
     return { anchor, joint, end, upper, lower, ...spec }
   })
   return item.matterLimbs
@@ -271,27 +278,24 @@ function destroyMatterLimbs(scene: VladsSkewersScene, item: RuntimeStackItem) {
   })
 }
 
-function updateMatterLimbs(
-  scene: VladsSkewersScene,
-  item: RuntimeStackItem,
-  accelerationX: number,
-  accelerationY: number,
-) {
+function updateMatterLimbs(scene: VladsSkewersScene, item: RuntimeStackItem) {
   const limbs = createMatterLimbs(scene, item)
-  const forceX = clamp(-accelerationX * .0000018, -.035, .035)
-  const forceY = clamp(-accelerationY * .0000015, -.03, .03)
 
   limbs.forEach((limb) => {
     const startLocal = limbStartLocal(item, limb.side, limb.leg)
     const shoulderWorld = localToWorld(item, startLocal)
-    scene.matter.body.setPosition(limb.anchor, shoulderWorld, true)
 
-    // The shoulder is kinematic because it belongs to the skewered body. The
-    // rest of the two-link chain is genuine Matter physics: gravity acts in
-    // screen/world space and the opposite acceleration impulse creates the
-    // expected lag/whip when the player flicks the mouse or finger.
-    scene.matter.body.applyForce(limb.joint, limb.joint.position, { x: forceX * .72, y: forceY * .72 })
-    scene.matter.body.applyForce(limb.end, limb.end.position, { x: forceX * 1.28, y: forceY * 1.28 })
+    // Matter already produces the correct lag because the dynamic chain is
+    // attached to this moving shoulder. Keep the anchor velocity at zero: using
+    // updateVelocity=true plus an extra acceleration force was effectively
+    // injecting the same mouse impulse twice and produced explosive motion.
+    scene.matter.body.setPosition(limb.anchor, shoulderWorld, false)
+
+    // Sudden pointer jumps can still create a large one-frame constraint error.
+    // Cap only the invisible limb-node velocities, preserving direction and all
+    // gravity/constraint behaviour while preventing numerical catapult spikes.
+    capMatterVelocity(scene, limb.joint, MAX_JOINT_SPEED)
+    capMatterVelocity(scene, limb.end, MAX_END_SPEED)
 
     const jointLocal = worldToLocal(item, limb.joint.position)
     const endLocal = worldToLocal(item, limb.end.position)
@@ -323,10 +327,6 @@ function updateMatterLimbs(
 export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
   const internals = scene as unknown as RuntimeInternals
   let completedRecipeLocked = false
-  let previousSkewerX = internals.skewerX
-  let previousSkewerY = internals.skewerY
-  let previousVelocityX = 0
-  let previousVelocityY = 0
 
   internals.createBloodVisual = (x, y) => createReadableBloodDrop(scene, x, y)
 
@@ -382,23 +382,12 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
     latest.visual.root.setRotation(latest.baseRotation)
   }
 
-  // Disable the previous synthetic spring/flap solver. Matter owns the limb
-  // motion below, after the guard-first stack position is finalized.
   internals.drawInertStackLimbs = () => {}
 
   const updateSkewer = internals.updateSkewer.bind(scene)
   internals.updateSkewer = (dt: number) => {
     updateSkewer(dt)
     const height = currentSkewerHeight(internals)
-    const safeDt = Math.max(dt, .001)
-    const velocityX = (internals.skewerX - previousSkewerX) / safeDt
-    const velocityY = (internals.skewerY - previousSkewerY) / safeDt
-    const accelerationX = (velocityX - previousVelocityX) / safeDt
-    const accelerationY = (velocityY - previousVelocityY) / safeDt
-    previousSkewerX = internals.skewerX
-    previousSkewerY = internals.skewerY
-    previousVelocityX = velocityX
-    previousVelocityY = velocityY
 
     internals.skewer
       .setPosition(Math.round(internals.skewerX), Math.round(internals.skewerY - SKEWER_BOTTOM_OFFSET))
@@ -418,7 +407,7 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
           Math.round(target.y + item.entryOffsetY * entry),
         )
         .setRotation(item.baseRotation)
-      updateMatterLimbs(scene, item, accelerationX, accelerationY)
+      updateMatterLimbs(scene, item)
     })
   }
 
@@ -488,6 +477,7 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
         stackLayout?: string
         guardY?: number
         limbPhysics?: string
+        limbMaxSpeed?: number
       }
     }
     if (state.skewer) {
@@ -498,7 +488,11 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
       state.skewer.completedLock = completedRecipeLocked
       state.skewer.stackLayout = 'guard-up'
       state.skewer.guardY = Math.round(internals.skewerY - SKEWER_BOTTOM_OFFSET)
-      state.skewer.limbPhysics = 'matter-two-link-gravity'
+      state.skewer.limbPhysics = 'matter-two-link-damped-anchor'
+      state.skewer.limbMaxSpeed = Number(Math.max(0, ...internals.stack.flatMap((item) => (item.matterLimbs ?? []).flatMap((limb) => [
+        Math.hypot(limb.joint.velocity?.x ?? 0, limb.joint.velocity?.y ?? 0),
+        Math.hypot(limb.end.velocity?.x ?? 0, limb.end.velocity?.y ?? 0),
+      ]))).toFixed(2))
     }
     return JSON.stringify(state)
   }

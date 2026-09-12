@@ -5,6 +5,7 @@ import { DEFAULT_LOGICAL_VIEWPORTS } from '../../core/runtime/gameRuntimePolicy'
 import { miniFuggAudio } from '../../audio'
 import { VLADS_SKEWERS_SCENE_KEY, VladsSkewersScene } from './VladsSkewersScene'
 import { applyVladRuntimeTuning } from './VladsSkewersRuntime'
+import { applyVladPresentationTuning } from './VladsSkewersPresentation'
 import './VladsSkewers.css'
 
 const GAME_ID = 'vlads-skewers'
@@ -41,6 +42,7 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
       },
     })
     applyVladRuntimeTuning(scene)
+    applyVladPresentationTuning(scene)
     return scene
   }, [renderPixelRatio, runSeed])
 

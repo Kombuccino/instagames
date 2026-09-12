@@ -2,6 +2,19 @@
 
 Updated: 2026-09-12 Europe/Paris
 
+## Gameplay CRT art integration — 2026-09-12
+
+- User approved the retro handheld / green CRT gameplay direction after iterative correction of the grid, previews, controls and tile treatment.
+- The accepted visual contract is now canonical in `ART_DIRECTION.md`; production ownership and format rules are in `ASSET_MANIFEST.md`.
+- Runtime raster rule confirmed by the user: PNG is source/master only; WebP lossless is the normal runtime derivative, AVIF only for validated large opaque static art with fallback.
+- First representative Phaser mini-slice is now on `main`: cream handheld shell blockout, one dominant CRT, English-only `LEVEL / TARGET / NEXT / NEXT+1 / SCORE`, monochrome phosphor number tiles, restrained operator accents, grid-aligned previews and the revised control geometry.
+- The four main controls are one aligned low row with tight spacing; `DOWN` is smaller underneath the movement pair.
+- `NEXT` receives a directional marker and preview centering now uses actual piece bounds, so a four-cell I piece fits correctly.
+- `SCORE` is a wide top-of-CRT display with dynamic font sizing for long multi-million values.
+- The line-clear sequence remains board-frozen until its arithmetic scan is complete and now uses the CRT palette.
+- No new gameplay raster asset is referenced yet. This is deliberate: shell/button/background raster production waits for visual validation of the mini-slice, avoiding contaminated flattened UI assets.
+- Migration remains `in-progress` / locked until build/typecheck and representative phone/desktop gameplay validation pass; legacy `CalcDrop.tsx` / `CalcDrop.css` therefore remain temporarily as historical fallback code.
+
 ## Cover fit correction — 2026-09-12
 
 - User review found that the previously top-cropped PC display hid substantial parts of several approved characters once the larger Core coin console was integrated.
@@ -11,7 +24,7 @@ Updated: 2026-09-12 Europe/Paris
 
 ## Current phase
 
-Gameplay migration + GD refinement.
+Gameplay Phaser migration + gameplay art production mini-slice.
 
 ## Current rules
 
@@ -39,9 +52,10 @@ Gameplay migration + GD refinement.
 
 ## Validation / remaining
 
-- Preserve the existing gameplay visual language from `ART_DIRECTION.md`; no gameplay DA redesign was requested in this pass.
+- Validate the new CRT mini-slice at phone width and desktop CENTRE-height framing before generating final shell/button raster assets.
 - Typecheck/build and representative phone/desktop play validation remain required before marking the migration `current` and deleting the legacy renderer.
-- Verify especially: controls, 7-bag previews, O-piece token rotation, reverse calculation, simultaneous line clear animation, 3-tick lock, bonus injection, total-clear target skipping, `1–9` generation, `2:1` operator split, game-over/restart and reactive music level changes.
+- Verify especially: controls, 7-bag previews including I-piece width, O-piece token rotation, reverse calculation, simultaneous line clear animation, 3-tick lock, bonus injection, total-clear target skipping, `1–9` generation, `2:1` operator split, long score display, game-over/restart and reactive music level changes.
+- After mini-slice acceptance: produce clean source masters and WebP-lossless runtime derivatives for the shell/button/background family through the documented asset pipeline, then replace temporary Phaser structural geometry without changing gameplay positions.
 
 ## Static cover pilot — 2026-09-12
 

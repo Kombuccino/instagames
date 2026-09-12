@@ -100,7 +100,12 @@ export function CoinConsole90s({ fixed = false, coins, cost, free, launchError, 
           aria-label={free ? 'Play free' : `Play for ${price} coin${price === 1 ? '' : 's'}`}
           data-testid="coin-console-play"
         >
-          <span className="mf-console-play-atlas" aria-hidden="true" />
+          <span className="mf-console-play-visual" aria-hidden="true">
+            <span className="mf-console-play-frame is-idle" />
+            <span className="mf-console-play-frame is-warm" />
+            <span className="mf-console-play-frame is-hot" />
+            <span className="mf-console-play-frame is-down" />
+          </span>
         </button>
 
         {Array.from({ length: Math.min(price, 2) }, (_, index) => (

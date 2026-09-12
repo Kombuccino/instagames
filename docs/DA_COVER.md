@@ -26,6 +26,12 @@ Leur force ne vient ni des seules étiquettes rétro, ni de la patine, ni de la 
 
 Pour un autre jeu, transférer ce **degré d'écriture**, pas ces motifs. Un brief limité à `pulp`, `micro 90s` ou `affiche graphique` est incomplet. Il précise aussi la technique d'image, les masses et la silhouette dominantes, le visage ou la posture, la direction de l'énergie, le comportement du titre, la carte de densité, l'emplacement de la matière et quelques rejets visibles. Ne pas lisser une référence approuvée en réalisme numérique brillant ni la reconstruire à partir de clichés d'époque génériques.
 
+### Suite de références approuvée — planche TetraMindFck
+
+Le 12 septembre 2026, l'utilisateur a confirmé comme références de style **toutes les variantes de la première rangée** de `GFX/crea-chatgpt/game/ChatGPT Image 5 sept. 2026, 19_27_48 (1).png`, ainsi que sa variante `PUB 90s`. Cette validation porte sur leur écriture d'auteur et leur diversité, pas sur les anciens slogans, CTA, logos ou textes français de la planche. Les trois premiers masters statiques restent les seuls déjà acceptés comme fichiers de production ; l'édition japonaise recréée reste à valider comme image indépendante.
+
+Ce que ces cinq directions partagent n'est pas une finition uniforme : chacune choisit une tradition d'image, un geste dominant et une économie de détail différents. Elles évitent le visage embelli, les objets flottants distribués symétriquement, l'éclairage de key art contemporain et la texture vintage utilisée comme filtre. Le titre agit comme une masse dessinée ; les pièces Tetra ont une trajectoire ; le personnage conserve une anatomie expressive, parfois ingrate ; les zones calmes et les omissions rendent l'explosion plus forte.
+
 ## Quatre familles artistiques à préserver
 
 ### A — Pulp européen / illustration franco-belge
@@ -44,6 +50,12 @@ Des cadrages techniques, écrans, schémas ou repères éditoriaux peuvent inter
 
 **Grammaire de référence TetraMindFck :** titre monumental et compact ; perspective centrale stricte ; chambre technique bleu-noir froide ; traces vertes de CRT ou de grille utilisées comme environnement, pas comme faux HUD ; chair chaude contre machines froides ; anatomie crédible de peinture de boîte. L'ordre sous-jacent reste lisible tandis que blocs et écrans le perturbent localement. Refuser le néon cyberpunk, les surfaces 3D plastiques, l'empilement d'interfaces et tout faux cadre de boîte abîmé.
 
+#### B2 — Publicité ou couverture de magazine micro 90s
+
+Cette variante ne consiste pas à poser quelques cartouches sur une illustration. Elle reproduit l'architecture d'une vraie page de presse micro : masthead énorme et asymétrique, image principale ou écran incliné, manchettes de tailles franchement différentes, filets, encadrés et aplats d'encre qui organisent le regard. Les captures ou CRT sont des preuves éditoriales mises en scène, pas un HUD flottant. L'impression quatre couleurs, le papier mat et les transitions d'aérographe restent visibles ; les erreurs de registre peuvent exister localement sans simuler une jaquette abîmée.
+
+La variante `PUB 90s` de la planche TetraMindFck est la référence : grand `MIND FCK` jaune/rouge, explosion de pièces, écran incliné et couverture très chargée mais hiérarchisée. Pour une nouvelle cover de cette famille, les manchettes sont en anglais et leur liste exacte doit être fournie dans le micro-brief ; aucun français, pseudo-texte ou glyphes improvisés. C'est une exception éditoriale possible à la règle « titre seul », uniquement lorsque cette édition magazine est explicitement demandée et que chaque ligne de copie est validée.
+
 ### C — Affiche graphique / traditions éditoriales d'Europe de l'Est
 
 Une idée visuelle ou métaphore forte plutôt qu'un inventaire d'objets. Palette réduite, aplats, silhouettes, découpes, collage, trame ou sérigraphie/offset. La typographie participe à la composition. Laisser du vide, accepter l'asymétrie, les proportions inhabituelles et les ruptures d'échelle.
@@ -59,6 +71,10 @@ Refaire la logique éditoriale, pas seulement traduire le titre de la version eu
 **Piste japonaise :** rythme vertical nerveux, rapport énergique entre illustration et typographie, encarts utiles, dessin éventuellement proche de l'édition manga, couleurs imprimées maîtrisées. Pas de kanji aléatoires, torii, sakura ou yeux d'anime automatiques.
 
 Pour TetraMindFck, la piste privilégiée retrouvée est `GFX/crea-chatgpt/game/ChatGPT Image 5 sept. 2026, 19_27_48 (1).png`, quatrième variante de la première rangée : jeune personnage manga alarmé placé bas, cascade diagonale dense de pièces, fond imprimé violet/bleu, figure orange chaude et grand titre japonais intégré. Cette planche fixe la direction, mais n'est pas un master de production : ne pas la croper, l'agrandir ni la réinterpréter librement. Tout texte localisé devra être vérifié avant validation finale.
+
+Sa grammaire précise est celle d'une publicité manga commerciale imprimée, pas d'un personnage d'anime générique : encrage noir nerveux, yeux volontairement disproportionnés par la panique, corps projeté en diagonale, vêtements orange découpés en plis anguleux, blocs utilisés comme avalanche avec raccourcis de perspective, fond indigo/violet et titre katakana jaune traité comme une masse. La densité culmine entre le titre et le visage puis se relâche dans quelques poches sombres. Refuser le rendu anime numérique propre, le cel-shading plastique, le héros posé, la symétrie et l'accumulation de signes japonais sans fonction.
+
+Les planches `(2)` à `(6)` de la même série contiennent cinq autres variantes japonaises récupérées : magenta/bleu frontal, éditorial rose à explosion verticale, encre manga crème plus austère, psychose bleue/rouge et pulp manga orange/violet. Elles servent de références secondaires pour comprendre l'étendue de la famille ; elles ne remplacent pas la variante 4 de la planche `(1)` comme composition principale de TetraMindFck.
 
 **Piste chinoise :** hiérarchie et cadrage affirmés, rapport texte/image construit, symboles et modules graphiques liés au sujet. Choisir le contexte commercial/historique plutôt qu'un décor touristique. Pas de dragons, lanternes, pagodes ou pseudo-calligraphie par défaut.
 

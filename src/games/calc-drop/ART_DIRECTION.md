@@ -35,6 +35,18 @@ Only promote a cultural edition into the production variant list once a proper s
 
 The Japanese direction has been recovered in `GFX/crea-chatgpt/game/ChatGPT Image 5 sept. 2026, 19_27_48 (1).png`, top-row variant 4. It belongs to the same comparative board as the three approved families and is therefore the preferred visual lead: energetic manga drawing, low expressive character, diagonal cascade of pieces, violet/blue printed ground, orange figure and integrated vertical typography. The board crop is not a production master and must not be upscaled or reinterpreted loosely.
 
+On 2026-09-12 the user approved, as style references, the full first row of that board and its `PUB 90s` study. Preserve their differences instead of averaging them into a house look:
+
+- `pulp-euro`: broad painted/inked marks, jagged title, imperfect terrified adult and frontal cranial eruption;
+- `micro-euro`: rigid commercial hierarchy, cold blue technical chamber, open-head mechanism and warmer painted anatomy;
+- `graphic-poster`: cream stock, reduced black/orange geometry, large negative field and profile used as a symbolic cut shape;
+- `japanese`: nervous manga ink, frightened young figure low on a diagonal, orange clothing, indigo/violet field, hard-perspective avalanche and large yellow katakana title;
+- `pub-90s`: real micro-magazine page architecture—loud masthead, tilted CRT/screenshot, unequal cover-line scales, rules and four-color ink—not decorative UI pasted on an illustration. Future editorial copy must be English and explicitly listed before generation.
+
+The boards `(2)` through `(6)` of the same `19_27_48` series were also recovered. Their Japanese studies range from magenta/blue frontal manga to cream ink, blue/red psychological collapse and orange/violet manga pulp. They document the breadth of the regional family but do not supersede board `(1)`, top-row variant 4, as the primary composition.
+
+A first faithful standalone reconstruction candidate now exists locally in `GFX/crea-chatgpt/game/tetramindfck/japanese-research/`. It keeps only the exact localized title `テトラマインドファック`, removes the former side copy, CTA, arrow, MiniFugg mark and physical frame, and continues the orange figure through the expendable lower crop zone. Its artistic acceptance and production promotion remain pending; do not add it to `welcome.ts` before explicit user validation.
+
 ## Static cover migration
 
 TetraMindFck covers are static raster art rendered by Core. The former animated layer bundles and runtime were removed after the three static editions were accepted. For `pulp-euro` and `micro-euro`, the exact approved flat poster remains the authority rather than any reconstruction from the old layer stack.

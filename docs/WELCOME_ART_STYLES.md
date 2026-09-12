@@ -28,14 +28,13 @@ Different covers must not become one rigid template. Collection coherence should
 
 For finished Fugg covers, normally preserve:
 
-- portrait format, usually around 9:16;
+- exact portrait MASTER `390 × 844`;
 - readable game title;
 - one strong principal illustration or graphic idea;
-- optional short slogan;
-- discreet MiniFugg mark when useful;
-- bottom CTA: **`SWIPE TO PLAY ↑`**;
 - a visual idea that is truthful to the game's mechanic even when dramatically exaggerated;
-- enough planned visual separation to support real raster parallax when animation is intended.
+- a full-bleed static composition whose lower decoration can continue behind the live Core JOUER control.
+
+The default closed text list contains only the exact game title. A deliberately magazine-like edition may use short English cover lines only when every line is supplied and approved in its micro-brief. Core controls, `SWIPE TO PLAY`, arrows, prices, coins and the MiniFugg logo are not baked into new cover art.
 
 Do **not** require the same cartridge mockup, frame, sunset, title placement, color palette or composition across games.
 
@@ -171,6 +170,12 @@ Examples: TetraMindFck `micro-euro`, LineFugg, Train Fighter.
 - glossy RGB gaming-PC aesthetic;
 - fake oldness created only by adding a noise layer.
 
+### B2 — 1990s micro-computer magazine page
+
+This is a press-layout branch of family B, not a box with extra stickers. Build the page through a loud asymmetric masthead, a tilted CRT or screenshot used as editorial evidence, strongly contrasted headline sizes, rules, inset panels and disciplined four-color printing. The TetraMindFck `PUB 90s` study on `ChatGPT Image 5 sept. 2026, 19_27_48 (1).png` is the reference: crowded but unmistakably hierarchical, like a page composed by a real micro-magazine art director.
+
+Use English copy only, from a closed approved list. Do not invent French cover lines, pseudo-copy, unreadable filler, floating modern UI or a distressed physical border. Paper and ink may be worn inside the page while the final cover remains full bleed.
+
 ---
 
 ## C — Eastern-European / cultural graphic poster
@@ -261,6 +266,10 @@ Late-80s/early-90s Japanese game packaging, magazine advertising and print/edito
 ### TetraMindFck interpretation
 
 Mental overload can become an aggressive vertical eruption of tetrominoes, numbers and fragments through the character's head, with Japanese editorial callouts acting as part of the print design.
+
+The primary TetraMindFck reference is the fourth image on the first row of `ChatGPT Image 5 sept. 2026, 19_27_48 (1).png`: a frightened black-haired young adult low in frame, orange clothing thrown across the diagonal, a violet/indigo printed field, colored pieces cascading in hard perspective and a large yellow katakana title at upper left. Its character comes from nervous brush-and-pen marks, imperfect panic anatomy, angular fabric and selective coarse halftone—not from polished contemporary anime rendering.
+
+Five supporting Japanese studies were recovered on boards `(2)` through `(6)` of that same series. They span magenta/blue frontal manga, vertical pink editorial explosion, restrained cream manga ink, blue/red psychological collapse and orange/violet manga pulp. Treat them as a range of plausible editorial dialects, not as a recipe to merge into one averaged image.
 
 ### Avoid
 
@@ -395,29 +404,11 @@ For cultural editions, native-language copy must be treated as real typography, 
 
 ---
 
-# 10. Motion / parallax art planning
+# 10. Static composition and crop planning
 
-The artwork should be conceived with animation in mind, not flattened first and “fixed” with CSS later.
+Production covers are single static raster illustrations rendered by Core. Do not create or plan animated cover layers. Express motion through pose, cropping, value rhythm, directional marks and the trajectory of objects inside the image.
 
-When motion is planned, design real raster planes such as:
-
-1. background/environment;
-2. midground event/props/explosion/geometric elements;
-3. foreground character/main object;
-4. overlay/title/CTA.
-
-Not every cover needs identical layers. A graphic poster may use paper + geometric forms + silhouette + typography. A micro-computer cover may use room/CRT + screen/tetromino effects + character + title.
-
-Autonomous motions should come from the subject:
-
-- **vibrate** — panic, nervous character, unstable machine;
-- **float** — suspended objects, dreams, zero-gravity, drifting blocks;
-- **breathe** — explosion/glow/pressure field slowly swelling;
-- **drift** — smoke, dust, clouds, paper, fog;
-- **sway** — signs, hanging objects, plants, ropes;
-- restrained parallax — depth between real raster planes.
-
-CSS may add lighting/vignette/glow effects, but should not invent the important graphical content.
+Compose the exact `390 × 844` MASTER and keep the title and principal subject out of MONNAIE, RAIL and JOUER. For top-anchored covers, continue authored scenery, clothing or subordinate objects through the lower part of the image so shorter screens and the overlapping JOUER control never expose a blank band. Do not place a second title, signature or CTA in that expendable lower zone.
 
 ---
 
@@ -457,11 +448,11 @@ Explicitly exclude glossy 3D, generic cinematic key art, synthwave, concept shee
 
 ### 7. Required text
 
-Always supply the exact title and `SWIPE TO PLAY ↑` if it belongs on the final master.
+Supply the exact title as the default closed list. A magazine edition may add only explicitly approved English cover lines. Never include `SWIPE TO PLAY`, arrows, MiniFugg controls or placeholder copy.
 
-### 8. Parallax foresight
+### 8. Crop foresight
 
-Before final production, identify what will become background / midground / subject / overlay so hidden areas can be reconstructed cleanly.
+Identify the title/subject safe area and the expendable lower decoration before final production. Reconstruct hidden or newly exposed art as a continuous part of the chosen medium rather than filling it with a dark band or generic texture.
 
 ---
 
@@ -479,7 +470,7 @@ The same families can be used for:
 - collectible gallery cards;
 - experimental mockups.
 
-When used outside a game cover, remove only the product-specific rules that do not apply (`SWIPE TO PLAY`, unlock score, etc.) while preserving the chosen visual language.
+When used outside a game cover, remove only the product-specific rules that do not apply (cover crop zones, unlock score, etc.) while preserving the chosen visual language.
 
 For the global MiniFugg home, several rotating interpretations are preferable to one generic landing-page illustration.
 
@@ -493,8 +484,9 @@ TetraMindFck established the first working comparison set:
 - `micro-euro` — European late-80s/early-90s micro-computer commercial cover;
 - `graphic-poster` — Eastern-European/editorial graphic poster;
 - regional edition — Japanese direction selected as the strongest first cultural candidate, with Chinese direction also worth preserving as a possible rarer edition.
+- magazine edition — an optional press-layout branch of the micro family, with a dominant masthead, editorial proof images and supplied English cover lines.
 
-The important discovery was that **all three initial visual families could be excellent simultaneously**. MiniFugg therefore should not choose one universal art style; it should treat variant diversity as part of the collectible system.
+The important discovery was that **all four first-row families and the magazine study could be excellent simultaneously**. MiniFugg therefore should not choose one universal art style; it should treat variant diversity as part of the collectible system. Their exact shared reference is `GFX/crea-chatgpt/game/ChatGPT Image 5 sept. 2026, 19_27_48 (1).png`; reproduce their level of authored decision, not their Tetra-specific motifs.
 
 ---
 
@@ -502,4 +494,4 @@ The important discovery was that **all three initial visual families could be ex
 
 If a future conversation needs the entire direction in one paragraph, use this:
 
-> Create MiniFugg welcome art like lost premium game packaging or illustrated advertising from the late 1980s/early 1990s. The work must feel visibly authored and printed, not like generic glossy AI key art. Use a controlled family of variants: expressive Franco-Belgian/European pulp illustration; believable European micro-computer box art; restrained Eastern-European/editorial graphic poster; and a genuine regional reinterpretation such as Japanese or Chinese publishing language. Preserve paper, ink, gouache, airbrush, offset, halftone, collage and registration imperfections where appropriate; use deliberate negative space and selective detail; vary the background and composition per game; avoid universal synthwave/neon, plastic 3D and centered cinematic hero templates. For a Fugg cover, keep the exact game title readable and use `SWIPE TO PLAY ↑`. If animation is intended, plan real raster background/midground/subject/overlay layers before integration.
+> Create MiniFugg cover art like lost premium game packaging or illustrated advertising from the late 1980s/early 1990s. The work must feel visibly authored and printed, not like generic glossy AI key art. Use a controlled family of variants: expressive Franco-Belgian/European pulp illustration; believable European micro-computer box art or magazine page; restrained Eastern-European/editorial graphic poster; and a genuine regional reinterpretation such as Japanese or Chinese publishing language. Preserve paper, ink, gouache, airbrush, offset, halftone, collage and registration imperfections where appropriate; use deliberate negative space and selective detail; vary the background and composition per game; avoid universal synthwave/neon, plastic 3D and centered cinematic hero templates. Produce a full-bleed static `390 × 844` master with the exact title as the only default text, no Core UI or CTA, and continuous expendable artwork in the lower crop zone.

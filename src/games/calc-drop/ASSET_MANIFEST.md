@@ -28,3 +28,17 @@ The three imported flat posters remain the approved visual references. Generated
 - The intended edition uses an energetic vertical manga composition: alarmed young character low in frame, dense diagonal fall of Tetra pieces, deep violet/blue ground, warm orange figure and large integrated Japanese title.
 - Supporting boards in the same `19_27_48` series contain related Japanese explorations, but none is the standalone full-resolution original of that exact fourth image.
 - Status: visual direction recovered, production master still missing. Do not crop or upscale the board into a runtime cover, and do not promote a fourth variant before a faithful standalone reconstruction is explicitly approved.
+
+## Japanese edition reconstruction candidate — 2026-09-12
+
+The primary Japanese tile and five supporting studies were isolated as reference-only crops under `GFX/crea-chatgpt/game/tetramindfck/japanese-research/`. These crops preserve the concept-board pixels; they are not production masters and were not sent together to the generator. The sole generation reference was `japanese-violet-orange-manga-reference.png`, isolated from board `(1)`.
+
+| Role | Local file | Technical state |
+| --- | --- | --- |
+| Generated source candidate | `tetramindfck-japanese-violet-orange-source-candidate.png` | 853×1844 opaque PNG; SHA-256 `d1569e44c1967298ffeca131a03b35557daea6599ad38478a49317ba301cc8c3` |
+| Exact Cover master candidate | `tetramindfck-japanese-violet-orange-master-candidate-390x844.png` | 390×844 opaque PNG; SHA-256 `e58cf8ddc5a6275d05454e372a4b6a4c55cca51ae426921b1fa851b81bc76db9` |
+| Runtime-size candidate | `tetramindfck-japanese-violet-orange-runtime-candidate-780x1688.webp` | 780×1688 opaque single-frame WebP; `VP8L` lossless payload; SHA-256 `aee59498f084d8030c7a3f52ce0ac7350ec241d0f1c92e247fc52ffccff23f4c` |
+
+Micro-brief: faithful standalone reconstruction of the violet/orange Japanese tile; nervous late-80s/early-90s commercial manga ink, alarmed black-haired young adult low on a diagonal, orange clothing continuing through BAS, hard-perspective colored-piece avalanche, indigo/violet printed ground and coarse halftone. Closed text list: `テトラマインドファック` only. Explicit removals: side copy, `SWIPE TO PLAY`, arrow, MiniFugg mark, physical frame, blank lower band, glossy anime polish and modern cyberpunk treatment.
+
+Control state: artistic `conforme` by agent for subject, style family, title-only rule and continuous lower body; technical `conforme` for format, dimensions, opacity and lossless runtime payload; usage `à vérifier` in the Core only after artistic acceptance. User acceptance, private Graphic Archive upload, production import and `welcome.ts` integration are pending.

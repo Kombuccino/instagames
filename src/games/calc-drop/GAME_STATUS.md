@@ -49,3 +49,13 @@ Gameplay migration + GD refinement.
 - User validation: all three corrected covers explicitly accepted on 2026-09-12; the distinct pulp, micro-computer and graphic-poster character must be preserved as the quality reference for later cover work.
 - The missing Japanese direction was recovered in `GFX/crea-chatgpt/game/ChatGPT Image 5 sept. 2026, 19_27_48 (1).png`, variant 4. No standalone full-resolution original was found, so it remains a reference candidate rather than a production fourth cover.
 - Production cutover complete in the delivery branch: Core uses the three static covers, and the inactive Phaser cover runtime plus superseded TetraMindFck layer files are removed.
+
+## Japanese cover and style recovery — 2026-09-12
+
+- Base inspected: `5b62f5926c2bdbe34bc8034d97f4c7dcae356199` on `origin/main`.
+- User validation: all four first-row directions on `ChatGPT Image 5 sept. 2026, 19_27_48 (1).png`, plus its `PUB 90s` magazine study, are approved as style references. This does not validate their obsolete CTA, logos, slogans or French copy.
+- Five additional Japanese studies were recovered from boards `(2)` through `(6)` and isolated as reference-only crops beside the primary violet/orange tile under local `GFX/crea-chatgpt/game/tetramindfck/japanese-research/`.
+- Built-in ImageGen received only the isolated primary tile and a closed title-only brief. One standalone source, exact `390 × 844` master candidate and lossless `780 × 1688` WebP candidate were generated and technically checked.
+- Agent visual check: the candidate preserves the violet/orange commercial-manga language, diagonal block avalanche, alarmed low character, exact `テトラマインドファック` title and continuous lower clothing; no CTA, logo, side copy, frame or blank lower band remains.
+- State: generated and locally preserved; not yet accepted by the user, not uploaded to the private Graphic Archive, not copied into the runtime asset tree, not integrated and not released. Production continues to use the three previously accepted static covers.
+- Next action: obtain artistic validation of the Japanese master. If accepted, archive it, copy the verified source/master/runtime files into the production asset tree, add the fourth static variant, test the live JOUER overlap and publish a TetraMindFck release update.

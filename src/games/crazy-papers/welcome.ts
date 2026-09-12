@@ -47,7 +47,9 @@ export const CRAZY_PAPERS_WELCOME: GameWelcomeConfig = {
       unlockScore: 50_000,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'top center',
+      // This source places its clerk in the expendable BAS. The approved art
+      // stays intact; a focal crop keeps her face above Core's fixed console.
+      objectPosition: 'center 70%',
     },
     {
       id: 'showa-paper-wave',

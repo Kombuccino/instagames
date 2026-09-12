@@ -4,20 +4,21 @@ import react from '@vitejs/plugin-react'
 import { createServer } from 'vite'
 import { chromium } from 'playwright'
 
-const output = 'artifacts/crazy-papers-covers'
+const output = process.env.CRAZY_PAPERS_COVER_OUTPUT || 'artifacts/crazy-papers-covers'
 await fs.mkdir(output, { recursive: true })
 
 const editions = [
-  ['pulp-disaster', 0, 'v1-pulp-disaster.webp'],
-  ['micro-records', 5_000, 'v2-micro-records.webp'],
-  ['graphic-collapse', 15_000, 'v3-graphic-collapse.webp'],
-  ['pulp-clerk', 30_000, 'v4-pulp-clerk.webp'],
-  ['constructivist-clerk', 50_000, 'v5-constructivist-clerk.webp'],
-  ['showa-paper-wave', 75_000, 'v6-showa-paper-wave.webp'],
-].map(([id, unlockScore, file]) => ({
+  ['pulp-disaster', 0, 'v1-pulp-disaster.webp', '50% 0%'],
+  ['micro-records', 5_000, 'v2-micro-records.webp', '50% 0%'],
+  ['graphic-collapse', 15_000, 'v3-graphic-collapse.webp', '50% 0%'],
+  ['pulp-clerk', 30_000, 'v4-pulp-clerk.webp', '50% 0%'],
+  ['constructivist-clerk', 50_000, 'v5-constructivist-clerk.webp', '50% 70%'],
+  ['showa-paper-wave', 75_000, 'v6-showa-paper-wave.webp', '50% 0%'],
+].map(([id, unlockScore, file, position]) => ({
   id,
   unlockScore,
   file,
+  position,
   src: `/assets/generated/crazy-papers/welcome/variants/runtime/${file}`,
 }))
 
@@ -47,17 +48,17 @@ try {
   for (const variant of CRAZY_PAPERS_WELCOME.variants) {
     assert.equal(variant.runtime, 'static')
     assert.equal(variant.fit, 'cover')
-    assert.equal(variant.objectPosition, 'top center')
+    assert.equal(variant.objectPosition, variant.id === 'constructivist-clerk' ? 'center 70%' : 'top center')
     assert.ok(!variant.layers?.length)
   }
 
   await server.listen()
   browser = await chromium.launch({ headless: true })
   const formats = [
-    { name: 'a54-brave', width: 360, height: 611, deviceScaleFactor: 2, hasTouch: true },
-    { name: 'a54-chrome', width: 360, height: 656, deviceScaleFactor: 2, hasTouch: true },
+    { name: 'a54-brave', width: 360, height: 611, deviceScaleFactor: 2, hasTouch: true, inspectCollection: true },
+    { name: 'a54-chrome', width: 360, height: 656, deviceScaleFactor: 2, hasTouch: true, inspectCollection: true },
     { name: 'master', width: 390, height: 844, deviceScaleFactor: 2, hasTouch: true, inspectCollection: true },
-    { name: 'desktop', width: 1280, height: 720, deviceScaleFactor: 1 },
+    { name: 'desktop', width: 1280, height: 720, deviceScaleFactor: 1, inspectCollection: true },
   ]
 
   const readArt = async (art) => {
@@ -104,6 +105,7 @@ try {
     const card = page.locator('.game-card[aria-label="CrazyPapers"]').first()
     const shell = card.locator('.mf-cover-shell')
     const art = shell.locator('.mf-core-selected-cover > img')
+    const fixedControls = page.locator('.mf-coin-console-system.is-fixed')
     const click = locator => format.hasTouch ? locator.tap() : locator.click()
     await art.waitFor({ state: 'visible' })
 
@@ -112,7 +114,7 @@ try {
       assert.ok(editions.some(edition => edition.src === value.src), `unexpected source ${value.src}`)
       assert.deepEqual([value.width, value.height], [780, 1688])
       assert.equal(value.fit, 'cover')
-      assert.equal(value.position, '50% 0%')
+      assert.equal(value.position, editions.find(edition => edition.src === value.src).position)
       assert.equal(value.overflow, 'hidden')
       assert.equal(value.animation, 'none')
       assert.ok(value.paintedWidth + 0.01 >= value.boxWidth)
@@ -143,20 +145,20 @@ try {
       report.screenshots.push(path)
     }
 
-    const playBox = await shell.locator('.mf-coin-console-90s').boundingBox()
+    const playBox = await fixedControls.locator('.mf-coin-console-90s').boundingBox()
     const coverBox = await art.boundingBox()
     assert.ok(playBox && coverBox && playBox.y > coverBox.y + coverBox.height * 0.72,
       'JOUER must overlap only the expendable lower cover zone')
 
-    const consoleBox = await shell.locator('.mf-coin-console-90s').boundingBox()
+    const consoleBox = await fixedControls.locator('.mf-coin-console-90s').boundingBox()
     assert.ok(consoleBox, 'coin console must be visible')
     const expectedControls = [
-      ['.mf-console-nav.is-prev', .0691, .1442, .2049, .3146],
-      ['.mf-console-nav.is-next', .0691, .5037, .2049, .3146],
-      ['.mf-console-play', .3368, .1161, .3030, .7079],
+      ['.mf-console-nav.is-prev', .0705, .1854, .1968, .2959],
+      ['.mf-console-nav.is-next', .0705, .5056, .1968, .2959],
+      ['.mf-console-play', .3349, .1442, .3249, .6910],
     ]
     for (const [selector, x, y, width, height] of expectedControls) {
-      const box = await shell.locator(selector).boundingBox()
+      const box = await fixedControls.locator(selector).boundingBox()
       assert.ok(box, `${selector} must be visible`)
       const actual = [
         (box.x - consoleBox.x) / consoleBox.width,
@@ -170,7 +172,7 @@ try {
       }
     }
 
-    await click(shell.locator('[data-testid="coin-console-play"]'))
+    await click(fixedControls.locator('[data-testid="coin-console-play"]'))
     await page.waitForFunction(() => document.querySelector('.game-card[aria-label="CrazyPapers"]')?.getAttribute('data-phase') === 'playing')
     const close = card.getByRole('button', { name: 'Exit game and return to cover' })
     await close.waitFor({ state: 'visible' })
@@ -182,7 +184,7 @@ try {
       passed: true,
       editionsInspected: format.inspectCollection ? editions.length : 1,
       input: format.hasTouch ? 'touch' : 'mouse',
-      topAnchoring: true,
+      focalCropChecked: true,
       playOverlapChecked: true,
       playFlowChecked: true,
       consoleControlsAligned: true,

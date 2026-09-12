@@ -22,8 +22,8 @@ export const gameDefinition: InstagameDefinition = {
   welcome: CRAZY_PAPERS_WELCOME,
   component: CrazyPapers,
   release: {
-    version: '0.5.0',
-    updatedAt: '2026-09-12T23:25:00+02:00',
+    version: '0.5.1',
+    updatedAt: '2026-09-13T01:17:33+02:00',
     changelogPath: 'src/games/crazy-papers/CHANGELOG.md',
   },
   instructions: {

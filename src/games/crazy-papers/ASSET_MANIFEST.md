@@ -19,7 +19,7 @@ The user explicitly approved six exact source covers across two research lots. T
 - `scripts/build-crazy-papers-covers.py` crops only about `0.915` source pixel in total from the horizontal perimeter to reach the exact `390:844` ratio, then resamples directly from the preserved source. It never stretches the image.
 - Masters are opaque, one-frame PNG files at exactly `390 × 844`.
 - Runtime derivatives are opaque, one-frame `780 × 1688` WebPs with a `VP8L` lossless payload.
-- Core owns MONNAIE, RAIL and JOUER. All variants use static top anchoring; lower desk/paper continuation is expendable under the variable-height crop and JOUER console.
+- Core owns MONNAIE, RAIL and JOUER. Five variants use static top anchoring. `Constructivist Clerk` keeps the exact same asset and uses `object-position: center 70%` so its low focal character remains above the fixed JOUER console; no raster is edited or regenerated.
 - All six variants are available during the platform alpha. Their future unlock scores remain recorded in `welcome.ts`.
 - No animated, CSS-layered or Phaser cover runtime exists for CrazyPapers.
 
@@ -27,5 +27,5 @@ The user explicitly approved six exact source covers across two research lots. T
 
 - Artistic source approval: user-confirmed for all six images on 12 September 2026.
 - File checks: source/master/runtime decoding, dimensions, opacity, hashes and lossless WebP payload are verified by the cover build and test scripts.
-- Browser usage: A54 Brave `360×611`, A54 Chrome `360×656`, MASTER `390×844` with all six editions, and desktop `1280×720` pass with top anchoring, full useful width, JOUER/logo clearance, edition selection, play and return-to-cover checks.
+- Browser usage: A54 Brave `360×611`, A54 Chrome `360×656`, MASTER `390×844` and desktop `1280×720` pass with all six editions, full useful width, the focal exception above, JOUER/title clearance, edition selection, play and return-to-cover checks.
 - Runtime errors: none reported by the dedicated cover matrix or the generic gameplay pass.

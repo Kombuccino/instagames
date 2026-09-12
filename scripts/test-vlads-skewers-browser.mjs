@@ -68,6 +68,9 @@ try {
     assert.equal(initial.remainingCustomers, 3)
     assert.equal(initial.visibleCustomers, 3)
     assert.equal(initial.skewer.stack.length, 0)
+    assert.equal(initial.skewer.height, 110, 'A two-food order must use the tight 110-unit skewer')
+    assert.equal(initial.skewer.width, 10, 'The runtime skewer must stay visually thin')
+    assert.equal(initial.skewer.completedLock, false)
     assert.ok(initial.fallArea.minX <= 40 && initial.fallArea.maxX >= 325, 'Food fall space must use the widened arena')
     const wrapperBackground = await page.locator('.vlad-skewers-game').evaluate(element => getComputedStyle(element).backgroundImage)
     assert.equal(wrapperBackground, 'none', 'Game-owned scenery must stay inside the canonical 390-wide stage')
@@ -98,7 +101,7 @@ try {
       const highReach = await point(195, 420)
       await page.mouse.move(highReach.x, highReach.y)
       await advance(34)
-      assert.ok((await state()).skewer.tipY < 170, 'Vlad must reach the upper gameplay field')
+      assert.ok((await state()).skewer.tipY < 380, 'The shorter two-food harpoon must still reach the useful upper-middle fall field')
       await capture('arm-high-reach')
       await page.mouse.up()
       await page.waitForTimeout(430)
@@ -168,10 +171,14 @@ try {
       else await page.mouse.up()
       await page.waitForTimeout(430)
     }
-    await pressAt(300, 765)
+    const probeDrop = probe.drops.find(drop => drop.id === probeId)
+    const probeTipOffset = probe.skewer.y - probe.skewer.tipY
+    await pressAt(300, probeDrop.y + probeTipOffset)
     assert.equal((await state()).skewer.stack.length, 0, 'A press beside the gold tip must not impale')
     assert.ok((await state()).drops.some(drop => drop.id === probeId), 'Near-tip miss must leave the food falling')
-    await pressAt(195, 765)
+    const exactBefore = await state()
+    const exactDrop = exactBefore.drops.find(drop => drop.id === probeId)
+    await pressAt(195, exactDrop.y + (exactBefore.skewer.y - exactBefore.skewer.tipY))
     assert.equal((await state()).skewer.stack.length, 1, 'A press exactly at the gold tip must impale')
     assert.ok(Math.abs((await state()).skewer.stack[0].rotation - 0.401) < 0.03, 'Pierced food must preserve its incoming orientation')
     assert.ok((await state()).skewer.stack[0].entryProgress < 1, 'Caught food must still be visibly sliding onto the skewer after the initial impact')
@@ -202,13 +209,29 @@ try {
     await capture('ragdoll-off-centre')
 
     await page.evaluate(() => window.vlad_test_action('brutality'))
+    const completed = await state()
+    assert.equal(completed.skewer.stack.length, 5, 'A complete recipe must stay visible for the one-second presentation beat')
+    assert.equal(completed.skewer.completedLock, true, 'A completed recipe must disable tip contact during the hold')
+    assert.equal(completed.score, 0, 'Score must not be awarded before the presentation beat finishes')
+    assert.equal(completed.served, 0, 'Customer must remain present during the protected hold')
+    assert.equal(completed.remainingCustomers, ragdoll.remainingCustomers)
+    assert.equal(completed.skewer.height, 230, 'A five-food recipe must use the tight 230-unit skewer')
+    await capture('brutality-completed-hold')
+
+    await page.waitForTimeout(600)
+    const midHold = await state()
+    assert.equal(midHold.skewer.stack.length, 5)
+    assert.equal(midHold.skewer.completedLock, true)
+    assert.equal(midHold.served, 0)
+
+    await page.waitForTimeout(520)
     const served = await state()
-    assert.equal(served.skewer.stack.length, 0, 'A completed skewer must immediately free the player for the next order')
+    assert.equal(served.skewer.stack.length, 0, 'The protected completed skewer must dispatch after about one second')
+    assert.equal(served.skewer.completedLock, false)
     assert.equal(served.score, 383, 'Chain 1+2+6+24+120 with average beauty ×2.5 must score 383 after rounding')
     assert.equal(served.served, 1)
-    assert.equal(served.remainingCustomers, ragdoll.remainingCustomers - 1, 'A completed skewer must validate automatically and remove exactly one client')
+    assert.equal(served.remainingCustomers, ragdoll.remainingCustomers - 1, 'Delivery must remove exactly one client')
     assert.equal(served.visibleCustomers, Math.min(5, served.remainingCustomers))
-    await page.waitForTimeout(420)
     await capture('brutality-delivery')
     await page.waitForTimeout(600)
     await capture('customer-beauty-reaction')
@@ -235,17 +258,21 @@ try {
 
     const maximumRecipe = JSON.parse(await page.evaluate(() => window.vlad_test_action('max-recipe')))
     assert.equal(maximumRecipe.activeCustomer.order.length, 5, 'Late-game recipes must be hard-capped at five ingredients')
+    assert.equal(maximumRecipe.skewer.height, 230, 'Late-game five-food recipe must keep the tight maximum shaft')
     const fullQueue = JSON.parse(await page.evaluate(() => window.vlad_test_action('queue-six')))
     assert.equal(fullQueue.remainingCustomers, 6)
     assert.equal(fullQueue.visibleCustomers, 5, 'At most five waiting floors should be occupied')
     await capture('five-customer-queue')
+
+    await page.evaluate(() => window.vlad_test_action('blood-visual'))
+    await capture('blood-bonus-v2')
 
     report.scenarios.push({
       name: config.name,
       passed: true,
       input: `${config.touch ? 'CDP touch' : 'mouse'} impalement + deterministic DEV art-state probes`,
       scorePreserved: served.score,
-      logicalViewport: '390x844 uniform FIT',
+      logicalViewport: '390x844 bottom-anchored',
     })
     await context.close()
   }

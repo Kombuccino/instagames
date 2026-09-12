@@ -22,20 +22,20 @@ export const gameDefinition: InstagameDefinition = {
   welcome: VLADS_SKEWERS_WELCOME,
   component: VladsSkewers,
   release: {
-    version: '0.3.3',
-    updatedAt: '2026-09-11T23:38:00+02:00',
+    version: '0.3.4',
+    updatedAt: '2026-09-12T11:08:00+02:00',
     changelogPath: 'src/games/vlads-skewers/CHANGELOG.md',
   },
   instructions: {
     goal: 'Prépare les brochettes demandées et sers le plus de clients possible.',
     rules: [
       'Empale les ingrédients dans l’ordre exact de la commande.',
-      'Quand la brochette est complète, apporte-la au client.',
+      'Quand la brochette est complète, elle reste protégée une seconde avant de partir au client.',
       'Un mauvais ingrédient ou de l’ail fait perdre le client.',
       'Le sang redonne de la patience et ralentit temporairement la chute.',
       'Au 3e client perdu, le service est terminé.',
     ],
-    controls: ['Maintiens et glisse pour déplacer la brochette', 'Empale avec la pointe', 'Brochette complète : va jusqu’au client'],
+    controls: ['Maintiens et glisse pour déplacer la brochette', 'Empale avec la pointe', 'Brochette complète : observe-la puis elle part automatiquement'],
   },
   features: STANDARD_FEATURES,
 }

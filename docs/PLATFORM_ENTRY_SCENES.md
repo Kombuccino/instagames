@@ -113,6 +113,8 @@ Do not cut to a generic storefront grid.
 
 When the available viewport is wide enough for the extended Core experience, the phone does not leave the frame after its approach. It grows toward the maximum useful height, moves to the right and keeps the player's hand visible. The surrounding metro gives way to a bedroom desk scene; the phone is the continuous object joining both places.
 
+The wide metro is a horizontal continuation of the validated portrait framing, not a zoomed version of it. The portrait view remains a crop of the desktop scene at the same apparent scale, with most added carriage space placed to its left. The exact selected arm asset persists into the bedroom. Its glass becomes transparent at the stable state so the real Core cover/game viewport can occupy the measured screen opening while bezel and fingers stay in front.
+
 The preferred research direction uses the enlarging phone and hand as a natural foreground mask rather than a literal split screen or digital particle effect: the metro loses focus and exposure behind the device, warm desk light appears, then the bedroom resolves in its wake. Reduced motion uses a short background fade while keeping the phone fixed and readable.
 
 The left side then introduces a physical or semi-physical `MiniFugg Retro Gaming` magazine. It is closed first for roughly 4–5 seconds. Its cover is a fixed low-poly Fuggy composition with the exact MiniFugg-logo masthead and short funny English cover lines; it never selects a catalog game. It then opens almost flat and readable on the desk, with one active page and the rest curled underneath. Three physical tabs directly select `FEATURE`, `COMMENTS` and `RANKING` inside the same fixed page.

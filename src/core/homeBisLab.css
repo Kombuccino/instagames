@@ -90,6 +90,12 @@
 .mf-home-bis-phone .mf-home-bis-return { top:calc(10.782% + 10px); }
 .mf-home-bis-hand { position:absolute; z-index:4; top:-46.5%; right:-119%; width:308%; height:235%; max-width:none; pointer-events:none; filter:drop-shadow(0 12px 12px rgba(0,0,0,.2)); }
 .mf-home-bis-hand img { display:block; width:100%; height:100%; }
+.mf-home-bis-handoff-rig { display:none; }
+
+@media (min-width:761px) {
+  .mf-home-bis-handoff-rig { position:fixed; z-index:4; right:8%; top:0; display:block; width:56.28dvh; height:100dvh; pointer-events:none; transform:var(--mf-entry-home-final-transform); transform-origin:0 0; }
+  .mf-home-bis-handoff-rig picture,.mf-home-bis-handoff-rig img { position:absolute; inset:0; display:block; width:100%; height:100%; max-width:none; }
+}
 
 .mf-home-bis-nav { position:fixed; z-index:20; left:17px; top:50%; display:grid; gap:8px; width:68px; transform:translateY(-50%); }
 .mf-home-bis-nav button { display:grid; justify-items:start; gap:3px; padding:8px 6px; overflow:hidden; border:0; border-left:2px solid rgba(255,255,255,.25); color:rgba(255,255,255,.5); background:transparent; font:800 7px/1 Arial,sans-serif; text-align:left; text-transform:uppercase; cursor:pointer; }

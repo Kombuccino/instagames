@@ -30,6 +30,8 @@ La chaîne est : **scène → activation du téléphone → rapprochement → v�
 
 Sur écran étendu, la scène de départ et la scène d'arrivée occupent le même viewport large dès le premier plan. Le décor du métro ne doit jamais rester enfermé dans un stage portrait avec des bandes latérales. Le téléphone et la main conservent leur propre repère portrait indépendant au-dessus du décor ; leur image ne doit pas être étirée pour remplir l'écran.
 
+Le cadrage portrait validé reste une sous-partie exacte du décor large : on prolonge le wagon latéralement, surtout dans l'espace disponible à gauche, sans agrandir ni recadrer le garçon, Fuggy, le siège ou les portes. La même variante de bras et de téléphone traverse tout le raccord. Après le changement de pièce, son verre est évidé et le véritable viewport Core apparaît dans cette ouverture ; aucune seconde main ne doit remplacer la première.
+
 La surface du téléphone doit suivre exactement son cadrage et sa perspective. Écran, bras et téléphone partagent les transformations utiles ; ne pas superposer un rectangle approximatif qui glisse séparément. Prévoir les occultations par la main, le cadre et les limites du zoom.
 
 Pour le raccord vers l'écran étendu, mesurer les quatre coins du verre dans l'asset source et les projeter sur les quatre coins du verre final. La transformation doit redresser la perspective et fixer simultanément la taille et la position. Le raccord ne se règle pas avec une succession empirique de rotations et de zooms. À l'arrivée, CENTRE remplit la hauteur utile ; HAUT et BAS du MASTER se prolongent hors du viewport.

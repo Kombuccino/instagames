@@ -48,11 +48,12 @@ function layoutGuideView(): LayoutTemplate | null {
 export default function App() {
   const [entered, setEntered] = useState(() => opensDirectlyOnAGame())
   const [homeBisEntered, setHomeBisEntered] = useState(() => !opensHomeBisEntryTest())
+  const [homeBisArm, setHomeBisArm] = useState<string | null>(null)
 
   if (opensHomeBisLab()) return (
     <>
-      <HomeBisLab />
-      {!homeBisEntered && <PlatformEntryScene handoff="home-bis" onLaunch={() => setHomeBisEntered(true)} />}
+      <HomeBisLab handoffArm={homeBisArm} />
+      {!homeBisEntered && <PlatformEntryScene handoff="home-bis" onLaunch={(arm) => { setHomeBisArm(arm); setHomeBisEntered(true) }} />}
     </>
   )
   const guideView = layoutGuideView()

@@ -8,6 +8,10 @@ import './homeBisLab.css'
 type MagazineSection = 'feature' | 'comments' | 'ranking'
 type PageMotion = 'still' | 'incoming-forward' | 'incoming-backward' | 'outgoing-forward' | 'outgoing-backward'
 
+type HomeBisLabProps = {
+  handoffArm?: string | null
+}
+
 type HomeBisGame = {
   id: 'tetramindfck' | 'vlads-skewers' | 'linefugg'
   title: string
@@ -227,7 +231,7 @@ function HomeBisPhone({ game, catalog, active, onChangeGame, onMagazineSection, 
   )
 }
 
-export function HomeBisLab() {
+export function HomeBisLab({ handoffArm = null }: HomeBisLabProps) {
   const [section, setSection] = useState<MagazineSection>('feature')
   const [activeIndex, setActiveIndex] = useState(0)
   const [previousIndex, setPreviousIndex] = useState<number | null>(null)
@@ -280,6 +284,7 @@ export function HomeBisLab() {
 
   const item = HOME_BIS_GAMES[activeIndex]
   const game = labGames[activeIndex]
+  const handoffCutout = handoffArm?.replace('/arms/', '/arms-screen-cutout/') ?? null
   const previousItem = previousIndex === null ? null : HOME_BIS_GAMES[previousIndex]
   if (!game) return null
 
@@ -316,12 +321,22 @@ export function HomeBisLab() {
                 onPlayingChange={setGamePlaying}
               />
             </div>
-            <picture className="mf-home-bis-hand" aria-hidden="true">
-              <source srcSet="/assets/generated/platform/home-bis-v1/production/canonical-hand-cutout-v2.webp" type="image/webp" />
-              <img src="/assets/generated/platform/home-bis-v1/production/canonical-hand-cutout-v2.png" alt="" />
-            </picture>
+            {!handoffArm && (
+              <picture className="mf-home-bis-hand" aria-hidden="true">
+                <source srcSet="/assets/generated/platform/home-bis-v1/production/canonical-hand-cutout-v2.webp" type="image/webp" />
+                <img src="/assets/generated/platform/home-bis-v1/production/canonical-hand-cutout-v2.png" alt="" />
+              </picture>
+            )}
           </div>
         </div>
+        {handoffCutout && (
+          <div className="mf-home-bis-handoff-rig" aria-hidden="true">
+            <picture>
+              <source srcSet={handoffCutout.replace('.png', '.webp')} type="image/webp" />
+              <img src={handoffCutout} alt="" draggable={false} />
+            </picture>
+          </div>
+        )}
         <p className="mf-home-bis-scroll-cue">{gamePlaying ? 'GAME CONTROLS ACTIVE' : 'WHEEL OR CHANGE GAME'} <span>{gamePlaying ? '●' : '↕'}</span></p>
       </section>
     </main>

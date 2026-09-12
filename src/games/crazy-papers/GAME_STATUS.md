@@ -1,6 +1,6 @@
 # CrazyPapers — Suivi de création
 
-Mis à jour : 12 septembre 2026 à 19:08 Europe/Paris. Version livrable : `0.4.0`. Base inspectée avant la passe cover : `4ac3928` (`origin/main`).
+Mis à jour : 12 septembre 2026 à 23:25 Europe/Paris. Version livrable : `0.5.0`. Base d'intégration initiale des covers : `db4c93799d01ba805388722a6710cca18ac5848d` (`origin/main`).
 
 ## Décision active
 
@@ -48,7 +48,7 @@ GitHub Actions `Frontend Build` run `34624907789` : `npm install`, `npm run test
 
 Pour cette raison, le jeu est bien passé sur `runtime: phaser-2d` mais reste provisoirement `migration.state: in-progress` et `locked: true`. C'est un verrou de validation, pas un second renderer : le DOM/CSS legacy n'existe plus en production.
 
-Cover : `update-required`, indépendamment de cette migration gameplay. La phase jaquettes reste séparée.
+Cover : `current`. Les six variantes validées sont désormais des images statiques rendues par Core ; la migration gameplay reste indépendante.
 
 ## Recherche cover — quatre écritures TetraMindFck transposées — 12 septembre 2026
 
@@ -69,9 +69,45 @@ Contrôle visuel agent : les quatre pistes sont propres, autonomes et nettement 
 
 Essais connus : **4 générations pour 4 pistes présentables**. L'archive locale est faite ; la copie vers la Graphic Archive privée reste en attente faute de connexion Drive dans cette passe.
 
+Validation utilisateur complémentaire, 12 septembre 2026 : les trois premières sources de ce lot sont explicitement validées — `crazy-papers-cover-a-pulp-source.png`, `crazy-papers-cover-b-micro-source.png` et `crazy-papers-cover-c-graphic-source.png`. La quatrième source japonaise n'est pas comprise dans cette validation. Les trois sources retenues ont ensuite été intégrées sans régénération avec les trois sources validées du lot suivant.
+
+## Sélection cover — lot inspiré des archives historiques — 12 septembre 2026
+
+Date / lot / base Git : 12 septembre 2026 à 22:54 Europe/Paris, lot `historical-inspired`, base `01a8158d0943fa7bcb0f8c329af560e4c42dec3b` (`origin/main`).
+
+Demande et références : nouvelles covers inspirées des choix historiques 02, 07, 08, 13, 15, 16, 17/20, 23, 28 et 31, croisées avec les grammaires TetraMindFck validées. Intention confirmée : submersion et écrasement bureaucratiques, personnages ordinaires, corpulents, âgés ou épuisés, regards vides ou fous, sans traitement de star. Les anciens logos 13 et 23 ne sont pas retenus.
+
+Brief / outil / contexte observable : quatre générations indépendantes, une par famille, avec les références exactes ouvertes. Cover statique plein cadre ; seul texte lisible autorisé : `CRAZYPAPERS` ; bas continu en corps, bureau, machine et papier ; aucun CTA, `SWIPE TO PLAY`, UI Core, faux cadre ou coins abîmés. Outil image de Codex avec trois références ciblées par direction.
+
+Sorties locales originales, PNG opaques `853 × 1844` :
+
+- `GFX/crea-chatgpt/game/crazy-papers/cover-research-2026-09-12-historical-inspired/crazy-papers-historical-inspired-a-pulp-clerk.png` — SHA-256 `d0e9e198426eca81407f56e06de73ef9b323e9715ea304a613d41d8f07c09126` — **retenue** ;
+- `.../crazy-papers-historical-inspired-b-constructivist-clerk.png` — SHA-256 `135849abd66221ee913a2a8ffcc4f4f91e08a2d99f11e3134f89e20923e4cd03` — **retenue** ;
+- `.../crazy-papers-historical-inspired-c-showa-paper-wave.png` — SHA-256 `179948b55f8e3ecda96d57d0110b7bda941d2eadec777361bcb7206c174c03a0` — **retenue** ;
+- `.../crazy-papers-historical-inspired-d-micro-machine.png` — SHA-256 `90d1bfea63dfc57162e2bcff1cac8f935a64ee909a2fcca993d0d8266d460876` — non retenue dans ce lot, conservée comme bonne recherche.
+
+Essais et écarts : quatre images initiales, puis une correction ciblée de la version micro car son premier rendu omettait le titre ; total connu : **5 appels image pour 4 sources finales**. La correction a conservé la scène et ajouté le masthead exact.
+
+Contrôles : artistique — A/B/C acceptées par l'utilisateur au niveau concept/source, D appréciée mais écartée de la sélection ; technique — quatre PNG opaques, une frame, plein cadre, dimensions conformes à la matrice de génération et contrôlées dans `inspection-report.json` ; usage — les trois sources retenues font partie de la collection Core statique testée ci-dessous.
+
+Validation utilisateur : le 12 septembre 2026, l'utilisateur garde explicitement **les trois premières propositions A, B et C** de ce lot, puis valide l'intégration de la collection complète de six covers. Cette validation ne s'étend pas à D.
+
+Livraison : généré oui / sources préservées oui / master production oui / runtime lossless oui / intégré Core oui / testé en Cover oui.
+
+Suite : conserver les trois sources non retenues hors production et ne pas régénérer les six éditions validées lors des futures passes techniques.
+
+Collection validée après la décision complémentaire : **6 covers sources** au total — les trois premières du lot `cover-research-2026-09-12` et les trois premières du lot `cover-research-2026-09-12-historical-inspired`. Les deux quatrièmes propositions restent hors sélection.
+
+## Intégration canonique des six covers — 12 septembre 2026
+
+Les six sources validées sont conservées octet pour octet dans `public/assets/generated/crazy-papers/welcome/variants/sources/`. Le script `scripts/build-crazy-papers-covers.py` fabrique six masters PNG opaques exactement `390 × 844` et six WebP lossless `780 × 1688`. Il retire seulement environ `0,915` pixel source au total sur les côtés pour atteindre le ratio exact, sans étirement, peinture, prolongation ni réinterprétation.
+
+Core expose les six éditions statiques avec sélection Alpha libre et scores futurs conservés. Toutes utilisent `cover`, ancrage `top center` et aucun runtime animé, CSS multicouche ou Phaser de cover. Les titres restent dans la zone utile ; le pupitre JOUER ne recouvre aucun logo.
+
+Contrôle navigateur : A54 Brave `360 × 611`, A54 Chrome `360 × 656`, MASTER `390 × 844` avec les six éditions, et PC `1280 × 720`. Sur mobile la largeur utile est pleine, le haut est fixe et seule la partie basse varie. MONNAIE, RAIL, pupitre JOUER, sélection d'édition, lancement du jeu et retour Cover sont vérifiés sans erreur console. Le contrôle générique gameplay confirme également le passage vers la scène Phaser.
+
 ## Prochaine action
 
-1. Faire choisir/valider séparément les nouvelles pistes cover ; adapter seulement la ou les retenues en master `390 × 844` et dérivé runtime lossless avant intégration Core.
-2. Refaire une vraie recherche DA gameplay conforme : 4–5 écrans indépendants, même géométrie et même état fonctionnel, sans titre/logo/texte parasite.
-3. Puis test utilisateur du gameplay en ligne : lisibilité du document, taille des 5 tampons, vitesse de la montée des piles, seuil de débordement et descente de la vague.
-4. Après validation technique de la migration, passer `migration.state` à `current` et `locked` à `false` sans réintroduire de renderer parallèle.
+1. Refaire une vraie recherche DA gameplay conforme : 4–5 écrans indépendants, même géométrie et même état fonctionnel, sans titre/logo/texte parasite.
+2. Puis test utilisateur du gameplay en ligne : lisibilité du document, taille des 5 tampons, vitesse de la montée des piles, seuil de débordement et descente de la vague.
+3. Après validation technique de la migration, passer `migration.state` à `current` et `locked` à `false` sans réintroduire de renderer parallèle.

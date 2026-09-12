@@ -22,6 +22,8 @@ type PhaserGameHostProps = {
   renderPixelRatio?: number
   /** Which edge keeps priority when MASTER is taller than the useful viewport. */
   verticalAnchor?: MiniFuggVerticalAnchor
+  /** Optional engine physics. Omit for games that do not need a physics plugin. */
+  physics?: Phaser.Types.Core.PhysicsConfig
   /** Crisp nearest-neighbour sampling for authored pixel-art games. */
   pixelArt?: boolean
 }
@@ -44,6 +46,7 @@ export function PhaserGameHost({
   className,
   renderPixelRatio = 1,
   verticalAnchor = 'center',
+  physics,
   pixelArt = false,
 }: PhaserGameHostProps) {
   const viewportRef = useRef<HTMLDivElement>(null)
@@ -93,6 +96,7 @@ export function PhaserGameHost({
       width: renderWidth,
       height: renderHeight,
       transparent: true,
+      physics,
       scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -134,7 +138,7 @@ export function PhaserGameHost({
       game?.destroy(true)
       game = null
     }
-  }, [createScene, logicalViewport.height, logicalViewport.width, pixelArt, renderPixelRatio, verticalAnchor])
+  }, [createScene, logicalViewport.height, logicalViewport.width, physics, pixelArt, renderPixelRatio, verticalAnchor])
 
   useEffect(() => {
     const game = gameRef.current

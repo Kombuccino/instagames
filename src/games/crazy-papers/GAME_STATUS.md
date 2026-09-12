@@ -1,6 +1,6 @@
 # CrazyPapers — Suivi de création
 
-Mis à jour : 12 septembre 2026 à 19:08 Europe/Paris. Version livrable : `0.4.0`. Base inspectée avant la passe cover : `4ac3928` (`origin/main`).
+Mis à jour : 12 septembre 2026 à 23:14 Europe/Paris. Version livrable : `0.4.1`. Base inspectée avant correctif dimensions : `db4c93799d01ba805388722a6710cca18ac5848d` (`main`).
 
 ## Décision active
 
@@ -11,6 +11,16 @@ Le retour utilisateur du 11 septembre remplace la simple limite invisible de bac
 CrazyPapers était `legacy-dom` avec `migration.locked: true`. La nouvelle mécanique n'a pas été ajoutée au renderer legacy : le gameplay a été reconstruit en Phaser 4.2.1 sur le stage logique `390 × 844`, avec React limité au `PhaserGameHost`. L'ancien `CrazyPapers.css` est supprimé.
 
 Mécaniques conservées : 5 services, 20 familles de documents, indices dégressifs, niveaux/promotions, arrivée accélérée quand la pile est vide, erreurs qui reviennent, pénalité de travail supplémentaire et trois événements surprise.
+
+## Correctif dimensions / DPR — 12 septembre 2026
+
+Deux captures utilisateur, PC puis téléphone Brave, montraient le même défaut : le host MiniFugg occupait bien sa surface, mais CrazyPapers n'utilisait qu'environ la moitié de la largeur et de la hauteur disponibles, laissant le fond brun visible à droite et en dessous.
+
+Cause confirmée dans le code : `PhaserGameHost` créait un backbuffer `390 × 844` multiplié par `renderPixelRatio` (souvent `2×` sur téléphone/écran haute densité), tandis que `CrazyPapersScene` dessinait directement en coordonnées `390 × 844` sans appliquer à sa caméra le zoom DPR utilisé par les autres scènes Phaser canoniques comme LineFugg. Le monde occupait donc le quart supérieur gauche d'un backbuffer `780 × 1688`.
+
+Correctif `0.4.1` : CrazyPapers passe provisoirement `renderPixelRatio={1}` à son host. Le monde logique, les hitboxes, le crop MiniFugg et le gameplay ne changent pas ; le canvas redevient simplement cohérent avec les coordonnées de la scène. Résultat attendu : sur mobile, les 390 unités remplissent toute la largeur utile ; sur desktop, la composition remplit toute la colonne MiniFugg calculée depuis la fenêtre verticale de 662 unités, hors bandes latérales Core.
+
+Ce correctif est volontairement local au jeu : le host partagé n'est pas modifié car les autres jeux Phaser compensent déjà le DPR dans leur caméra. Une future passe peut réactiver le rendu haute densité de CrazyPapers en ajoutant proprement `renderPixelRatio` au bridge de scène et `camera.setZoom(...)`, sans changer la géométrie.
 
 ## Pression hybride implémentée
 
@@ -71,7 +81,7 @@ Essais connus : **4 générations pour 4 pistes présentables**. L'archive local
 
 ## Prochaine action
 
-1. Faire choisir/valider séparément les nouvelles pistes cover ; adapter seulement la ou les retenues en master `390 × 844` et dérivé runtime lossless avant intégration Core.
-2. Refaire une vraie recherche DA gameplay conforme : 4–5 écrans indépendants, même géométrie et même état fonctionnel, sans titre/logo/texte parasite.
-3. Puis test utilisateur du gameplay en ligne : lisibilité du document, taille des 5 tampons, vitesse de la montée des piles, seuil de débordement et descente de la vague.
-4. Après validation technique de la migration, passer `migration.state` à `current` et `locked` à `false` sans réintroduire de renderer parallèle.
+1. Vérifier le correctif `0.4.1` sur téléphone haute densité et PC : aucune bande interne marron/jaune due au canvas ; seule la zone Core extérieure peut rester visible.
+2. Faire choisir/valider séparément les nouvelles pistes cover ; adapter seulement la ou les retenues en master `390 × 844` et dérivé runtime lossless avant intégration Core.
+3. Refaire une vraie recherche DA gameplay conforme : 4–5 écrans indépendants, même géométrie et même état fonctionnel, sans titre/logo/texte parasite.
+4. Puis tester la lisibilité du document, la taille des 5 tampons, la montée des piles et la vague. Après validation technique de la migration, passer `migration.state` à `current` et `locked` à `false` sans réintroduire de renderer parallèle.

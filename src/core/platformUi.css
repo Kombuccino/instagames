@@ -14,31 +14,33 @@
   --mf-ui-success: #79d6a0;
   --mf-ui-danger: #ff625a;
 
-  --mf-ui-type-display: clamp(44px, 12vw, 64px);
-  --mf-ui-type-h1: 26px;
-  --mf-ui-type-h2: 17px;
-  --mf-ui-type-h3: 11px;
-  --mf-ui-type-body: 13px;
-  --mf-ui-type-label: 12px;
-  --mf-ui-type-meta: 10px;
-  --mf-ui-type-micro: 9px;
+  /* Core UI keeps its validated phone size, then grows with the canonical
+   * 390-wide frame instead of looking smaller beside scaled cover artwork. */
+  --mf-ui-type-display: clamp(44px, 12cqw, 64px);
+  --mf-ui-type-h1: max(26px, 6.6667cqw);
+  --mf-ui-type-h2: max(17px, 4.359cqw);
+  --mf-ui-type-h3: max(11px, 2.8205cqw);
+  --mf-ui-type-body: max(13px, 3.3333cqw);
+  --mf-ui-type-label: max(12px, 3.0769cqw);
+  --mf-ui-type-meta: max(10px, 2.5641cqw);
+  --mf-ui-type-micro: max(9px, 2.3077cqw);
 
   --mf-ui-weight-normal: 450;
   --mf-ui-weight-medium: 600;
   --mf-ui-weight-strong: 760;
   --mf-ui-weight-heavy: 850;
 
-  --mf-ui-space-1: 4px;
-  --mf-ui-space-2: 8px;
-  --mf-ui-space-3: 12px;
-  --mf-ui-space-4: 16px;
-  --mf-ui-space-5: 24px;
-  --mf-ui-space-6: 32px;
+  --mf-ui-space-1: max(4px, 1.0256cqw);
+  --mf-ui-space-2: max(8px, 2.0513cqw);
+  --mf-ui-space-3: max(12px, 3.0769cqw);
+  --mf-ui-space-4: max(16px, 4.1026cqw);
+  --mf-ui-space-5: max(24px, 6.1538cqw);
+  --mf-ui-space-6: max(32px, 8.2051cqw);
 
   --mf-ui-radius-xs: 4px;
   --mf-ui-radius-sm: 8px;
   --mf-ui-radius-pill: 999px;
-  --mf-ui-touch: 42px;
+  --mf-ui-touch: max(42px, 10.7692cqw);
 
   /* Temporary compatibility aliases while old Core selectors disappear. */
   --mf-core-graphite: var(--mf-ui-bg);
@@ -161,8 +163,8 @@
 /* -------------------------------------------------------------------------- */
 
 .mf-platform-icon {
-  width: 28px;
-  height: 28px;
+  width: max(28px, 7.1795cqw);
+  height: max(28px, 7.1795cqw);
   overflow: visible;
   stroke: currentColor;
   stroke-width: 1.8;
@@ -170,10 +172,10 @@
   stroke-linejoin: round;
 }
 
-.mf-platform-icon-replyHeart { width: 15px; height: 15px; stroke-width: 1.6; }
-.mf-platform-icon-more { width: 19px; height: 19px; }
-.mf-platform-icon-chevron { width: 15px; height: 15px; stroke-width: 2; }
-.mf-platform-icon-send { width: 22px; height: 22px; }
+.mf-platform-icon-replyHeart { width: max(15px, 3.8462cqw); height: max(15px, 3.8462cqw); stroke-width: 1.6; }
+.mf-platform-icon-more { width: max(19px, 4.8718cqw); height: max(19px, 4.8718cqw); }
+.mf-platform-icon-chevron { width: max(15px, 3.8462cqw); height: max(15px, 3.8462cqw); stroke-width: 2; }
+.mf-platform-icon-send { width: max(22px, 5.641cqw); height: max(22px, 5.641cqw); }
 
 /* -------------------------------------------------------------------------- */
 /* Screens, panels, scrolling                                                 */
@@ -243,8 +245,8 @@
   position: absolute;
   left: 50%;
   bottom: 0;
-  width: 26px;
-  height: 2px;
+  width: max(26px, 6.6667cqw);
+  height: max(2px, .5128cqw);
   transform: translateX(-50%);
   background: var(--mf-ui-accent);
 }
@@ -257,8 +259,8 @@
 .mf-comment-avatar {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
+  width: max(38px, 9.7436cqw);
+  height: max(38px, 9.7436cqw);
   flex: 0 0 auto;
   overflow: hidden;
   border-radius: 50%;
@@ -293,11 +295,11 @@
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  height: 18px;
-  padding: 0 6px;
+  height: max(18px, 4.6154cqw);
+  padding: 0 max(6px, 1.5385cqw);
   flex: 0 0 auto;
   border-radius: var(--mf-ui-radius-pill);
-  font-size: 8px;
+  font-size: max(8px, 2.0513cqw);
   font-weight: var(--mf-ui-weight-heavy);
   line-height: 1;
 }

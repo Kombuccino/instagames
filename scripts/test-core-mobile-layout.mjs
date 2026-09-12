@@ -80,7 +80,7 @@ try {
 
     await page.goto('http://127.0.0.1:5179/?game=linefugg')
     const line = page.locator('.game-card[aria-label="LineFugg"]').first()
-    const play = line.locator('.mf-insert-coin')
+    const play = line.locator('[data-testid="coin-console-play"]')
     await play.waitFor({ state: 'visible' })
     if (scenario.touch) await play.tap()
     else await play.click()

@@ -125,6 +125,13 @@ Current phone hierarchy:
 
 These are platform roles, not game typography rules.
 
+The values above are the floor at a `390px` Core width. When the canonical Core
+frame is displayed wider — height-driven tablet/desktop, or a phone browser
+exposing a desktop-sized CSS viewport — typography, icons, touch targets and the
+main panel rhythms scale from the actual frame width. Cover art and authored
+console assets must never grow while the shared rail, Info/Comments,
+Leaderboard or Game Over remain frozen at phone pixels.
+
 ### 3.3 Spacing tokens
 
 ```css

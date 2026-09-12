@@ -22,40 +22,28 @@ Approved full-resolution production directions so far:
 2. `micro-euro` — believable European micro-computer cover language;
 3. `graphic-poster` — authored graphic/poster interpretation.
 
+These exact flat originals are the visual authority for the static-cover migration. The migration is a technical adaptation, not a new art pass: preserve the subject, title, framing, palette, medium and global composition. Only remove non-title copy and extend the existing subject or environment below the original when the `390 × 844` canvas requires it. The extension must read as continuous authored artwork, never as a blank or featureless dark band.
+
+General paper grain, worn ink or paint texture may remain part of an edition's medium. Do not add a simulated old-box frame, distressed perimeter or damaged corners: the artwork must remain full bleed so responsive crops do not reveal a fake physical edge.
+
 Foreign-edition candidates being explored:
 
 - Japanese edition;
 - Chinese edition.
 
-Only promote a cultural edition into the production variant list once a proper standalone full-resolution master has been created and imported through the Drive asset pipeline. Do not use cropped concept boards as production artwork.
+Only promote a cultural edition into the production variant list once a proper standalone full-resolution master has been created and verified through the current asset pipeline. Do not use cropped concept boards as production artwork.
 
-## Motion / parallax
+The Japanese direction has been recovered in `GFX/crea-chatgpt/game/ChatGPT Image 5 sept. 2026, 19_27_48 (1).png`, top-row variant 4. It belongs to the same comparative board as the three approved families and is therefore the preferred visual lead: energetic manga drawing, low expressive character, diagonal cascade of pieces, violet/blue printed ground, orange figure and integrated vertical typography. The board crop is not a production master and must not be upscaled or reinterpreted loosely.
 
-Every TetraMindFck cover intended to use parallax must have **real generated raster layers**. Do not invent important visible parallax objects with CSS geometry or generic JS particles.
+## Static cover migration
 
-Reference decomposition for `pulp-euro`:
-
-- background/environment;
-- burst + tetromino objects;
-- foreground character;
-- title/logo/`SWIPE TO PLAY ↑` overlay.
-
-All layers should share the same canvas size/alignment. PNG masters stay untouched; verified WebP derivatives may be used at runtime.
-
-Runtime motion stays restrained:
-
-- background moves least;
-- midground objects move moderately;
-- foreground subject moves most;
-- title/CTA stays nearly fixed;
-- very subtle layer drift may run on touch devices;
-- optional light/vignette may be CSS because it is an effect, not substitute artwork.
-
-Motion must pause when the feed slot is inactive and must respect `prefers-reduced-motion`.
+TetraMindFck covers are static raster art rendered by Core. The former layer bundles are legacy migration sources only. For `pulp-euro` and `micro-euro`, use the exact approved flat poster rather than rebuilding or flattening the animated layer stack. Keep legacy files only until the static pilot is accepted, then remove their runtime and unused layers in the same cleanup.
 
 ## Interaction
 
-Primary CTA: `SWIPE TO PLAY ↑`.
+The playable CTA is the live Core **JOUER** control. Do not bake `SWIPE TO PLAY`, an arrow or a MiniFugg button/logo into the cover.
+
+The cover art may continue beneath Core controls. Only the title/logo of the game must stay clear of the overlapping bottom JOUER button; no multi-height exclusion mask is required for the other controls.
 
 The welcome screen owns the first forward gesture outside the protected Core gutter:
 
@@ -80,9 +68,9 @@ The pilot currently stores best-score unlock state locally. A future platform/pr
 
 ## Asset rules
 
-Follow `docs/ASSET_PIPELINE.md` exactly. Masters are uploaded untouched to the private Drive `Fugg` folder and referenced only after the synced file exists under `public/assets/imported/`.
+Follow `docs/ASSET_PIPELINE.md` exactly. Codex-local production uses `public/assets/generated/...`; the private Drive sync route is reserved for ChatGPT sessions without local repository access. Preserve the approved flat source separately from its master and runtime derivative.
 
-For each new cover, complete the flat poster **and** the parallax layer bundle before calling the animated welcome version finished.
+For each final cover, preserve the approved flat source and produce only the static master and verified runtime derivative required by the current Cover contract.
 
 ## Music direction
 

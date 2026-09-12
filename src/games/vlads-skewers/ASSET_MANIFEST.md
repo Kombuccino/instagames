@@ -11,11 +11,12 @@ The three approved DA files under `GFX/crea-chatgpt/game/` are **REFERENCE ONLY*
 | `sprites/bone-in-beef.png` | gameplay character body | falling/stacked beef body, wider than the other foods | real | isolated bone-in rib steak; no face, limb, drool or cooked state baked | Phaser eyes, mouth, limbs, cooked colour and grill marks | integrated |
 | `sprites/character-parts-v3.png` fixed 4×4 grid | stateful character pieces | food facial/limb overlays and customer drool | real | 4 eye states, 4 mouths, authored arms/legs, drool, grill marks, ash and juice | Phaser animation/physics; drool frame used only by customers | integrated |
 | `sprites/customer-atlas.png` fixed 5×3 grid | animatable decoration / customers | right architecture portrait ~`96×96` | real | 15 distinct hungry/joyful clients; idle/cheer through pose, hop and mouth-anchored drool | Phaser order bubble, patience, queue state | integrated |
-| `props/vlad-skewer-hand.png` frame `shaft` | animatable prop | rigid `30×300` skewer, dimensionnée pour cinq aliments maximum ; point reaches y ~165 at maximum extension | real | never scaled by reach; gold point is sole impalement source | Phaser stack, collisions, multiplier | integrated |
+| `props/vlad-skewer-hand.png` frame `shaft` | animatable prop | runtime tige `10×110 / 150 / 190 / 230` selon recette 2 / 3 / 4 / 5 | real | taille liée à la commande ; l'apex du harpon est la seule collision ; aucune hitbox visible | Phaser stack, collision, hold de validation, livraison | integrated |
 | `props/vlad-arm-grip.png` | canonical animatable prop | fixed `290×435` long arm; handle axis aligned to runtime shaft | real alpha | hand visibly wraps red/gold handle; guard above, pommel below, full sleeve to bottom | rigid shaft and food stack | integrated |
 | `ui/life-skewer.png` | structural HUD prop | three vertical skewers at left x `25..48`, y `185..294` | real | full/lost; lost state created by fall/rotation, not separate baked score | Phaser life count | integrated |
 | `ui/component-atlas.png` manually cropped components | structural UI | order board, score plaque and speech bubble | real | irregular authored bounds preserved; values and states remain dynamic | Phaser texts, food icons and patience | integrated |
 | `fx/pixel-fire-atlas.png` fixed 4×2 crop grid, cells `443×443` | FX support | fixtures, rear room, lower grill and food fire | real alpha | 4 broad torch frames + 4 broad barbecue frames with white-yellow cores | Phaser dense rear/foreground sparks, smoke, juice and ash | integrated |
+| procedural blood drop v2 | gameplay bonus | ~`24×42` autour du centre de chute | transparent | grosse goutte construite uniquement avec rectangles sur grille `2 px`, contour bordeaux sombre, rouge saturé, reflet clair ; aucune primitive lissée | Phaser rotation/chute/bonus de patience | integrated 0.3.4 |
 | `ui/gothic-digits.png` fixed 12-glyph strip | structural UI | dynamic score | real alpha | digits `0..9`, `X`, `+` authored from the approved DA typography | Phaser dynamic values | integrated |
 | `public/assets/imported/vlads-skewers/welcome/vlad-cover-c-graphic-poster-approved-2026-09-07.png` | validated static Cover C | Core Cover master, `941×1672` source | opaque | exact approved black/red/cream poster; never regenerate | Core overlay remains live | validated source, not integrated |
 | articulated ingredient limbs | dynamic gameplay | four independent appendages around each body | procedural pixel graphics | two segments, elbow/knee, small hand/foot; gesture sets for joy, realization, panic and death | Phaser | integrated |
@@ -36,17 +37,19 @@ Runtime texts and values stay dynamic: score, level, secondary client counter, o
 ## Acceptance
 
 - Texture filtering is nearest-neighbour; no blur/post-FX.
+- Procedural gameplay accents added or redrawn from `0.3.4` onward use an explicit coarse logical grid (normally `2 px`) and integer-aligned positions; do not mix smooth vector circles/triangles with the authored coarse pixel vocabulary.
 - Fifteen customer frames are visibly distinct at game size.
 - All eyes, mouths, arms and legs are separate Phaser pieces; no face or limb is baked into a body texture.
 - Customer drool and food grill marks are separate, stateful overlays rather than baked pixels. Foods never receive drool.
+- The blood bonus must read immediately as a blood drop at phone size: dark outline, saturated red body, light glint, no ambiguous red circle.
 - Falling emotion reads joy → realization → worry → frantic last attempt; bodies first cook into appetizing marked food, then missed bodies burn black on the lower grate, ash and disappear.
 - Nearby falling characters can visually grab or repel one another without escaping the bounded fall/grill outcome.
 - Stack limbs are articulated in two readable segments with four independent low-mass angular states; acceleration and direction can make them whirl while bodies remain locked to the skewer.
-- Food hitboxes are slightly inside their visible silhouettes. Foods separate, rebound with gravity, and are pushed directionally by walls, shaft, hand and arm ; shaft/hand contact never impersonates the tip.
+- Food hitboxes are slightly inside their visible silhouettes. Foods separate, rebound with gravity, and are pushed directionally by walls; shaft/hand contact never impersonates the tip.
 - Three left life skewers match the approved gold/red spear family and disappear one per missed customer.
 - Normal→×5 impacts have five clearly different visual/audio intensities while scoring stays unchanged.
-- The skewer and authored long arm remain fixed-size and travel together; the natural centered pose exposes roughly one third of the arm, and the enlarged hand hit area remains fully inside CENTRE. Pointer capture keeps relative control outside the canvas.
-- A complete recipe validates automatically; there is no delivery target or side gesture.
+- The authored long arm keeps its fixed size and travels with the handle. The runtime shaft is deliberately shorter than before and its visual capacity follows the active recipe: `110 / 150 / 190 / 230` for `2 / 3 / 4 / 5` foods.
+- A complete recipe enters a `1 s` protected presentation state: the full stack stays visible in Vlad's hand, the apex accepts no contact, then the automatic delivery begins. No manual delivery target or side gesture.
 - Customer architecture is fixed, at most five actors are visible, and mouth offsets own drool placement per portrait.
 
 ## Built-in ImageGen production prompt set — 2026-09-07

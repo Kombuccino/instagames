@@ -1,5 +1,12 @@
 # Les Brochettes de Vlad — Changelog
 
+## [0.3.5] — 2026-09-12 11:39 Europe/Paris
+
+- Les ingrédients ne s'empilent plus à partir de la pointe : chaque nouvel aliment entre par l'apex puis **glisse jusqu'à la garde**.
+- Le premier ingrédient reste contre la garde ; les suivants s'empilent progressivement vers le haut de la tige, comme une vraie brochette.
+- Le déplacement d'entrée conserve le point de perforation et l'orientation propre de chaque aliment.
+- La livraison après la seconde de protection part désormais directement depuis cette pile adossée à la garde, sans remontée visuelle vers la pointe.
+
 ## [0.3.4] — 2026-09-12 11:08 Europe/Paris
 
 - La brochette est raccourcie beaucoup plus strictement : `110 / 150 / 190 / 230` unités pour des recettes de `2 / 3 / 4 / 5` ingrédients, avec une tige ramenée à `10` unités de largeur. Sa capacité visuelle correspond désormais réellement à la commande, sans place apparente pour un ou deux aliments supplémentaires.

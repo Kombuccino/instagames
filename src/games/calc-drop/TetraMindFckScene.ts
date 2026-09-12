@@ -9,15 +9,29 @@ const { width: STAGE_WIDTH, height: STAGE_HEIGHT } = DEFAULT_LOGICAL_VIEWPORTS.p
 const GAME_ID = 'tetramindfck'
 const COLS = 10
 const ROWS = 20
-const BOARD_X = 82
-const BOARD_Y = 108
-const CELL_SIZE = 26.8
+
+// Fixed 390x844 composition. All gameplay-critical geometry lives in CENTRE.
+const SHELL_X = 4
+const SHELL_Y = 56
+const SHELL_W = 382
+const SHELL_H = 706
+const INFO_X = 10
+const INFO_W = 82
+const CRT_X = 98
+const CRT_Y = 92
+const CRT_W = 280
+const CRT_H = 564
+const SCORE_Y = 103
+const BOARD_X = 112
+const BOARD_Y = 142
+const CELL_SIZE = 24.5
 const BOARD_WIDTH = CELL_SIZE * COLS
 const BOARD_HEIGHT = CELL_SIZE * ROWS
-const INFO_X = 8
-const INFO_WIDTH = 66
-const CONTROL_SIZE = 48
-const CONTROL_BOTTOM = 746
+const MAIN_BUTTON_SIZE = 58
+const MAIN_BUTTON_Y = 678
+const MAIN_BUTTON_GAP = 4
+const DOWN_BUTTON_SIZE = 44
+const DOWN_BUTTON_Y = 731
 const LOCK_TICKS = 3
 const CLEAR_SETTLE_MS = 1180
 const MAX_NUMBER = 9
@@ -25,14 +39,27 @@ const BASE_MAX_MULTIPLIER = 3
 const STANDARD_LINE_MAX = MAX_NUMBER * (BASE_MAX_MULTIPLIER ** (COLS - 1))
 const BIG_CLEAR_THRESHOLD = 1000
 
-const PAPER = 0xf2efe6
-const BOARD_BG = 0xddd8ca
-const INK = 0x151515
-const NUMBER_BG = 0xf7f3e8
-const MULTIPLY_BG = 0xe0c857
-const DIVIDE_BG = 0x7b9fc5
-const BONUS_BG = 0xd64b36
-const GHOST = 0x8f8a7e
+const ROOM_DARK = 0x3a3029
+const ROOM_MID = 0x66584a
+const SHELL = 0xeee0c6
+const SHELL_LIGHT = 0xfff5df
+const SHELL_SHADOW = 0xb9aa92
+const INK = 0x1b211d
+const CRT_BG = 0x0b2b22
+const CRT_DEEP = 0x071f19
+const CRT_GRID = 0x2f6551
+const CRT_PHOSPHOR = 0xa6d5a5
+const CRT_TEXT = '#b8e7b6'
+const CRT_NUMBER = 0x8fba8f
+const CRT_MULTIPLY = 0xae7977
+const CRT_DIVIDE = 0xb39a68
+const CRT_BONUS = 0x729fa0
+const CRT_ACTIVE = 0xd2e8c6
+const CRT_GHOST = 0x79a88f
+const BUTTON_MOVE = 0xb83b59
+const BUTTON_ROTATE_A = 0xd8952f
+const BUTTON_ROTATE_B = 0x2790a3
+const BUTTON_DOWN = 0x2d8f82
 
 const SHAPE_IDS = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'] as const
 type ShapeId = typeof SHAPE_IDS[number]
@@ -48,39 +75,11 @@ type Tile = {
 }
 
 type Coord = { x: number; y: number }
-
-type Piece = {
-  shape: ShapeId
-  rotation: number
-  x: number
-  y: number
-  tokens: Tile[]
-}
-
-type ShapeDefinition = {
-  cells: Coord[]
-  pivot: Coord
-}
-
-type LineReport = {
-  value: number
-  points: number
-  reversed: boolean
-  steps: Array<number | null>
-}
-
-type ClearRowSnapshot = {
-  rowIndex: number
-  tiles: Tile[]
-  report: LineReport
-}
-
-type PendingClear = {
-  fullRows: number[]
-  reports: LineReport[]
-  gained: number
-  earnedBonus: BonusKind | null
-}
+type Piece = { shape: ShapeId; rotation: number; x: number; y: number; tokens: Tile[] }
+type ShapeDefinition = { cells: Coord[]; pivot: Coord }
+type LineReport = { value: number; points: number; reversed: boolean; steps: Array<number | null> }
+type ClearRowSnapshot = { rowIndex: number; tiles: Tile[]; report: LineReport }
+type PendingClear = { fullRows: number[]; reports: LineReport[]; gained: number; earnedBonus: BonusKind | null }
 
 export type TetraMindFckSceneBridge = {
   seed: number
@@ -237,10 +236,14 @@ function formatCompact(value: number) {
 }
 
 function tileFill(tile: Tile) {
-  if (tile.bonus || tile.kind === 'reverse') return BONUS_BG
-  if (tile.kind === 'multiply') return MULTIPLY_BG
-  if (tile.kind === 'divide') return DIVIDE_BG
-  return NUMBER_BG
+  if (tile.bonus || tile.kind === 'reverse') return CRT_BONUS
+  if (tile.kind === 'multiply') return CRT_MULTIPLY
+  if (tile.kind === 'divide') return CRT_DIVIDE
+  return CRT_NUMBER
+}
+
+function tileInk(tile: Tile) {
+  return tile.bonus || tile.kind === 'reverse' ? '#102a28' : '#12261c'
 }
 
 export class TetraMindFckScene extends Phaser.Scene {
@@ -261,11 +264,11 @@ export class TetraMindFckScene extends Phaser.Scene {
   private cellRects: Phaser.GameObjects.Rectangle[] = []
   private cellTexts: Phaser.GameObjects.Text[] = []
   private boardFrame!: Phaser.GameObjects.Graphics
+  private crtOverlay!: Phaser.GameObjects.Graphics
   private lockGraphics!: Phaser.GameObjects.Graphics
   private levelText!: Phaser.GameObjects.Text
   private targetText!: Phaser.GameObjects.Text
-  private bestText!: Phaser.GameObjects.Text
-  private progressGraphics!: Phaser.GameObjects.Graphics
+  private scoreText!: Phaser.GameObjects.Text
   private nextOne!: Phaser.GameObjects.Container
   private nextTwo!: Phaser.GameObjects.Container
   private clearLayer!: Phaser.GameObjects.Container
@@ -287,15 +290,19 @@ export class TetraMindFckScene extends Phaser.Scene {
     this.lockTicks = 0
     this.finished = false
     this.pendingClear = null
+    this.cellRects = []
+    this.cellTexts = []
   }
 
   create() {
     this.cameras.main.setZoom(this.bridge.renderPixelRatio ?? 1).centerOn(STAGE_WIDTH / 2, STAGE_HEIGHT / 2)
     this.drawBackground()
+    this.drawShell()
     this.createBoard()
     this.createHud()
     this.createControls()
     this.clearLayer = this.add.container(0, 0).setDepth(30)
+    this.drawCrtOverlay()
     this.registerKeyboard()
     this.input.on('pointerup', this.stopHold, this)
     this.input.on('pointerupoutside', this.stopHold, this)
@@ -324,18 +331,46 @@ export class TetraMindFckScene extends Phaser.Scene {
   }
 
   private drawBackground() {
-    const background = this.add.graphics().setDepth(0)
-    background.fillStyle(PAPER, 1).fillRect(0, 0, STAGE_WIDTH, STAGE_HEIGHT)
-    background.lineStyle(1, INK, 0.045)
-    for (let x = 0; x <= STAGE_WIDTH; x += 22) background.lineBetween(x, 0, x, STAGE_HEIGHT)
-    for (let y = 0; y <= STAGE_HEIGHT; y += 22) background.lineBetween(0, y, STAGE_WIDTH, y)
+    const g = this.add.graphics().setDepth(0)
+    g.fillStyle(ROOM_DARK, 1).fillRect(0, 0, STAGE_WIDTH, STAGE_HEIGHT)
+    g.fillStyle(ROOM_MID, 1).fillRect(0, 0, STAGE_WIDTH, 88)
+    g.fillStyle(0x211d19, 1).fillRect(0, 18, STAGE_WIDTH, 8)
+    g.fillStyle(0x2c251f, 1).fillRect(100, 26, 208, 62)
+    g.fillStyle(0x4f7653, 0.85).fillEllipse(35, 29, 46, 16)
+    g.fillEllipse(47, 43, 34, 18)
+    g.fillStyle(0xd7cbb9, 0.8).fillRoundedRect(330, 26, 36, 50, 8)
+    g.fillStyle(0x24211e, 0.55).fillRect(341, 38, 14, 14)
+  }
+
+  private drawShell() {
+    const g = this.add.graphics().setDepth(1)
+    g.fillStyle(SHELL_SHADOW, 1).fillRoundedRect(SHELL_X + 3, SHELL_Y + 5, SHELL_W, SHELL_H, 24)
+    g.fillStyle(SHELL, 1).fillRoundedRect(SHELL_X, SHELL_Y, SHELL_W, SHELL_H, 24)
+    g.lineStyle(2, SHELL_LIGHT, 0.95).strokeRoundedRect(SHELL_X + 1, SHELL_Y + 1, SHELL_W - 2, SHELL_H - 2, 23)
+    g.lineStyle(1, INK, 0.2).strokeRoundedRect(SHELL_X + 8, SHELL_Y + 8, SHELL_W - 16, SHELL_H - 16, 18)
+
+    this.add.text(20, 68, 'TetraMindFck / Calc Drop', {
+      fontFamily: 'Arial Narrow, Arial, sans-serif', fontSize: '16px', color: '#1b211d', fontStyle: 'bold italic',
+    }).setDepth(3)
+    this.add.text(326, 70, 'MINIFUGG', {
+      fontFamily: 'monospace', fontSize: '8px', color: '#1b211d', fontStyle: 'bold', letterSpacing: 1,
+    }).setDepth(3)
+
+    // Left equipment rail: cream body directly around the CRT apertures.
+    g.fillStyle(0xd9cbb3, 1).fillRoundedRect(INFO_X - 2, 102, INFO_W + 4, 444, 12)
+    g.lineStyle(1, INK, 0.3).strokeRoundedRect(INFO_X - 2, 102, INFO_W + 4, 444, 12)
+
+    // One CRT frame only.
+    g.fillStyle(0x17231e, 1).fillRoundedRect(CRT_X - 4, CRT_Y - 4, CRT_W + 8, CRT_H + 8, 18)
+    g.fillStyle(CRT_BG, 1).fillRoundedRect(CRT_X, CRT_Y, CRT_W, CRT_H, 14)
+    g.lineStyle(2, 0x7f9b82, 0.42).strokeRoundedRect(CRT_X + 1, CRT_Y + 1, CRT_W - 2, CRT_H - 2, 13)
   }
 
   private createBoard() {
-    this.boardFrame = this.add.graphics().setDepth(2)
-    this.boardFrame.fillStyle(BOARD_BG, 1).fillRect(BOARD_X, BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT)
-    this.boardFrame.lineStyle(3, INK, 1).strokeRect(BOARD_X, BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT)
-    this.boardFrame.lineStyle(1, INK, 0.12)
+    this.boardFrame = this.add.graphics().setDepth(4)
+    this.boardFrame.fillStyle(CRT_DEEP, 1).fillRect(BOARD_X, BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT)
+    this.boardFrame.lineStyle(1, CRT_GRID, 0.7).strokeRect(BOARD_X, BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT)
+    this.boardFrame.lineStyle(1, CRT_GRID, 0.42)
     for (let column = 1; column < COLS; column += 1) {
       const x = BOARD_X + column * CELL_SIZE
       this.boardFrame.lineBetween(x, BOARD_Y, x, BOARD_Y + BOARD_HEIGHT)
@@ -349,74 +384,112 @@ export class TetraMindFckScene extends Phaser.Scene {
       for (let column = 0; column < COLS; column += 1) {
         const x = BOARD_X + (column + 0.5) * CELL_SIZE
         const y = BOARD_Y + (row + 0.5) * CELL_SIZE
-        const rect = this.add.rectangle(x, y, CELL_SIZE - 1, CELL_SIZE - 1, NUMBER_BG, 1).setDepth(5).setVisible(false)
-        const text = this.add.text(x, y, '', {
-          fontFamily: 'Inter, Arial, sans-serif', fontSize: '15px', color: '#151515', fontStyle: 'bold',
-        }).setOrigin(0.5).setDepth(6).setVisible(false)
+        const rect = this.add.rectangle(x, y, CELL_SIZE - 1, CELL_SIZE - 1, CRT_NUMBER, 0.76).setDepth(8).setVisible(false)
+        const text = this.add.text(x, y + 0.5, '', {
+          fontFamily: 'monospace', fontSize: '13px', color: '#12261c', fontStyle: 'bold',
+        }).setOrigin(0.5).setDepth(9).setVisible(false)
         this.cellRects.push(rect)
         this.cellTexts.push(text)
       }
     }
-    this.lockGraphics = this.add.graphics().setDepth(12)
+    this.lockGraphics = this.add.graphics().setDepth(18)
+  }
+
+  private createMiniCrt(x: number, y: number, w: number, h: number, label: string) {
+    const g = this.add.graphics().setDepth(4)
+    g.fillStyle(0x17231e, 1).fillRoundedRect(x, y, w, h, 8)
+    g.lineStyle(1, 0x7f9b82, 0.35).strokeRoundedRect(x, y, w, h, 8)
+    g.fillStyle(CRT_BG, 1).fillRoundedRect(x + 4, y + 19, w - 8, h - 23, 5)
+    this.add.text(x + w / 2, y + 4, label, {
+      fontFamily: 'monospace', fontSize: '9px', color: CRT_TEXT, fontStyle: 'bold', letterSpacing: 1,
+    }).setOrigin(0.5, 0).setDepth(5)
+    for (let sy = y + 23; sy < y + h - 4; sy += 3) {
+      g.lineStyle(1, CRT_PHOSPHOR, 0.035).lineBetween(x + 5, sy, x + w - 5, sy)
+    }
   }
 
   private createHud() {
-    const heading = { fontFamily: 'Inter, Arial, sans-serif', fontSize: '11px', color: '#151515', fontStyle: 'bold' as const }
-    const value = { fontFamily: 'Inter, Arial, sans-serif', fontSize: '25px', color: '#151515', fontStyle: 'bold' as const }
+    this.createMiniCrt(INFO_X + 2, 112, INFO_W - 4, 78, 'LEVEL')
+    this.createMiniCrt(INFO_X + 2, 198, INFO_W - 4, 78, 'TARGET')
+    this.createMiniCrt(INFO_X + 2, 286, INFO_W - 4, 116, 'NEXT')
+    this.createMiniCrt(INFO_X + 2, 410, INFO_W - 4, 116, 'NEXT+1')
 
-    const rule = this.add.graphics().setDepth(4)
-    rule.lineStyle(3, INK, 1).lineBetween(INFO_X, 108, INFO_X + INFO_WIDTH, 108)
-    rule.lineStyle(1, INK, 1).lineBetween(INFO_X, 158, INFO_X + INFO_WIDTH, 158)
+    this.levelText = this.add.text(INFO_X + INFO_W / 2, 156, '1', {
+      fontFamily: 'monospace', fontSize: '28px', color: CRT_TEXT, fontStyle: 'bold',
+    }).setOrigin(0.5).setDepth(6)
+    this.targetText = this.add.text(INFO_X + INFO_W / 2, 242, '50', {
+      fontFamily: 'monospace', fontSize: '24px', color: '#d4a5a8', fontStyle: 'bold',
+    }).setOrigin(0.5).setDepth(6)
 
-    this.add.text(INFO_X + INFO_WIDTH / 2, 116, 'LVL', heading).setOrigin(0.5, 0).setDepth(5)
-    this.levelText = this.add.text(INFO_X + INFO_WIDTH / 2, 132, '1', value).setOrigin(0.5, 0).setDepth(5)
+    // Immediate-next marker.
+    this.add.triangle(INFO_X + 7, 313, 0, 0, 0, 12, 9, 6, CRT_ACTIVE, 0.9).setOrigin(0.5).setDepth(7)
 
-    this.add.text(INFO_X + INFO_WIDTH / 2, 177, 'OBJECTIF', heading).setOrigin(0.5, 0).setDepth(5)
-    this.targetText = this.add.text(INFO_X + INFO_WIDTH / 2, 193, '50', {
-      ...value, fontSize: '22px', color: '#d64b36',
-    }).setOrigin(0.5, 0).setDepth(5)
-    this.add.text(INFO_X + INFO_WIDTH / 2, 220, 'EN 1 COUP', {
-      ...heading, fontSize: '9px',
-    }).setOrigin(0.5, 0).setDepth(5)
+    this.nextOne = this.add.container(INFO_X + INFO_W / 2, 349).setDepth(8)
+    this.nextTwo = this.add.container(INFO_X + INFO_W / 2, 473).setDepth(8)
 
-    this.progressGraphics = this.add.graphics().setDepth(5)
-    this.add.text(INFO_X + INFO_WIDTH / 2, 357, 'MEILLEUR', { ...heading, fontSize: '9px' }).setOrigin(0.5, 0).setDepth(5)
-    this.bestText = this.add.text(INFO_X + INFO_WIDTH / 2, 373, '0', {
-      ...heading, fontSize: '14px',
-    }).setOrigin(0.5, 0).setDepth(5)
-
-    const nextRule = this.add.graphics().setDepth(4)
-    nextRule.lineStyle(2, INK, 1).lineBetween(INFO_X, 405, INFO_X + INFO_WIDTH, 405)
-    this.add.text(INFO_X + INFO_WIDTH / 2, 414, 'NEXT', heading).setOrigin(0.5, 0).setDepth(5)
-    this.nextOne = this.add.container(INFO_X + INFO_WIDTH / 2, 449).setDepth(6)
-    this.nextTwo = this.add.container(INFO_X + INFO_WIDTH / 2, 513).setDepth(6)
+    this.add.text(CRT_X + 12, SCORE_Y, 'SCORE', {
+      fontFamily: 'monospace', fontSize: '12px', color: CRT_TEXT, fontStyle: 'bold', letterSpacing: 1,
+    }).setDepth(7)
+    this.scoreText = this.add.text(CRT_X + CRT_W - 12, SCORE_Y - 2, '0', {
+      fontFamily: 'monospace', fontSize: '22px', color: CRT_TEXT, fontStyle: 'bold',
+    }).setOrigin(1, 0).setDepth(7)
   }
 
   private createControls() {
-    this.makeButton(8 + CONTROL_SIZE / 2, CONTROL_BOTTOM - CONTROL_SIZE - 4, '←', NUMBER_BG, 'left')
-    this.makeButton(8 + CONTROL_SIZE + 6 + CONTROL_SIZE / 2, CONTROL_BOTTOM - CONTROL_SIZE - 4, '→', NUMBER_BG, 'right')
-    this.makeButton(8 + (CONTROL_SIZE * 2 + 6) / 2, CONTROL_BOTTOM - CONTROL_SIZE / 2, '↓', MULTIPLY_BG, 'down')
-    this.makeButton(282 + CONTROL_SIZE / 2, CONTROL_BOTTOM - CONTROL_SIZE / 2, '↺', DIVIDE_BG, 'rotateLeft')
-    this.makeButton(282 + CONTROL_SIZE + 8 + CONTROL_SIZE / 2, CONTROL_BOTTOM - CONTROL_SIZE / 2, '↻', DIVIDE_BG, 'rotateRight')
+    const totalWidth = MAIN_BUTTON_SIZE * 4 + MAIN_BUTTON_GAP * 3
+    const startX = (STAGE_WIDTH - totalWidth) / 2
+    const centers = Array.from({ length: 4 }, (_, index) => startX + MAIN_BUTTON_SIZE / 2 + index * (MAIN_BUTTON_SIZE + MAIN_BUTTON_GAP))
+
+    this.makeButton(centers[0], MAIN_BUTTON_Y, MAIN_BUTTON_SIZE, '◀', BUTTON_MOVE, 'left')
+    this.makeButton(centers[1], MAIN_BUTTON_Y, MAIN_BUTTON_SIZE, '▶', BUTTON_MOVE, 'right')
+    this.makeButton(centers[2], MAIN_BUTTON_Y, MAIN_BUTTON_SIZE, '↺', BUTTON_ROTATE_A, 'rotateLeft')
+    this.makeButton(centers[3], MAIN_BUTTON_Y, MAIN_BUTTON_SIZE, '↻', BUTTON_ROTATE_B, 'rotateRight')
+    this.makeButton((centers[0] + centers[1]) / 2, DOWN_BUTTON_Y, DOWN_BUTTON_SIZE, '▼', BUTTON_DOWN, 'down')
+
+    const labelStyle = { fontFamily: 'monospace', fontSize: '8px', color: '#1b211d', fontStyle: 'bold' as const }
+    this.add.text(centers[0], MAIN_BUTTON_Y + 37, 'LEFT', labelStyle).setOrigin(0.5).setDepth(12)
+    this.add.text(centers[1], MAIN_BUTTON_Y + 37, 'RIGHT', labelStyle).setOrigin(0.5).setDepth(12)
+    this.add.text(centers[2], MAIN_BUTTON_Y + 37, 'ROTATE', labelStyle).setOrigin(0.5).setDepth(12)
+    this.add.text(centers[3], MAIN_BUTTON_Y + 37, 'ROTATE', labelStyle).setOrigin(0.5).setDepth(12)
+    this.add.text((centers[0] + centers[1]) / 2, DOWN_BUTTON_Y + 28, 'DOWN', labelStyle).setOrigin(0.5).setDepth(12)
   }
 
-  private makeButton(x: number, y: number, label: string, fill: number, action: ActionName) {
-    this.add.rectangle(x + 3, y + 3, CONTROL_SIZE, CONTROL_SIZE, INK, 1).setDepth(8)
-    const rect = this.add.rectangle(x, y, CONTROL_SIZE, CONTROL_SIZE, fill, 1)
-      .setStrokeStyle(2, INK, 1)
-      .setDepth(9)
+  private makeButton(x: number, y: number, size: number, label: string, fill: number, action: ActionName) {
+    const shadow = this.add.rectangle(x + 2, y + 3, size, size, 0x51473d, 0.9).setDepth(9)
+    const rect = this.add.rectangle(x, y, size, size, fill, 1)
+      .setStrokeStyle(2, INK, 0.9)
+      .setDepth(10)
       .setInteractive({ useHandCursor: true })
-    this.add.text(x, y, label, {
-      fontFamily: 'Inter, Arial, sans-serif', fontSize: '27px', color: '#151515', fontStyle: 'bold',
-    }).setOrigin(0.5).setDepth(10)
+    const gloss = this.add.rectangle(x, y - size * 0.22, size - 6, Math.max(5, size * 0.12), SHELL_LIGHT, 0.18).setDepth(11)
+    const icon = this.add.text(x, y, label, {
+      fontFamily: 'Arial, sans-serif', fontSize: `${Math.round(size * 0.46)}px`, color: '#f8ead2', fontStyle: 'bold',
+    }).setOrigin(0.5).setDepth(12)
+
+    const setPressed = (pressed: boolean) => {
+      const dy = pressed ? 2 : 0
+      rect.setPosition(x, y + dy)
+      gloss.setPosition(x, y - size * 0.22 + dy)
+      icon.setPosition(x, y + dy)
+      shadow.setAlpha(pressed ? 0.45 : 0.9)
+    }
+
     rect.on('pointerdown', () => {
       if (this.finished || this.pendingClear) return
-      rect.setPosition(x + 2, y + 2)
+      setPressed(true)
       this.runAction(action)
       if (action === 'left' || action === 'right' || action === 'down') this.startHold(action)
     })
-    rect.on('pointerup', () => { rect.setPosition(x, y); this.stopHold() })
-    rect.on('pointerout', () => { rect.setPosition(x, y); this.stopHold() })
+    rect.on('pointerup', () => { setPressed(false); this.stopHold() })
+    rect.on('pointerout', () => { setPressed(false); this.stopHold() })
+  }
+
+  private drawCrtOverlay() {
+    this.crtOverlay = this.add.graphics().setDepth(26)
+    this.crtOverlay.lineStyle(1, CRT_PHOSPHOR, 0.035)
+    for (let y = CRT_Y + 2; y < CRT_Y + CRT_H - 2; y += 3) {
+      this.crtOverlay.lineBetween(CRT_X + 3, y, CRT_X + CRT_W - 3, y)
+    }
+    this.crtOverlay.fillStyle(0x00140f, 0.09).fillRoundedRect(CRT_X + 2, CRT_Y + 2, CRT_W - 4, CRT_H - 4, 12)
   }
 
   private registerKeyboard() {
@@ -449,9 +522,7 @@ export class TetraMindFckScene extends Phaser.Scene {
     this.gravityTimer?.remove()
     this.gravityTimer = null
     if (this.finished || this.pendingClear) return
-    this.gravityTimer = this.time.addEvent({
-      delay: dropDelay(this.level), loop: true, callback: this.tick, callbackScope: this,
-    })
+    this.gravityTimer = this.time.addEvent({ delay: dropDelay(this.level), loop: true, callback: this.tick, callbackScope: this })
   }
 
   private canPlace(piece: Piece) {
@@ -496,9 +567,7 @@ export class TetraMindFckScene extends Phaser.Scene {
         this.active = moved
         this.lockTicks = 0
         this.renderBoard()
-      } else if (this.isGrounded()) {
-        this.consumeLockTick()
-      }
+      } else if (this.isGrounded()) this.consumeLockTick()
       return
     }
 
@@ -547,9 +616,7 @@ export class TetraMindFckScene extends Phaser.Scene {
       return
     }
 
-    const snapshots = fullRows.map((rowIndex, index) => ({
-      rowIndex, tiles: [...(board[rowIndex] as Tile[])], report: reports[index],
-    }))
+    const snapshots = fullRows.map((rowIndex, index) => ({ rowIndex, tiles: [...(board[rowIndex] as Tile[])], report: reports[index] }))
     const gained = reports.reduce((sum, report) => sum + report.points, 0)
     const earnedBonus = bonusForClear(fullRows.length)
     this.pendingClear = { fullRows, reports, gained, earnedBonus }
@@ -650,13 +717,16 @@ export class TetraMindFckScene extends Phaser.Scene {
         const text = this.cellTexts[index]
         if (!tile) {
           if (ghostSet.has(key)) {
-            rect.setVisible(true).setFillStyle(BOARD_BG, 0).setStrokeStyle(1, GHOST, 0.7)
+            rect.setVisible(true).setFillStyle(CRT_BG, 0).setStrokeStyle(1, CRT_GHOST, 0.8)
           } else rect.setVisible(false)
           text.setVisible(false)
           continue
         }
-        rect.setVisible(true).setFillStyle(tileFill(tile), 1).setStrokeStyle(moving ? 2 : 1, moving ? BONUS_BG : INK, 1)
-        text.setVisible(true).setText(tile.label).setColor(tile.bonus || tile.kind === 'reverse' ? '#ffffff' : '#151515')
+        rect
+          .setVisible(true)
+          .setFillStyle(tileFill(tile), moving ? 0.9 : 0.74)
+          .setStrokeStyle(moving ? 2 : 1, moving ? CRT_ACTIVE : CRT_DEEP, moving ? 0.9 : 0.7)
+        text.setVisible(true).setText(tile.label).setColor(tileInk(tile))
       }
     }
     this.renderLockMeter()
@@ -665,29 +735,22 @@ export class TetraMindFckScene extends Phaser.Scene {
   private renderLockMeter() {
     this.lockGraphics.clear()
     if (this.pendingClear || this.finished || !this.isGrounded()) return
-    const x = BOARD_X + BOARD_WIDTH + 4
-    const baseY = BOARD_Y + BOARD_HEIGHT - 12
+    const x = BOARD_X + BOARD_WIDTH + 5
+    const baseY = BOARD_Y + BOARD_HEIGHT - 10
     for (let index = 0; index < LOCK_TICKS; index += 1) {
-      this.lockGraphics.fillStyle(index < this.lockTicks ? BONUS_BG : 0xc9c3b5, 1)
-      this.lockGraphics.fillRect(x, baseY - index * 16, 5, 12)
-      this.lockGraphics.lineStyle(1, INK, 1).strokeRect(x, baseY - index * 16, 5, 12)
+      this.lockGraphics.fillStyle(index < this.lockTicks ? CRT_BONUS : CRT_GRID, 0.85)
+      this.lockGraphics.fillRect(x, baseY - index * 12, 4, 9)
     }
   }
 
   private renderHud() {
     const target = targetForLevel(this.level)
     this.levelText.setText(String(this.level))
-    this.targetText.setText(target.toLocaleString('fr-FR'))
-    this.bestText.setText(this.bestAttempt.toLocaleString('fr-FR'))
-    const ratio = Math.min(1, this.bestAttempt / target)
-    const barX = INFO_X + INFO_WIDTH / 2 - 5
-    const barY = 244
-    const barHeight = 104
-    this.progressGraphics.clear()
-    this.progressGraphics.fillStyle(0xd8d3c6, 1).fillRect(barX, barY, 10, barHeight)
-    this.progressGraphics.lineStyle(1, INK, 1).strokeRect(barX, barY, 10, barHeight)
-    const fillHeight = Math.max(0, (barHeight - 2) * ratio)
-    this.progressGraphics.fillStyle(BONUS_BG, 1).fillRect(barX + 1, barY + barHeight - 1 - fillHeight, 8, fillHeight)
+    this.targetText.setText(String(target))
+    this.targetText.setFontSize(String(target).length > 5 ? 17 : String(target).length > 3 ? 20 : 24)
+    this.scoreText.setText(String(this.score))
+    const digits = String(Math.abs(this.score)).length
+    this.scoreText.setFontSize(digits > 11 ? 14 : digits > 8 ? 17 : 22)
   }
 
   private renderPreviews() {
@@ -699,16 +762,19 @@ export class TetraMindFckScene extends Phaser.Scene {
     container.removeAll(true)
     const cells = pieceCells({ ...piece, x: 0, y: 0 })
     const minX = Math.min(...cells.map((cell) => cell.x))
+    const maxX = Math.max(...cells.map((cell) => cell.x))
     const minY = Math.min(...cells.map((cell) => cell.y))
-    const size = 12
-    const offset = 18
+    const maxY = Math.max(...cells.map((cell) => cell.y))
+    const size = 11
+    const width = (maxX - minX + 1) * size
+    const height = (maxY - minY + 1) * size
     for (const cell of cells) {
       const tile = piece.tokens[cell.tokenIndex]
-      const x = (cell.x - minX) * size - offset
-      const y = (cell.y - minY) * size - 6
-      const rect = this.add.rectangle(x, y, size - 1, size - 1, tileFill(tile), 1).setStrokeStyle(1, INK, 1)
-      const label = this.add.text(x, y, tile.label, {
-        fontFamily: 'Inter, Arial, sans-serif', fontSize: '7px', color: tile.bonus || tile.kind === 'reverse' ? '#ffffff' : '#151515', fontStyle: 'bold',
+      const x = (cell.x - minX) * size - width / 2 + size / 2
+      const y = (cell.y - minY) * size - height / 2 + size / 2
+      const rect = this.add.rectangle(x, y, size - 1, size - 1, tileFill(tile), 0.74).setStrokeStyle(1, CRT_DEEP, 0.7)
+      const label = this.add.text(x, y + 0.5, tile.label, {
+        fontFamily: 'monospace', fontSize: '6px', color: tileInk(tile), fontStyle: 'bold',
       }).setOrigin(0.5)
       container.add([rect, label])
     }
@@ -726,10 +792,10 @@ export class TetraMindFckScene extends Phaser.Scene {
 
     snapshot.tiles.forEach((tile, column) => {
       const x = BOARD_X + (column + 0.5) * CELL_SIZE
-      const box = this.add.rectangle(0, 0, CELL_SIZE - 1, CELL_SIZE - 1, tileFill(tile), 1).setStrokeStyle(1, INK, 1)
+      const box = this.add.rectangle(0, 0, CELL_SIZE - 1, CELL_SIZE - 1, tileFill(tile), 0.8).setStrokeStyle(1, CRT_ACTIVE, 0.8)
       const effectLabel = tile.kind === 'number' ? `+${tile.label}` : tile.label
-      const label = this.add.text(0, 0, effectLabel, {
-        fontFamily: 'Inter, Arial, sans-serif', fontSize: '13px', color: tile.bonus || tile.kind === 'reverse' ? '#ffffff' : '#151515', fontStyle: 'bold',
+      const label = this.add.text(0, 0.5, effectLabel, {
+        fontFamily: 'monospace', fontSize: '11px', color: tileInk(tile), fontStyle: 'bold',
       }).setOrigin(0.5)
       const cellContainer = this.add.container(x, rowY, [box, label])
       rowContainer.add(cellContainer)
@@ -738,13 +804,13 @@ export class TetraMindFckScene extends Phaser.Scene {
       const calculationOrder = snapshot.report.reversed ? COLS - 1 - column : column
       const stepValue = snapshot.report.steps[column]
       if (stepValue !== null) {
-        const step = this.add.text(x, rowY - 18, formatCompact(stepValue), {
-          fontFamily: 'Inter, Arial, sans-serif', fontSize: '9px', color: '#ffffff', backgroundColor: '#151515', fontStyle: 'bold', padding: { x: 2, y: 1 },
+        const step = this.add.text(x, rowY - 16, formatCompact(stepValue), {
+          fontFamily: 'monospace', fontSize: '8px', color: CRT_TEXT, backgroundColor: '#0b2b22', fontStyle: 'bold', padding: { x: 2, y: 1 },
         }).setOrigin(0.5).setAlpha(0)
         rowContainer.add(step)
         this.time.delayedCall(70 + calculationOrder * 46, () => {
-          this.tweens.add({ targets: cellContainer, scale: 1.18, duration: 90, yoyo: true })
-          this.tweens.add({ targets: step, alpha: 1, y: rowY - 21, duration: 90, hold: 210, yoyo: true })
+          this.tweens.add({ targets: cellContainer, scale: 1.08, duration: 90, yoyo: true })
+          this.tweens.add({ targets: step, alpha: 1, y: rowY - 19, duration: 90, hold: 210, yoyo: true })
         })
       }
     })
@@ -753,16 +819,16 @@ export class TetraMindFckScene extends Phaser.Scene {
       snapshot.report.reversed ? BOARD_X + BOARD_WIDTH : BOARD_X,
       rowY,
       BOARD_WIDTH,
-      3,
-      BONUS_BG,
-      1,
+      2,
+      CRT_ACTIVE,
+      0.9,
     ).setOrigin(snapshot.report.reversed ? 1 : 0, 0.5).setScale(0, 1)
     rowContainer.add(arrow)
     this.tweens.add({ targets: arrow, scaleX: 1, duration: 620, ease: 'Cubic.easeOut' })
 
-    const scoreX = snapshot.report.reversed ? BOARD_X - 4 : BOARD_X + BOARD_WIDTH + 4
-    const score = this.add.text(scoreX, rowY, `+${formatCompact(snapshot.report.points)}`, {
-      fontFamily: 'Inter, Arial, sans-serif', fontSize: '12px', color: '#151515', backgroundColor: '#f2efe6', fontStyle: 'bold', padding: { x: 2, y: 2 },
+    const scoreX = snapshot.report.reversed ? BOARD_X - 3 : BOARD_X + BOARD_WIDTH + 3
+    const score = this.add.text(scoreX, rowY, `${snapshot.report.reversed ? '←' : '→'}${formatCompact(snapshot.report.points)}`, {
+      fontFamily: 'monospace', fontSize: '10px', color: CRT_TEXT, backgroundColor: '#0b2b22', fontStyle: 'bold', padding: { x: 2, y: 2 },
     }).setOrigin(snapshot.report.reversed ? 1 : 0, 0.5).setAlpha(0)
     rowContainer.add(score)
     this.time.delayedCall(430, () => this.tweens.add({ targets: score, alpha: 1, duration: 100, hold: 420, yoyo: true }))
@@ -770,7 +836,7 @@ export class TetraMindFckScene extends Phaser.Scene {
     cells.forEach((cell, column) => {
       const wipeOrder = COLS - 1 - column
       this.time.delayedCall(540 + wipeOrder * 34, () => {
-        this.tweens.add({ targets: cell, alpha: 0, scaleX: 0.18, x: cell.x - 10, duration: 250, ease: 'Cubic.easeIn' })
+        this.tweens.add({ targets: cell, alpha: 0, scaleX: 0.18, x: cell.x - 8, duration: 250, ease: 'Cubic.easeIn' })
       })
     })
   }

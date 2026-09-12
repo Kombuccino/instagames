@@ -1,13 +1,13 @@
 import type { GameWelcomeConfig } from '../../core/types'
 
-const ROOT = '/assets/imported/linefugg/welcome/variants/runtime'
+const ROOT = '/assets/generated/linefugg/welcome/variants/runtime'
 
 /**
- * Exact PNG masters approved on 2026-09-07 remain preserved as canonical artwork.
- * Runtime serves lossless WebP derivatives of those same four compositions.
+ * Exact PNG references approved on 2026-09-07 remain preserved as visual authorities.
+ * Runtime serves lossless WebP derivatives of the 2026-09-12 full-height restorations.
  * Core owns selection and presentation. No animation or invented score gates:
  * all four editions replace the placeholder and are available in Cover selection.
- * Contain preserves the baked title; only the decorative exterior is cover-cropped.
+ * The authored 390 × 844 frame fills the Cover; only its continuous lower art is cropped.
  */
 export const LINEFUGG_WELCOME: GameWelcomeConfig = {
   variants: [
@@ -17,7 +17,8 @@ export const LINEFUGG_WELCOME: GameWelcomeConfig = {
       image: `${ROOT}/linefugg-cover-a-pulp-euro.webp`,
       unlockScore: 0,
       runtime: 'static',
-      fit: 'contain',
+      fit: 'cover',
+      objectPosition: 'top center',
     },
     {
       id: 'b-micro-euro',
@@ -25,7 +26,8 @@ export const LINEFUGG_WELCOME: GameWelcomeConfig = {
       image: `${ROOT}/linefugg-cover-b-micro-euro.webp`,
       unlockScore: 0,
       runtime: 'static',
-      fit: 'contain',
+      fit: 'cover',
+      objectPosition: 'top center',
     },
     {
       id: 'c-graphic-poster',
@@ -33,7 +35,8 @@ export const LINEFUGG_WELCOME: GameWelcomeConfig = {
       image: `${ROOT}/linefugg-cover-c-graphic-poster.webp`,
       unlockScore: 0,
       runtime: 'static',
-      fit: 'contain',
+      fit: 'cover',
+      objectPosition: 'top center',
     },
     {
       id: 'd-japanese-edition',
@@ -41,7 +44,8 @@ export const LINEFUGG_WELCOME: GameWelcomeConfig = {
       image: `${ROOT}/linefugg-cover-d-japanese-edition.webp`,
       unlockScore: 0,
       runtime: 'static',
-      fit: 'contain',
+      fit: 'cover',
+      objectPosition: 'top center',
     },
   ],
   selection: 'seeded',

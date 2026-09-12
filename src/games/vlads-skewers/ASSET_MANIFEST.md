@@ -24,6 +24,22 @@ The three approved DA files under `GFX/crea-chatgpt/game/` are **REFERENCE ONLY*
 
 Runtime texts and values stay dynamic: score, level, secondary client counter, order icons, patience, comic impact cry, multiplier, active bonus, `BRUTALITY!` and end state.
 
+## Covers statiques remises aux normes — 12 septembre 2026
+
+Les cinq PNG approuvés du 10 septembre sous `public/assets/imported/vlads-skewers/welcome/variants/` restent les références artistiques inchangées. Les nouveaux fichiers corrigent uniquement le format : prolongement authored vers le bas, suppression des bandes floues/mirroirs et, sur l'échoppe japonaise, retrait du petit texte secondaire `串焼き` pour ne conserver que le titre principal `ヴラッドの串焼き`.
+
+| Édition | Source restaurée | Master exact | Dérivé Core actif |
+| --- | --- | --- | --- |
+| Chaos | `sources/vlad-cover-01-chaos-source.png` — 853×1844 | `masters/vlad-cover-01-chaos-master.png` — 390×844 | `runtime/vlad-cover-01-chaos.webp` — 780×1688, 2 202 142 octets |
+| Nature morte | `sources/vlad-cover-02-still-life-source.png` — 853×1844 | `masters/vlad-cover-02-still-life-master.png` — 390×844 | `runtime/vlad-cover-02-still-life.webp` — 780×1688, 1 822 494 octets |
+| Portrait japonais | `sources/vlad-cover-03-japanese-portrait-source.png` — 853×1844 | `masters/vlad-cover-03-japanese-portrait-master.png` — 390×844 | `runtime/vlad-cover-03-japanese-portrait.webp` — 780×1688, 2 052 080 octets |
+| Château | `sources/vlad-cover-04-castle-sign-source.png` — 853×1844 | `masters/vlad-cover-04-castle-sign-master.png` — 390×844 | `runtime/vlad-cover-04-castle-sign.webp` — 780×1688, 2 209 820 octets |
+| Échoppe japonaise | `sources/vlad-cover-05-japanese-stall-source.png` — 852×1846 | `masters/vlad-cover-05-japanese-stall-master.png` — 390×844 | `runtime/vlad-cover-05-japanese-stall.webp` — 780×1688, 2 186 958 octets |
+
+Tous ces chemins sont relatifs à `public/assets/generated/vlads-skewers/welcome/variants/`. Les masters/sources sont des PNG opaques mono-frame ; les dérivés actifs sont des WebP opaques mono-frame au payload `VP8L` lossless. `welcome.ts` conserve cinq variantes statiques, ancrées en haut, sans animation ni couche supplémentaire.
+
+Micro-brief fermé : conserver titre, personnages, scène, palette et technique de chaque original ; prolonger uniquement le manteau/feu, le velours de nature morte, la cape sérigraphiée, la vallée du château ou l'échoppe en bois. Rejets : bande vide/noire/floue, miroir, étirement, faux cadre abîmé, nouveau sujet, slogan, CTA ou UI.
+
 ## Layer order
 
 1. Environment and crisp flames.

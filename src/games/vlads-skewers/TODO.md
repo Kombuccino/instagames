@@ -12,7 +12,7 @@ Backlog durable du jeu. Voir `docs/TODO_NOTES.md`.
 
 ## Covers / présentation
 
-- [ ] Vérifier le format et le rendu des covers de Vlad : les bonnes jaquettes sont actuellement très cropées en haut et en bas et ne semblent pas occuper correctement toute la hauteur. Contrôler les dimensions source, le ratio attendu et le mode d’affichage avant de corriger.
+- [x] Remettre les cinq covers validées au format `390 × 844` : bandes floues supprimées, décor bas prolongé, dérivés WebP lossless plein cadre et ancrage haut. Revue utilisateur finale distincte.
 
 ## Bugs / technique
 

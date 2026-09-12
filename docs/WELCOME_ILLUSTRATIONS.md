@@ -6,9 +6,24 @@ Before a cover pass, follow [GAME_CREATION_PIPELINE.md](GAME_CREATION_PIPELINE.m
 
 ## Current migration status
 
-TetraMindFck's three validated covers now run as static Core raster art. The former Phaser cover host and TetraMindFck layer bundles were retired with this cutover. Other catalog covers remain **A METTRE A JOUR** until their registry state is `current`.
+TetraMindFck's three validated covers now run as static Core raster art. The former Phaser cover host and TetraMindFck layer bundles were retired with this cutover. LineFugg and Vlad's Skewers also use static full-height Core collections; their approved original references remain preserved separately from the `390 × 844` restorations.
 
 The registry tracks this with `migration.cover`. Until a game's cover state is `current`, the cover is considered transitional even when the current artwork itself is useful/beautiful.
+
+### Catalog audit — 12 September 2026
+
+| Game | Approved standalone originals found | Current cover state | Next action |
+| --- | ---: | --- | --- |
+| TetraMindFck | 3 | `current` | Japanese candidate remains outside production pending explicit artistic acceptance |
+| LineFugg | 4 | `current` | Full-height restorations active and browser-checked on three reference heights; final user review remains distinct |
+| Vlad's Skewers | 5 | `current` | Full-height restorations active and browser-checked on three reference heights; final user review remains distinct |
+| Train Fighter | 0 | `update-required` | Recover or validate a real original before any cover production |
+| Shoot the Shooter | 0 | `update-required` | Recover or validate a real original before any cover production |
+| HARI les dents pourries | 0 | `update-required` | Recover or validate a real original before any cover production |
+| CrazyPapers | 0 | `update-required` | Recover or validate a real original before any cover production |
+| DebthOfLife | 0 | `update-required` | Recover or validate a real original before any cover production |
+
+The audit covers repository history and the accessible local `GFX/crea-chatgpt/` archive. A screenshot, gameplay DA or contact-sheet tile is not counted as a standalone approved cover master. Missing originals are reported rather than reconstructed from memory.
 
 ## 1. Core ownership
 

@@ -82,7 +82,11 @@ Validation utilisateur : 10 septembre 2026 (« Très bien je valide tout ça. Tu
 4. `vlad-cover-04-castle-sign-approved-2026-09-10.png` — scène classique de film de vampire avec enseigne de brochettes ;
 5. `vlad-cover-05-japanese-stall-approved-2026-09-10.png` — estampe japonaise / comptoir nocturne.
 
-Production GitHub : `public/assets/imported/vlads-skewers/welcome/variants/`. Le feed utilise les PNG approuvés exacts avec `fit: contain`, `runtime: static`, `selection: seeded` et `unlockScore: 0` pour les cinq variantes. Les dérivés `masters/` et `runtime/` existent comme préparations techniques mais ne remplacent pas ces références.
+Les cinq PNG approuvés restent intacts sous `public/assets/imported/vlads-skewers/welcome/variants/` et gouvernent toujours le style, le sujet et la composition. La demande du 12 septembre 2026 autorise leur remise aux normes sans réinterprétation : chaque image est prolongée vers le bas dans son propre médium jusqu'au cadre Cover `390 × 844`. Les anciens masters à bandes floues ne sont plus utilisés.
+
+Production active : `public/assets/generated/vlads-skewers/welcome/variants/`. Le feed emploie les dérivés WebP lossless `780 × 1688` avec `fit: cover`, `objectPosition: 'top center'`, `runtime: static`, `selection: seeded` et `unlockScore: 0`. Le titre et la scène approuvée restent en haut ; JOUER recouvre seulement le décor continu ajouté en bas.
+
+Textes autorisés : `Vlad's Skewers` pour les quatre éditions occidentales ; `ヴラッドの串焼き` pour l'échoppe japonaise. Sur cette dernière, le petit panneau secondaire `串焼き` est retiré afin de garder uniquement le titre principal. Aucun `SWIPE TO PLAY`, CTA, score, signature MiniFugg ou pseudo-texte.
 
 Conserver la matière du médium : grain de papier, irrégularités d'impression, trame, coups de pinceau, accidents d'encre ou texture picturale propres à chaque édition. **Ne pas ajouter d'usure artificielle aux coins ou bords** ; la patine peut vivre dans le papier ou l'impression, pas comme un effet de cadre systématique.
 
@@ -95,4 +99,4 @@ Le précédent master C du 7 septembre reste archivé comme étape validée hist
 - effets plein écran permanents, particules non plafonnées ou labels critiques minuscules ;
 - mélanger volontairement plusieurs granularités de pixels entre objets voisins sans raison artistique ;
 - utiliser une référence aplatie comme fond avec score, vies, clients ou ingrédients déjà cuits ;
-- restaurer les covers rejetées ou altérer les cinq masters validés.
+- restaurer les covers rejetées ou traiter les cinq références validées comme de simples inspirations ; toute adaptation reste un prolongement fidèle et localisé.

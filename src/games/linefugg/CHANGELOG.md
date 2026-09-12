@@ -1,5 +1,15 @@
 # LineFugg — Changelog
 
+## [0.6.0] — 2026-09-12 12:46 Europe/Paris
+
+- Les quatre jaquettes approuvées occupent désormais le vrai cadre MiniFugg `390 × 844`, sans ancien letterbox ni fond diffus autour de l'image.
+- Leur composition reste la même ; seule la partie basse est prolongée dans le médium propre à chaque édition afin que le recadrage et le bouton JOUER tombent sur du décor continu.
+- Les covers restent statiques, ancrées en haut et servies en WebP lossless `780 × 1688`. Aucun CTA, slogan, logo ou faux cadre n'est ajouté au raster.
+
+Références : les quatre PNG approuvés du 7 septembre 2026, `ART_DIRECTION.md` et `ASSET_MANIFEST.md`.
+
+Vérifié : formats, dimensions, opacité, payload lossless, build/typecheck, puis quatre éditions sur mobile court, MASTER et bureau avec sélection, lancement et retour cover.
+
 ## [0.5.5] — 2026-09-12 09:57 Europe/Paris
 
 - La composition respire davantage : plateau ramené à `280 × 280`, mécanisme céleste et console basse recalés, registre élargi verticalement et hiérarchie typographique réduite sans toucher aux règles ni au score.

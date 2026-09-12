@@ -1,5 +1,15 @@
 # Les Brochettes de Vlad — Changelog
 
+## [0.4.0] — 2026-09-12 12:46 Europe/Paris
+
+- Les cinq jaquettes approuvées disposent désormais d'un vrai cadre MiniFugg `390 × 844`, sans les bandes floues qui complétaient artificiellement les anciens masters.
+- Chaque édition conserve sa composition et son médium ; seule la partie basse continue naturellement le manteau, le velours, la cape graphique, la vallée ou l'échoppe pour absorber le crop et le bouton JOUER.
+- L'échoppe japonaise ne garde plus que son titre principal `ヴラッドの串焼き`. Toutes les covers restent statiques, ancrées en haut et servies en WebP lossless `780 × 1688`.
+
+Références : les cinq PNG approuvés du 10 septembre 2026, `ART_DIRECTION.md` et `ASSET_MANIFEST.md`.
+
+Vérifié : formats, dimensions, opacité, payload lossless, build/typecheck, puis cinq éditions sur mobile court, MASTER et bureau avec contrôle du recouvrement JOUER.
+
 ## [0.3.7] — 2026-09-12 12:05 Europe/Paris
 
 - Correction de la physique des membres pendant les déplacements de brochette : l'inertie était appliquée deux fois, une première fois par le déplacement de l'ancrage Matter et une seconde fois par une force calculée sur l'accélération souris/doigt.

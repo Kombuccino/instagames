@@ -1,6 +1,6 @@
 # LineFugg — Production asset manifest
 
-État canonique : 12 septembre 2026, version `0.5.5`, direction **Orbital Accounting**. Appliquer `docs/GAME_ART_PRODUCTION_PIPELINE.md` et `docs/ASSET_PIPELINE.md`.
+État canonique : 12 septembre 2026, version `0.6.0`, direction **Orbital Accounting**. Appliquer `docs/GAME_ART_PRODUCTION_PIPELINE.md` et `docs/ASSET_PIPELINE.md`.
 
 Les PNG approuvés et sources de travail sont conservés. **Le runtime gameplay ne charge plus aucun de ces gros PNG : ses 11 images actives sont des dérivés WebP lossless pré-dimensionnés.** Les quatre covers suivent le même principe, avec masters PNG distincts et dérivés WebP Core.
 
@@ -40,18 +40,20 @@ Phaser possède valeurs, signes, chemins, flèches, halos, calculs, total, pips,
 
 `OrbitalImageFile` a été supprimé : LineFugg utilise maintenant le loader Phaser standard `load.image`. Le navigateur ne télécharge plus une source surdimensionnée avant de la réduire sur Canvas.
 
-## Covers
+## Covers — remise aux normes du 12 septembre 2026
 
-Masters approuvés du 7 septembre, conservés sans régénération dans `Fugg/linefugg/welcome/variants/` et l'archive `Games/linefugg/covers-validated/` :
+Les quatre PNG approuvés du 7 septembre restent intacts sous `public/assets/imported/linefugg/welcome/variants/` et demeurent les autorités de style, de sujet et de composition. Le lot du 12 septembre prolonge chaque jaquette vers le bas dans le même dessin afin d'obtenir un vrai cadre plein écran, sans bande noire ou floue et sans réinterprétation volontaire.
 
-| Édition | Master canonique | Dérivé Core actif |
-| --- | --- | --- |
-| A — Pulp | `linefugg-cover-a-pulp-euro-approved-2026-09-07.png` — 941×1672 | `runtime/linefugg-cover-a-pulp-euro.webp` — 780×1386, 1 577 418 octets |
-| B — Micro euro | `linefugg-cover-b-micro-euro-approved-2026-09-07.png` — 941×1672 | `runtime/linefugg-cover-b-micro-euro.webp` — 780×1386, 1 440 408 octets |
-| C — Graphic poster | `linefugg-cover-c-graphic-poster-approved-2026-09-07.png` — 941×1672 | `runtime/linefugg-cover-c-graphic-poster.webp` — 780×1386, 1 402 038 octets |
-| D — Japanese edition | `linefugg-cover-d-japanese-edition-approved-2026-09-07.png` — 941×1672 | `runtime/linefugg-cover-d-japanese-edition.webp` — 780×1386, 1 533 336 octets |
+| Édition | Référence approuvée | Source restaurée | Master exact | Dérivé Core actif |
+| --- | --- | --- | --- | --- |
+| A — Pulp | `linefugg-cover-a-pulp-euro-approved-2026-09-07.png` — 941×1672 | `generated/linefugg/welcome/variants/sources/linefugg-cover-a-pulp-euro-source.png` — 853×1844 | `masters/linefugg-cover-a-pulp-euro-master.png` — 390×844 | `runtime/linefugg-cover-a-pulp-euro.webp` — 780×1688, 1 827 684 octets |
+| B — Micro euro | `linefugg-cover-b-micro-euro-approved-2026-09-07.png` — 941×1672 | `generated/linefugg/welcome/variants/sources/linefugg-cover-b-micro-euro-source.png` — 853×1844 | `masters/linefugg-cover-b-micro-euro-master.png` — 390×844 | `runtime/linefugg-cover-b-micro-euro.webp` — 780×1688, 1 705 350 octets |
+| C — Graphic poster | `linefugg-cover-c-graphic-poster-approved-2026-09-07.png` — 941×1672 | `generated/linefugg/welcome/variants/sources/linefugg-cover-c-graphic-poster-source.png` — 853×1844 | `masters/linefugg-cover-c-graphic-poster-master.png` — 390×844 | `runtime/linefugg-cover-c-graphic-poster.webp` — 780×1688, 1 694 510 octets |
+| D — Japanese edition | `linefugg-cover-d-japanese-edition-approved-2026-09-07.png` — 941×1672 | `generated/linefugg/welcome/variants/sources/linefugg-cover-d-japanese-edition-source.png` — 853×1844 | `masters/linefugg-cover-d-japanese-edition-master.png` — 390×844 | `runtime/linefugg-cover-d-japanese-edition.webp` — 780×1688, 1 820 564 octets |
 
-Les quatre covers WebP totalisent 5 953 200 octets mais sont des assets de feed, pas le payload Phaser du jeu. `welcome.ts` utilise `fit: contain`, sélection seedée, aucun slideshow et aucune animation cover. Les masters PNG restent les références artistiques canoniques ; leur provenance/empreinte initiale est dans `ops/drive-asset-sync/imports/linefugg-covers-2026-09-07.json`.
+Micro-brief fermé : conserver chaque titre et composition approuvés ; prolonger uniquement le décor bas — table/carte et instruments, manteau/livres, trois routes sérigraphiées ou armillaire/architecture — sans `SWIPE TO PLAY`, CTA, signature, texte ajouté, faux cadre, miroir, étirement ou remplissage flou. Le sous-titre japonais déjà intégré à l'édition D appartient à son traitement de titre localisé.
+
+Les sources et masters sont des PNG opaques, mono-frame. Les quatre WebP actifs sont opaques, `780×1688`, mono-frame et utilisent un payload `VP8L` lossless. `welcome.ts` emploie `fit: cover`, `objectPosition: 'top center'`, sélection seedée et aucune animation ; la variation de hauteur ne révèle que le prolongement décoratif bas. Les empreintes des quatre références approuvées restent dans `ops/drive-asset-sync/imports/linefugg-covers-2026-09-07.json`.
 
 ## Vérification
 
@@ -60,5 +62,6 @@ Les quatre covers WebP totalisent 5 953 200 octets mais sont des assets de feed,
 - Scénario navigateur 390×844 DPR2 tactile réussi : tracé, reroll, trois lignes, Undo, Valider, replay/retour ; aucune erreur HTTP/JavaScript.
 - Captures `empty`, `drag`, `reroll-cascade`, `one`, `three`, `submitted` produites. Contrôle visuel des états `empty` et `three` : rendu Orbital cohérent, textures présentes et lisibles, aucune dégradation évidente liée aux dérivés.
 - Les matrices historiques de `scripts/test-linefugg-browser.mjs` et `scripts/test-linefugg-covers.mjs` restent les preuves multi-écrans. Profilage sur téléphone physique et acceptation artistique finale utilisateur restent distincts.
+- Remise aux normes cover : les quatre sources prolongées, masters `390×844` et dérivés `780×1688` sont décodés, opaques et mono-frame ; les WebP sont lossless. Le contrôle d'usage vérifie le plein cadre statique, l'ancrage haut et le chevauchement du bouton JOUER sur la seule zone décorative basse.
 
 Le coût RGBA après décodage reste de l'ordre de la mesure précédente (~14,875 Mio hors fond CSS, textes et buffers) : WebP réduit le **transfert et le stockage**, pas mécaniquement la mémoire d'une texture décodée à dimensions identiques.

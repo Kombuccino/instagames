@@ -1,8 +1,8 @@
 # LineFugg — Suivi de création
 
-Mis à jour : 12 septembre 2026 à 09:57 Europe/Paris. Version : `0.5.5`. Changelog : `CHANGELOG.md`.
+Mis à jour : 12 septembre 2026 à 12:46 Europe/Paris. Version : `0.6.0`. Changelog : `CHANGELOG.md`.
 
-Runtime Phaser 4.2.1, stage 390 × 844. Prototype, game design et équilibre validés par l'utilisateur. Direction gameplay : **Orbital Accounting**. Cover runtime : current ; quatre jaquettes statiques approuvées, masters PNG conservés et dérivés WebP lossless actifs.
+Runtime Phaser 4.2.1, stage 390 × 844. Prototype, game design et équilibre validés par l'utilisateur. Direction gameplay : **Orbital Accounting**. Cover runtime : current ; quatre références approuvées conservées et quatre restaurations statiques plein cadre actives.
 
 ## Décisions acquises
 
@@ -22,9 +22,9 @@ Références : [ART_DIRECTION.md](ART_DIRECTION.md), [ASSET_MANIFEST.md](ASSET_M
 | Inputs / responsive | Vérifiés en émulation | Contrôle appareil réel recommandé |
 | Animations / FX | Intégrés et bornés | Aucun changement demandé |
 | Audio | Musiques conservées | Écoute finale du mix/SFX restant à faire |
-| Covers | 4 statiques intégrées | Aucune animation prévue dans le contrat actuel |
+| Covers | 4 statiques `390×844` intégrées, ancrées en haut | Revue visuelle utilisateur du lot remis aux normes |
 | Assets runtime | Optimisés | Tous les visuels gameplay actifs sont en WebP lossless pré-dimensionné ; PNG sources conservés hors chemin actif |
-| Livraison | `0.5.5` | Déploiement applicatif distinct de la publication GitHub |
+| Livraison | `0.6.0` | Déploiement applicatif distinct de la publication GitHub |
 
 ## Optimisation images runtime — 11 septembre 2026
 
@@ -50,3 +50,12 @@ Les matrices historiques plus larges de `scripts/test-linefugg-browser.mjs` et `
 2. Profilage sur téléphone physique et écoute finale du mix/SFX.
 
 Aucun blocage technique connu. L'optimisation des images runtime de LineFugg est terminée ; ne pas rouvrir gameplay ou DA pour une simple optimisation de fichiers.
+
+## Remise aux normes des covers — 12 septembre 2026
+
+- Base : `abdb1b464f1376ecce39aaccb6301e6dc19204f8` sur `origin/main` ; lot limité aux quatre jaquettes approuvées et à leur configuration Core.
+- Demande : reprendre le pilote TetraMindFck sans réinterprétation. Les quatre PNG du 7 septembre restent les références exactes ; ImageGen a reçu une image cible à la fois et un brief de prolongement vers le bas uniquement.
+- Sorties : quatre sources opaques plein cadre, quatre masters PNG `390×844` et quatre WebP lossless `780×1688` sous `public/assets/generated/linefugg/welcome/variants/`.
+- Contrôle artistique agent : titres, sujets, palettes, médiums et compositions globales préservés ; aucun CTA, logo, slogan, faux cadre ou bande de remplissage. La zone JOUER recouvre seulement le décor bas continu.
+- Contrôle technique : PNG/WebP décodés, opaques, mono-frame ; WebP `VP8L`. `npm run build` réussi. Les quatre éditions ont été ouvertes, sélectionnées et capturées en navigateur sur mobile court `360×611`, MASTER `390×844` et bureau `1280×720`, sans erreur HTTP/JavaScript ; lancement puis retour cover également vérifiés.
+- Validation utilisateur : références historiques approuvées ; application du procédé à tous les originaux autorisée le 12 septembre 2026 ; revue finale du lot livré encore distincte.

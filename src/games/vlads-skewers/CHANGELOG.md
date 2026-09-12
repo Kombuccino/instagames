@@ -1,5 +1,12 @@
 # Les Brochettes de Vlad — Changelog
 
+## [0.3.7] — 2026-09-12 12:05 Europe/Paris
+
+- Correction de la physique des membres pendant les déplacements de brochette : l'inertie était appliquée deux fois, une première fois par le déplacement de l'ancrage Matter et une seconde fois par une force calculée sur l'accélération souris/doigt.
+- L'impulsion artificielle liée à l'accélération est supprimée. Le mouvement vient désormais uniquement de la gravité, des contraintes et du déplacement réel de l'épaule/hanche.
+- Le déplacement de l'ancrage Matter n'invente plus de vélocité (`updateVelocity=false`), ce qui supprime les pics absurdes lors d'un saut de pointeur entre deux frames.
+- Les contraintes sont légèrement assouplies et davantage amorties ; les vitesses invisibles des nœuds de membre sont bornées pour empêcher les explosions numériques tout en conservant le lag et le fouettement naturel.
+
 ## [0.3.6] — 2026-09-12 11:54 Europe/Paris
 
 - Les bras et jambes des aliments embrochés n'utilisent plus le faux ressort angulaire maison : ils passent sur de vraies chaînes physiques **Matter** à deux segments, avec contraintes épaule→coude/genou→main/pied.

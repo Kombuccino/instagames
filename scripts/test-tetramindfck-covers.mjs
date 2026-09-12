@@ -183,12 +183,18 @@ try {
     assert.equal(await page.locator('.mf-coin-console-system').count(), 1, 'only the active fixed control layer may exist')
 
     const play = fixedControls.locator('.mf-console-play')
-    const atlas = play.locator('.mf-console-play-atlas')
+    const visual = play.locator('.mf-console-play-visual')
+    const frames = play.locator('.mf-console-play-frame')
+    const warmFrame = play.locator('.mf-console-play-frame.is-warm')
     assert.equal(await play.locator('img').count(), 0, 'PLAY must not swap independent image elements')
-    assert.equal(await atlas.count(), 1, 'PLAY must use one fixed atlas layer')
-    assert.match(await atlas.evaluate(element => getComputedStyle(element).backgroundImage), /play-states-atlas\.webp/)
-    assert.match(await atlas.evaluate(element => getComputedStyle(element).animationTimingFunction), /steps\(1\)/,
-      'PLAY atlas cells must switch discretely instead of sliding between frames')
+    assert.equal(await visual.count(), 1, 'PLAY must keep one fixed visual assembly')
+    assert.equal(await frames.count(), 4, 'PLAY must crop four aligned states from one atlas')
+    for (let index = 0; index < 4; index++) {
+      assert.match(await frames.nth(index).evaluate(element => getComputedStyle(element).backgroundImage), /play-states-atlas\.webp/)
+    }
+    assert.equal(await warmFrame.evaluate(element => getComputedStyle(element).animationName), 'mf-play-warm-breathe')
+    assert.doesNotMatch(await warmFrame.evaluate(element => getComputedStyle(element).animationTimingFunction), /steps/,
+      'PLAY breathing must crossfade continuously instead of jumping between atlas cells')
     const playBefore = await play.boundingBox()
     const counterBefore = await counter.boundingBox()
     const coinsBefore = Number.parseInt(await counter.getAttribute('aria-label'), 10)
@@ -196,6 +202,7 @@ try {
     await click(play)
     await page.waitForTimeout(40)
     assert.equal(await play.evaluate(element => element.classList.contains('is-pressed')), true)
+    assert.notEqual(await visual.evaluate(element => getComputedStyle(element).transform), 'none')
     const playPressed = await play.boundingBox()
     const counterPressed = await counter.boundingBox()
     for (const key of ['x', 'y', 'width', 'height']) {

@@ -1,6 +1,6 @@
 # LineFugg — Suivi de création
 
-Mis à jour : 12 septembre 2026 à 12:46 Europe/Paris. Version : `0.6.0`. Changelog : `CHANGELOG.md`.
+Mis à jour : 13 septembre 2026 à 01:24 Europe/Paris. Version : `0.6.0`. Changelog : `CHANGELOG.md`.
 
 Runtime Phaser 4.2.1, stage 390 × 844. Prototype, game design et équilibre validés par l'utilisateur. Direction gameplay : **Orbital Accounting**. Cover runtime : current ; quatre références approuvées conservées et quatre restaurations statiques plein cadre actives.
 
@@ -18,7 +18,7 @@ Références : [ART_DIRECTION.md](ART_DIRECTION.md), [ASSET_MANIFEST.md](ASSET_M
 | --- | --- | --- |
 | Prototype / GD / équilibre | Validés utilisateur | Rien à rouvrir sans nouvelle demande |
 | Gameplay Phaser | Fonctionnel et vérifié | Profilage téléphone physique seulement |
-| DA gameplay | Intégrée | Acceptation visuelle finale utilisateur toujours distincte |
+| DA gameplay | Intégrée mais refusée visuellement le 13 septembre | Recomposition complète en exploration ; aucune nouvelle piste acceptée ni intégrée |
 | Inputs / responsive | Vérifiés en émulation | Contrôle appareil réel recommandé |
 | Animations / FX | Intégrés et bornés | Aucun changement demandé |
 | Audio | Musiques conservées | Écoute finale du mix/SFX restant à faire |
@@ -46,10 +46,19 @@ Les matrices historiques plus larges de `scripts/test-linefugg-browser.mjs` et `
 
 ## Prochaines actions
 
-1. Revue utilisateur du rendu gameplay final si elle n'a pas encore été donnée.
-2. Profilage sur téléphone physique et écoute finale du mix/SFX.
+1. Choisir ou recadrer la nouvelle direction gameplay, particulièrement le registre des trois lignes.
+2. Produire la planche de traduction DA → composants avant toute intégration.
+3. Profilage sur téléphone physique et écoute finale du mix/SFX.
 
 Aucun blocage technique connu. L'optimisation des images runtime de LineFugg est terminée ; ne pas rouvrir gameplay ou DA pour une simple optimisation de fichiers.
+
+## Reprise de la DA gameplay — 13 septembre 2026
+
+- Retour utilisateur : la composition actuelle paraît trop massive et mal calée sur PC ; les trois grands panneaux de résultats sont le principal défaut, car ils consomment beaucoup d'espace, ressemblent à des champs presque vides et relient mal calcul, couleur de ligne et score. L'égalité visuelle des commandes Annuler/Valider reste obligatoire.
+- Une première exploration de quatre variantes proches de la DA historique a été produite puis explicitement refusée comme trop similaire et toujours peu convaincante. Elle reste archivée comme recherche rejetée, sans intégration.
+- Une seconde exploration rompt avec le registre illustré : quatre compositions plates (éditoriale claire, arcade sombre, papier modulaire, ledger minimal) présentent chaque ligne sous forme d'une entrée compacte `repère coloré + calcul + score aligné`, avec un total hiérarchisé séparément.
+- Les sources et la planche comparative sont archivées dans `MiniFugg - Graphic Archive/Games/linefugg/gameplay-art-exploration-2026-09-13/round-02-results-redesign`. Statut : généré et archivé ; revue utilisateur en cours ; aucune piste acceptée, intégrée ou publiée.
+- La version reste `0.6.0` : cette passe ne modifie ni runtime, ni règles, ni assets actifs.
 
 ## Remise aux normes des covers — 12 septembre 2026
 

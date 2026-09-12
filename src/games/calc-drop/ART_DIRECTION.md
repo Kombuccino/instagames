@@ -1,8 +1,34 @@
 # TetraMindFck — Art Direction
 
-## Gameplay surface
+## Gameplay direction — approved 2026-09-12
 
-Preserve the current TetraMindFck gameplay visual language unless a later prompt explicitly asks for an in-game redesign. The welcome-screen work is a separate marketing/editorial layer in front of the game.
+The former neutral gameplay prototype is now superseded by a **retro portable-console / green CRT** direction for the Phaser gameplay surface.
+
+Visual reference accepted by the user in the 2026-09-12 ChatGPT art iteration: cream late-90s handheld body, one dominant green CRT/LCD screen, narrow left status rail, washed phosphor tiles and tactile physical controls. The generated mockup remains **REFERENCE ONLY** because its board state, score, HUD values and controls are baked. Production must reconstruct the system in layers rather than use the flat image as runtime art.
+
+### Gameplay visual contract
+
+- Fixed logical stage `390 × 844`; phone remains the complete composition.
+- Warm cream handheld shell, restrained wear, dark green CRT surfaces and a simple crop-safe room ambience above/behind the machine.
+- The `10 × 20` board is the dominant surface; no decorative nesting may reduce digit size unnecessarily.
+- Main CRT: one frame only. `SCORE` sits above the board inside the display and must accommodate multi-million values.
+- Left rail: `LEVEL`, `TARGET`, `NEXT`, `NEXT+1`; preview windows are mini CRTs. The immediate `NEXT` gets a small marker/arrow. Preview layout must handle the four-cell I piece.
+- Regular numeric cells `1–9` are not color-coded. They share one muted pale-green CRT/phosphor family, with low brightness and visible scanline influence.
+- Operators and bonuses keep the exact same square geometry as numbers; only restrained tint distinguishes them: warm muted multiply, amber divide, alternate cyan/special.
+- Every tile is snapped to the exact board grid and rendered as part of the screen, never as glossy plastic bricks placed over it.
+- Active piece may receive a small edge lift; ghost remains a low-alpha grid-aligned outline.
+- Clear animation keeps the board frozen until the scan ends. Intermediate totals follow calculation order; final result appears outside the row in the calculation direction; only then do cleared rows collapse.
+- Controls: four equal main buttons on one low row with minimal consistent gaps — `LEFT`, `RIGHT`, rotate-left, rotate-right. `DOWN` is smaller and centered beneath the movement pair. Buttons stay within CENTRE.
+- Functional text is English only. No filler slogans, no instructional microcopy, no repeated branding. One MiniFugg mark maximum in the gameplay artwork.
+- Decorative room/background contains no text.
+
+### Production ownership
+
+Authored raster later: crop-safe room ambience, clean shell, shared physical button base and optional CRT glass highlight. Phaser owns all values, labels, grid geometry, cells, previews, score, operators, scanlines, ghost, line-clear FX and button-state movement.
+
+The first integration pass intentionally uses Phaser geometry for the shell/control blockout so composition and readability can be validated before raster production. Once accepted, authored source masters are created losslessly and runtime derivatives use WebP lossless by default. PNG is source/master only; AVIF is reserved for large opaque static art after decode/quality validation.
+
+`ASSET_MANIFEST.md` is the production contract for layer ownership, states, filenames and FX recipes.
 
 ## Welcome illustration direction
 

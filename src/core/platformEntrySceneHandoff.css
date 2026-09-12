@@ -116,107 +116,6 @@
   object-position: 50% 50%;
 }
 
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-parallax {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  overflow: hidden;
-  background: #f59b78;
-}
-
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer {
-  position: absolute;
-  inset: 0;
-  display: block;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--sky img,
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--water-reflection img {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  display: block;
-  height: 100%;
-  min-width: 100%;
-  width: auto;
-  max-width: none;
-  transform: translate3d(-50%,0,0);
-}
-
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--sky {
-  z-index: 0;
-}
-
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--water-base {
-  z-index: 1;
-  clip-path: inset(35.6% 0 0 0);
-}
-
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--skyline-far {
-  z-index: 2;
-}
-
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--skyline-near {
-  z-index: 3;
-}
-
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--shore-bridge {
-  z-index: 4;
-}
-
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--water-reflection {
-  z-index: 5;
-  opacity: .88;
-  animation: mf-entry-sun-occlusion-reflection 48s linear infinite;
-}
-
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-track {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  display: flex;
-  width: max-content;
-  height: 100%;
-  will-change: transform;
-}
-
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-track picture,
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-track img {
-  display: block;
-  flex: none;
-  width: auto;
-  height: 100%;
-  max-width: none;
-}
-
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--skyline-far .mf-entry-scene__metro-track {
-  animation: mf-entry-metro-loop 76s linear infinite;
-}
-
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--skyline-near .mf-entry-scene__metro-track {
-  animation: mf-entry-metro-loop 48s linear infinite;
-}
-
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--shore-bridge .mf-entry-scene__metro-track {
-  animation: mf-entry-metro-loop 34s linear infinite;
-}
-
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--water-base .mf-entry-scene__metro-track {
-  animation: mf-entry-metro-loop 25s linear infinite;
-}
-
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__wagon--foreground {
-  z-index: 2;
-}
-
-.mf-entry-scene.is-metro-v2 .mf-entry-scene__wagon--sunlight {
-  z-index: 3;
-  will-change: opacity;
-  animation: mf-entry-sun-occlusion-carriage 48s linear infinite;
-}
-
 .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__handoff-blackout {
   position: absolute;
   inset: -100vmax;
@@ -283,29 +182,10 @@
   100% { opacity: 0; }
 }
 
-@keyframes mf-entry-metro-loop {
-  0% { transform: translate3d(-25%,0,0); }
-  100% { transform: translate3d(-75%,0,0); }
-}
-
 @keyframes mf-entry-rig-to-feed {
   0%, 18% { opacity: 1; transform: none; }
   78% { opacity: 1; transform: translate3d(-12%,-2%,0) scale(1.28); }
   100% { opacity: 0; transform: translate3d(-14%,-3%,0) scale(1.38); }
-}
-
-@keyframes mf-entry-sun-occlusion-carriage {
-  0%, 26%, 34%, 46%, 54%, 81%, 89%, 100% { opacity: .82; }
-  29%, 31% { opacity: .24; }
-  49%, 51% { opacity: .1; }
-  84%, 86% { opacity: .3; }
-}
-
-@keyframes mf-entry-sun-occlusion-reflection {
-  0%, 26%, 34%, 46%, 54%, 81%, 89%, 100% { opacity: .88; }
-  29%, 31% { opacity: .26; }
-  49%, 51% { opacity: .08; }
-  84%, 86% { opacity: .32; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -322,9 +202,4 @@
     transition: none;
   }
 
-  .mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-track,
-  .mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--water-reflection,
-  .mf-entry-scene.is-metro-v2 .mf-entry-scene__wagon--sunlight {
-    animation: none;
-  }
 }

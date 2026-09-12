@@ -176,5 +176,4 @@ def build_arms() -> None:
 
 
 if __name__ == "__main__":
-    build_parallax_layers()
     build_arms()

@@ -22,8 +22,8 @@ export const gameDefinition: InstagameDefinition = {
   welcome: VLADS_SKEWERS_WELCOME,
   component: VladsSkewers,
   release: {
-    version: '0.3.5',
-    updatedAt: '2026-09-12T11:39:00+02:00',
+    version: '0.3.6',
+    updatedAt: '2026-09-12T11:54:00+02:00',
     changelogPath: 'src/games/vlads-skewers/CHANGELOG.md',
   },
   instructions: {
@@ -31,6 +31,7 @@ export const gameDefinition: InstagameDefinition = {
     rules: [
       'Empale les ingrédients dans l’ordre exact de la commande.',
       'Chaque ingrédient glisse jusqu’à la garde puis la brochette s’empile vers la pointe.',
+      'Les bras et jambes embrochés suivent une vraie gravité et réagissent aux accélérations de la brochette.',
       'Quand la brochette est complète, elle reste protégée une seconde avant de partir au client.',
       'Un mauvais ingrédient ou de l’ail fait perdre le client.',
       'Le sang redonne de la patience et ralentit temporairement la chute.',

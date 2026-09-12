@@ -1,5 +1,13 @@
 # Les Brochettes de Vlad — Changelog
 
+## [0.3.6] — 2026-09-12 11:54 Europe/Paris
+
+- Les bras et jambes des aliments embrochés n'utilisent plus le faux ressort angulaire maison : ils passent sur de vraies chaînes physiques **Matter** à deux segments, avec contraintes épaule→coude/genou→main/pied.
+- La gravité agit désormais en coordonnées monde, donc les membres retombent réellement vers le bas de l'écran quelle que soit l'orientation du corps embroché.
+- Les déplacements rapides de la souris/doigt transmettent l'inertie par l'ancrage mobile de l'épaule et ajoutent une impulsion opposée à l'accélération : les membres laguent, fouettent et repartent dans le bon sens lors des changements brusques de direction.
+- Les corps Matter sont non-collisionnels et invisibles : ils ne changent ni les hitboxes d'empalement, ni la pile, ni le score. Ils sont détruits à la perte ou au départ de la brochette pour éviter toute fuite physique.
+- Le host Phaser accepte maintenant une configuration physique optionnelle ; Vlad active Matter avec gravité et itérations de contraintes renforcées, sans imposer Matter aux autres jeux.
+
 ## [0.3.5] — 2026-09-12 11:39 Europe/Paris
 
 - Les ingrédients ne s'empilent plus à partir de la pointe : chaque nouvel aliment entre par l'apex puis **glisse jusqu'à la garde**.

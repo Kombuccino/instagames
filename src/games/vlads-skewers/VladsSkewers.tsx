@@ -8,6 +8,17 @@ import { applyVladRuntimeTuning } from './VladsSkewersRuntime'
 import './VladsSkewers.css'
 
 const GAME_ID = 'vlads-skewers'
+const VLAD_PHYSICS = {
+  default: 'matter',
+  matter: {
+    gravity: { x: 0, y: 1.35 },
+    enableSleeping: false,
+    positionIterations: 8,
+    velocityIterations: 6,
+    constraintIterations: 4,
+    debug: false,
+  },
+}
 
 export function VladsSkewers({ active, seed, restartToken, session }: GameComponentProps) {
   const renderPixelRatio = useRef(Math.min(2, Math.max(1, window.devicePixelRatio || 1))).current
@@ -45,6 +56,7 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
         createScene={createScene}
         renderPixelRatio={renderPixelRatio}
         verticalAnchor="bottom"
+        physics={VLAD_PHYSICS}
         pixelArt
         ariaLabel="Les Brochettes de Vlad. Maintiens et glisse pour déplacer la brochette et empale la commande dans l'ordre. Une brochette complète est validée automatiquement."
       />

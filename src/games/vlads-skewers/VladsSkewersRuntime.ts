@@ -15,6 +15,17 @@ type RuntimeCustomer = {
   patience?: number
 }
 
+type RuntimeMatterLimb = {
+  anchor: any
+  joint: any
+  end: any
+  upper: any
+  lower: any
+  side: -1 | 1
+  leg: boolean
+  index: number
+}
+
 type RuntimeStackItem = {
   baseRotation: number
   entryOffsetX: number
@@ -24,8 +35,16 @@ type RuntimeStackItem = {
   pushVelocityY: number
   pierceLocalX: number
   pierceLocalY: number
+  limbSwing: [number, number, number, number]
+  limbJointSwing: [number, number, number, number]
+  matterLimbs?: RuntimeMatterLimb[]
   visual: {
     root: Phaser.GameObjects.Container
+    leftArm: Phaser.GameObjects.Graphics
+    rightArm: Phaser.GameObjects.Graphics
+    leftLeg: Phaser.GameObjects.Graphics
+    rightLeg: Phaser.GameObjects.Graphics
+    size: number
   }
 }
 
@@ -42,12 +61,18 @@ type RuntimeInternals = {
   findTipContact: (previous: Phaser.Math.Vector2, tip: Phaser.Math.Vector2) => unknown
   addStackFood: (...args: unknown[]) => void
   updateSkewer: (dt: number) => void
+  drawInertStackLimbs: (...args: any[]) => void
   dispatchCompletedSkewer: (customer: RuntimeCustomer) => void
+  clearStack: () => void
   stateReader: () => string
   runTestAction?: (action: string) => string
 }
 
 type ImageFactory = (...args: any[]) => Phaser.GameObjects.Image
+
+function clamp(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, value))
+}
 
 function skewerHeightForRecipe(count: number) {
   if (count <= 2) return 110
@@ -88,8 +113,6 @@ function guardStackTarget(internals: RuntimeInternals, item: RuntimeStackItem, i
 }
 
 function deliverySourceShiftForRecipe(count: number) {
-  // The legacy delivery code arranges food from the tip. Offset its temporary
-  // source so those same settle points coincide with our guard-first stack.
   return 208 - (Math.max(2, Math.min(5, count)) - 1) * STACK_GAP
 }
 
@@ -143,10 +166,167 @@ function createReadableBloodDrop(scene: VladsSkewersScene, x: number, y: number)
   return root
 }
 
+function limbStartLocal(item: RuntimeStackItem, side: -1 | 1, leg: boolean) {
+  const size = item.visual.size
+  return leg
+    ? { x: side * size * .17, y: size * .29 }
+    : { x: side * size * .32, y: 0 }
+}
+
+function localToWorld(item: RuntimeStackItem, point: { x: number; y: number }) {
+  const rotated = rotatePoint(point.x, point.y, item.visual.root.rotation)
+  return {
+    x: item.visual.root.x + rotated.x,
+    y: item.visual.root.y + rotated.y,
+  }
+}
+
+function worldToLocal(item: RuntimeStackItem, point: { x: number; y: number }) {
+  return rotatePoint(
+    point.x - item.visual.root.x,
+    point.y - item.visual.root.y,
+    -item.visual.root.rotation,
+  )
+}
+
+function drawPhysicalLimb(
+  graphics: Phaser.GameObjects.Graphics,
+  start: { x: number; y: number },
+  joint: { x: number; y: number },
+  end: { x: number; y: number },
+  extremity: 'hand' | 'foot',
+  side: -1 | 1,
+) {
+  const pixel = (value: number) => Math.round(value)
+  graphics.clear().lineStyle(5, 0x090405, 1)
+  graphics.lineBetween(pixel(start.x), pixel(start.y), pixel(joint.x), pixel(joint.y))
+  graphics.lineBetween(pixel(joint.x), pixel(joint.y), pixel(end.x), pixel(end.y))
+  graphics.lineStyle(2, 0x6f3024, 1)
+  graphics.lineBetween(pixel(start.x), pixel(start.y), pixel(joint.x), pixel(joint.y))
+  graphics.lineBetween(pixel(joint.x), pixel(joint.y), pixel(end.x), pixel(end.y))
+  graphics.fillStyle(0x170708, 1).fillRect(pixel(joint.x) - 2, pixel(joint.y) - 2, 5, 5)
+  graphics.fillStyle(0xa45a43, 1).fillRect(pixel(joint.x) - 1, pixel(joint.y) - 1, 3, 3)
+  graphics.fillStyle(0xffead5, 1)
+  if (extremity === 'hand') {
+    graphics.fillRect(pixel(end.x) - 3, pixel(end.y) - 3, 6, 7)
+    graphics.fillRect(pixel(end.x) + side * 2 - (side < 0 ? 2 : 0), pixel(end.y) - 6, 2, 4)
+    graphics.fillStyle(0x9f5d50, 1).fillRect(pixel(end.x) - 2, pixel(end.y) + 2, 4, 1)
+  } else {
+    graphics.fillRect(pixel(end.x) - (side < 0 ? 7 : 0), pixel(end.y) - 2, 7, 5)
+    graphics.fillStyle(0x9f5d50, 1).fillRect(pixel(end.x) - (side < 0 ? 6 : 0), pixel(end.y) + 1, 6, 1)
+  }
+}
+
+function createMatterLimbs(scene: VladsSkewersScene, item: RuntimeStackItem) {
+  if (item.matterLimbs) return item.matterLimbs
+  const size = item.visual.size
+  const specs = [
+    { side: -1 as const, leg: false, index: 0 },
+    { side: 1 as const, leg: false, index: 1 },
+    { side: -1 as const, leg: true, index: 2 },
+    { side: 1 as const, leg: true, index: 3 },
+  ]
+
+  item.matterLimbs = specs.map((spec) => {
+    const startLocal = limbStartLocal(item, spec.side, spec.leg)
+    const shoulder = localToWorld(item, startLocal)
+    const hang = size * (spec.leg ? .58 : .55)
+    const firstLength = hang * .47
+    const secondLength = hang * .53
+    const initialSide = spec.side * (spec.leg ? 4 : 6)
+    const joint = scene.matter.add.circle(shoulder.x + initialSide, shoulder.y + firstLength, 2, {
+      frictionAir: .018,
+      restitution: 0,
+      collisionFilter: { mask: 0 },
+      label: `vlad-limb-joint-${spec.index}`,
+    })
+    const end = scene.matter.add.circle(shoulder.x + initialSide * 1.4, shoulder.y + firstLength + secondLength, 2, {
+      frictionAir: .012,
+      restitution: 0,
+      collisionFilter: { mask: 0 },
+      label: `vlad-limb-end-${spec.index}`,
+    })
+    const anchor = scene.matter.add.circle(shoulder.x, shoulder.y, 2, {
+      isStatic: true,
+      collisionFilter: { mask: 0 },
+      label: `vlad-limb-anchor-${spec.index}`,
+    })
+    const upper = scene.matter.add.constraint(anchor, joint, firstLength, .94, { damping: .035 })
+    const lower = scene.matter.add.constraint(joint, end, secondLength, .92, { damping: .025 })
+    return { anchor, joint, end, upper, lower, ...spec }
+  })
+  return item.matterLimbs
+}
+
+function destroyMatterLimbs(scene: VladsSkewersScene, item: RuntimeStackItem) {
+  const limbs = item.matterLimbs
+  if (!limbs) return
+  item.matterLimbs = undefined
+  limbs.forEach((limb) => {
+    scene.matter.world.removeConstraint(limb.upper)
+    scene.matter.world.removeConstraint(limb.lower)
+    scene.matter.world.remove(limb.anchor)
+    scene.matter.world.remove(limb.joint)
+    scene.matter.world.remove(limb.end)
+  })
+}
+
+function updateMatterLimbs(
+  scene: VladsSkewersScene,
+  item: RuntimeStackItem,
+  accelerationX: number,
+  accelerationY: number,
+) {
+  const limbs = createMatterLimbs(scene, item)
+  const forceX = clamp(-accelerationX * .0000018, -.035, .035)
+  const forceY = clamp(-accelerationY * .0000015, -.03, .03)
+
+  limbs.forEach((limb) => {
+    const startLocal = limbStartLocal(item, limb.side, limb.leg)
+    const shoulderWorld = localToWorld(item, startLocal)
+    scene.matter.body.setPosition(limb.anchor, shoulderWorld, true)
+
+    // The shoulder is kinematic because it belongs to the skewered body. The
+    // rest of the two-link chain is genuine Matter physics: gravity acts in
+    // screen/world space and the opposite acceleration impulse creates the
+    // expected lag/whip when the player flicks the mouse or finger.
+    scene.matter.body.applyForce(limb.joint, limb.joint.position, { x: forceX * .72, y: forceY * .72 })
+    scene.matter.body.applyForce(limb.end, limb.end.position, { x: forceX * 1.28, y: forceY * 1.28 })
+
+    const jointLocal = worldToLocal(item, limb.joint.position)
+    const endLocal = worldToLocal(item, limb.end.position)
+    const graphics = limb.index === 0
+      ? item.visual.leftArm
+      : limb.index === 1
+        ? item.visual.rightArm
+        : limb.index === 2
+          ? item.visual.leftLeg
+          : item.visual.rightLeg
+
+    drawPhysicalLimb(
+      graphics,
+      startLocal,
+      jointLocal,
+      endLocal,
+      limb.leg ? 'foot' : 'hand',
+      limb.side,
+    )
+
+    const upperAngle = Math.atan2(jointLocal.y - startLocal.y, jointLocal.x - startLocal.x)
+    const lowerAngle = Math.atan2(endLocal.y - jointLocal.y, endLocal.x - jointLocal.x)
+    item.limbSwing[limb.index] = Phaser.Math.Angle.Wrap(upperAngle - Math.PI / 2)
+    item.limbJointSwing[limb.index] = Phaser.Math.Angle.Wrap(lowerAngle - upperAngle)
+  })
+}
+
 /** Runtime tuning kept beside Vlad's canonical Phaser scene. */
 export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
   const internals = scene as unknown as RuntimeInternals
   let completedRecipeLocked = false
+  let previousSkewerX = internals.skewerX
+  let previousSkewerY = internals.skewerY
+  let previousVelocityX = 0
+  let previousVelocityY = 0
 
   internals.createBloodVisual = (x, y) => createReadableBloodDrop(scene, x, y)
 
@@ -157,7 +337,15 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
         internals.createBloodVisual(195, 350)
         return internals.stateReader()
       }
-      return runTestAction(action)
+      const result = runTestAction(action)
+      if (action === 'limb-whirl') {
+        for (let step = 0; step < 24; step += 1) {
+          scene.matter.step(1000 / 60)
+          internals.updateSkewer(1 / 60)
+        }
+        return internals.stateReader()
+      }
+      return result
     }
   }
 
@@ -180,9 +368,6 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
   internals.addStackFood = (...args: unknown[]) => {
     addStackFood(...args)
 
-    // The canonical scene used to pile food downwards from the tip. Reset that
-    // push model: the first pierced food belongs against the guard, and every
-    // following food gets the next slot above it.
     internals.stack.forEach((item) => {
       item.pushOffsetY = 0
       item.pushVelocityY = 0
@@ -197,10 +382,23 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
     latest.visual.root.setRotation(latest.baseRotation)
   }
 
+  // Disable the previous synthetic spring/flap solver. Matter owns the limb
+  // motion below, after the guard-first stack position is finalized.
+  internals.drawInertStackLimbs = () => {}
+
   const updateSkewer = internals.updateSkewer.bind(scene)
   internals.updateSkewer = (dt: number) => {
     updateSkewer(dt)
     const height = currentSkewerHeight(internals)
+    const safeDt = Math.max(dt, .001)
+    const velocityX = (internals.skewerX - previousSkewerX) / safeDt
+    const velocityY = (internals.skewerY - previousSkewerY) / safeDt
+    const accelerationX = (velocityX - previousVelocityX) / safeDt
+    const accelerationY = (velocityY - previousVelocityY) / safeDt
+    previousSkewerX = internals.skewerX
+    previousSkewerY = internals.skewerY
+    previousVelocityX = velocityX
+    previousVelocityY = velocityY
 
     internals.skewer
       .setPosition(Math.round(internals.skewerX), Math.round(internals.skewerY - SKEWER_BOTTOM_OFFSET))
@@ -220,7 +418,14 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
           Math.round(target.y + item.entryOffsetY * entry),
         )
         .setRotation(item.baseRotation)
+      updateMatterLimbs(scene, item, accelerationX, accelerationY)
     })
+  }
+
+  const clearStack = internals.clearStack.bind(scene)
+  internals.clearStack = () => {
+    internals.stack.forEach((item) => destroyMatterLimbs(scene, item))
+    clearStack()
   }
 
   const dispatchCompletedSkewer = internals.dispatchCompletedSkewer.bind(scene)
@@ -230,6 +435,8 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
     const originalSkewerY = internals.skewerY
     const factory = scene.add as unknown as { image: ImageFactory }
     const originalImage: ImageFactory = factory.image.bind(scene.add)
+
+    internals.stack.forEach((item) => destroyMatterLimbs(scene, item))
 
     factory.image = (...args: any[]) => {
       const deliveryShaft = args[2] === 'vlad-skewer' && args[3] === 'shaft'
@@ -280,6 +487,7 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
         completedLock?: boolean
         stackLayout?: string
         guardY?: number
+        limbPhysics?: string
       }
     }
     if (state.skewer) {
@@ -290,6 +498,7 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
       state.skewer.completedLock = completedRecipeLocked
       state.skewer.stackLayout = 'guard-up'
       state.skewer.guardY = Math.round(internals.skewerY - SKEWER_BOTTOM_OFFSET)
+      state.skewer.limbPhysics = 'matter-two-link-gravity'
     }
     return JSON.stringify(state)
   }

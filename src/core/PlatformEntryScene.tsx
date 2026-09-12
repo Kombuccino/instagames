@@ -35,6 +35,7 @@ const METRO_PARALLAX_ROOT = `${METRO_SCENE_ROOT}/parallax`
 const ARM_ROOT = `${METRO_SCENE_ROOT}/arms`
 const ARM_VARIANTS = Array.from({ length: 8 }, (_, index) => `${ARM_ROOT}/arm-${String(index + 1).padStart(2, '0')}.png`)
 const ARM_STORAGE_KEY = 'minifugg:entry-arm:v1'
+const METRO_LOOP_LAYERS = ['water-base', 'skyline-far', 'skyline-near', 'shore-bridge'] as const
 
 type Matrix3 = [number, number, number, number, number, number, number, number, number]
 
@@ -294,18 +295,43 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
           {metroCameraDistance === '20' ? (
             <>
               <div className="mf-entry-scene__metro-parallax">
-                {(['sky', 'city', 'water'] as const).map((layer) => (
-                  <picture key={layer} className={`mf-entry-scene__metro-layer mf-entry-scene__metro-layer--${layer}`}>
-                    <source srcSet={`${METRO_PARALLAX_ROOT}/exterior-panorama.webp`} type="image/webp" />
-                    <img src={`${METRO_PARALLAX_ROOT}/exterior-panorama.png`} alt="" draggable={false} decoding="async" loading="eager" />
-                  </picture>
+                <picture className="mf-entry-scene__metro-layer mf-entry-scene__metro-layer--sky">
+                  <source srcSet={`${METRO_PARALLAX_ROOT}/sky.webp`} type="image/webp" />
+                  <img src={`${METRO_PARALLAX_ROOT}/sky.png`} alt="" draggable={false} decoding="async" loading="eager" />
+                </picture>
+                {METRO_LOOP_LAYERS.map((layer) => (
+                  <div key={layer} className={`mf-entry-scene__metro-layer mf-entry-scene__metro-layer--${layer}`}>
+                    <div className="mf-entry-scene__metro-track">
+                      {[0, 1].map((tile) => (
+                        <picture key={tile}>
+                          <source srcSet={`${METRO_PARALLAX_ROOT}/${layer}.webp`} type="image/webp" />
+                          <img src={`${METRO_PARALLAX_ROOT}/${layer}.png`} alt="" draggable={false} decoding="async" loading="eager" />
+                        </picture>
+                      ))}
+                    </div>
+                  </div>
                 ))}
+                <picture className="mf-entry-scene__metro-layer mf-entry-scene__metro-layer--water-reflection">
+                  <source srcSet={`${METRO_PARALLAX_ROOT}/water-reflection.webp`} type="image/webp" />
+                  <img src={`${METRO_PARALLAX_ROOT}/water-reflection.png`} alt="" draggable={false} decoding="async" loading="eager" />
+                </picture>
               </div>
               <picture>
-                <source srcSet={`${METRO_PARALLAX_ROOT}/carriage-foreground.webp`} type="image/webp" />
+                <source srcSet={`${METRO_PARALLAX_ROOT}/carriage-base.webp`} type="image/webp" />
                 <img
                   className="mf-entry-scene__wagon mf-entry-scene__wagon--wide mf-entry-scene__wagon--foreground"
-                  src={`${METRO_PARALLAX_ROOT}/carriage-foreground.png`}
+                  src={`${METRO_PARALLAX_ROOT}/carriage-base.png`}
+                  alt=""
+                  draggable={false}
+                  decoding="async"
+                  loading="eager"
+                />
+              </picture>
+              <picture>
+                <source srcSet={`${METRO_PARALLAX_ROOT}/carriage-sunlight.webp`} type="image/webp" />
+                <img
+                  className="mf-entry-scene__wagon mf-entry-scene__wagon--wide mf-entry-scene__wagon--sunlight"
+                  src={`${METRO_PARALLAX_ROOT}/carriage-sunlight.png`}
                   alt=""
                   draggable={false}
                   decoding="async"
@@ -326,7 +352,6 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
               />
             </picture>
           )}
-          <span className="mf-entry-scene__floor-light" aria-hidden="true" />
         </div>
 
         {handoff === 'home-bis' && <span className="mf-entry-scene__handoff-blackout" aria-hidden="true" />}

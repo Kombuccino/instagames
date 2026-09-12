@@ -12,6 +12,13 @@ This phone rule remains active when a mobile browser exposes a desktop-sized CSS
 
 Regression coverage: A54 Brave `360 × 611`, A54 Chrome `360 × 656`, narrow-phone/desktop-layout `980 × 1663`, tablet `1024 × 768`, and desktop `1280 × 720`, including Cover → Phaser. The phone cases use the full viewport width; tablet and desktop preserve the centered vertical Core column with Cover and Phaser at the same width.
 
+The Core overlay follows that same displayed width. At and below the canonical
+`390px`, the validated phone sizes are a legibility floor. Above `390px`, the
+social rail, Info/Comments, Leaderboard and Game Over primitives scale with the
+frame instead of remaining at fixed phone pixels beside enlarged cover art and
+the coin console. The `390 × 844` phone reference and a tall desktop frame are
+covered by a dedicated browser regression test.
+
 ## Approved system direction
 
 The converged platform direction is approved **in principle** for the overall product grammar:

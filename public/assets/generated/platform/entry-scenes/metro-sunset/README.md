@@ -13,7 +13,13 @@ The existing MiniFugg phone shell and live projected phone screen remain indepen
 
 `parallax/` contains the active 20% scene split:
 
-- `carriage-foreground.png` / `.webp`: exact approved carriage and passenger pixels with transparent window openings;
-- `exterior-panorama.png` / `.webp`: independent low-poly sunset, skyline and water panorama.
+- `sky.png` / `.webp`: full fixed sky and fixed sun, present behind every exterior layer;
+- `skyline-far.png` / `.webp`: complete transparent distant silhouettes, slow loop;
+- `skyline-near.png` / `.webp`: complete transparent foreground buildings, intermediate loop and sunlight occluders;
+- `shore-bridge.png` / `.webp`: transparent water edge, bridge and lights;
+- `water-base.png` / `.webp`: seamless moving sea without baked direct sun path;
+- `water-reflection.png` / `.webp`: stationary direct reflection aligned below the fixed sun;
+- `carriage-base.png` / `.webp`: exact approved carriage geometry with transparent windows and ambient light only;
+- `carriage-sunlight.png` / `.webp`: transparent direct-sun facets used as a variable light plate.
 
-Core clips the outdoor panorama into three bands while the carriage plate stays fixed: sky/sun remains stationary, city moves, and water moves faster. A shared occlusion cycle lowers the carriage exposure, the stationary floor-light strength and the water reflections when buildings pass in front of the sun. The light direction never moves. Reduced-motion freezes both parallax and exposure. Source studies and the alpha-matte extraction are documented under `concepts/metro-parallax-v1/`; `scripts/build-metro-entry-parallax-assets.py` deterministically rebuilds the production files and every arm derivative.
+Core moves these cutout layers in one direction with depth-ordered speeds and seamless horizontal joins. No layer boundary crosses a building. A shared occlusion cycle lowers only `carriage-sunlight` and `water-reflection` when foreground buildings pass the fixed sun. Reduced-motion freezes both parallax and exposure. V2 sources are documented under `concepts/metro-parallax-v2/`; `scripts/build-metro-entry-parallax-assets.py` deterministically rebuilds the production files and every arm derivative.

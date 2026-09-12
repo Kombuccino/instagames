@@ -38,6 +38,7 @@ button { color: inherit; }
   height: 100%;
   overflow: hidden;
   background: #0a0a0d;
+  container-type: inline-size;
 }
 
 .game-surface {

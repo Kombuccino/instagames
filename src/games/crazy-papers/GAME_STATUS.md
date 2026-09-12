@@ -1,6 +1,14 @@
 # CrazyPapers — Suivi de création
 
-Mis à jour : 12 septembre 2026 à 23:25 Europe/Paris. Version livrable : `0.5.0`. Base d'intégration initiale des covers : `db4c93799d01ba805388722a6710cca18ac5848d` (`origin/main`).
+Mis à jour : 12 septembre 2026 à 23:25 Europe/Paris. Version livrable : `0.5.0`. Base combinée avant publication : `63468fedabe845d069d99fcdd6937d35e256f215` (`origin/main`).
+
+## Correctif affichage 0.4.1 — 12 septembre 2026
+
+Le screenshot utilisateur PC a révélé des bandes internes marron/jaunes à droite et en bas de la surface Phaser ; le même défaut est reproductible conceptuellement sur téléphone haute densité. Diagnostic : `PhaserGameHost` augmente la résolution du canvas selon le `devicePixelRatio` (plafonné à 2), mais CrazyPapers gardait une caméra à zoom 1. Le monde logique `390 × 844` n'occupait donc qu'une fraction du canvas DPR2/DPR3.
+
+Correctif : CrazyPapers applique maintenant à sa caméra le même `renderPixelRatio` que le host et recentre explicitement le monde sur `195 × 422`. La géométrie logique, les hitboxes, les règles et le scoring restent inchangés. Le comportement attendu est celui des autres scènes Phaser haute densité : le monde logique remplit entièrement le canvas, puis le host applique uniquement le scaling/crop MiniFugg.
+
+Vérification requise après CI : téléphone DPR2/DPR3 avec largeur utile entièrement remplie et aucune bande interne à droite/bas ; PC sans bande interne, seules les marges extérieures Core pouvant rester visibles. La migration reste `in-progress` / `locked: true` jusqu'à validation interactive finale.
 
 ## Décision active
 
@@ -108,6 +116,7 @@ Contrôle navigateur : A54 Brave `360 × 611`, A54 Chrome `360 × 656`, MASTER `
 
 ## Prochaine action
 
-1. Refaire une vraie recherche DA gameplay conforme : 4–5 écrans indépendants, même géométrie et même état fonctionnel, sans titre/logo/texte parasite.
-2. Puis test utilisateur du gameplay en ligne : lisibilité du document, taille des 5 tampons, vitesse de la montée des piles, seuil de débordement et descente de la vague.
-3. Après validation technique de la migration, passer `migration.state` à `current` et `locked` à `false` sans réintroduire de renderer parallèle.
+1. Vérifier le correctif `0.4.1` sur le screen mobile/PC réel : plus aucune bande interne due au DPR.
+2. Refaire une vraie recherche DA gameplay conforme : 4–5 écrans indépendants, même géométrie et même état fonctionnel, sans titre/logo/texte parasite.
+3. Puis test utilisateur du gameplay en ligne : lisibilité du document, taille des 5 tampons, vitesse de la montée des piles, seuil de débordement et descente de la vague.
+4. Après validation technique de la migration, passer `migration.state` à `current` et `locked` à `false` sans réintroduire de renderer parallèle.

@@ -36,7 +36,7 @@ Dans la scène métro retenue, Fuggy ne doit plus être assis sur le banc. Le po
 
 Le cadrage validé le 12 septembre 2026 avance la caméra de 20 % vers la banquette opposée. Sa source corrigée est `public/assets/generated/platform/concepts/metro-geometry-v2/09-ecoliere-lowpoly.png` et son dérivé runtime est `public/assets/generated/platform/entry-scenes/metro-sunset/camera-distance-20.webp`. Toute la rame et tous les personnages gardent des volumes clairement facettés ; les cheveux et chaussures ne doivent pas réintroduire des mèches peintes ou des volumes lisses. Le lecteur porte un casque normal muni de deux petites oreilles corail inspirées de Fuggy, sans visage ni logo de mascotte. La version 30 % reste une alternative de réglage ; elle ne remplace pas la valeur active sans nouvelle décision. Le même asset large est recadré sur les écrans complets.
 
-Sur écran étendu, le téléphone au repos se place entre le lecteur au casque et le voyageur plus âgé. Les huit bras d'entrée dérivent des mains et téléphones d'origine sans les redessiner. Chaque PNG de production possède désormais une toile réellement prolongée : la manche garde son épaisseur, ses facettes, sa couleur et ses accessoires, puis sort naturellement par le bord droit. Une forme CSS, un aplat ou une copie du bras ne constitue pas une reconstruction acceptable.
+Sur écran étendu, le téléphone au repos se place entre le lecteur au casque et le voyageur plus âgé. Les huit bras d'entrée dérivent des mains et téléphones d'origine sans les redessiner. Chaque PNG de production possède désormais une toile réellement prolongée : la main, le téléphone, le poignet et les accessoires restent pixel pour pixel ceux de la source, puis chaque manche est continuée avec ses propres pixels et ses propres facettes jusqu'au bord droit. Une manche commune recolorée, une forme CSS, un aplat ou une copie d'un autre bras ne constitue pas un raccord acceptable.
 
 La surface du téléphone doit suivre exactement son cadrage et sa perspective. Écran, bras et téléphone partagent les transformations utiles ; ne pas superposer un rectangle approximatif qui glisse séparément. Prévoir les occultations par la main, le cadre et les limites du zoom.
 
@@ -44,7 +44,7 @@ Pour le raccord vers l'écran étendu, mesurer les quatre coins du verre dans l'
 
 ## Couches, mouvements et transition
 
-Pour le métro, séparer les éléments selon leurs mouvements : décor extérieur qui défile, wagon, personnages/Fuggy lorsque nécessaire, bras et téléphone, contenu d'écran et éventuels effets de lumière. Reconstituer les zones cachées avant d'animer.
+Pour le métro, séparer les éléments selon leurs mouvements : ciel et soleil très lents, ville intermédiaire, eau et reflets plus rapides, wagon et personnages fixes, bras et téléphone, contenu d'écran et effets de lumière. Reconstituer les zones cachées avant d'animer. Le parallaxe ne doit jamais faire glisser les passagers, les fenêtres, les barres ou la géométrie de la rame. Prévoir une variante sans mouvement via `prefers-reduced-motion`.
 
 Le wagon peut trembler légèrement ; Fuggy assis et ses yeux suivent ce mouvement. Une expression temporaire remplace les yeux fixes au lieu de se dessiner dessus. Prévoir des pauses entre somnolence, réveil, regard et sourire exprimé uniquement par les yeux. Ne pas faire bouger tous les objets de manière indépendante.
 

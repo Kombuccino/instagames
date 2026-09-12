@@ -157,6 +157,31 @@ try {
       }
     }
 
+    const play = shell.locator('.mf-console-play')
+    const atlas = play.locator('.mf-console-play-atlas')
+    const counter = shell.locator('.mf-coin-balance-90s')
+    assert.equal(await play.locator('img').count(), 0, 'PLAY must not swap independent image elements')
+    assert.equal(await atlas.count(), 1, 'PLAY must use one fixed atlas layer')
+    assert.match(await atlas.evaluate(element => getComputedStyle(element).backgroundImage), /play-states-atlas\.webp/)
+    assert.match(await atlas.evaluate(element => getComputedStyle(element).animationTimingFunction), /steps\(1\)/,
+      'PLAY atlas cells must switch discretely instead of sliding between frames')
+    const playBefore = await play.boundingBox()
+    const counterBefore = await counter.boundingBox()
+    const coinsBefore = Number.parseInt(await counter.getAttribute('aria-label'), 10)
+    assert.ok(Number.isFinite(coinsBefore), 'the stationary counter must expose a numeric balance')
+    await click(play)
+    await page.waitForTimeout(40)
+    assert.equal(await play.evaluate(element => element.classList.contains('is-pressed')), true)
+    const playPressed = await play.boundingBox()
+    const counterPressed = await counter.boundingBox()
+    for (const key of ['x', 'y', 'width', 'height']) {
+      assert.ok(Math.abs(playBefore[key] - playPressed[key]) < .1, `PLAY ${key} must not move when pressed`)
+      assert.ok(Math.abs(counterBefore[key] - counterPressed[key]) < .1, `coin counter ${key} must stay fixed during PLAY`)
+    }
+    const pressedPath = `${output}/${format.name}-play-pressed.png`
+    await page.screenshot({ path: pressedPath })
+    report.screenshots.push(pressedPath)
+
     report.scenarios.push({
       name: format.name,
       passed: true,
@@ -165,6 +190,8 @@ try {
       topAnchoring: true,
       playOverlapChecked: true,
       consoleControlsAligned: true,
+      normalizedPlayAtlas: true,
+      playAndCounterStationary: true,
       noAnimatedCoverRuntime: true,
     })
     await context.close()

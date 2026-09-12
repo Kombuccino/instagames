@@ -317,8 +317,8 @@ export function HomeBisLab() {
               />
             </div>
             <picture className="mf-home-bis-hand" aria-hidden="true">
-              <source srcSet="/assets/generated/platform/home-bis-v1/production/canonical-hand-cutout-v1.webp" type="image/webp" />
-              <img src="/assets/generated/platform/home-bis-v1/production/canonical-hand-cutout-v1.png" alt="" />
+              <source srcSet="/assets/generated/platform/home-bis-v1/production/canonical-hand-cutout-v2.webp" type="image/webp" />
+              <img src="/assets/generated/platform/home-bis-v1/production/canonical-hand-cutout-v2.png" alt="" />
             </picture>
           </div>
         </div>

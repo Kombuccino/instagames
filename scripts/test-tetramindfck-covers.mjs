@@ -134,6 +134,29 @@ try {
     const first = await art.getAttribute('src')
     await page.waitForTimeout(250)
     assert.equal(await art.getAttribute('src'), first, 'Static cover selection must not rotate on a timer')
+
+    const consoleBox = await shell.locator('.mf-coin-console-90s').boundingBox()
+    assert.ok(consoleBox, 'coin console must be visible')
+    const expectedControls = [
+      ['.mf-console-nav.is-prev', .0691, .1442, .2049, .3146],
+      ['.mf-console-nav.is-next', .0691, .5037, .2049, .3146],
+      ['.mf-console-play', .3368, .1161, .3030, .7079],
+    ]
+    for (const [selector, x, y, width, height] of expectedControls) {
+      const box = await shell.locator(selector).boundingBox()
+      assert.ok(box, `${selector} must be visible`)
+      const actual = [
+        (box.x - consoleBox.x) / consoleBox.width,
+        (box.y - consoleBox.y) / consoleBox.height,
+        box.width / consoleBox.width,
+        box.height / consoleBox.height,
+      ]
+      for (let coordinate = 0; coordinate < actual.length; coordinate++) {
+        assert.ok(Math.abs(actual[coordinate] - [x, y, width, height][coordinate]) < .006,
+          `${selector} must stay locked to its measured chassis well`)
+      }
+    }
+
     report.scenarios.push({
       name: format.name,
       passed: true,
@@ -141,6 +164,7 @@ try {
       input: format.hasTouch ? 'touch' : 'mouse',
       topAnchoring: true,
       playOverlapChecked: true,
+      consoleControlsAligned: true,
       noAnimatedCoverRuntime: true,
     })
     await context.close()

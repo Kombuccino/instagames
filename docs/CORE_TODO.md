@@ -18,7 +18,7 @@ Backlog transversal de la plateforme. Voir `docs/TODO_NOTES.md`.
 
 ## Graphismes / UI / marque
 
-- [ ] Finaliser la nouvelle famille MONNAIE + JOUER : direction 3 retenue le 12 septembre 2026, avec une pièce dorée pleine à pourtour faux low-poly, grand `1` et tête complète de Fuggy ciselée. Aucun noir, trou, émail, insert ni seconde matière. La console 90s graphite occupe maintenant toute la largeur du cadre Core ; `PREV GAME`, `NEXT GAME` et PLAY sont recalés dans leurs logements, le prix reste à droite, le compteur est dynamique et le retour gameplay affiche `← EXIT`. Le châssis ne bouge pas ; deux pièces locales, deux `-1` et deux `cling` accompagnent le débit. Build, cover→jeu→cover, navigation, 390 × 844, PC et les trois covers TetraMindFck sont validés sans erreur. Restent : arbitrage final Fuggy/pièce et restitution rare de trois ou quatre pièces.
+- [ ] Finaliser la nouvelle famille MONNAIE + JOUER : direction 3 retenue le 12 septembre 2026, avec une pièce dorée pleine à pourtour faux low-poly, grand `1` et tête complète de Fuggy ciselée. Aucun noir, trou, émail, insert ni seconde matière. La console 90s graphite occupe toute la largeur du cadre Core ; son ratio suit désormais le châssis réel `2099 × 534` et `PREV GAME`, `NEXT GAME` et PLAY remplissent les trois logements mesurés avec une boîte identique dans tous leurs états. Le prix reste à droite, le compteur est dynamique et le retour gameplay affiche `← EXIT`. Le châssis ne bouge pas ; deux pièces locales, deux `-1` et deux `cling` accompagnent le débit. Build, cover→jeu→cover, navigation, 390 × 844 et PC sont à conserver dans la validation. Restent : arbitrage final Fuggy/pièce et restitution rare de trois ou quatre pièces.
 
 ## Distribution / économie
 

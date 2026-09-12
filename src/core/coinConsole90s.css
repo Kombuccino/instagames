@@ -64,7 +64,10 @@
   bottom: max(0px, env(safe-area-inset-bottom));
   width: 100%;
   height: auto;
-  aspect-ratio: 390 / 148;
+  /* Match the actual chassis bitmap (2099 × 534). The former 390/148 box was
+     49% too tall, so every independent button was positioned against empty
+     space rather than against the wells visible in the chassis. */
+  aspect-ratio: 2099 / 534;
   transform: translateX(-50%);
   pointer-events: none;
 }
@@ -103,30 +106,31 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  /* Each generated state has a slightly different source canvas. Stretching
+     every state to the measured physical well keeps the opaque button edges
+     locked to the same chassis coordinates and prevents state-to-state drift. */
+  object-fit: fill;
   user-select: none;
   -webkit-user-drag: none;
 }
 
 .mf-console-nav {
-  left: 7.4%;
-  width: 21.03%;
-  height: auto;
-  aspect-ratio: 82 / 38;
+  left: 6.91%;
+  width: 20.49%;
+  height: 31.46%;
 }
 
-.mf-console-nav.is-prev { bottom: 44.59%; }
-.mf-console-nav.is-next { bottom: 12.84%; }
+.mf-console-nav.is-prev { top: 14.42%; }
+.mf-console-nav.is-next { top: 50.37%; }
 .mf-console-nav .is-pressed { opacity: 0; }
 .mf-console-nav:active:not(:disabled) .is-idle { opacity: 0; }
 .mf-console-nav:active:not(:disabled) .is-pressed { opacity: 1; }
 
 .mf-console-play {
-  left: 35.13%;
-  bottom: 18.24%;
-  width: 28.7%;
-  height: auto;
-  aspect-ratio: 112 / 70;
+  left: 33.68%;
+  top: 11.61%;
+  width: 30.30%;
+  height: 70.79%;
 }
 
 .mf-console-play img { opacity: 0; }

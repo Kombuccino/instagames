@@ -1,5 +1,7 @@
 Original prompt: Mettre à jour LineFugg pour rendre les GFX conformes à la DA approuvée, optimiser et utiliser Phaser pour une réalisation plus animée, en préservant le prototype, le GD et l'équilibrage validés.
 
+2026-09-12 — Correctif d’alignement de la console Core : le conteneur suivait à tort un ratio `390/148` alors que le châssis réel mesure `2099 × 534`, et les états raster avaient des canevas différents. Le conteneur reprend le ratio réel ; PREV, NEXT et PLAY remplissent maintenant les logements mesurés du châssis avec une géométrie identique dans tous leurs états.
+
 2026-09-12 — Correctif urgent après retour utilisateur : la passe console avait fait passer les quatre covers TetraMindFck en `contain`, ce qui réduisait les affiches et ajoutait des marges diffuses. Rétablissement du cadrage `cover` validé ; la console reste pleine largeur sans modifier l’échelle des jaquettes.
 
 2026-09-12 — Console Core 90s livrée sur la version principale : façade sur toute la largeur du cadre, boutons PREV/NEXT/PLAY recalés dans leurs logements, halo et appui isolés, compteur Fuggy, deux débits locaux et retour `← EXIT`. Le cadre PC conserve le ratio 390 × 662 ; les quatre affiches TetraMindFck sont maintenant affichées entières avec fond diffus pour préserver titre et personnage. Build et contrôles téléphone/PC réussis sans erreur.

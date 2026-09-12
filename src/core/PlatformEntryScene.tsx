@@ -8,8 +8,6 @@ import {
   type PointerEvent as ReactPointerEvent,
   type WheelEvent as ReactWheelEvent,
 } from 'react'
-import { FuggyEyes } from './graphics/FuggyEyes'
-import { PerspectiveTextureCanvas } from './graphics/PerspectiveTextureCanvas'
 import { PhoneWelcomeScreen } from './graphics/PhoneWelcomeScreen'
 import { ProjectiveDomSurface } from './graphics/ProjectiveDomSurface'
 import { createPlatformEntryMusic, type PlatformEntryMusicController } from './platformEntryMusic'
@@ -32,11 +30,8 @@ const ENTER_DURATION_MS = 860
 const HOME_BIS_ENTER_DURATION_MS = 1700
 const TAP_SLOP_PX = 14
 const SWIPE_THRESHOLD_PX = 42
-const ASSET_ROOT = '/assets/imported/platform/entry-scenes/metro-moment-v1'
-const WAGON_ART = `${ASSET_ROOT}/wagon-reader-fuggy.png`
 const METRO_SCENE_ROOT = '/assets/generated/platform/entry-scenes/metro-sunset'
 const METRO_PARALLAX_ROOT = `${METRO_SCENE_ROOT}/parallax`
-const CITY_ART = `${ASSET_ROOT}/city-loop-sunset.png`
 const ARM_ROOT = `${METRO_SCENE_ROOT}/arms`
 const ARM_VARIANTS = Array.from({ length: 8 }, (_, index) => `${ARM_ROOT}/arm-${String(index + 1).padStart(2, '0')}.png`)
 const ARM_STORAGE_KEY = 'minifugg:entry-arm:v1'
@@ -284,7 +279,7 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
 
   return (
     <main
-      className={`mf-entry-scene${handoff === 'home-bis' ? ' is-home-bis-handoff' : ''}${entering ? ' is-entering' : ''}`}
+      className={`mf-entry-scene is-metro-v2${handoff === 'home-bis' ? ' is-home-bis-handoff' : ''}${entering ? ' is-entering' : ''}`}
       role="button"
       tabIndex={0}
       aria-label="Tap to play MiniFugg"
@@ -295,28 +290,8 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
       onKeyDown={handleKeyDown}
     >
       <div className="mf-entry-scene__stage">
-        {handoff !== 'home-bis' && (
-          <div className="mf-entry-scene__city" aria-hidden="true">
-            <PerspectiveTextureCanvas
-              src={CITY_ART}
-              className="mf-entry-scene__city-canvas"
-              paused={entering}
-              speed={116}
-              slices={260}
-              nearX={-0.16}
-              farX={1.02}
-              nearTop={-0.34}
-              nearBottom={0.78}
-              farTop={0.365}
-              farBottom={0.425}
-              xCurve={3.6}
-              depthCurve={1.18}
-            />
-          </div>
-        )}
-
         <div className="mf-entry-scene__carriage" aria-hidden="true">
-          {handoff === 'home-bis' && metroCameraDistance === '20' ? (
+          {metroCameraDistance === '20' ? (
             <>
               <div className="mf-entry-scene__metro-parallax">
                 {(['sky', 'city', 'water'] as const).map((layer) => (
@@ -338,7 +313,7 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
                 />
               </picture>
             </>
-          ) : handoff === 'home-bis' ? (
+          ) : (
             <picture>
               <source srcSet={`${METRO_SCENE_ROOT}/camera-distance-${metroCameraDistance}.webp`} type="image/webp" />
               <img
@@ -350,11 +325,8 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
                 loading="eager"
               />
             </picture>
-          ) : (
-            <img className="mf-entry-scene__wagon" src={WAGON_ART} alt="" draggable={false} decoding="sync" />
           )}
-          {handoff !== 'home-bis' && <FuggyEyes className="mf-entry-scene__fuggy-eyes" />}
-          {handoff === 'home-bis' && <span className="mf-entry-scene__floor-light" aria-hidden="true" />}
+          <span className="mf-entry-scene__floor-light" aria-hidden="true" />
         </div>
 
         {handoff === 'home-bis' && <span className="mf-entry-scene__handoff-blackout" aria-hidden="true" />}

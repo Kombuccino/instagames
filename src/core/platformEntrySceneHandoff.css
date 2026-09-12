@@ -62,12 +62,12 @@
 /* The wide pilot uses one viewport for both rooms. The portrait artwork is a
  * separate phone rig, while the metro plate fills the desktop stage. */
 @media (min-width: 761px) {
-  .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__stage {
+  .mf-entry-scene.is-metro-v2 .mf-entry-scene__stage {
     width: 100vw;
     height: 100dvh;
   }
 
-  .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__wagon {
+  .mf-entry-scene.is-metro-v2 .mf-entry-scene__wagon {
     inset: 0;
     width: 100%;
     height: 100%;
@@ -75,18 +75,14 @@
     object-position: center;
   }
 
-  .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__fuggy-eyes {
-    display: none;
-  }
-
-  .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__phone-rig {
+  .mf-entry-scene.is-metro-v2 .mf-entry-scene__phone-rig {
     inset: auto 26% 0 auto;
     width: 56.28dvh;
     height: 100dvh;
     will-change: transform;
   }
 
-  .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__hand-group {
+  .mf-entry-scene.is-metro-v2 .mf-entry-scene__hand-group {
     transform: none;
     animation: none;
   }
@@ -98,21 +94,21 @@
   .mf-entry-scene.is-home-bis-handoff.is-entering .mf-entry-scene__hand-group {
     animation: none;
   }
+
+  .mf-entry-scene.is-metro-v2:not(.is-home-bis-handoff).is-entering .mf-entry-scene__phone-rig {
+    animation: mf-entry-rig-to-feed 860ms cubic-bezier(.14,.84,.17,1) forwards;
+  }
 }
 
 .mf-entry-scene.is-home-bis-handoff.is-entering .mf-entry-scene__flash {
   animation: none;
 }
 
-.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__stage {
+.mf-entry-scene.is-metro-v2 .mf-entry-scene__stage {
   overflow: visible;
 }
 
-.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__city {
-  display: none;
-}
-
-.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__wagon--wide {
+.mf-entry-scene.is-metro-v2 .mf-entry-scene__wagon--wide {
   inset: 0;
   width: 100%;
   height: 100%;
@@ -120,7 +116,7 @@
   object-position: 50% 50%;
 }
 
-.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-parallax {
+.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-parallax {
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -128,7 +124,7 @@
   background: #f59b78;
 }
 
-.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer {
+.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer {
   position: absolute;
   inset: 0;
   display: block;
@@ -136,7 +132,7 @@
   pointer-events: none;
 }
 
-.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer img {
+.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer img {
   position: absolute;
   left: -8%;
   top: -18%;
@@ -148,33 +144,33 @@
   will-change: transform, filter;
 }
 
-.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer--sky {
+.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--sky {
   clip-path: inset(0 0 66% 0);
 }
 
-.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer--sky img {
+.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--sky img {
   transform: scale(1.006);
 }
 
-.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer--city {
+.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--city {
   clip-path: inset(25% 0 60% 0);
 }
 
-.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer--city img {
+.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--city img {
   animation: mf-entry-metro-city-drift 13s linear infinite;
 }
 
-.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer--water {
+.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--water {
   clip-path: inset(34% 0 49% 0);
 }
 
-.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer--water img {
+.mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer--water img {
   animation:
     mf-entry-metro-water-drift 7s ease-in-out infinite alternate,
     mf-entry-sun-occlusion-water 13s linear infinite;
 }
 
-.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__wagon--foreground {
+.mf-entry-scene.is-metro-v2 .mf-entry-scene__wagon--foreground {
   z-index: 2;
   will-change: filter;
   animation: mf-entry-sun-occlusion-carriage 13s linear infinite;
@@ -182,7 +178,7 @@
 
 /* The sun is effectively fixed at this scale. Buildings crossing its line of
  * sight only reduce the existing light; they never sweep it across the floor. */
-.mf-entry-scene.is-home-bis-handoff .mf-entry-scene__floor-light {
+.mf-entry-scene.is-metro-v2 .mf-entry-scene__floor-light {
   position: absolute;
   z-index: 3;
   left: -35%;
@@ -272,6 +268,12 @@
   100% { transform: translate3d(-1.4%,0,0) scale(1.01); }
 }
 
+@keyframes mf-entry-rig-to-feed {
+  0%, 18% { opacity: 1; transform: none; }
+  78% { opacity: 1; transform: translate3d(-12%,-2%,0) scale(1.28); }
+  100% { opacity: 0; transform: translate3d(-14%,-3%,0) scale(1.38); }
+}
+
 @keyframes mf-entry-metro-water-drift {
   0% { transform: translate3d(2.5%,.1%,0) scale(1.015,1.005); }
   100% { transform: translate3d(-2.5%,-.15%,0) scale(1.015,1.012); }
@@ -312,15 +314,15 @@
     transition: none;
   }
 
-  .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__floor-light {
+  .mf-entry-scene.is-metro-v2 .mf-entry-scene__floor-light {
     animation: none;
   }
 
-  .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer img {
+  .mf-entry-scene.is-metro-v2 .mf-entry-scene__metro-layer img {
     animation: none;
   }
 
-  .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__wagon--foreground {
+  .mf-entry-scene.is-metro-v2 .mf-entry-scene__wagon--foreground {
     animation: none;
   }
 }

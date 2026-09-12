@@ -110,9 +110,15 @@ Collection validée après la décision complémentaire : **6 covers sources** a
 
 Les six sources validées sont conservées octet pour octet dans `public/assets/generated/crazy-papers/welcome/variants/sources/`. Le script `scripts/build-crazy-papers-covers.py` fabrique six masters PNG opaques exactement `390 × 844` et six WebP lossless `780 × 1688`. Il retire seulement environ `0,915` pixel source au total sur les côtés pour atteindre le ratio exact, sans étirement, peinture, prolongation ni réinterprétation.
 
-Core expose les six éditions statiques avec sélection Alpha libre et scores futurs conservés. Toutes utilisent `cover`, ancrage `top center` et aucun runtime animé, CSS multicouche ou Phaser de cover. Les titres restent dans la zone utile ; le pupitre JOUER ne recouvre aucun logo.
+Core expose les six éditions statiques avec sélection Alpha libre et scores futurs conservés. Cinq utilisent `cover` avec ancrage `top center`. `Constructivist Clerk` utilise le cadrage focal `center 70%` afin que l'employée, placée très bas dans la source approuvée, reste visible au-dessus du pupitre fixe. Aucun runtime animé, CSS multicouche ou Phaser de cover n'est ajouté ; les six rasters demeurent inchangés.
 
-Contrôle navigateur : A54 Brave `360 × 611`, A54 Chrome `360 × 656`, MASTER `390 × 844` avec les six éditions, et PC `1280 × 720`. Sur mobile la largeur utile est pleine, le haut est fixe et seule la partie basse varie. MONNAIE, RAIL, pupitre JOUER, sélection d'édition, lancement du jeu et retour Cover sont vérifiés sans erreur console. Le contrôle générique gameplay confirme également le passage vers la scène Phaser.
+Contrôle navigateur : A54 Brave `360 × 611`, A54 Chrome `360 × 656`, MASTER `390 × 844` et PC `1280 × 720`, avec les six éditions à chaque format. Sur mobile la largeur utile est pleine ; les cinq compositions compatibles gardent leur haut fixe et l'exception constructiviste décale seulement sa fenêtre sur l'image intacte. MONNAIE, RAIL, vrai pupitre Core fixe, sélection d'édition, lancement du jeu et retour Cover sont vérifiés sans erreur console. Le contrôle générique gameplay confirme également le passage vers la scène Phaser.
+
+## Correction du recouvrement PLAY — 13 septembre 2026
+
+Le contrôle après l'intégration du pupitre Core fixe a montré que l'ancien test regardait encore le composant désormais absent de chaque cover. La matrice a donc été raccordée à la couche fixe réelle et étendue aux six éditions sur mobile court, mobile haut, MASTER et PC. L'audit visuel des 19 covers déclarées `current` confirme que LineFugg, TetraMindFck et Vlad conservent leurs points focaux ; le défaut franc concernait `Constructivist Clerk`, dont seul le sommet des cheveux restait visible.
+
+La correction est exclusivement un cadrage runtime `center 70%` pour cette variante. Les sources, masters et WebP restent octet pour octet identiques ; aucun prolongement, effacement, redessin ou nouvel effet n'est introduit. Le titre et le personnage sont désormais tous deux lisibles au-dessus de JOUER dans les quatre formats de référence.
 
 ## Prochaine action
 

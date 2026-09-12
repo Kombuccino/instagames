@@ -6,7 +6,7 @@ import { chromium } from 'playwright'
 
 // Self-contained: starts Vite, verifies preserved approved PNG references and
 // exercises the full-height static WebP restorations. No production API writes.
-const output = 'artifacts/linefugg-covers'
+const output = process.env.LINEFUGG_COVER_OUTPUT || 'artifacts/linefugg-covers'
 await fs.mkdir(output, { recursive: true })
 const receipt = JSON.parse(await fs.readFile('ops/drive-asset-sync/imports/linefugg-covers-2026-09-07.json', 'utf8'))
 const runtimeFile = edition => `linefugg-cover-${edition}.webp`
@@ -81,6 +81,7 @@ try {
     const card = page.locator('.game-card[aria-label="LineFugg"]').first()
     const shell = card.locator('.mf-cover-shell')
     const art = shell.locator('.mf-core-selected-cover > img')
+    const fixedControls = page.locator('.mf-coin-console-system.is-fixed')
     const click = async locator => format.hasTouch ? locator.tap() : locator.click()
     const assertArt = async expectedSrc => {
       await art.evaluate(image => image.decode())
@@ -102,7 +103,7 @@ try {
       assert.ok(!/METTRE/i.test(await shell.evaluate(element => getComputedStyle(element, '::after').content)))
       assert.equal(await shell.locator('canvas').count(), 0, 'Static covers must not create a Phaser cover canvas')
       assert.equal(await art.evaluate(image => getComputedStyle(image).animationName), 'none')
-      const playBox = await shell.locator('.mf-insert-coin').boundingBox()
+      const playBox = await fixedControls.locator('.mf-coin-console-90s').boundingBox()
       const coverBox = await art.boundingBox()
       assert.ok(playBox && coverBox && playBox.y > coverBox.y + coverBox.height * .72, 'JOUER must overlap only the expendable lower cover zone')
     }
@@ -127,10 +128,10 @@ try {
     assert.equal(coverRequests.some(url => /approved-2026-09-07\.png(?:\?|$)/.test(url)), false, 'Runtime must not request preserved PNG masters')
     const box = await card.boundingBox()
     if (format.width >= 760) assert.ok(box.width <= 520.1, 'Do not widen the Core desktop column')
-    await click(shell.locator('.mf-insert-coin'))
+    await click(fixedControls.locator('[data-testid="coin-console-play"]'))
     await page.waitForFunction(() => document.querySelector('.game-card[aria-label="LineFugg"]')?.getAttribute('data-phase') === 'playing')
     await card.locator('.mf-phaser-host canvas').waitFor({ state: 'visible' })
-    await click(card.getByRole('button', { name: 'Return to cover', exact: true }))
+    await click(card.getByRole('button', { name: 'Exit game and return to cover', exact: true }))
     await art.waitFor({ state: 'visible' })
     await assertArt()
     await page.goto('http://127.0.0.1:5176/?game=vlads-skewers')
@@ -157,7 +158,7 @@ try {
       assert.equal(value.fit, 'cover')
       assert.equal(value.position, '50% 0%')
       assert.equal(await vladShell.locator('canvas').count(), 0)
-      const playBox = await vladShell.locator('.mf-insert-coin').boundingBox()
+      const playBox = await fixedControls.locator('.mf-coin-console-90s').boundingBox()
       const coverBox = await vladArt.boundingBox()
       assert.ok(playBox && coverBox && playBox.y > coverBox.y + coverBox.height * .72, 'JOUER must overlap only the expendable lower cover zone')
       const path = `${output}/${format.name}-vlad-${index + 1}.png`

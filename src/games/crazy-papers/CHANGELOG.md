@@ -1,5 +1,11 @@
 # CrazyPapers — Changelog
 
+## 0.5.1 — 13 septembre 2026
+
+- La cover `Constructivist Clerk` conserve son image approuvée intacte mais emploie désormais un cadrage focal : le personnage reste visible au-dessus du pupitre PLAY fixe sur mobile court comme sur PC.
+- Les cinq autres covers gardent leur ancrage supérieur validé ; aucune illustration, aucun titre et aucun asset raster n'est modifié.
+- La matrice de contrôle inspecte maintenant les six éditions dans chaque format et mesure le vrai pupitre Core fixe, après sa sortie de la cover individuelle.
+
 ## 0.5.0 — 12 septembre 2026
 
 - Six covers illustrées validées intégrées comme collection statique Core.

@@ -44,7 +44,7 @@ Pour le raccord vers l'écran étendu, mesurer les quatre coins du verre dans l'
 
 ## Couches, mouvements et transition
 
-Pour le métro, séparer les éléments selon leurs mouvements : ciel et soleil très lents, ville intermédiaire, eau et reflets plus rapides, wagon et personnages fixes, bras et téléphone, contenu d'écran et effets de lumière. Reconstituer les zones cachées avant d'animer. Le parallaxe ne doit jamais faire glisser les passagers, les fenêtres, les barres ou la géométrie de la rame. Prévoir une variante sans mouvement via `prefers-reduced-motion`.
+Pour le métro, séparer les éléments selon leurs mouvements : ciel et soleil fixes à cette échelle, ville en défilement intermédiaire, eau et reflets plus rapides, wagon et personnages fixes, bras et téléphone, contenu d'écran et effets de lumière. Le passage des bâtiments devant le soleil atténue brièvement et de manière synchronisée la lumière de la rame, la lumière fixe du sol et les reflets de l'eau ; il ne déplace jamais leur angle. Reconstituer les zones cachées avant d'animer. Le parallaxe ne doit jamais faire glisser les passagers, les fenêtres, les barres ou la géométrie de la rame. Prévoir une variante sans mouvement via `prefers-reduced-motion`.
 
 Le wagon peut trembler légèrement ; Fuggy assis et ses yeux suivent ce mouvement. Une expression temporaire remplace les yeux fixes au lieu de se dessiner dessus. Prévoir des pauses entre somnolence, réveil, regard et sourire exprimé uniquement par les yeux. Ne pas faire bouger tous les objets de manière indépendante.
 

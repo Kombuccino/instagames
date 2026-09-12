@@ -153,7 +153,7 @@
 }
 
 .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer--sky img {
-  animation: mf-entry-metro-sky-drift 18s ease-in-out infinite alternate;
+  transform: scale(1.006);
 }
 
 .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer--city {
@@ -161,7 +161,7 @@
 }
 
 .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer--city img {
-  animation: mf-entry-metro-city-drift 13s ease-in-out infinite alternate;
+  animation: mf-entry-metro-city-drift 13s linear infinite;
 }
 
 .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer--water {
@@ -169,15 +169,19 @@
 }
 
 .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer--water img {
-  animation: mf-entry-metro-water-drift 7s ease-in-out infinite alternate;
+  animation:
+    mf-entry-metro-water-drift 7s ease-in-out infinite alternate,
+    mf-entry-sun-occlusion-water 13s linear infinite;
 }
 
 .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__wagon--foreground {
   z-index: 2;
+  will-change: filter;
+  animation: mf-entry-sun-occlusion-carriage 13s linear infinite;
 }
 
-/* A restrained moving reflection gives the approved static plate some train
- * life. It stays on the floor and remains independent from the authored art. */
+/* The sun is effectively fixed at this scale. Buildings crossing its line of
+ * sight only reduce the existing light; they never sweep it across the floor. */
 .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__floor-light {
   position: absolute;
   z-index: 3;
@@ -192,9 +196,9 @@
     linear-gradient(180deg, transparent, rgba(255,142,36,.18));
   mix-blend-mode: screen;
   clip-path: polygon(16% 8%,84% 8%,100% 100%,0 100%);
-  transform: translate3d(-8%,0,0);
-  will-change: transform, opacity;
-  animation: mf-entry-floor-light-pass 4.8s linear infinite;
+  transform: translate3d(0,0,0);
+  will-change: opacity;
+  animation: mf-entry-sun-occlusion-floor 13s linear infinite;
 }
 
 .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__handoff-blackout {
@@ -263,27 +267,35 @@
   100% { opacity: 0; }
 }
 
-@keyframes mf-entry-floor-light-pass {
-  0% { opacity: .12; transform: translate3d(-9%,0,0); }
-  18% { opacity: .25; }
-  46% { opacity: .15; }
-  72% { opacity: .27; }
-  100% { opacity: .12; transform: translate3d(9%,0,0); }
-}
-
-@keyframes mf-entry-metro-sky-drift {
-  0% { transform: translate3d(-.35%,0,0) scale(1.002); filter: saturate(.98) brightness(.99); }
-  100% { transform: translate3d(.35%,.18%,0) scale(1.006); filter: saturate(1.03) brightness(1.02); }
-}
-
 @keyframes mf-entry-metro-city-drift {
   0% { transform: translate3d(1.4%,0,0) scale(1.01); }
   100% { transform: translate3d(-1.4%,0,0) scale(1.01); }
 }
 
 @keyframes mf-entry-metro-water-drift {
-  0% { transform: translate3d(2.5%,.1%,0) scale(1.015,1.005); filter: brightness(.98) saturate(1); }
-  100% { transform: translate3d(-2.5%,-.15%,0) scale(1.015,1.012); filter: brightness(1.05) saturate(1.06); }
+  0% { transform: translate3d(2.5%,.1%,0) scale(1.015,1.005); }
+  100% { transform: translate3d(-2.5%,-.15%,0) scale(1.015,1.012); }
+}
+
+@keyframes mf-entry-sun-occlusion-floor {
+  0%, 10%, 24%, 47%, 61%, 79%, 89%, 100% { opacity: .25; }
+  13%, 20% { opacity: .13; }
+  50%, 57% { opacity: .08; }
+  82%, 86% { opacity: .15; }
+}
+
+@keyframes mf-entry-sun-occlusion-carriage {
+  0%, 10%, 24%, 47%, 61%, 79%, 89%, 100% { filter: brightness(1); }
+  13%, 20% { filter: brightness(.965); }
+  50%, 57% { filter: brightness(.94); }
+  82%, 86% { filter: brightness(.972); }
+}
+
+@keyframes mf-entry-sun-occlusion-water {
+  0%, 10%, 24%, 47%, 61%, 79%, 89%, 100% { filter: brightness(1.06) saturate(1.07); }
+  13%, 20% { filter: brightness(.98) saturate(1.01); }
+  50%, 57% { filter: brightness(.91) saturate(.96); }
+  82%, 86% { filter: brightness(1) saturate(1.02); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -305,6 +317,10 @@
   }
 
   .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__metro-layer img {
+    animation: none;
+  }
+
+  .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__wagon--foreground {
     animation: none;
   }
 }

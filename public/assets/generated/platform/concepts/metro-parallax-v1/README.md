@@ -9,8 +9,8 @@ The production derivatives live in `entry-scenes/metro-sunset/parallax/` and are
 
 Target motion ownership:
 
-1. sky and sun: slow drift;
+1. sky and sun: fixed;
 2. skyline: medium drift;
 3. water and reflections: faster drift;
 4. carriage and passengers: fixed;
-5. floor light: independent interior response.
+5. floor light: fixed direction, intensity synchronized with skyline occlusion.

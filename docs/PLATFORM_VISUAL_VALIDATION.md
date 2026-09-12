@@ -4,6 +4,14 @@ Validate every surface against its named model in [Zones MiniFugg](MINIFUGG_ZONE
 
 Living record of the platform visual decisions already approved by the user. Update this file whenever a visual direction is accepted/rejected so later work does not drift back to older concepts.
 
+## Mobile viewport behavior — locked 12 September 2026
+
+On a touch phone, the complete Core column always follows the useful width: the logical `390` units fill that width, the available browser/app height defines the visible window, and a shorter window never shrinks the composition horizontally. Covers stay anchored at the top, so only their expendable lower continuation is cropped as the browser chrome changes.
+
+This phone rule remains active when a mobile browser exposes a desktop-sized CSS layout viewport (for example a `980px` viewport in a desktop-site mode). The centered `520px` large-screen column and CENTRE-height gameplay scaling apply only when both the layout viewport and the physical CSS screen are at least `760px` wide. A true tablet therefore keeps the large-screen presentation, while a narrow phone cannot be misclassified by its artificial layout viewport. Gameplay on a phone remains width-driven; its individual `top | center | bottom` vertical anchor is still owned by each game.
+
+Regression coverage: A54 Brave `360 × 611`, A54 Chrome `360 × 656`, narrow-phone/desktop-layout `980 × 1663`, tablet `1024 × 768`, and desktop `1280 × 720`, including Cover → Phaser. The phone cases use the full viewport width; tablet and desktop preserve the centered Core column.
+
 ## Approved system direction
 
 The converged platform direction is approved **in principle** for the overall product grammar:

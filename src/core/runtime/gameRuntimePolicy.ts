@@ -8,6 +8,7 @@ export const DEFAULT_LOGICAL_VIEWPORTS = {
 export const DEFAULT_RENDER_PIXEL_RATIO_CAP = 2
 export const MINIFUGG_PORTRAIT_CENTRE_HEIGHT = 662
 export const MINIFUGG_DESKTOP_BREAKPOINT = 760
+export const MINIFUGG_DESKTOP_MEDIA_QUERY = `(min-width: ${MINIFUGG_DESKTOP_BREAKPOINT}px) and (min-device-width: ${MINIFUGG_DESKTOP_BREAKPOINT}px)`
 
 export type MiniFuggVerticalAnchor = 'top' | 'center' | 'bottom'
 export type MiniFuggScaleAxis = 'auto' | 'width' | 'height'

@@ -4,7 +4,7 @@ import type { GameLogicalViewport } from '../types'
 import {
   clampRenderPixelRatio,
   fitMiniFuggGameplayViewport,
-  MINIFUGG_DESKTOP_BREAKPOINT,
+  MINIFUGG_DESKTOP_MEDIA_QUERY,
   type MiniFuggVerticalAnchor,
 } from './gameRuntimePolicy'
 
@@ -66,6 +66,7 @@ export function PhaserGameHost({
     const renderWidth = Math.round(logicalViewport.width * density)
     const renderHeight = Math.round(logicalViewport.height * density)
     let game: Phaser.Game | null = null
+    const desktopLayout = window.matchMedia(MINIFUGG_DESKTOP_MEDIA_QUERY)
 
     const layoutStage = () => {
       const bounds = viewport.getBoundingClientRect()
@@ -73,7 +74,7 @@ export function PhaserGameHost({
         width: bounds.width || logicalViewport.width,
         height: bounds.height || logicalViewport.height,
       }
-      const scaleAxis = window.innerWidth >= MINIFUGG_DESKTOP_BREAKPOINT ? 'height' : 'width'
+      const scaleAxis = desktopLayout.matches ? 'height' : 'width'
       const layout = fitMiniFuggGameplayViewport(logicalViewport, available, {
         verticalAnchor,
         scaleAxis,
@@ -129,10 +130,12 @@ export function PhaserGameHost({
 
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(layoutStage)
     observer?.observe(viewport)
+    desktopLayout.addEventListener('change', layoutStage)
     window.addEventListener('resize', layoutStage)
 
     return () => {
       observer?.disconnect()
+      desktopLayout.removeEventListener('change', layoutStage)
       window.removeEventListener('resize', layoutStage)
       gameRef.current = null
       game?.destroy(true)

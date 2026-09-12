@@ -87,7 +87,9 @@ button { color: inherit; }
   pointer-events: none;
 }
 
-@media (min-width: 760px) {
+/* A phone can expose a 980px desktop-site layout viewport while its physical
+ * CSS screen stays narrow. Keep that case width-first without widening tablets. */
+@media (min-width: 760px) and (min-device-width: 760px) {
   body { background: #020203; }
   #root { display: grid; place-items: center; }
   .game-feed {

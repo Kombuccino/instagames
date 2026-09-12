@@ -298,15 +298,13 @@ export function HomeBisLab() {
         {HOME_BIS_GAMES.map((candidate, index) => <button key={candidate.id} disabled={gamePlaying} className={index === activeIndex ? 'is-active' : ''} onClick={() => changeGame(index)} aria-label={`Show ${candidate.title}`}><span>{index + 1}</span>{candidate.title}</button>)}
       </aside>
       <section className="mf-home-bis-scene" data-game={item.id}>
-        <div className="mf-home-bis-wall" aria-hidden="true"><i className="mf-home-bis-lamp" /><i className="mf-home-bis-cat" /></div>
-        <div className="mf-home-bis-desk" aria-hidden="true" />
+        <div className="mf-home-bis-production-plate" aria-hidden="true" />
         <div className="mf-home-bis-layout">
           <div className="mf-home-bis-magazine-stack" aria-live="polite">
             {previousItem && <MagazinePage key={`previous-${transitionId}`} item={previousItem} section={section} onSection={setSection} motion={`outgoing-${turnDirection}`} />}
             <MagazinePage key={`current-${item.id}-${transitionId}`} item={item} section={section} onSection={setSection} motion={previousItem ? `incoming-${turnDirection}` : 'still'} />
           </div>
           <div className="mf-home-bis-phone-wrap">
-            <div className="mf-home-bis-hand" aria-hidden="true"><i /><i /><i /><i /><b /></div>
             <div className="mf-home-bis-phone">
               <HomeBisPhone
                 key={`${game.id}-${transitionId}`}
@@ -318,6 +316,10 @@ export function HomeBisLab() {
                 onPlayingChange={setGamePlaying}
               />
             </div>
+            <picture className="mf-home-bis-hand" aria-hidden="true">
+              <source srcSet="/assets/generated/platform/home-bis-v1/production/canonical-hand-cutout-v1.webp" type="image/webp" />
+              <img src="/assets/generated/platform/home-bis-v1/production/canonical-hand-cutout-v1.png" alt="" />
+            </picture>
           </div>
         </div>
         <p className="mf-home-bis-scroll-cue">{gamePlaying ? 'GAME CONTROLS ACTIVE' : 'WHEEL OR CHANGE GAME'} <span>{gamePlaying ? '●' : '↕'}</span></p>

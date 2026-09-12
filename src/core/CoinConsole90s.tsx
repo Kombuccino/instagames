@@ -4,6 +4,7 @@ import { miniFuggAudio } from '../audio'
 const ASSET_ROOT = '/assets/generated/platform/ui/coin-console-90s'
 
 type Props = {
+  fixed?: boolean
   coins: number
   cost: number
   free: boolean
@@ -14,7 +15,7 @@ type Props = {
 
 type Timer = ReturnType<typeof window.setTimeout>
 
-export function CoinConsole90s({ coins, cost, free, launchError, onPlay, onChangeGame }: Props) {
+export function CoinConsole90s({ fixed = false, coins, cost, free, launchError, onPlay, onChangeGame }: Props) {
   const timers = useRef<Timer[]>([])
   const [pressed, setPressed] = useState(false)
   const [sequence, setSequence] = useState(0)
@@ -70,7 +71,7 @@ export function CoinConsole90s({ coins, cost, free, launchError, onPlay, onChang
   }
 
   return (
-    <div className="mf-coin-console-system">
+    <div className={`mf-coin-console-system${fixed ? ' is-fixed' : ''}`}>
       <div className="mf-coin-balance mf-coin-balance-90s" aria-label={`${Math.max(0, coins - visibleDebits)} coins`}>
         <img src={`${ASSET_ROOT}/coin-counter-frame.webp`} alt="" />
         <strong>{Math.max(0, coins - visibleDebits)}</strong>

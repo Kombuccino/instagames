@@ -5,6 +5,18 @@
   pointer-events: none;
 }
 
+.mf-coin-console-system.is-fixed {
+  position: fixed;
+  z-index: 190;
+  right: auto;
+  bottom: auto;
+  left: 50%;
+  width: 100%;
+  height: 100dvh;
+  transform: translateX(-50%);
+  container-type: inline-size;
+}
+
 .mf-coin-balance-90s {
   width: 28.72cqw;
   height: 11.79cqw;
@@ -117,22 +129,22 @@
 }
 
 .mf-console-nav {
-  left: 6.91%;
-  width: 20.49%;
-  height: 31.46%;
+  left: 7.05%;
+  width: 19.68%;
+  height: 29.59%;
 }
 
-.mf-console-nav.is-prev { top: 14.42%; }
-.mf-console-nav.is-next { top: 50.37%; }
+.mf-console-nav.is-prev { top: 18.54%; }
+.mf-console-nav.is-next { top: 50.56%; }
 .mf-console-nav .is-pressed { opacity: 0; }
 .mf-console-nav:active:not(:disabled) .is-idle { opacity: 0; }
 .mf-console-nav:active:not(:disabled) .is-pressed { opacity: 1; }
 
 .mf-console-play {
-  left: 33.68%;
-  top: 11.61%;
-  width: 30.30%;
-  height: 70.79%;
+  left: 33.49%;
+  top: 14.42%;
+  width: 32.49%;
+  height: 69.10%;
 }
 
 .mf-console-play-atlas {
@@ -228,4 +240,10 @@
   }
   .mf-coin-console-90s.is-inserting .mf-local-insert-coin,
   .mf-coin-console-system:has(.mf-coin-console-90s.is-inserting) .mf-coin-debit { animation-duration: 1ms; }
+}
+
+@media (min-width: 760px) and (min-device-width: 760px) {
+  .mf-coin-console-system.is-fixed {
+    width: min(100vw, calc(100dvh * 390 / 662));
+  }
 }

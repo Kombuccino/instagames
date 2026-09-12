@@ -23,6 +23,7 @@ type Props = {
   nickname: string
   commentText: string
   launchError: string
+  showCoinConsole?: boolean
   onPanel: (panel: Exclude<PlatformPanel, null>) => void
   onClosePanel: () => void
   onToggleLove: () => void
@@ -157,7 +158,7 @@ function CommentCard({ thread, depth = 0, reportedId, onReport }: { thread: Comm
 
 export function PlatformCoverShell(props: Props) {
   const {
-    game, catalog, seed, coins, cost, social, comments, bestScore, panel, nickname, commentText, launchError,
+    game, catalog, seed, coins, cost, social, comments, bestScore, panel, nickname, commentText, launchError, showCoinConsole = true,
     onPanel, onClosePanel, onToggleLove, onToggleBookmark, onPlay, onChangeGame, onShare,
     onNicknameChange, onCommentTextChange, onPostComment, onOpenLeaderboard, onSelectCover,
   } = props
@@ -212,15 +213,16 @@ export function PlatformCoverShell(props: Props) {
           <StaticCoverArt variant={activeCover} />
         </div>
       )}
-      <CoinConsole90s
-        coins={coins}
-        cost={cost}
-        free={game.status === 'trash'}
-        launchError={launchError}
-        onPlay={onPlay}
-        onChangeGame={onChangeGame}
-      />
-
+      {showCoinConsole && (
+        <CoinConsole90s
+          coins={coins}
+          cost={cost}
+          free={game.status === 'trash'}
+          launchError={launchError}
+          onPlay={onPlay}
+          onChangeGame={onChangeGame}
+        />
+      )}
       <nav className="mf-cover-rail" aria-label="Game actions">
         <button type="button" onClick={() => onPanel('info')} aria-label="Info"><Icon name="info" /></button>
         <button type="button" className={social.loved ? 'is-loved' : ''} onClick={onToggleLove} aria-label="Like"><Icon name="heart" filled={social.loved} /><small>{formatSocialCount(social.loves)}</small></button>

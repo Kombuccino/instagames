@@ -6,7 +6,7 @@
 - Historical reference: the administrative tension of *Papers, Please* without copying its interface, assets, characters, emblems or exact palette.
 - Gameplay renderer is Phaser 4 on the canonical `390 × 844` stage. Dynamic gameplay state stays engine-owned; do not rebuild a DOM/CSS interface inside the scene.
 
-## Cover research — 12 September 2026 — not yet approved
+## Cover research — 12 September 2026 — first three sources approved
 
 The TetraMindFck cover collection is the reference for the **degree of authorship and stylistic distance**, not for its tetromino motifs, characters or compositions. CrazyPapers must remain its own oppressive bureaucracy fiction: an ordinary clerk, physical files, loose forms, stamps and an accumulating paper threat.
 
@@ -17,7 +17,22 @@ Four independent source covers were produced, one image per generation and one T
 3. `graphic` — asymmetric Eastern-European editorial poster and a single bureaucratic metaphor;
 4. `japanese` — nervous early-1990s commercial manga print and diagonal paper avalanche.
 
-All four are exploratory. They may be compared and validated independently, but none is a runtime asset until the user chooses it. The closed text list is `CrazyPapers` only: no CTA, slogan, readable form copy, MiniFugg mark, platform UI or decorative pseudo-writing. Covers remain full bleed, without fake old-box frame or damaged corners. The lower desk, body and paper mass must continue naturally into an expendable BAS so Core can crop from the bottom while keeping the useful width fixed.
+The user subsequently validated the first three exact sources from this lot: `pulp`, `micro` and `graphic`. The fourth `japanese` source is not included in that validation. The three retained sources now have checked production masters and static lossless runtime derivatives. The closed text list is `CrazyPapers` only: no CTA, slogan, readable form copy, MiniFugg mark, platform UI or decorative pseudo-writing. Covers remain full bleed, without fake old-box frame or damaged corners. The lower desk, body and paper mass continue naturally into an expendable BAS so Core can crop from the bottom while keeping the useful width fixed.
+
+## Cover selection — historical references transposed — 12 September 2026
+
+After reviewing the 31 recovered historical CrazyPapers covers, the user identified 02, 07 and 08 as particularly strong, with additional useful directions in 13, 15, 16, 17/20, 23, 28 and 31. The retained qualities are bureaucratic submersion and physical crushing, ordinary non-glamorous workers, heavy-set or older bodies, exhaustion, and empty or unstable gazes. Historical logos from 13 and 23 were explicitly not retained; new title treatments must remain strong and authored.
+
+Four new static sources were produced by crossing those qualities with the validated TetraMindFck cover grammars without copying Tetra motifs or compositions. The user retained the first three at concept and cover-source level:
+
+1. `historical-inspired-a-pulp-clerk` — retained; grotesque European pulp clerk, derived from the roles of historical 02/28 and the validated pulp grammar;
+2. `historical-inspired-b-constructivist-clerk` — retained; monumental paper architecture and older clerk, derived from historical 15/23 and the validated graphic-poster grammar;
+3. `historical-inspired-c-showa-paper-wave` — retained; nervous Shōwa paper tsunami and older office worker, derived from historical 13/16 and the validated Japanese grammar;
+4. `historical-inspired-d-micro-machine` — not retained in this lot, although positively assessed; keep archived as research only.
+
+This decision approves the three exact source images and their artistic directions. Their `390 × 844` masters, Core-overlay clearance, static runtime derivatives and in-app crop behavior are now certified with the rest of the six-cover collection. Preserve the retained originals unchanged; rebuild derivatives from them rather than regenerating them.
+
+The current CrazyPapers cover collection therefore contains **six user-validated source images**: the earlier `pulp`, `micro` and `graphic` sources, plus the historical-inspired `pulp-clerk`, `constructivist-clerk` and `showa-paper-wave` sources. They are the six canonical static Core covers. The two unselected fourth images remain research only and are not silently promoted into the collection.
 
 ## Palette
 

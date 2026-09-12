@@ -14,6 +14,7 @@ import {
 import type { GameComment, GameSocialStats } from './social'
 import type { GameFinishPayload, GameLeaderboardPeriod, InstagameDefinition } from './types'
 import { PlatformCoverShell, formatSocialCount, type PlatformPanel } from './PlatformCoverShell'
+import { CoinConsole90s } from './CoinConsole90s'
 import { gameCoinCost, useCoreCoinBalance } from './platformEconomy'
 import { readWelcomeBestScore, recordWelcomeBestScore } from './welcomeProgress'
 
@@ -336,6 +337,7 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
             nickname={nickname}
             commentText={commentText}
             launchError={launchError}
+            showCoinConsole={false}
             onPanel={setPanel}
             onClosePanel={() => setPanel(null)}
             onToggleLove={() => void toggleLove()}
@@ -350,6 +352,18 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
             onSelectCover={() => {}}
           />
         </div>
+      )}
+
+      {(phase === 'cover' || phase === 'launching') && active && panel === null && (
+        <CoinConsole90s
+          fixed
+          coins={coins}
+          cost={cost}
+          free={game.status === 'trash'}
+          launchError={launchError}
+          onPlay={play}
+          onChangeGame={changeGame}
+        />
       )}
 
       {phase === 'playing' && !finished && (

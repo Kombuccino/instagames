@@ -1,6 +1,7 @@
 import type { InstagameDefinition } from '../../core/types'
-import { STANDARD_FEATURES, placeholderWelcome } from '../../core/gameDefinitionDefaults'
+import { STANDARD_FEATURES } from '../../core/gameDefinitionDefaults'
 import { CrazyPapers } from './CrazyPapers'
+import { CRAZY_PAPERS_WELCOME } from './welcome'
 
 /** Game-owned catalog data. Core only assembles these definitions. */
 export const gameDefinition: InstagameDefinition = {
@@ -16,13 +17,13 @@ export const gameDefinition: InstagameDefinition = {
     state: 'in-progress',
     targetRuntime: 'phaser-2d',
     locked: true,
-    cover: 'update-required',
+    cover: 'current',
   },
-  welcome: placeholderWelcome('crazy-papers'),
+  welcome: CRAZY_PAPERS_WELCOME,
   component: CrazyPapers,
   release: {
-    version: '0.4.1',
-    updatedAt: '2026-09-12T23:14:00+02:00',
+    version: '0.5.0',
+    updatedAt: '2026-09-12T23:25:00+02:00',
     changelogPath: 'src/games/crazy-papers/CHANGELOG.md',
   },
   instructions: {

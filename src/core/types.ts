@@ -23,49 +23,6 @@ export type GameMigrationConfig = {
   cover: CoverMigrationState
 }
 
-export type GameWelcomeLayerRole = 'background' | 'midground' | 'foreground' | 'overlay'
-export type GameWelcomeMotionType = 'none' | 'float' | 'vibrate' | 'breathe' | 'drift' | 'sway'
-
-export type GameWelcomeMotion = {
-  type: GameWelcomeMotionType
-  /** Multiplier around 1.0. Higher values animate faster. */
-  speed?: number
-  /** Motion amplitude in logical cover pixels. */
-  intensity?: number
-  /** Direction in degrees for directional presets such as drift/float. */
-  direction?: number
-  /** 0..1. Used mostly by vibrate to make the motion less mechanical. */
-  irregularity?: number
-}
-
-export type GameWelcomeLayerFx = {
-  /** Legacy cover-interpreter blur radius. */
-  blur?: number
-  /** Legacy cover-interpreter glow radius. 0 disables it. */
-  glow?: number
-}
-
-export type GameWelcomeLayer = {
-  /** Repository-served raster asset. Production layers must come through the Drive asset pipeline. */
-  image: string
-  /** Controls movement depth and default stacking. */
-  role: GameWelcomeLayerRole
-  objectPosition?: string
-  /** Layer scale in percent. 100 means the authored canvas size. */
-  scale?: number
-  /** Translation within the canonical cover, in percentages of its logical size. */
-  x?: number
-  y?: number
-  rotation?: number
-  /** 0..100 */
-  opacity?: number
-  /** Pointer parallax amplitude in logical cover pixels. */
-  parallaxX?: number
-  parallaxY?: number
-  motion?: GameWelcomeMotion
-  fx?: GameWelcomeLayerFx
-}
-
 export type GameWelcomeVariant = {
   id: string
   label: string
@@ -74,9 +31,8 @@ export type GameWelcomeVariant = {
   objectPosition?: string
   /** Preserve an uncroppable flat master/title; Core fills the outside with decorative overscan. */
   fit?: 'cover' | 'contain'
-  /** Static covers stay in Core; advanced layered covers use the shared Phaser scene. */
-  runtime?: 'static' | 'phaser-2d'
-  layers?: GameWelcomeLayer[]
+  /** Covers are static raster art rendered by Core. */
+  runtime?: 'static'
 }
 
 export type GameWelcomeConfig = {

@@ -32,7 +32,7 @@ Engine migration state and cover migration state are independent. A game may be 
 | 1 | LineFugg | **current Phaser 2D pilot** | Phaser 2D | fixed logical geometry and lifecycle established; host scaling must adopt width-first mobile / CENTRE-height PC during the blockout-led platform pass |
 | 2 | Les Brochettes de Vlad | legacy DOM/CSS | Phaser 2D | sprite-count/performance pressure + major visual polish pass |
 | 3 | Train Fighter | legacy DOM/CSS | Phaser 2D | sprite-heavy scrolling/action game; imported raster assets ready to exploit |
-| 4 | TetraMindFck | legacy DOM/CSS | Phaser 2D | mobile/desktop geometry drift + current legacy cover/parallax pilot |
+| 4 | TetraMindFck | **Phaser 2D migration in progress** | Phaser 2D | representative gameplay validation and legacy renderer cleanup remain |
 | 5 | Shoot the Shooter | legacy DOM/CSS | Phaser 2D | timing/hit-testing/input consistency across screen sizes |
 | 6 | DebthOfLife | legacy DOM/CSS | Phaser 2D | runner architecture naturally fits an engine scene/camera |
 | 7 | CrazyPapers | **Phaser 2D migration in progress** | Phaser 2D | renderer migrated and hybrid paper-pressure system integrated; build green, interactive geometry/input validation still required before unlock |
@@ -76,9 +76,9 @@ Reuse these primitives for the next migrations, extending the shared host only w
 
 The approved target is one static raster cover path rendered by React Core. Do not create new animated covers.
 
-TetraMindFck currently has two layered variants using `PhaserCoverHost` and one Core raster variant. This describes the running implementation only: the animated variants are legacy and must receive static replacements before `PhaserCoverHost` and its layer data are removed.
+TetraMindFck established the completed cutover pattern: validate static replacements, point every variant to Core raster art, then remove `PhaserCoverHost`, layer-only types and superseded layer assets in the same cleanup.
 
-Legacy CSS parallax, `FuggWelcome`, the former Parallax Lab and animated Phaser cover code are migration sources, not foundations to extend. Git history remains the archive after cutover.
+Legacy CSS parallax, `FuggWelcome`, the former Parallax Lab and animated Phaser cover code remain migration history, not foundations to restore or extend. Git history is the archive after cutover.
 
 The platform-wide layout redesign is blockout-first: validate Home, Cover, Game, GameOver and Ladder templates on mobile browser, installed app and desktop before applying broad migrations to production scenes.
 

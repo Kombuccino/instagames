@@ -81,7 +81,7 @@ Use Phaser for:
 
 The Phaser world keeps fixed logical geometry. The host applies the MiniFugg width-first mobile / CENTRE-height desktop camera and crop contract without mutating gameplay coordinates. A universal `FIT` that shrinks the 390-wide game on short mobile viewports is legacy behavior to replace.
 
-All new covers are static raster art displayed by Core. Existing `PhaserCoverHost` covers may run only until a validated static replacement is active; then remove their layers and runtime code.
+All covers are static raster art displayed by Core. The former `PhaserCoverHost` and its animated TetraMindFck layers were removed after validated static replacements became active; do not reintroduce a cover engine.
 
 ### 4.1 Shared Phaser host pattern
 

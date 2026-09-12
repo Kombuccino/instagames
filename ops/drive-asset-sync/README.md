@@ -121,16 +121,9 @@ The current original home image should ultimately be imported as:
 
 `public/assets/imported/minifugg-home-original.png`
 
-## Welcome parallax bundles
+## Welcome cover assets
 
-A Fugg welcome cover that uses parallax should be treated as a small asset bundle, not as one flat image plus CSS-drawn decorations. Keep a flat poster/master for reference and generate aligned raster layers such as:
-
-- background/environment;
-- midground burst/objects;
-- foreground character or hero object;
-- title/logo/CTA overlay.
-
-Transparent layers keep PNG masters and normally use WebP lossless runtime derivatives. Large static art may use AVIF with a WebP/PNG fallback after target validation. All files still enter through the same private `Fugg` Drive inbox and are verified under `public/assets/imported/` before the code references them.
+Fugg covers are static raster art rendered by Core. Keep one approved lossless master and a measured WebP lossless runtime derivative; AVIF may be added only after target validation with a WebP/PNG fallback. Do not create parallax bundles or bake Core CTA/controls into the image. Assets entering through ChatGPT's private `Fugg` Drive inbox are verified under `public/assets/imported/` before code references them; Codex-local production follows the direct `public/assets/generated/` route in `docs/ASSET_PIPELINE.md`.
 
 ## Security model
 

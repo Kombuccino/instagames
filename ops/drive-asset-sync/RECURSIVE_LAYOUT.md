@@ -4,11 +4,11 @@ The importer mirrors the hierarchy below the private Drive folder `Fugg` into `p
 
 Example:
 
-`Fugg/tetramindfck/welcome/parallax/v1/bg.webp`
+`Fugg/tetramindfck/welcome/variants/v1-pulp-euro.webp`
 
 becomes:
 
-`public/assets/imported/tetramindfck/welcome/parallax/v1/bg.webp`
+`public/assets/imported/tetramindfck/welcome/variants/v1-pulp-euro.webp`
 
 Game `concepts/` folders are mirrored by the same rule, but application runtime must not reference flattened concept/mockup files unless they are explicitly production assets.
 

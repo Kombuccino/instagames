@@ -48,7 +48,7 @@ Phaser explicitly publishes these files for AI coding agents. The Phaser reposit
 
 ## Why MiniFugg vendors them
 
-Phaser 4 is the canonical runtime for MiniFugg 2D gameplay. Covers are now static Core raster art; the existing Phaser cover host is legacy migration code. The project deliberately avoids relying only on an agent's generic memory of Phaser because:
+Phaser 4 is the canonical runtime for MiniFugg 2D gameplay. Covers are static Core raster art; the former Phaser cover host is retained only in Git history. The project deliberately avoids relying only on an agent's generic memory of Phaser because:
 
 - Phaser 4 differs materially from Phaser 3;
 - the renderer, filters and several APIs changed;

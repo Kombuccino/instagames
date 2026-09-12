@@ -2,7 +2,7 @@
 
 Reusable visual-language catalog for MiniFugg welcome covers, posters, home concepts and other promotional mockups.
 
-This document describes **art direction**, not implementation. For the collectible cover product rules, unlocks and motion contract, read `docs/WELCOME_ILLUSTRATIONS.md`. For image storage/import, read `docs/ASSET_PIPELINE.md`. For layer tuning, read `docs/PARALLAX_LAB.md`.
+This document describes **art direction**, not implementation. For the collectible cover product rules and unlocks, read `docs/WELCOME_ILLUSTRATIONS.md`. For image storage/import, read `docs/ASSET_PIPELINE.md`. `docs/PARALLAX_LAB.md` documents the retired layered-cover experiment only.
 
 The goal is that a future conversation, illustrator or image model can read this file alone and recover the visual vocabulary developed during the TetraMindFck pilot without falling back to generic AI art.
 

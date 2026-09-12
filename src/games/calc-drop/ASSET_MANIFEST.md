@@ -20,7 +20,7 @@ The three imported flat posters remain the approved visual references. Generated
 - `graphic-poster`: only the narrow perimeter is corrected; interior paper grain and the existing lower-body ending are retained while the distressed border/corners are removed.
 - PNG masters and sources are opaque, single-frame and technically decoded. Runtime WebPs are opaque, single-frame and use a `VP8L` lossless payload.
 - Build and nine browser cases passed: `360 × 611`, `390 × 844` and `1280 × 720` across all three variants, with no cover canvas/Phaser host or console error.
-- Phaser layer bundles under `public/assets/imported/tetramindfck/welcome/parallax/` are superseded legacy assets. Remove them with the shared animated-cover runtime now that the static set is accepted.
+- The superseded Phaser layer bundles and shared animated-cover runtime were removed after acceptance. Git history preserves the experiment; production contains only the static set.
 
 ## Japanese edition reference recovered — 2026-09-12
 

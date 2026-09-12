@@ -1,5 +1,13 @@
 # TetraMindFck — Changelog
 
+## 0.5.0 — 2026-09-12
+
+- Mise en production des trois covers statiques validées : pulp européen, boîte micro 90s et affiche graphique.
+- Conservation des compositions d'origine, suppression de `SWIPE TO PLAY` et prolongement propre du bas pour le recadrage MiniFugg.
+- Retrait des faux cadres et coins abîmés ; la matière papier ou peinture interne reste intacte.
+- Suppression du runtime Phaser des covers animées et de leurs anciens calques.
+- La quatrième direction japonaise est retrouvée comme référence, mais reste hors production tant que son master autonome manque.
+
 ## 0.4.0 — 2026-09-10
 
 - Migration du gameplay vers une scène Phaser 4 en stage logique fixe `390 × 844`.

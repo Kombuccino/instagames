@@ -293,7 +293,7 @@ As of this handoff:
 | **LineFugg** | **Phaser 2D — current** | first canonical Phaser migration pilot; gameplay unlocked; cover still A METTRE A JOUR |
 | Les Brochettes de Vlad | legacy DOM/CSS | locked until Phaser migration; sprite/performance + visual quality are major reasons |
 | Train Fighter | legacy DOM/CSS | locked; strong candidate for sprite-heavy Phaser migration |
-| TetraMindFck | legacy DOM/CSS | locked; geometry drift + legacy premium layered cover |
+| TetraMindFck | Phaser 2D migration in progress | gameplay validation/legacy renderer cleanup remain; three static covers are current |
 | Shoot the Shooter | legacy DOM/CSS | locked; input/hit-testing consistency issues |
 | DebthOfLife | legacy DOM/CSS | locked; runner architecture naturally fits Phaser |
 | CrazyPapers | legacy DOM/CSS | locked; document-heavy mechanic but target runtime remains Phaser for catalog consistency |
@@ -477,7 +477,7 @@ Read `docs/WELCOME_ILLUSTRATIONS.md`.
 
 ## 12.1 TetraMindFck is the premium cover migration reference
 
-TetraMindFck contains the most advanced legacy layered/parallax cover work and is considered valuable reference material.
+TetraMindFck contained the most advanced legacy layered/parallax cover work and remains valuable historical reference material.
 
 Do **not** throw this work away merely because the renderer is legacy.
 
@@ -495,7 +495,7 @@ However, the old `FuggWelcome` / Parallax Lab / CSS-layer renderer is **not** th
 
 Read `docs/PARALLAX_LAB.md`.
 
-The approved target from 8 September 2026 is one static cover path: normal raster art rendered by React Core. Do not create new animated covers. TetraMindFck's current Phaser layers and older CSS parallax are legacy; replace them with validated static covers, then remove their runtime code.
+The approved target from 8 September 2026 is one static cover path: normal raster art rendered by React Core. Do not create new animated covers. TetraMindFck completed this cutover on 12 September 2026 with three validated static covers; its Phaser cover runtime and old layer assets were removed. Git history preserves the former experiment.
 
 ## 12.2 “Open the game box” transition
 

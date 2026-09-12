@@ -37,7 +37,7 @@ The Japanese direction has been recovered in `GFX/crea-chatgpt/game/ChatGPT Imag
 
 ## Static cover migration
 
-TetraMindFck covers are static raster art rendered by Core. The former layer bundles are legacy migration sources only. For `pulp-euro` and `micro-euro`, use the exact approved flat poster rather than rebuilding or flattening the animated layer stack. Keep legacy files only until the static pilot is accepted, then remove their runtime and unused layers in the same cleanup.
+TetraMindFck covers are static raster art rendered by Core. The former animated layer bundles and runtime were removed after the three static editions were accepted. For `pulp-euro` and `micro-euro`, the exact approved flat poster remains the authority rather than any reconstruction from the old layer stack.
 
 ## Interaction
 

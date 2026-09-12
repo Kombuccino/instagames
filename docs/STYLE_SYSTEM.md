@@ -97,7 +97,7 @@ Artwork should be delivered in forms that preserve flexibility inside the engine
 
 - important independent moving objects should normally be separate assets/sprites;
 - backgrounds may be larger than the canonical stage when overscan is useful;
-- layered covers should keep independently animated subjects/layers separate;
+- static cover masters should remain self-contained and free of baked Core controls;
 - avoid baking controls or mutable UI text into gameplay art unless explicitly intended;
 - preserve source resolution and originals unless optimization is explicitly requested.
 

@@ -6,7 +6,7 @@ Before a cover pass, follow [GAME_CREATION_PIPELINE.md](GAME_CREATION_PIPELINE.m
 
 ## Current migration status
 
-TetraMindFck's layered cover variants currently run in the shared Phaser cover scene. This is the running state, not the approved target: all covers are moving to static Core raster art. Other catalog covers remain **A METTRE A JOUR** until their registry state is `current`.
+TetraMindFck's three validated covers now run as static Core raster art. The former Phaser cover host and TetraMindFck layer bundles were retired with this cutover. Other catalog covers remain **A METTRE A JOUR** until their registry state is `current`.
 
 The registry tracks this with `migration.cover`. Until a game's cover state is `current`, the cover is considered transitional even when the current artwork itself is useful/beautiful.
 
@@ -34,11 +34,11 @@ A normal authored raster image may be rendered directly by React Core. Do not in
 
 Do not create new animated covers. Existing Phaser or CSS layered covers remain only until an approved static replacement is available. Preserve their current output during transition, then delete the runtime and layer data no longer referenced.
 
-## 3. Existing legacy cover system
+## 3. Retired legacy cover systems
 
-The retired `FuggWelcome`, `ParallaxLab` and `welcomeTuning` implementation remains available in Git history as migration reference. TetraMindFck's preserved layer data currently drives the shared Phaser cover scene.
+The retired `FuggWelcome`, `ParallaxLab`, `welcomeTuning` and shared Phaser cover implementation remain available in Git history as migration references. No animated cover runtime remains in production.
 
-No new capability is added to either legacy cover runtime.
+Do not restore or replace these systems with another animated cover runtime.
 
 ## 4. Visual composition is canonical
 

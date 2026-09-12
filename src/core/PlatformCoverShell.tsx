@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointer
 import type { GameComment, GameSocialStats } from './social'
 import type { InstagameDefinition } from './types'
 import { PLATFORM_ALPHA_POLICY } from './platformAlphaPolicy'
-import { PhaserCoverHost } from './runtime/PhaserCoverHost'
 import { StaticCoverArt } from './StaticCoverArt'
 import './platformCover.css'
 
@@ -156,7 +155,7 @@ function CommentCard({ thread, depth = 0, reportedId, onReport }: { thread: Comm
 
 export function PlatformCoverShell(props: Props) {
   const {
-    game, catalog, active, seed, coins, cost, social, comments, bestScore, panel, nickname, commentText, launchError,
+    game, catalog, seed, coins, cost, social, comments, bestScore, panel, nickname, commentText, launchError,
     onPanel, onClosePanel, onToggleLove, onToggleBookmark, onPlay, onChangeGame, onShare,
     onNicknameChange, onCommentTextChange, onPostComment, onOpenLeaderboard, onSelectCover,
   } = props
@@ -210,13 +209,6 @@ export function PlatformCoverShell(props: Props) {
       {activeCover?.image && (
         <div className="mf-core-selected-cover">
           <StaticCoverArt variant={activeCover} />
-          {active && activeCover.runtime === 'phaser-2d' && activeCover.layers?.length ? (
-            <PhaserCoverHost
-              active={!panel}
-              variant={activeCover}
-              ariaLabel={`${game.title} — ${activeCover.label}`}
-            />
-          ) : null}
         </div>
       )}
       <div className="mf-coin-balance" aria-label={`${coins} coins`}><PixelCoin /><strong>{formatSocialCount(coins)}</strong></div>

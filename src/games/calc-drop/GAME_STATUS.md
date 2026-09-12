@@ -48,4 +48,4 @@ Gameplay migration + GD refinement.
 - Build passed. Browser validation passed for all three static editions at `360 × 611`, full MASTER `390 × 844` and PC `1280 × 720`: runtime assets decode at `780 × 1688`, zero animated-cover canvas/host, zero console errors, title clear above the overlapping Core JOUER button.
 - User validation: all three corrected covers explicitly accepted on 2026-09-12; the distinct pulp, micro-computer and graphic-poster character must be preserved as the quality reference for later cover work.
 - The missing Japanese direction was recovered in `GFX/crea-chatgpt/game/ChatGPT Image 5 sept. 2026, 19_27_48 (1).png`, variant 4. No standalone full-resolution original was found, so it remains a reference candidate rather than a production fourth cover.
-- Production cutover authorized: remove the inactive Phaser cover runtime and superseded layer files, then publish the static set through Core.
+- Production cutover complete in the delivery branch: Core uses the three static covers, and the inactive Phaser cover runtime plus superseded TetraMindFck layer files are removed.

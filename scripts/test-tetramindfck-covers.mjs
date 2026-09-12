@@ -80,6 +80,7 @@ try {
     const card = page.locator('.game-card[aria-label="TetraMindFck"]').first()
     const shell = card.locator('.mf-cover-shell')
     const art = shell.locator('.mf-core-selected-cover > img')
+    const fixedControls = page.locator('.mf-coin-console-system')
     const click = locator => format.hasTouch ? locator.tap() : locator.click()
     await art.waitFor({ state: 'visible' })
 
@@ -121,7 +122,7 @@ try {
       assert.equal(await shell.getAttribute('data-cover-migration'), 'current')
       assert.equal(await shell.locator('canvas').count(), 0)
 
-      const playBox = await shell.locator('.mf-coin-console-90s').boundingBox()
+      const playBox = await fixedControls.locator('.mf-coin-console-90s').boundingBox()
       const coverBox = await art.boundingBox()
       assert.ok(playBox && coverBox && playBox.y > coverBox.y + coverBox.height * 0.72,
         'JOUER must overlap only the expendable lower cover zone')
@@ -135,15 +136,16 @@ try {
     await page.waitForTimeout(250)
     assert.equal(await art.getAttribute('src'), first, 'Static cover selection must not rotate on a timer')
 
-    const consoleBox = await shell.locator('.mf-coin-console-90s').boundingBox()
+    const consoleBox = await fixedControls.locator('.mf-coin-console-90s').boundingBox()
     assert.ok(consoleBox, 'coin console must be visible')
+    assert.equal(await fixedControls.getAttribute('class'), 'mf-coin-console-system is-fixed')
     const expectedControls = [
-      ['.mf-console-nav.is-prev', .0691, .1442, .2049, .3146],
-      ['.mf-console-nav.is-next', .0691, .5037, .2049, .3146],
-      ['.mf-console-play', .3368, .1161, .3030, .7079],
+      ['.mf-console-nav.is-prev', .0705, .1854, .1968, .2959],
+      ['.mf-console-nav.is-next', .0705, .5056, .1968, .2959],
+      ['.mf-console-play', .3349, .1442, .3249, .6910],
     ]
     for (const [selector, x, y, width, height] of expectedControls) {
-      const box = await shell.locator(selector).boundingBox()
+      const box = await fixedControls.locator(selector).boundingBox()
       assert.ok(box, `${selector} must be visible`)
       const actual = [
         (box.x - consoleBox.x) / consoleBox.width,
@@ -157,9 +159,31 @@ try {
       }
     }
 
-    const play = shell.locator('.mf-console-play')
+    const counter = fixedControls.locator('.mf-coin-balance-90s')
+    const counterBeforeScroll = await counter.boundingBox()
+    const consoleBeforeScroll = await fixedControls.locator('.mf-coin-console-90s').boundingBox()
+    const coverBeforeScroll = await shell.boundingBox()
+    await click(fixedControls.getByRole('button', { name: 'Next game', exact: true }))
+    await page.waitForTimeout(90)
+    const scrollTop = await page.locator('.game-feed').evaluate(element => element.scrollTop)
+    const consoleDuringScroll = await fixedControls.locator('.mf-coin-console-90s').boundingBox()
+    const counterDuringScroll = await counter.boundingBox()
+    const coverDuringScroll = await shell.boundingBox()
+    assert.ok(scrollTop > 0, 'the next-game control must move the cover feed')
+    assert.ok(Math.abs(coverBeforeScroll.y - coverDuringScroll.y) > 1, 'the cover must slide below the fixed controls')
+    for (const key of ['x', 'y', 'width', 'height']) {
+      assert.ok(Math.abs(consoleBeforeScroll[key] - consoleDuringScroll[key]) < .1, `console ${key} must stay fixed while covers slide`)
+      assert.ok(Math.abs(counterBeforeScroll[key] - counterDuringScroll[key]) < .1, `coin counter ${key} must stay fixed while covers slide`)
+    }
+    const scrollingPath = `${output}/${format.name}-cover-scroll-fixed.png`
+    await page.screenshot({ path: scrollingPath })
+    report.screenshots.push(scrollingPath)
+    await page.locator('.game-feed').evaluate(element => element.scrollTo({ top: 0, behavior: 'auto' }))
+    await page.waitForTimeout(160)
+    assert.equal(await page.locator('.mf-coin-console-system').count(), 1, 'only the active fixed control layer may exist')
+
+    const play = fixedControls.locator('.mf-console-play')
     const atlas = play.locator('.mf-console-play-atlas')
-    const counter = shell.locator('.mf-coin-balance-90s')
     assert.equal(await play.locator('img').count(), 0, 'PLAY must not swap independent image elements')
     assert.equal(await atlas.count(), 1, 'PLAY must use one fixed atlas layer')
     assert.match(await atlas.evaluate(element => getComputedStyle(element).backgroundImage), /play-states-atlas\.webp/)
@@ -192,6 +216,7 @@ try {
       consoleControlsAligned: true,
       normalizedPlayAtlas: true,
       playAndCounterStationary: true,
+      fixedControlsDuringCoverScroll: true,
       noAnimatedCoverRuntime: true,
     })
     await context.close()

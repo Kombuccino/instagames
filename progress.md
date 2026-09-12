@@ -1,5 +1,7 @@
 Original prompt: Mettre à jour LineFugg pour rendre les GFX conformes à la DA approuvée, optimiser et utiliser Phaser pour une réalisation plus animée, en préservant le prototype, le GD et l'équilibrage validés.
 
+2026-09-12 — Correction d’après capture utilisateur LineFugg : PREV/NEXT et PLAY sont recentrés sur les cavités réellement visibles du châssis, au lieu des rectangles opaques des assets. Dans le feed principal, MONNAIE et JOUER sont désormais une couche Core fixe unique ; les covers et leur rail défilent dessous. Les positions restent identiques au repos, pendant le clic et au milieu d’un changement de cover sur A54 Brave, MASTER et PC. Le mode embarqué de Home bis est conservé séparément.
+
 2026-09-12 — Stabilisation du bouton PLAY et du compteur : les cinq rasters autonomes, dont les dessins internes n’étaient pas alignés, sont remplacés par un tileset horizontal normalisé. Ses quatre cellules repos/halo moyen/halo fort/appui ont exactement le même cadre ; l’animation ne déplace plus ni la boîte, ni le texte, ni le compteur, et seul l’intérieur du poussoir change d’état.
 
 2026-09-12 — Correctif d’alignement de la console Core : le conteneur suivait à tort un ratio `390/148` alors que le châssis réel mesure `2099 × 534`, et les états raster avaient des canevas différents. Le conteneur reprend le ratio réel ; PREV, NEXT et PLAY remplissent maintenant les logements mesurés du châssis avec une géométrie identique dans tous leurs états.

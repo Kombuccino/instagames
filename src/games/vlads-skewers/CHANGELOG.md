@@ -1,5 +1,12 @@
 # Les Brochettes de Vlad — Changelog
 
+## [0.4.1] — 2026-09-12 23:24 Europe/Paris
+
+- Les quinze clients sont recalés dans leurs loges : taille uniforme, léger retrait dans l'architecture et ligne de base commune à chaque tablette. Le client actif n'est plus agrandi au point de déborder de sa case.
+- La bave repart désormais du bord de la bouche avec un ancrage propre à chaque portrait, au lieu de flotter près de la tablette ou du visage.
+- La demande de brochette est resserrée : bulle `136 × 58`, icônes plus petites et rapprochées, broche horizontale adaptée au nombre d'ingrédients et petite horloge rapprochée sous la bulle.
+- Les aliments ne parlent plus au moment de l'embrochement : les impacts gardent seulement leur onomatopée. Une courte remarque discrète peut apparaître uniquement lorsqu'un aliment raté tombe sur le grill.
+
 ## [0.4.0] — 2026-09-12 12:46 Europe/Paris
 
 - Les cinq jaquettes approuvées disposent désormais d'un vrai cadre MiniFugg `390 × 844`, sans les bandes floues qui complétaient artificiellement les anciens masters.
@@ -36,7 +43,7 @@ Vérifié : formats, dimensions, opacité, payload lossless, build/typecheck, pu
 
 - La brochette est raccourcie beaucoup plus strictement : `110 / 150 / 190 / 230` unités pour des recettes de `2 / 3 / 4 / 5` ingrédients, avec une tige ramenée à `10` unités de largeur. Sa capacité visuelle correspond désormais réellement à la commande, sans place apparente pour un ou deux aliments supplémentaires.
 - Une recette complète reste visible et protégée pendant `1 s` avant la livraison automatique. Durant cette seconde, la pointe n'accepte plus aucune collision : aucun ingrédient supplémentaire ne peut ruiner accidentellement une brochette déjà validée.
-- La patience du client reçoit un minimum de sécurité pendant ce court temps de présentation afin qu'une recette terminée ne puisse pas expirer entre la validation et le départ.
+- La patience du client reçoit un minimum de sécurité pendant ce court temps de présentation afin qu'une recette terminée ne puisse pas expirer pendant le temps de présentation.
 - La goutte de sang est entièrement redessinée comme une grosse goutte pixel-art construite sur grille de `2 px`, avec contour sombre, masse rouge saturée et reflet clair ; les anciennes primitives lissées cercle/triangle sont supprimées.
 - Le harpon, la pile et le bras sont davantage quantifiés sur des coordonnées entières pour éviter les décalages subpixel et rapprocher la granularité des éléments procéduraux du reste de la scène.
 

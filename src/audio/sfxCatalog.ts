@@ -164,6 +164,22 @@ const commonSounds: SfxDefinition[] = [
       { type: 'noise', at: .02, duration: .08, filter: 'lowpass', frequency: 680, gain: .18 },
     ],
   },
+  {
+    id: 'MF-SFX-0017',
+    key: 'common.coinInsert',
+    event: 'land',
+    name: 'Arcade Coin Cling',
+    scope: 'common',
+    status: 'selected',
+    createdAt: '2026-09-12',
+    summary: 'Cling métallique bref du monnayeur Core, assez net pour ponctuer deux insertions successives.',
+    cooldownMs: 90,
+    steps: [
+      { type: 'noise', at: 0, duration: .035, filter: 'highpass', frequency: 4200, gain: .28 },
+      { type: 'tone', at: 0, duration: .075, fromHz: 1480, toHz: 1120, wave: 'triangle', gain: .55 },
+      { type: 'tone', at: .055, duration: .12, fromHz: 920, toHz: 670, wave: 'triangle', gain: .38 },
+    ],
+  },
 ]
 
 const tetraSounds: SfxDefinition[] = [

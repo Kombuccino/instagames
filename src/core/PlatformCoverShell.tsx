@@ -3,7 +3,9 @@ import type { GameComment, GameSocialStats } from './social'
 import type { InstagameDefinition } from './types'
 import { PLATFORM_ALPHA_POLICY } from './platformAlphaPolicy'
 import { StaticCoverArt } from './StaticCoverArt'
+import { CoinConsole90s } from './CoinConsole90s'
 import './platformCover.css'
+import './coinConsole90s.css'
 
 export type PlatformPanel = 'info' | 'comments' | null
 
@@ -26,7 +28,7 @@ type Props = {
   onToggleLove: () => void
   onToggleBookmark: () => void
   onPlay: () => void
-  onChangeGame: () => void
+  onChangeGame: (direction?: -1 | 1) => void
   onShare: () => void
   onNicknameChange: (value: string) => void
   onCommentTextChange: (value: string) => void
@@ -75,7 +77,7 @@ function Icon({ name, filled = false }: { name: IconName, filled?: boolean }) {
 }
 
 function PixelCoin({ small = false }: { small?: boolean }) {
-  return <span className={`mf-pixel-coin${small ? ' is-small' : ''}`} aria-hidden="true"><i /><b /></span>
+  return <img className={`mf-pixel-coin${small ? ' is-small' : ''}`} src="/assets/generated/platform/ui/coin-console-90s/coin-front.webp" alt="" aria-hidden="true" />
 }
 
 function coverVariants(game: InstagameDefinition) {
@@ -195,7 +197,6 @@ export function PlatformCoverShell(props: Props) {
     onSelectCover(variantId)
   }
 
-  const cta = game.status === 'trash' ? 'PLAY FREE' : `INSERT COIN x${cost}`
   const activeCover = variants.find((variant) => variant.id === activeVariantId)
 
   return (
@@ -211,7 +212,14 @@ export function PlatformCoverShell(props: Props) {
           <StaticCoverArt variant={activeCover} />
         </div>
       )}
-      <div className="mf-coin-balance" aria-label={`${coins} coins`}><PixelCoin /><strong>{formatSocialCount(coins)}</strong></div>
+      <CoinConsole90s
+        coins={coins}
+        cost={cost}
+        free={game.status === 'trash'}
+        launchError={launchError}
+        onPlay={onPlay}
+        onChangeGame={onChangeGame}
+      />
 
       <nav className="mf-cover-rail" aria-label="Game actions">
         <button type="button" onClick={() => onPanel('info')} aria-label="Info"><Icon name="info" /></button>
@@ -220,16 +228,6 @@ export function PlatformCoverShell(props: Props) {
         <button type="button" className={social.bookmarked ? 'is-bookmarked' : ''} onClick={onToggleBookmark} aria-label="Bookmark"><Icon name="bookmark" filled={social.bookmarked} /><small>{formatSocialCount(social.bookmarks)}</small></button>
         <button type="button" onClick={onShare} aria-label="Share"><Icon name="share" /></button>
       </nav>
-
-      <div className="mf-cover-bottom">
-        <button className="mf-change-game" type="button" onClick={onChangeGame}><span>⌃</span>CHANGE GAME</button>
-        <button className={`mf-insert-coin${game.status === 'trash' ? ' is-free' : ''}`} type="button" onClick={onPlay}>
-          <span>{cta}</span>
-          {game.status !== 'trash' && <span className={`mf-insert-coins is-${cost}`} aria-hidden="true">{Array.from({ length: cost }, (_, index) => <PixelCoin key={index} />)}</span>}
-          <b>&gt;&gt;</b>
-        </button>
-        {launchError && <p className="mf-launch-error mf-ui-meta">{launchError}</p>}
-      </div>
 
       {panel && (
         <section className="mf-platform-panel mf-ui-screen" role="dialog" aria-modal="true" aria-label={panel === 'info' ? 'Game information' : 'Comments'}>

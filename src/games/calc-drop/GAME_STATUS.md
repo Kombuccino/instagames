@@ -2,6 +2,13 @@
 
 Updated: 2026-09-12 Europe/Paris
 
+## Cover fit correction — 2026-09-12
+
+- User review found that the previously top-cropped PC display hid substantial parts of several approved characters once the larger Core coin console was integrated.
+- All four static editions now preserve their complete `390 × 844` poster in the wider PC `390 × 662` frame; `StaticCoverArt` supplies the diffused exterior fill.
+- The Core console itself spans the full frame width and no longer uses a 390 CSS-pixel cap on desktop.
+- Pulp, micro-computer, graphic-poster and Japanese editions were checked with the console; title and dominant face remain readable. Phone `390 × 844`, paid launch and return were also verified without console errors.
+
 ## Current phase
 
 Gameplay migration + GD refinement.

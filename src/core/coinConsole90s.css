@@ -1,0 +1,220 @@
+.mf-coin-console-system {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.mf-coin-balance-90s {
+  width: 28.72cqw;
+  height: 11.79cqw;
+  top: max(14px, env(safe-area-inset-top));
+  right: 4px;
+  display: block;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .55));
+  text-shadow: 0 2px 3px rgba(0, 0, 0, .9);
+}
+
+.mf-coin-balance-90s > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.mf-coin-balance-90s strong {
+  position: absolute;
+  left: 69.5%;
+  top: 50%;
+  width: 47%;
+  transform: translate(-50%, -52%);
+  color: #f6eed8;
+  font-family: Arial, sans-serif;
+  font-size: clamp(17px, 5.13cqw, 22px);
+  font-weight: 800;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.mf-coin-debit {
+  position: absolute;
+  left: 69%;
+  top: 95.65%;
+  color: #ffb436;
+  font-family: Arial, sans-serif;
+  font-size: clamp(15px, 4.36cqw, 19px);
+  font-weight: 900;
+  opacity: 0;
+  transform: translateX(-50%);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, .95), 0 0 8px rgba(255, 141, 20, .75);
+}
+
+.mf-coin-console-system:has(.mf-coin-console-90s.is-inserting) .mf-coin-debit.is-1 {
+  animation: mf-coin-debit-pop 360ms ease-out 440ms both;
+}
+
+.mf-coin-console-system:has(.mf-coin-console-90s.is-inserting) .mf-coin-debit.is-2 {
+  animation: mf-coin-debit-pop 360ms ease-out 800ms both;
+}
+
+.mf-coin-console-90s {
+  position: absolute;
+  left: 50%;
+  bottom: max(0px, env(safe-area-inset-bottom));
+  width: 100%;
+  height: auto;
+  aspect-ratio: 390 / 148;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.mf-coin-console-chassis {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 2;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  filter: drop-shadow(0 -3px 7px rgba(0, 0, 0, .34));
+}
+
+.mf-console-nav,
+.mf-console-play {
+  position: absolute;
+  z-index: 4;
+  display: block;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mf-console-nav:disabled,
+.mf-console-play:disabled { cursor: default; }
+
+.mf-console-nav img,
+.mf-console-play img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.mf-console-nav {
+  left: 7.4%;
+  width: 21.03%;
+  height: auto;
+  aspect-ratio: 82 / 38;
+}
+
+.mf-console-nav.is-prev { bottom: 44.59%; }
+.mf-console-nav.is-next { bottom: 12.84%; }
+.mf-console-nav .is-pressed { opacity: 0; }
+.mf-console-nav:active:not(:disabled) .is-idle { opacity: 0; }
+.mf-console-nav:active:not(:disabled) .is-pressed { opacity: 1; }
+
+.mf-console-play {
+  left: 35.13%;
+  bottom: 18.24%;
+  width: 28.7%;
+  height: auto;
+  aspect-ratio: 112 / 70;
+}
+
+.mf-console-play img { opacity: 0; }
+.mf-console-play .is-idle { opacity: 1; }
+.mf-console-play .is-glow-medium { animation: mf-play-glow-medium 2.2s ease-in-out infinite; }
+.mf-console-play .is-glow-peak { animation: mf-play-glow-peak 2.2s ease-in-out infinite; }
+.mf-console-play.is-pressed .is-idle,
+.mf-console-play.is-pressed .is-glow-medium,
+.mf-console-play.is-pressed .is-glow-peak { opacity: 0; animation: none; }
+.mf-console-play.is-pressed .is-pressed { opacity: 1; }
+.mf-console-play:focus-visible { outline: 2px solid #fff4b4; outline-offset: -9px; border-radius: 16px; }
+
+.mf-local-insert-coin {
+  position: absolute;
+  z-index: 3;
+  left: 77.5%;
+  top: 2.7%;
+  width: 8.72%;
+  height: auto;
+  aspect-ratio: 1;
+  opacity: 0;
+  transform: translate(0, 0) scale(1);
+  pointer-events: none;
+}
+
+.mf-local-insert-coin img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+}
+
+.mf-local-insert-coin .is-front { opacity: 1; }
+.mf-coin-console-90s.is-inserting .mf-local-insert-coin.is-1 { animation: mf-local-coin-travel 430ms cubic-bezier(.3, .02, .45, 1) 140ms both; }
+.mf-coin-console-90s.is-inserting .mf-local-insert-coin.is-2 { animation: mf-local-coin-travel 430ms cubic-bezier(.3, .02, .45, 1) 500ms both; }
+.mf-coin-console-90s.is-inserting .mf-local-insert-coin img.is-front { animation: mf-coin-front 430ms steps(1) both; }
+.mf-coin-console-90s.is-inserting .mf-local-insert-coin img.is-yaw-30 { animation: mf-coin-yaw-30 430ms steps(1) both; }
+.mf-coin-console-90s.is-inserting .mf-local-insert-coin img.is-yaw-65 { animation: mf-coin-yaw-65 430ms steps(1) both; }
+.mf-coin-console-90s.is-inserting .mf-local-insert-coin img.is-edge { animation: mf-coin-edge 430ms steps(1) both; }
+
+.mf-launch-error {
+  position: absolute;
+  left: 50%;
+  bottom: 142px;
+  width: min(320px, calc(100% - 36px));
+  margin: 0;
+  transform: translateX(-50%);
+  color: #ffcf62;
+  text-align: center;
+  letter-spacing: .06em;
+  text-shadow: 0 2px 5px #000;
+}
+
+@keyframes mf-play-glow-medium {
+  0%, 18%, 82%, 100% { opacity: 0; }
+  38%, 68% { opacity: 1; }
+}
+
+@keyframes mf-play-glow-peak {
+  0%, 39%, 65%, 100% { opacity: 0; }
+  50%, 56% { opacity: .92; }
+}
+
+@keyframes mf-local-coin-travel {
+  0% { opacity: 0; transform: translate(0, 0) scale(1); }
+  8% { opacity: 1; }
+  72% { opacity: 1; transform: translate(85.3%, 208.8%) scale(.94); }
+  100% { opacity: 0; transform: translate(102.9%, 267.6%) scale(.22); }
+}
+
+@keyframes mf-coin-front { 0%, 24% { opacity: 1; } 25%, 100% { opacity: 0; } }
+@keyframes mf-coin-yaw-30 { 0%, 24% { opacity: 0; } 25%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes mf-coin-yaw-65 { 0%, 49% { opacity: 0; } 50%, 73% { opacity: 1; } 74%, 100% { opacity: 0; } }
+@keyframes mf-coin-edge { 0%, 73% { opacity: 0; } 74%, 100% { opacity: 1; } }
+
+@keyframes mf-coin-debit-pop {
+  0% { opacity: 0; transform: translate(-50%, 1px) scale(.82); }
+  22% { opacity: 1; transform: translate(-50%, 4px) scale(1.08); }
+  68% { opacity: 1; transform: translate(-50%, 9px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, 16px) scale(.92); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mf-console-play .is-glow-medium,
+  .mf-console-play .is-glow-peak { animation: none; }
+  .mf-console-play .is-glow-medium { opacity: .55; }
+  .mf-coin-console-90s.is-inserting .mf-local-insert-coin,
+  .mf-coin-console-system:has(.mf-coin-console-90s.is-inserting) .mf-coin-debit { animation-duration: 1ms; }
+}

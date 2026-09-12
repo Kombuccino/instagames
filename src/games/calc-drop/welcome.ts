@@ -10,7 +10,7 @@ export const TETRAMINDFCK_WELCOME: GameWelcomeConfig = {
       image: '/assets/generated/tetramindfck/welcome/variants/runtime/v1-pulp-euro.webp',
       unlockScore: 0,
       runtime: 'static',
-      fit: 'cover',
+      fit: 'contain',
       objectPosition: 'top center',
     },
     {
@@ -19,7 +19,7 @@ export const TETRAMINDFCK_WELCOME: GameWelcomeConfig = {
       image: '/assets/generated/tetramindfck/welcome/variants/runtime/v2-micro-euro.webp',
       unlockScore: 5_000,
       runtime: 'static',
-      fit: 'cover',
+      fit: 'contain',
       objectPosition: 'top center',
     },
     {
@@ -28,7 +28,7 @@ export const TETRAMINDFCK_WELCOME: GameWelcomeConfig = {
       image: '/assets/generated/tetramindfck/welcome/variants/runtime/v3-graphic-poster.webp',
       unlockScore: 15_000,
       runtime: 'static',
-      fit: 'cover',
+      fit: 'contain',
       objectPosition: 'top center',
     },
     {
@@ -37,7 +37,7 @@ export const TETRAMINDFCK_WELCOME: GameWelcomeConfig = {
       image: '/assets/generated/tetramindfck/welcome/variants/runtime/v4-japanese-edition.webp',
       unlockScore: 30_000,
       runtime: 'static',
-      fit: 'cover',
+      fit: 'contain',
       objectPosition: 'top center',
     },
   ],

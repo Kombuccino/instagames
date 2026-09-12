@@ -86,18 +86,6 @@ function CloseIcon() {
   )
 }
 
-function ReturnToCoverIcon() {
-  return (
-    <svg className="mf-platform-icon mf-platform-icon-return-cover" viewBox="0 0 24 24" aria-hidden="true" fill="none">
-      <g transform="translate(-6.6 -6.6) scale(1.55)">
-        <path d="M5 4.5h11.5a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5V4.5Z" />
-        <path d="M15.5 7v10" />
-        <path d="m9 8.5 3.5 3.5L9 15.5" />
-      </g>
-    </svg>
-  )
-}
-
 export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntimeProps) {
   const rootRef = useRef<HTMLElement>(null)
   const launchTimerRef = useRef<number | null>(null)
@@ -288,10 +276,10 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
     await refreshSocial()
   }, [commentText, game.id, nickname, refreshSocial])
 
-  const changeGame = useCallback(() => {
+  const changeGame = useCallback((direction: -1 | 1 = 1) => {
     const slot = rootRef.current?.closest<HTMLElement>('.game-slot')
-    const next = slot?.nextElementSibling as HTMLElement | null
-    if (next) next.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    const target = (direction < 0 ? slot?.previousElementSibling : slot?.nextElementSibling) as HTMLElement | null
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }, [])
 
   const share = useCallback(async () => {
@@ -365,7 +353,11 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
       )}
 
       {phase === 'playing' && !finished && (
-        <button type="button" className="mf-game-close-box mf-ui-icon-action" onClick={closeGame} aria-label="Return to cover"><ReturnToCoverIcon /></button>
+        <button type="button" className="mf-game-close-box" onClick={closeGame} aria-label="Exit game and return to cover">
+          <img className="is-idle" src="/assets/generated/platform/ui/coin-console-90s/return-exit-idle.webp" alt="EXIT" />
+          <img className="is-focus" src="/assets/generated/platform/ui/coin-console-90s/return-exit-focus.webp" alt="" />
+          <img className="is-pressed" src="/assets/generated/platform/ui/coin-console-90s/return-exit-pressed.webp" alt="" />
+        </button>
       )}
 
       {leaderboardOpen && (

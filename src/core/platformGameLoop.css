@@ -10,7 +10,10 @@
   left: max(8px, calc(env(safe-area-inset-left, 0px) + 6px));
   width: clamp(48px, min(12.3077cqw, 7.2508cqh), 72px);
   height: clamp(48px, min(12.3077cqw, 7.2508cqh), 72px);
-  opacity: .82;
+  padding: 0;
+  border: 0;
+  opacity: .92;
+  background: transparent;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .55));
@@ -22,13 +25,28 @@
   opacity: 1;
 }
 
-.mf-game-close-box:active { transform: scale(.93); }
+.mf-game-close-box:active { transform: translateY(2px) scale(.97); }
 
-.mf-game-close-box .mf-platform-icon-return-cover {
+.mf-game-close-box img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  stroke-width: 1.8;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .36));
+  user-select: none;
+  -webkit-user-drag: none;
 }
+
+.mf-game-close-box img.is-focus,
+.mf-game-close-box img.is-pressed { opacity: 0; }
+.mf-game-close-box:hover img.is-idle,
+.mf-game-close-box:focus-visible img.is-idle { opacity: 0; }
+.mf-game-close-box:hover img.is-focus,
+.mf-game-close-box:focus-visible img.is-focus { opacity: 1; }
+.mf-game-close-box:active img.is-idle,
+.mf-game-close-box:active img.is-focus { opacity: 0; }
+.mf-game-close-box:active img.is-pressed { opacity: 1; }
 
 .game-feed:has(.game-card[data-phase='playing']) {
   overflow-y: hidden;

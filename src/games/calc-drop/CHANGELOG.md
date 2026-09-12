@@ -1,5 +1,10 @@
 # TetraMindFck — Changelog
 
+## 0.6.1 — 2026-09-12 21:17 Europe/Paris
+
+- Conservation intégrale des quatre affiches statiques sur les cadres PC plus larges, avec prolongement diffus à l’extérieur du master.
+- Le titre et le personnage principal restent lisibles au-dessus de la nouvelle console Core pleine largeur.
+
 ## 0.6.0 — 2026-09-12 18:56 Europe/Paris
 
 - Ajout de l’édition japonaise validée à la collection de covers statiques.

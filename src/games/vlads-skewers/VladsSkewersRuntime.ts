@@ -7,6 +7,8 @@ const SKEWER_WIDTH = 10
 const OFFSCREEN_SPAWN_SHIFT = 240
 const ARM_SPRITE_Y_OFFSET = 24
 const COMPLETED_HOLD_MS = 1000
+const STACK_GAP = 43
+const GUARD_STACK_CLEARANCE = 38
 
 type RuntimeCustomer = {
   order: unknown[]
@@ -15,7 +17,13 @@ type RuntimeCustomer = {
 
 type RuntimeStackItem = {
   baseRotation: number
+  entryOffsetX: number
   entryOffsetY: number
+  entryAge: number
+  pushOffsetY: number
+  pushVelocityY: number
+  pierceLocalX: number
+  pierceLocalY: number
   visual: {
     root: Phaser.GameObjects.Container
   }
@@ -42,9 +50,6 @@ type RuntimeInternals = {
 type ImageFactory = (...args: any[]) => Phaser.GameObjects.Image
 
 function skewerHeightForRecipe(count: number) {
-  // The final body centre sits at 54 + 43*(n-1) from the tip in the canonical
-  // scene. These lengths leave only a small visual margin after the requested
-  // number of foods, so a 2-food recipe no longer looks able to carry 4.
   if (count <= 2) return 110
   if (count === 3) return 150
   if (count === 4) return 190
@@ -67,14 +72,33 @@ function legacyToCurrentTipDelta(internals: RuntimeInternals) {
   return LEGACY_SKEWER_HEIGHT - currentSkewerHeight(internals)
 }
 
+function rotatePoint(x: number, y: number, rotation: number) {
+  const cos = Math.cos(rotation)
+  const sin = Math.sin(rotation)
+  return { x: x * cos - y * sin, y: x * sin + y * cos }
+}
+
+function guardStackTarget(internals: RuntimeInternals, item: RuntimeStackItem, index: number) {
+  const anchor = rotatePoint(item.pierceLocalX, item.pierceLocalY, item.baseRotation)
+  const guardY = internals.skewerY - SKEWER_BOTTOM_OFFSET
+  return {
+    x: internals.skewerX - anchor.x,
+    y: guardY - GUARD_STACK_CLEARANCE - index * STACK_GAP - anchor.y,
+  }
+}
+
+function deliverySourceShiftForRecipe(count: number) {
+  // The legacy delivery code arranges food from the tip. Offset its temporary
+  // source so those same settle points coincide with our guard-first stack.
+  return 208 - (Math.max(2, Math.min(5, count)) - 1) * STACK_GAP
+}
+
 function drawHarpoonHead(internals: RuntimeInternals) {
   const x = Math.round(internals.skewerX)
   const y = Math.round(internals.skewerY - currentTipOffset(internals))
   const graphics = internals.tipGlow
   graphics.clear().setDepth(48)
 
-  // Deliberately built on a 2px grid: no antialiased debug dot and the visible
-  // apex is the actual collision point.
   graphics.fillStyle(0x1b0807, 1)
   graphics.fillRect(x - 2, y, 4, 4)
   graphics.fillRect(x - 4, y + 4, 8, 8)
@@ -93,9 +117,6 @@ function createReadableBloodDrop(scene: VladsSkewersScene, x: number, y: number)
   const root = scene.add.container(Math.round(x), Math.round(y)).setDepth(21)
   const g = scene.add.graphics()
 
-  // Coarse 2px-grid droplet: dark outline, saturated blood mass and a tiny
-  // highlight. No circles/triangles, which looked smooth and unlike the rest of
-  // Vlad's constructed pixel art.
   g.fillStyle(0x2b0509, 1)
   g.fillRect(-2, -20, 4, 6)
   g.fillRect(-6, -16, 12, 6)
@@ -157,11 +178,22 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
 
   const addStackFood = internals.addStackFood.bind(scene)
   internals.addStackFood = (...args: unknown[]) => {
-    const delta = legacyToCurrentTipDelta(internals)
     addStackFood(...args)
-    const latest = internals.stack[internals.stack.length - 1]
+
+    // The canonical scene used to pile food downwards from the tip. Reset that
+    // push model: the first pierced food belongs against the guard, and every
+    // following food gets the next slot above it.
+    internals.stack.forEach((item) => {
+      item.pushOffsetY = 0
+      item.pushVelocityY = 0
+    })
+
+    const latestIndex = internals.stack.length - 1
+    const latest = internals.stack[latestIndex]
     if (!latest) return
-    latest.entryOffsetY -= delta
+    const target = guardStackTarget(internals, latest, latestIndex)
+    latest.entryOffsetX = latest.visual.root.x - target.x
+    latest.entryOffsetY = latest.visual.root.y - target.y
     latest.visual.root.setRotation(latest.baseRotation)
   }
 
@@ -169,7 +201,6 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
   internals.updateSkewer = (dt: number) => {
     updateSkewer(dt)
     const height = currentSkewerHeight(internals)
-    const delta = LEGACY_SKEWER_HEIGHT - height
 
     internals.skewer
       .setPosition(Math.round(internals.skewerX), Math.round(internals.skewerY - SKEWER_BOTTOM_OFFSET))
@@ -178,23 +209,31 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
     internals.arm.setPosition(Math.round(internals.skewerX + 23), Math.round(internals.skewerY - 92 + ARM_SPRITE_Y_OFFSET))
     drawHarpoonHead(internals)
 
-    internals.stack.forEach((item) => {
-      item.visual.root.x = Math.round(item.visual.root.x)
-      item.visual.root.y = Math.round(item.visual.root.y + delta)
+    internals.stack.forEach((item, index) => {
+      item.pushOffsetY = 0
+      item.pushVelocityY = 0
+      const target = guardStackTarget(internals, item, index)
+      const entry = 1 - Phaser.Math.Easing.Cubic.Out(item.entryAge)
+      item.visual.root
+        .setPosition(
+          Math.round(target.x + item.entryOffsetX * entry),
+          Math.round(target.y + item.entryOffsetY * entry),
+        )
+        .setRotation(item.baseRotation)
     })
   }
 
   const dispatchCompletedSkewer = internals.dispatchCompletedSkewer.bind(scene)
   const performDispatch = (customer: RuntimeCustomer) => {
     const desiredHeight = skewerHeightForRecipe(customer.order.length)
-    const delta = LEGACY_SKEWER_HEIGHT - desiredHeight
+    const sourceShift = deliverySourceShiftForRecipe(customer.order.length)
     const originalSkewerY = internals.skewerY
     const factory = scene.add as unknown as { image: ImageFactory }
     const originalImage: ImageFactory = factory.image.bind(scene.add)
 
     factory.image = (...args: any[]) => {
       const deliveryShaft = args[2] === 'vlad-skewer' && args[3] === 'shaft'
-      if (deliveryShaft && typeof args[1] === 'number') args[1] -= delta
+      if (deliveryShaft && typeof args[1] === 'number') args[1] -= sourceShift
       const image = originalImage(...args)
       if (!deliveryShaft) return image
 
@@ -206,7 +245,7 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
       return image
     }
 
-    internals.skewerY = originalSkewerY + delta
+    internals.skewerY = originalSkewerY + sourceShift
     try {
       dispatchCompletedSkewer(customer)
     } finally {
@@ -221,9 +260,6 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
     completedRecipeLocked = true
     if (typeof customer.patience === 'number') customer.patience = Math.max(customer.patience, 1.25)
 
-    // Keep the completed skewer in the player's hand for one full second. During
-    // this presentation beat the apex has no collision, so a falling ingredient
-    // cannot accidentally ruin an already-valid recipe.
     scene.time.delayedCall(COMPLETED_HOLD_MS, () => {
       if (internals.customers[0] !== customer) {
         completedRecipeLocked = false
@@ -236,7 +272,15 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
   const stateReader = internals.stateReader.bind(scene)
   internals.stateReader = () => {
     const state = JSON.parse(stateReader()) as {
-      skewer?: { tipY?: number; height?: number; width?: number; hitboxVisible?: boolean; completedLock?: boolean }
+      skewer?: {
+        tipY?: number
+        height?: number
+        width?: number
+        hitboxVisible?: boolean
+        completedLock?: boolean
+        stackLayout?: string
+        guardY?: number
+      }
     }
     if (state.skewer) {
       state.skewer.tipY = Math.round(internals.skewerY - currentTipOffset(internals))
@@ -244,6 +288,8 @@ export function applyVladRuntimeTuning(scene: VladsSkewersScene) {
       state.skewer.width = SKEWER_WIDTH
       state.skewer.hitboxVisible = false
       state.skewer.completedLock = completedRecipeLocked
+      state.skewer.stackLayout = 'guard-up'
+      state.skewer.guardY = Math.round(internals.skewerY - SKEWER_BOTTOM_OFFSET)
     }
     return JSON.stringify(state)
   }

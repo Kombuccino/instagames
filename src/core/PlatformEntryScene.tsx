@@ -18,6 +18,7 @@ import './platformEntrySceneHandoff.css'
 
 type PlatformEntrySceneProps = {
   onLaunch: () => void
+  handoff?: 'default' | 'home-bis'
 }
 
 type PointerStart = {
@@ -27,6 +28,7 @@ type PointerStart = {
 }
 
 const ENTER_DURATION_MS = 860
+const HOME_BIS_ENTER_DURATION_MS = 1700
 const TAP_SLOP_PX = 14
 const SWIPE_THRESHOLD_PX = 42
 const ASSET_ROOT = '/assets/imported/platform/entry-scenes/metro-moment-v1'
@@ -70,7 +72,7 @@ function chooseArm() {
   return ARM_VARIANTS[index]
 }
 
-export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
+export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEntrySceneProps) {
   const [entering, setEntering] = useState(false)
   const [arm] = useState(chooseArm)
   const enteringRef = useRef(false)
@@ -82,13 +84,14 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
   const triggerEntry = useCallback(() => {
     if (enteringRef.current) return
     enteringRef.current = true
-    musicRef.current?.fadeOut(ENTER_DURATION_MS / 1000)
+    const duration = handoff === 'home-bis' ? HOME_BIS_ENTER_DURATION_MS : ENTER_DURATION_MS
+    musicRef.current?.fadeOut(duration / 1000)
     setEntering(true)
     timerRef.current = window.setTimeout(() => {
       timerRef.current = null
       onLaunch()
-    }, ENTER_DURATION_MS)
-  }, [onLaunch])
+    }, duration)
+  }, [handoff, onLaunch])
 
   useEffect(() => {
     document.title = 'MiniFugg'
@@ -142,7 +145,7 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
 
   return (
     <main
-      className={`mf-entry-scene${entering ? ' is-entering' : ''}`}
+      className={`mf-entry-scene${handoff === 'home-bis' ? ' is-home-bis-handoff' : ''}${entering ? ' is-entering' : ''}`}
       role="button"
       tabIndex={0}
       aria-label="Tap to play MiniFugg"
@@ -172,12 +175,12 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
         </div>
 
         <div className="mf-entry-scene__carriage" aria-hidden="true">
-          <img className="mf-entry-scene__wagon" src={WAGON_ART} alt="" draggable={false} decoding="sync" fetchPriority="high" />
+          <img className="mf-entry-scene__wagon" src={WAGON_ART} alt="" draggable={false} decoding="sync" />
           <FuggyEyes className="mf-entry-scene__fuggy-eyes" />
         </div>
 
         <div className="mf-entry-scene__hand-group" aria-hidden="true">
-          <img className="mf-entry-scene__arm" src={arm} alt="" draggable={false} decoding="sync" fetchPriority="high" />
+          <img className="mf-entry-scene__arm" src={arm} alt="" draggable={false} decoding="sync" />
           <ProjectiveDomSurface
             className="mf-entry-scene__phone-projective"
             planeClassName="mf-entry-scene__phone-ui"
@@ -186,6 +189,7 @@ export function PlatformEntryScene({ onLaunch }: PlatformEntrySceneProps) {
             logicalHeight={100}
           >
             <PhoneWelcomeScreen paused={entering} />
+            {handoff === 'home-bis' && <span className="mf-entry-scene__loading">LOADING<span aria-hidden="true">•••</span></span>}
           </ProjectiveDomSurface>
         </div>
 

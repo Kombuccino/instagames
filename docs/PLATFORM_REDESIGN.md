@@ -45,6 +45,8 @@ La page `FEATURE` réserve sa surface au nom du jeu composé dans la police du m
 
 La Home bis alpha `/?usr=moigod&lab=home-bis` est le prototype fonctionnel de cette direction. Elle utilise une surface de téléphone au ratio canonique `390 × 844`, à 95 % de la hauteur utile PC, et lance le vrai jeu dans ce téléphone sans quitter la scène. Bureau, magazine, main et téléphone forment une scène unique persistante : molette, navigation latérale et `CHANGE GAME` ne changent que le contenu du téléphone et la page. Ces commandes sont verrouillées pendant le gameplay. Le premier essai `390 × 884` reste une hypothèse documentée, pas la géométrie de cette alpha.
 
+Le pilote `/?usr=moigod&lab=home-bis&entry=1` teste le raccord depuis la scène du métro sans modifier la Home principale. La main et le téléphone d'entrée avancent jusqu'à ce que leur ouverture d'écran atteigne approximativement le cadre canonique `390 × 844` et que la coque sorte en haut et en bas. Un écran de chargement masque alors le changement de surface ; le téléphone recule ensuite vers la droite pendant l'apparition de la chambre. Ce pilote reste expérimental jusqu'à validation visuelle : il sert à décider si ce trucage suffit avant toute reconstruction commune des mains et téléphones.
+
 Les onglets permettent de sauter directement à une rubrique ; le tourné de page reste court et peut être réduit ou supprimé selon les préférences de mouvement.
 
 Un marque-page ou contrôle discret permettant de revenir à Home peut être étudié plus tard. Il ne doit pas prendre de place dans la première validation de composition.

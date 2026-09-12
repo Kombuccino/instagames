@@ -7,12 +7,12 @@ const output = 'artifacts/core-mobile-layout'
 await fs.mkdir(output, { recursive: true })
 
 const scenarios = [
-  { name: 'a54-brave', width: 360, height: 611, screenWidth: 360, screenHeight: 800, touch: true, mobile: true, desktop: false, expectedFeedWidth: 360 },
-  { name: 'a54-chrome', width: 360, height: 656, screenWidth: 360, screenHeight: 800, touch: true, mobile: true, desktop: false, expectedFeedWidth: 360 },
+  { name: 'a54-brave', width: 360, height: 611, screenWidth: 360, screenHeight: 800, touch: true, mobile: true, desktop: false },
+  { name: 'a54-chrome', width: 360, height: 656, screenWidth: 360, screenHeight: 800, touch: true, mobile: true, desktop: false },
   // Reproduces a phone browser exposing a desktop-sized CSS layout viewport.
-  { name: 'touch-desktop-viewport', width: 980, height: 1663, screenWidth: 360, screenHeight: 800, touch: true, mobile: true, dpr: 1, desktop: false, expectedFeedWidth: 980 },
-  { name: 'tablet', width: 1024, height: 768, screenWidth: 1024, screenHeight: 768, touch: true, mobile: true, dpr: 1, desktop: true, expectedFeedWidth: 520 },
-  { name: 'desktop', width: 1280, height: 720, screenWidth: 1280, screenHeight: 720, touch: false, mobile: false, desktop: true, expectedFeedWidth: 520 },
+  { name: 'touch-desktop-viewport', width: 980, height: 1663, screenWidth: 360, screenHeight: 800, touch: true, mobile: true, dpr: 1, desktop: false },
+  { name: 'tablet', width: 1024, height: 768, screenWidth: 1024, screenHeight: 768, touch: true, mobile: true, dpr: 1, desktop: true },
+  { name: 'desktop', width: 1280, height: 720, screenWidth: 1280, screenHeight: 720, touch: false, mobile: false, desktop: true },
 ]
 
 const closeTo = (actual, expected, message, tolerance = 1) => {
@@ -28,6 +28,9 @@ try {
   browser = await chromium.launch({ headless: true })
 
   for (const scenario of scenarios) {
+    const expectedFeedWidth = scenario.desktop
+      ? Math.min(scenario.width, scenario.height / 662 * 390)
+      : scenario.width
     const context = await browser.newContext({
       viewport: { width: scenario.width, height: scenario.height },
       screen: { width: scenario.screenWidth, height: scenario.screenHeight },
@@ -63,10 +66,10 @@ try {
     const cardBox = await tetra.boundingBox()
     const coverBox = await cover.boundingBox()
     assert.ok(feedBox && cardBox && coverBox)
-    closeTo(feedBox.width, scenario.expectedFeedWidth, `${scenario.name} feed width`)
-    closeTo(cardBox.width, scenario.expectedFeedWidth, `${scenario.name} card width`)
-    closeTo(coverBox.width, scenario.expectedFeedWidth, `${scenario.name} cover width`)
-    closeTo(feedBox.x, scenario.desktop ? (scenario.width - scenario.expectedFeedWidth) / 2 : 0, `${scenario.name} feed x`)
+    closeTo(feedBox.width, expectedFeedWidth, `${scenario.name} feed width`)
+    closeTo(cardBox.width, expectedFeedWidth, `${scenario.name} card width`)
+    closeTo(coverBox.width, expectedFeedWidth, `${scenario.name} cover width`)
+    closeTo(feedBox.x, scenario.desktop ? (scenario.width - expectedFeedWidth) / 2 : 0, `${scenario.name} feed x`)
     closeTo(cardBox.y, 0, `${scenario.name} card top`)
     assert.equal(await art.evaluate(image => getComputedStyle(image).objectFit), 'cover')
     assert.equal(await art.evaluate(image => getComputedStyle(image).objectPosition), '50% 0%')
@@ -89,14 +92,14 @@ try {
     const viewportBox = await viewport.boundingBox()
     const stageBox = await stage.boundingBox()
     assert.ok(viewportBox && stageBox)
-    closeTo(viewportBox.width, scenario.expectedFeedWidth, `${scenario.name} gameplay viewport width`)
+    closeTo(viewportBox.width, expectedFeedWidth, `${scenario.name} gameplay viewport width`)
     if (!scenario.desktop) {
-      closeTo(stageBox.width, scenario.expectedFeedWidth, `${scenario.name} width-driven Phaser stage`)
+      closeTo(stageBox.width, expectedFeedWidth, `${scenario.name} width-driven Phaser stage`)
       closeTo(stageBox.x, 0, `${scenario.name} Phaser stage x`)
     } else {
       const expectedStageWidth = scenario.height / 662 * 390
       closeTo(stageBox.width, expectedStageWidth, `${scenario.name} height-driven Phaser stage`)
-      closeTo(stageBox.x, feedBox.x + (scenario.expectedFeedWidth - expectedStageWidth) / 2, `${scenario.name} centered Phaser stage x`)
+      closeTo(stageBox.x, feedBox.x, `${scenario.name} Phaser stage x`)
     }
 
     report.scenarios.push({

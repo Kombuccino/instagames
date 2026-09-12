@@ -93,7 +93,9 @@ button { color: inherit; }
   body { background: #020203; }
   #root { display: grid; place-items: center; }
   .game-feed {
-    max-width: 520px;
+    width: auto;
+    max-width: 100%;
+    aspect-ratio: 390 / 662;
     box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 0 100px rgba(0, 0, 0, .8);
   }
 }

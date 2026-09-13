@@ -35,7 +35,9 @@ def atlas_groups() -> list[Image.Image]:
             y1 = round((row + 1) * atlas.height / 2)
             cell = atlas.crop((x0, y0, x1, y1))
             alpha = np.array(cell.getchannel("A"))
-            alpha = np.where(alpha >= 18, alpha, 0).astype(np.uint8)
+            # Depth comes from colour and scale. Buildings remain solid objects;
+            # transparency made the sky show through their faces.
+            alpha = np.where(alpha >= 18, 255, 0).astype(np.uint8)
             cell.putalpha(Image.fromarray(alpha))
             bounds = cell.getbbox()
             if bounds:
@@ -98,7 +100,7 @@ def bridge_strip(source: Image.Image) -> Image.Image:
     return output
 
 
-def water_layers(source: Image.Image) -> tuple[Image.Image, Image.Image]:
+def water_layers(source: Image.Image) -> tuple[Image.Image, Image.Image, Image.Image]:
     water_top = 510
     water_height = SCENE[1] - 350
     water_source = source.crop((0, water_top, SCENE[0], SCENE[1])).resize((SCENE[0], water_height), Image.Resampling.LANCZOS)
@@ -115,29 +117,24 @@ def water_layers(source: Image.Image) -> tuple[Image.Image, Image.Image]:
     water = Image.new("RGBA", SCENE)
     water.alpha_composite(tile.crop((0, 0, SCENE[0], tile.height)).convert("RGBA"), (0, 350))
 
+    tile_rgb = np.array(tile.crop((0, 0, SCENE[0], tile.height)), dtype=np.float32)
+    tr, tg, tb = (tile_rgb[:, :, channel] for channel in range(3))
+    sparkle_strength = np.clip((tr * .38 + tg * .44 + tb * .18 - 145) / 90, 0, 1)
+    sparkle_strength *= np.clip((tr - tb + 30) / 115, 0, 1)
+    # Retain small authored water facets with restrained alpha so their pulse
+    # reads as surface shimmer rather than a second moving sun path.
+    sparkle_alpha = np.clip(sparkle_strength * 118, 0, 118).astype(np.uint8)
+    sparkle_rgb = np.clip(tile_rgb * np.array((1.13, 1.08, 1.02), dtype=np.float32), 0, 255).astype(np.uint8)
+    sparkle = Image.new("RGBA", SCENE)
+    sparkle.alpha_composite(Image.fromarray(np.dstack((sparkle_rgb, sparkle_alpha))), (0, 350))
+
     x = np.linspace(-1, 1, SCENE[0], dtype=np.float32)
     fixed_path = np.exp(-((x / .16) ** 2))[None, :]
     alpha = np.clip(reflection * fixed_path * 255, 0, 255).astype(np.uint8)
     reflection_crop = Image.fromarray(np.dstack((rgb.astype(np.uint8), alpha)))
     overlay = Image.new("RGBA", SCENE)
     overlay.alpha_composite(reflection_crop, (0, 350))
-    return water, overlay
-
-
-def carriage_light_layers() -> tuple[Image.Image, Image.Image]:
-    carriage = np.array(Image.open(CONCEPT / "carriage-foreground-source.png").convert("RGBA"))
-    red, green, blue = (carriage[:, :, channel].astype(np.float32) for channel in range(3))
-    luma = red * .299 + green * .587 + blue * .114
-    warmth = np.clip((red - blue - 16) / 125, 0, 1) * np.clip((luma - 100) / 145, 0, 1)
-    direct = np.clip(warmth * 2.2, 0, 1)
-    base_rgb = carriage[:, :, :3].astype(np.float32)
-    base_rgb[:, :, 0] *= 1 - direct * .38
-    base_rgb[:, :, 1] *= 1 - direct * .34
-    base_rgb[:, :, 2] *= 1 - direct * .18
-    base = Image.fromarray(np.dstack((np.clip(base_rgb, 0, 255).astype(np.uint8), carriage[:, :, 3])))
-    light_alpha = np.clip(direct * carriage[:, :, 3] * .88, 0, 255).astype(np.uint8)
-    sunlight = Image.fromarray(np.dstack((carriage[:, :, :3], light_alpha)))
-    return base, sunlight
+    return water, overlay, sparkle
 
 
 def main() -> None:
@@ -148,19 +145,21 @@ def main() -> None:
     sky.paste(sky_source.crop((0, SCENE[1] - 1, SCENE[0], SCENE[1])).resize((SCENE[0], 110)), (0, SCENE[1] - 110))
 
     groups = atlas_groups()
-    far = skyline_strip(groups, [0, 2, 4, 6, 8], 88, 338, .52, haze=.34)
-    near = skyline_strip(groups, [1, 5, 7, 9], 190, 349, .98)
-    water, reflection = water_layers(source)
-    carriage_base, carriage_sunlight = carriage_light_layers()
+    far = skyline_strip(groups, [0, 2, 4, 6, 8], 88, 338, 1, haze=.42)
+    near = skyline_strip(groups, [1, 5, 7, 9], 190, 349, 1)
+    water, reflection, sparkle = water_layers(source)
+    carriage_base = Image.open(CONCEPT / "carriage-foreground-source.png").convert("RGBA")
 
     save(sky, "sky")
     save(far.crop((0, 250, SCENE[0], 338)), "skyline-far-strip")
     save(near.crop((0, 159, SCENE[0], 349)), "skyline-near-strip")
     save(bridge_strip(source).crop((0, 332, SCENE[0], 361)), "shore-bridge-strip")
     save(water.crop((0, 350, SCENE[0], SCENE[1])), "water-strip")
+    save(sparkle.crop((0, 350, SCENE[0], SCENE[1])), "water-sparkle-strip")
     save(reflection.crop((562, 363, 1116, 886)), "water-reflection")
     save(carriage_base, "carriage-base")
-    save(carriage_sunlight, "carriage-sunlight")
+    for obsolete in (RUNTIME / "carriage-sunlight.png", RUNTIME / "carriage-sunlight.webp"):
+        obsolete.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":

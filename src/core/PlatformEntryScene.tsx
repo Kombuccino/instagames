@@ -32,11 +32,11 @@ const TAP_SLOP_PX = 14
 const SWIPE_THRESHOLD_PX = 42
 const METRO_SCENE_ROOT = '/assets/generated/platform/entry-scenes/metro-sunset'
 const METRO_PARALLAX_V3_ROOT = `${METRO_SCENE_ROOT}/parallax-v3`
-const METRO_PARALLAX_V3_REVISION = '20260913-v32'
+const METRO_PARALLAX_V3_REVISION = '20260913-v34'
 const ARM_ROOT = `${METRO_SCENE_ROOT}/arms`
 const ARM_VARIANTS = Array.from({ length: 8 }, (_, index) => `${ARM_ROOT}/arm-${String(index + 1).padStart(2, '0')}.png`)
 const ARM_STORAGE_KEY = 'minifugg:entry-arm:v1'
-const METRO_PARALLAX_V3_LOOPS = ['water-strip', 'skyline-far-strip', 'skyline-near-strip', 'shore-bridge-strip'] as const
+const METRO_PARALLAX_V3_LOOPS = ['water-strip', 'water-sparkle-strip', 'skyline-far-strip', 'skyline-near-strip', 'shore-bridge-strip'] as const
 
 function metroParallaxAsset(name: string, extension: 'png' | 'webp') {
   return `${METRO_PARALLAX_V3_ROOT}/${name}.${extension}?v=${METRO_PARALLAX_V3_REVISION}`
@@ -324,10 +324,6 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
               <picture className="mf-entry-scene__metro-v3-carriage mf-entry-scene__metro-v3-carriage--base">
                 <source srcSet={metroParallaxAsset('carriage-base', 'webp')} type="image/webp" />
                 <img className="mf-entry-scene__wagon mf-entry-scene__wagon--wide mf-entry-scene__wagon--v3-base" src={metroParallaxAsset('carriage-base', 'png')} alt="" draggable={false} decoding="async" loading="eager" />
-              </picture>
-              <picture className="mf-entry-scene__metro-v3-carriage mf-entry-scene__metro-v3-carriage--sunlight">
-                <source srcSet={metroParallaxAsset('carriage-sunlight', 'webp')} type="image/webp" />
-                <img className="mf-entry-scene__wagon mf-entry-scene__wagon--wide mf-entry-scene__wagon--v3-sunlight" src={metroParallaxAsset('carriage-sunlight', 'png')} alt="" draggable={false} decoding="async" loading="eager" />
               </picture>
             </>
           ) : (

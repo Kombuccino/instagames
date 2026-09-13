@@ -143,24 +143,53 @@ def extend_arm(source: Image.Image) -> Image.Image:
     if source.size != (ARM_SOURCE_WIDTH, ARM_HEIGHT):
         raise ValueError(f"Unexpected arm size {source.size}")
     output = Image.new("RGBA", (ARM_WIDTH, ARM_HEIGHT))
-    output.alpha_composite(source)
+    output.paste(source, (0, 0))
 
-    extension_width = ARM_WIDTH - ARM_SOURCE_WIDTH
-    texture = source.crop((ARM_SOURCE_WIDTH - extension_width, 0, ARM_SOURCE_WIDTH, ARM_HEIGHT))
-    texture = texture.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-    layer = Image.new("RGBA", output.size)
-    layer.alpha_composite(texture, (ARM_SOURCE_WIDTH, 0))
+    alpha = np.array(source.getchannel("A"))
+    edge_rows = np.where(alpha[:, ARM_SOURCE_WIDTH - 1] > 16)[0]
+    if not edge_rows.size:
+        raise ValueError("Arm does not reach its source right edge")
+    top = int(edge_rows[0])
 
-    # The upper silhouette continues the real cuff edge and slopes down toward
-    # the lower-right viewport. The mirrored pixels make the seam exact while
-    # retaining every variant's own facets, palette and material.
+    # Continue the existing forearm angle, then let the sleeve leave through
+    # the bottom. The previous mirrored triangle widened into a giant cuff.
+    exit_x = ARM_SOURCE_WIDTH + 188
     mask = Image.new("L", output.size, 0)
     ImageDraw.Draw(mask).polygon(
-        [(ARM_SOURCE_WIDTH, 1302), (ARM_WIDTH, 1505), (ARM_WIDTH, ARM_HEIGHT), (ARM_SOURCE_WIDTH, ARM_HEIGHT)],
+        [(ARM_SOURCE_WIDTH, top), (exit_x, ARM_HEIGHT), (ARM_SOURCE_WIDTH, ARM_HEIGHT)],
         fill=255,
     )
-    layer.putalpha(Image.composite(layer.getchannel("A"), Image.new("L", output.size), mask))
-    output.alpha_composite(layer)
+
+    sleeve_pixels = np.array(source)
+    sample_mask = sleeve_pixels[:, :, 3] > 64
+    sample_mask[: max(top + 80, 1420), :] = False
+    sample_mask[:, : max(0, ARM_SOURCE_WIDTH - 220)] = False
+    colours = sleeve_pixels[:, :, :3][sample_mask]
+    if not colours.size:
+        raise ValueError("Cannot sample sleeve colours")
+    quantized = Image.fromarray(colours.reshape((-1, 1, 3))).quantize(colors=10)
+    raw_palette = quantized.getpalette()
+    palette = [tuple(raw_palette[i * 3:i * 3 + 3]) + (255,) for i in range(10)]
+
+    facets = Image.new("RGBA", output.size)
+    draw = ImageDraw.Draw(facets)
+    xs = [ARM_SOURCE_WIDTH, ARM_SOURCE_WIDTH + 34, ARM_SOURCE_WIDTH + 72, ARM_SOURCE_WIDTH + 112, exit_x]
+    for column in range(len(xs) - 1):
+        x0, x1 = xs[column], xs[column + 1]
+        top0 = round(top + (ARM_HEIGHT - top) * ((x0 - ARM_SOURCE_WIDTH) / (exit_x - ARM_SOURCE_WIDTH)) ** 1.35)
+        top1 = round(top + (ARM_HEIGHT - top) * ((x1 - ARM_SOURCE_WIDTH) / (exit_x - ARM_SOURCE_WIDTH)) ** 1.35)
+        for row in range(4):
+            y00 = round(top0 + (ARM_HEIGHT - top0) * row / 4)
+            y01 = round(top0 + (ARM_HEIGHT - top0) * (row + 1) / 4)
+            y10 = round(top1 + (ARM_HEIGHT - top1) * row / 4)
+            y11 = round(top1 + (ARM_HEIGHT - top1) * (row + 1) / 4)
+            first = palette[(column * 3 + row * 2) % len(palette)]
+            second = palette[(column * 3 + row * 2 + 1) % len(palette)]
+            draw.polygon([(x0, y00), (x1, y10), (x0, y01)], fill=first)
+            draw.polygon([(x1, y10), (x1, y11), (x0, y01)], fill=second)
+
+    facets.putalpha(Image.composite(facets.getchannel("A"), Image.new("L", output.size), mask))
+    output.alpha_composite(facets)
     return output
 
 

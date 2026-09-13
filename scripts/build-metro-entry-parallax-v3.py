@@ -129,12 +129,13 @@ def carriage_light_layers() -> tuple[Image.Image, Image.Image]:
     red, green, blue = (carriage[:, :, channel].astype(np.float32) for channel in range(3))
     luma = red * .299 + green * .587 + blue * .114
     warmth = np.clip((red - blue - 16) / 125, 0, 1) * np.clip((luma - 100) / 145, 0, 1)
+    direct = np.clip(warmth * 2.2, 0, 1)
     base_rgb = carriage[:, :, :3].astype(np.float32)
-    base_rgb[:, :, 0] *= 1 - warmth * .09
-    base_rgb[:, :, 1] *= 1 - warmth * .045
-    base_rgb[:, :, 2] *= 1 + warmth * .012
+    base_rgb[:, :, 0] *= 1 - direct * .38
+    base_rgb[:, :, 1] *= 1 - direct * .34
+    base_rgb[:, :, 2] *= 1 - direct * .18
     base = Image.fromarray(np.dstack((np.clip(base_rgb, 0, 255).astype(np.uint8), carriage[:, :, 3])))
-    light_alpha = np.clip(warmth * carriage[:, :, 3] * .58, 0, 255).astype(np.uint8)
+    light_alpha = np.clip(direct * carriage[:, :, 3] * .88, 0, 255).astype(np.uint8)
     sunlight = Image.fromarray(np.dstack((carriage[:, :, :3], light_alpha)))
     return base, sunlight
 

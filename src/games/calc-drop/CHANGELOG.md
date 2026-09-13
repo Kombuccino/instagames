@@ -1,5 +1,13 @@
 # TetraMindFck — Changelog
 
+## 0.8.1 — 2026-09-13 23:31 Europe/Paris
+
+- Remplacement des cases Phaser provisoires par les vrais atlas raster : chiffres `1–9`, multiplicateurs, diviseurs et bonus utilisent désormais les sprites CRT produits pour la DA.
+- `NEXT` et `NEXT+1` utilisent les mêmes tuiles raster que le plateau, en taille plus lisible, au lieu de petits rectangles et textes reconstruits.
+- Intégration de la vraie plate CRT et du fond décoratif séparé ; les cinq écrans restent alignés sur les ouvertures de la coque canonique.
+- Les cinq contrôles utilisent désormais leurs deux états raster distincts `up/down` à emprise identique, sans compression artificielle ni cadre debug.
+- Gameplay, RNG, scoring, objectifs, accélération, bonus et lock restent inchangés.
+
 ## 0.8.0 — 2026-09-13 10:48 Europe/Paris
 
 - Intégration de la coque raster CRT dans la scène Phaser en remplacement du blockout géométrique temporaire.

@@ -12,6 +12,12 @@ function opensDirectlyOnAGame() {
   return Boolean(new URL(window.location.href).searchParams.get('game')?.trim())
 }
 
+function forcesPlatformEntryScene() {
+  if (typeof window === 'undefined') return false
+  const query = new URL(window.location.href).searchParams
+  return query.get('usr') === 'moigod' && query.get('entry') === '1'
+}
+
 function opensMusicLab() {
   if (typeof window === 'undefined') return false
   const query = new URL(window.location.href).searchParams
@@ -53,7 +59,7 @@ function layoutGuideView(): LayoutTemplate | null {
 }
 
 export default function App() {
-  const [entered, setEntered] = useState(() => opensDirectlyOnAGame())
+  const [entered, setEntered] = useState(() => opensDirectlyOnAGame() && !forcesPlatformEntryScene())
   const [homeBisEntered, setHomeBisEntered] = useState(() => !opensHomeBisEntryTest())
   const [homeBisArm, setHomeBisArm] = useState<string | null>(null)
 

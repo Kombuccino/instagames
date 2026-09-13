@@ -178,12 +178,12 @@
 
 .mf-console-play-frame.is-warm {
   background-position: 33.333333% 0;
-  animation: mf-play-warm-lamp 4.8s linear infinite;
+  animation: mf-play-warm-lamp 2s linear infinite;
 }
 
 .mf-console-play-frame.is-hot {
   background-position: 66.666667% 0;
-  animation: mf-play-hot-lamp 4.8s linear infinite;
+  animation: mf-play-hot-lamp 2s linear infinite;
 }
 
 .mf-console-play-frame.is-down {
@@ -257,15 +257,14 @@
 }
 
 @keyframes mf-play-warm-lamp {
-  0%, 66% { opacity: 1; }
-  67%, 95% { opacity: 0; }
-  96%, 100% { opacity: 1; }
+  0%, 72.6% { opacity: 1; }
+  75%, 97.6% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
 @keyframes mf-play-hot-lamp {
-  0%, 65% { opacity: .78; }
-  67%, 95% { opacity: 0; }
-  96% { opacity: .82; }
+  0%, 72.6% { opacity: .78; }
+  75%, 97.6% { opacity: 0; }
   100% { opacity: .78; }
 }
 

@@ -16,7 +16,7 @@ Si la DA n'est pas fixée, proposer normalement quatre ou cinq pistes réellemen
 
 L'agent récupère ou produit les captures du jeu actuel, mesure les zones utiles et prépare dès les propositions le plan de couches, les états et les effets réalisables dans le moteur canonique. La référence de composition gouverne la géométrie ; la référence de style gouverne le traitement. Sans accès au jeu ou à une référence géométrique suffisante, signaler la limite avant de présenter une étude comme fidèle au jeu.
 
-Les études montrent uniquement le gameplay demandé : aucun titre de jeu, slogan, cartouche explicatif, logo ou annotation décorative ajouté par défaut. Les explications des variantes restent hors image ; seuls les textes et symboles fonctionnels requis appartiennent au visuel.
+Les études montrent uniquement le gameplay demandé : aucun titre de jeu, slogan, cartouche explicatif, logo ou annotation décorative ajouté par défaut. Les explications des variantes restent hors image ; seuls les textes et symboles fonctionnels requis appartiennent au visuel. Avant chaque génération, écrire une liste exhaustive des chaînes autorisées. Si la sortie ajoute une accroche, un panneau, une devise, une légende, du faux texte ou un nombre absent de cette liste, ne pas la montrer comme proposition : la corriger ou la rejeter et archiver l'écart. Un concept ne transforme jamais ces ajouts en placeholders acceptables.
 
 Pour chaque piste, définir l'émotion, les silhouettes, la palette, la matière, le traitement des contours et des ombres, la typographie locale, le mouvement et la faisabilité de production. Préciser ce qui rend cette piste spécifique au jeu. Recommander une direction avec ses avantages et risques.
 

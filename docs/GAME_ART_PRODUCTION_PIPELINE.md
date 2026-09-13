@@ -203,7 +203,7 @@ Prefer:
 - dynamic localized Phaser/Core text;
 - symbols already intrinsic to the mechanic.
 
-Decorative fictional markings may be baked only when they are not functional instructions and do not create localization ambiguity.
+Decorative fictional markings may be baked only when the user or approved DA explicitly requests them and the micro-brief lists them. A plausible slogan, sign, caption, serial number or pseudo-writing invented by the generator is still a defect and must be removed before presentation.
 
 ## 12. Integration order
 
@@ -239,6 +239,7 @@ Before declaring the art pass complete, answer yes to all relevant items:
 - Do the implemented FX visibly match its approved intent while staying inside their declared budget?
 - Is there only one owner for each visible function?
 - Are all functional texts localizable or avoided?
+- Does every visible word, number and symbol belong to the micro-brief's closed allowlist, with every unlisted generator invention rejected before presentation?
 - Does the screen remain coherent at all gameplay states?
 - Does the 390×844 (or declared viewport) composition remain unchanged across device ratios?
 - Are runtime assets verified through their documented local/Drive entry route?

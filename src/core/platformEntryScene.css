@@ -81,16 +81,16 @@
 }
 
 /*
- * The hand uses a 21% right / 20% down resting pose on portrait screens. Its train
- * rhythm starts 90ms after the carriage and is slightly damped, so every
- * wheel-joint "ta-tang" reaches the hand a fraction later.
+ * On portrait screens the hand uses fixed coordinates in its 390 × 693.33
+ * scene plate. The viewport scales that whole plate uniformly; it never
+ * recalculates the hand position from the browser's changing height.
  */
 .mf-entry-scene__hand-group {
   position: absolute;
   inset: 0;
   z-index: 3;
   transform-origin: 44.1% 47.5%;
-  transform: translate3d(21%,20%,0) scale(.91) rotate(-1.6deg);
+  transform: translate3d(122px,139px,0) scale(.91) rotate(-1.6deg);
   will-change: transform, opacity;
   animation: mf-entry-hand-inertia 5.2s linear 90ms infinite both;
 }
@@ -248,30 +248,30 @@
 
 /* Same rail rhythm, delayed and damped, with a tiny rotational inertia cue. */
 @keyframes mf-entry-hand-inertia {
-  0%, 100% { transform: translate3d(21%,20%,0) scale(.91) rotate(-1.6deg); }
-  9% { transform: translate3d(calc(21% + 1px),calc(20% - 1px),0) scale(.91) rotate(-1.56deg); }
-  18% { transform: translate3d(21%,calc(20% + 1px),0) scale(.91) rotate(-1.62deg); }
-  23% { transform: translate3d(calc(21% - 1px),calc(20% + 1px),0) scale(.911) rotate(-1.66deg); }
-  24.5% { transform: translate3d(calc(21% + 1px),calc(20% - 1px),0) scale(.909) rotate(-1.54deg); }
-  27.5% { transform: translate3d(21%,20%,0) scale(.91) rotate(-1.6deg); }
-  36% { transform: translate3d(calc(21% - 1px),20%,0) scale(.91) rotate(-1.62deg); }
-  44% { transform: translate3d(21%,calc(20% + 1px),0) scale(.91) rotate(-1.6deg); }
-  48% { transform: translate3d(calc(21% - 1px),calc(20% + 1px),0) scale(.911) rotate(-1.66deg); }
-  49.5% { transform: translate3d(calc(21% + 1px),calc(20% - 1px),0) scale(.909) rotate(-1.54deg); }
-  52.5% { transform: translate3d(21%,20%,0) scale(.91) rotate(-1.6deg); }
-  61% { transform: translate3d(calc(21% + 1px),20%,0) scale(.91) rotate(-1.56deg); }
-  69% { transform: translate3d(21%,calc(20% - 1px),0) scale(.91) rotate(-1.58deg); }
-  73% { transform: translate3d(calc(21% - 1px),calc(20% + 1px),0) scale(.911) rotate(-1.66deg); }
-  74.5% { transform: translate3d(calc(21% + 1px),calc(20% - 1px),0) scale(.909) rotate(-1.54deg); }
-  77.5% { transform: translate3d(21%,20%,0) scale(.91) rotate(-1.6deg); }
-  87% { transform: translate3d(calc(21% - 1px),20%,0) scale(.91) rotate(-1.62deg); }
-  95% { transform: translate3d(21%,calc(20% + 1px),0) scale(.91) rotate(-1.6deg); }
+  0%, 100% { transform: translate3d(122px,139px,0) scale(.91) rotate(-1.6deg); }
+  9% { transform: translate3d(123px,138px,0) scale(.91) rotate(-1.56deg); }
+  18% { transform: translate3d(122px,140px,0) scale(.91) rotate(-1.62deg); }
+  23% { transform: translate3d(121px,140px,0) scale(.911) rotate(-1.66deg); }
+  24.5% { transform: translate3d(123px,138px,0) scale(.909) rotate(-1.54deg); }
+  27.5% { transform: translate3d(122px,139px,0) scale(.91) rotate(-1.6deg); }
+  36% { transform: translate3d(121px,139px,0) scale(.91) rotate(-1.62deg); }
+  44% { transform: translate3d(122px,140px,0) scale(.91) rotate(-1.6deg); }
+  48% { transform: translate3d(121px,140px,0) scale(.911) rotate(-1.66deg); }
+  49.5% { transform: translate3d(123px,138px,0) scale(.909) rotate(-1.54deg); }
+  52.5% { transform: translate3d(122px,139px,0) scale(.91) rotate(-1.6deg); }
+  61% { transform: translate3d(123px,139px,0) scale(.91) rotate(-1.56deg); }
+  69% { transform: translate3d(122px,138px,0) scale(.91) rotate(-1.58deg); }
+  73% { transform: translate3d(121px,140px,0) scale(.911) rotate(-1.66deg); }
+  74.5% { transform: translate3d(123px,138px,0) scale(.909) rotate(-1.54deg); }
+  77.5% { transform: translate3d(122px,139px,0) scale(.91) rotate(-1.6deg); }
+  87% { transform: translate3d(121px,139px,0) scale(.91) rotate(-1.62deg); }
+  95% { transform: translate3d(122px,140px,0) scale(.91) rotate(-1.6deg); }
 }
 
 @keyframes mf-entry-hand-deliver {
   0% {
     opacity: 1;
-    transform: translate3d(21%,20%,0) scale(.91) rotate(-1.6deg);
+    transform: translate3d(122px,139px,0) scale(.91) rotate(-1.6deg);
   }
   38% {
     opacity: 1;
@@ -334,27 +334,6 @@
   }
 }
 
-@media (max-height: 720px) {
-  .mf-entry-scene__hand-group {
-    transform: translate3d(21%,16%,0) scale(.91) rotate(-1.6deg);
-    animation-name: mf-entry-hand-inertia-compact;
-  }
-
-  .mf-entry-scene.is-entering .mf-entry-scene__hand-group {
-    animation-name: mf-entry-hand-deliver;
-  }
-}
-
-@keyframes mf-entry-hand-inertia-compact {
-  0%, 100% { transform: translate3d(21%,16%,0) scale(.91) rotate(-1.6deg); }
-  23% { transform: translate3d(calc(21% - 1px),calc(16% + 1px),0) scale(.911) rotate(-1.66deg); }
-  24.5% { transform: translate3d(calc(21% + 1px),calc(16% - 1px),0) scale(.909) rotate(-1.54deg); }
-  48% { transform: translate3d(calc(21% - 1px),calc(16% + 1px),0) scale(.911) rotate(-1.66deg); }
-  49.5% { transform: translate3d(calc(21% + 1px),calc(16% - 1px),0) scale(.909) rotate(-1.54deg); }
-  73% { transform: translate3d(calc(21% - 1px),calc(16% + 1px),0) scale(.911) rotate(-1.66deg); }
-  74.5% { transform: translate3d(calc(21% + 1px),calc(16% - 1px),0) scale(.909) rotate(-1.54deg); }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .mf-entry-scene__carriage,
   .mf-entry-scene__hand-group,
@@ -363,7 +342,7 @@
   }
 
   .mf-entry-scene__hand-group {
-    transform: translate3d(21%,20%,0) scale(.91) rotate(-1.6deg);
+    transform: translate3d(122px,139px,0) scale(.91) rotate(-1.6deg);
   }
 
   .mf-entry-scene.is-entering .mf-entry-scene__hand-group {

@@ -169,6 +169,23 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
   const phoneRigRef = useRef<HTMLDivElement>(null)
 
   useLayoutEffect(() => {
+    const rig = phoneRigRef.current
+    if (!rig) return
+
+    const updateMobileRigScale = () => {
+      if (window.innerWidth > 760) {
+        rig.style.removeProperty('--mf-entry-mobile-scale')
+        return
+      }
+      rig.style.setProperty('--mf-entry-mobile-scale', String(window.innerWidth / 390))
+    }
+
+    updateMobileRigScale()
+    window.addEventListener('resize', updateMobileRigScale)
+    return () => window.removeEventListener('resize', updateMobileRigScale)
+  }, [])
+
+  useLayoutEffect(() => {
     if (handoff !== 'home-bis') return
     const rig = phoneRigRef.current
     if (!rig) return

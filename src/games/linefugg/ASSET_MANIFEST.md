@@ -4,6 +4,24 @@
 
 Les PNG approuvés et sources de travail sont conservés. **Le runtime gameplay ne charge plus aucun de ces gros PNG : ses 11 images actives sont des dérivés WebP lossless pré-dimensionnés.** Les quatre covers suivent le même principe, avec masters PNG distincts et dérivés WebP Core.
 
+## Pack de remplacement Solar Origami — planifié, non intégré
+
+| Fonction | Production attendue | États / ownership |
+| --- | --- | --- |
+| Environnement spatial | fond opaque MASTER + éventuels fragments recadrables séparés | aucune valeur, ligne, score, astre chargé ou commande cuite |
+| Cases additives | diamant ivoire neutre, atlas de faces cohérent | états sélection/partage/survol par Phaser |
+| Cases multiplicatrices | silhouette facettée expansive distincte | faces raster `×2`, `×3` ; matériau neutre, teinte de ligne dynamique séparée |
+| Cases divisantes | silhouette fendue ou échancrée distincte | faces raster `÷2`, `÷3` ; matériau neutre, teinte de ligne dynamique séparée |
+| Atlas des 17 faces | `1…9`, `−1…−4`, `×2`, `×3`, `÷2`, `÷3` | grille raster, frames nommées et coordonnées explicites |
+| Atlas score composable | `0…9`, `−`, `+`, `×`, `÷`, `.`, `=` | live value, scores et décimales ; aucune police système pour les nombres |
+| Trois astres / voiles de résultat | base ivoire + masque d'émission propre | inactif blanc ; actif rouge / bleu-violet / jaune seulement après commit ; retour blanc sur Undo |
+| Astre total `51` | base ivoire-or + trois masques d'alimentation | valeur dynamique ; convergence colorée sans quatrième couleur de ligne |
+| Flux sélection → astre | petit segment/ruban plié et éclats isolés, si nécessaires | courbe et progression calculées par Phaser ; animation temporaire au commit, absente au repos |
+| Flux astres → total | supports de ruban/éclat séparés | trois courbes fixes, mouvement subtil borné ; extinction par slot |
+| Commandes | fonds/états séparés et icônes propres | mêmes dimensions ; libellés fonctionnels dynamiques/localisables |
+
+Couleurs exactes : `#ff5a36`, `#a54dff`, `#ffc72c`. La planche de traduction doit montrer au minimum : zéro ligne (trois astres blancs), une/deux/trois lignes, transfert en cours, trois astres chargés, Undo et réduction de mouvement. Ce lot reste **planifié** ; aucun chemin runtime ci-dessus n'existe encore et aucun asset actif n'est remplacé.
+
 ## Assets gameplay actifs
 
 | Fonction | Source conservée | URL runtime / dimensions | Octets runtime | Ownership / notes |

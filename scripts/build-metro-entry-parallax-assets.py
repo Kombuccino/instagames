@@ -12,9 +12,10 @@ PARALLAX = RUNTIME / "parallax"
 
 SCENE_WIDTH = 1671
 SCENE_HEIGHT = 941
-ARM_SOURCE_WIDTH = 941
 ARM_WIDTH = 1255
 ARM_HEIGHT = 1672
+ARM_V2_SOURCES = RUNTIME / "arms-v2-sources"
+PHONE_SCREEN_CUTOUT = [(408, 421), (673, 432), (601, 989), (344, 961)]
 
 
 def normalize_scene(image: Image.Image, width: int, height: int) -> Image.Image:
@@ -138,49 +139,48 @@ def build_parallax_layers() -> None:
     save_master_and_runtime(reflection, "water-reflection")
 
 
-def extend_arm(source: Image.Image) -> Image.Image:
-    source = source.convert("RGBA")
-    if source.size != (ARM_SOURCE_WIDTH, ARM_HEIGHT):
-        raise ValueError(f"Unexpected arm size {source.size}")
-    output = Image.new("RGBA", (ARM_WIDTH, ARM_HEIGHT))
-    output.paste(source, (0, 0))
+def remove_chroma_green(source: Image.Image) -> Image.Image:
+    rgb = np.asarray(source.convert("RGB"), dtype=np.float32)
+    red, green, blue = (rgb[:, :, channel] for channel in range(3))
+    dominance = green - np.maximum(red, blue)
+    alpha = np.clip((80.0 - dominance) / 55.0, 0.0, 1.0)
+    alpha = np.where(green < 85, 1.0, alpha)
 
-    alpha = np.array(source.getchannel("A"))
-    edge_rows = np.where(alpha[:, ARM_SOURCE_WIDTH - 1] > 16)[0]
-    if not edge_rows.size:
-        raise ValueError("Arm does not reach its source right edge")
-    top = int(edge_rows[0])
-
-    # Continue the existing sleeve itself, then let it leave through the
-    # bottom. Repainting fresh polygons here creates an immediately visible
-    # change of facet scale and colour at the source edge.
-    exit_x = ARM_SOURCE_WIDTH + 188
-    mask = Image.new("L", output.size, 0)
-    ImageDraw.Draw(mask).polygon(
-        [(ARM_SOURCE_WIDTH, top), (exit_x, ARM_HEIGHT), (ARM_SOURCE_WIDTH, ARM_HEIGHT)],
-        fill=255,
+    # Recover edge colour from the green composite before resizing. The soft
+    # alpha band keeps low-poly silhouettes clean without a neon fringe.
+    soft = (alpha > .001) & (alpha < .999)
+    safe_alpha = np.maximum(alpha, .08)
+    output = rgb.copy()
+    output[:, :, 0] = np.where(soft, np.clip(red / safe_alpha, 0, 255), red)
+    output[:, :, 2] = np.where(soft, np.clip(blue / safe_alpha, 0, 255), blue)
+    output[:, :, 1] = np.where(
+        soft,
+        np.clip((green - (1 - alpha) * 255) / safe_alpha, 0, 255),
+        green,
     )
-
-    extension_width = exit_x - ARM_SOURCE_WIDTH
-    continuation = source.crop(
-        (ARM_SOURCE_WIDTH - extension_width, 0, ARM_SOURCE_WIDTH, ARM_HEIGHT)
-    ).transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-    layer = Image.new("RGBA", output.size)
-    layer.alpha_composite(continuation, (ARM_SOURCE_WIDTH, 0))
-    layer.putalpha(Image.composite(layer.getchannel("A"), Image.new("L", output.size), mask))
-    output.alpha_composite(layer)
-    return output
+    rgba = np.dstack((output, np.round(alpha * 255))).astype(np.uint8)
+    return Image.fromarray(rgba, "RGBA").resize(
+        (ARM_WIDTH, ARM_HEIGHT), Image.Resampling.LANCZOS
+    )
 
 
 def build_arms() -> None:
-    for folder in ("arms", "arms-screen-cutout"):
-        destination = RUNTIME / folder
-        destination.mkdir(parents=True, exist_ok=True)
-        for index in range(1, 9):
-            name = f"arm-{index:02d}"
-            image = extend_arm(Image.open(IMPORTED / folder / f"{name}.png"))
-            image.save(destination / f"{name}.png", optimize=True)
-            image.save(destination / f"{name}.webp", format="WEBP", lossless=True, method=6)
+    arms = RUNTIME / "arms"
+    cutouts = RUNTIME / "arms-screen-cutout"
+    arms.mkdir(parents=True, exist_ok=True)
+    cutouts.mkdir(parents=True, exist_ok=True)
+    for index in range(1, 9):
+        name = f"arm-{index:02d}"
+        image = remove_chroma_green(Image.open(ARM_V2_SOURCES / f"{name}-chroma-source.png"))
+        image.save(arms / f"{name}.png", optimize=True)
+        image.save(arms / f"{name}.webp", format="WEBP", lossless=True, method=6)
+
+        cutout = image.copy()
+        alpha = cutout.getchannel("A")
+        ImageDraw.Draw(alpha).polygon(PHONE_SCREEN_CUTOUT, fill=0)
+        cutout.putalpha(alpha)
+        cutout.save(cutouts / f"{name}.png", optimize=True)
+        cutout.save(cutouts / f"{name}.webp", format="WEBP", lossless=True, method=6)
 
 
 if __name__ == "__main__":

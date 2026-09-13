@@ -32,7 +32,7 @@ const TAP_SLOP_PX = 14
 const SWIPE_THRESHOLD_PX = 42
 const METRO_SCENE_ROOT = '/assets/generated/platform/entry-scenes/metro-sunset'
 const METRO_PARALLAX_V3_ROOT = `${METRO_SCENE_ROOT}/parallax-v3`
-const METRO_PARALLAX_V3_REVISION = '20260913-v35'
+const METRO_PARALLAX_V3_REVISION = '20260913-v36'
 const ARM_ROOT = `${METRO_SCENE_ROOT}/arms`
 const armAsset = (variant: string) => `${ARM_ROOT}/arm-${variant}.png?v=${METRO_PARALLAX_V3_REVISION}`
 const ARM_VARIANTS = Array.from({ length: 8 }, (_, index) => armAsset(String(index + 1).padStart(2, '0')))
@@ -123,10 +123,10 @@ function quadToQuadMatrix(source: readonly (readonly [number, number])[], destin
  * variants use the same locked phone geometry. Order is TL, TR, BR, BL.
  */
 const PHONE_SCREEN_QUAD = [
-  [0.338072, 0.297603],
-  [0.629183, 0.297324],
-  [0.559736, 0.660858],
-  [0.263604, 0.652634],
+  [0.433581, 0.251794],
+  [0.715197, 0.258373],
+  [0.638682, 0.591507],
+  [0.365569, 0.574761],
 ] as const
 
 function chooseArm() {

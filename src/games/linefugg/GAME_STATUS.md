@@ -1,6 +1,6 @@
 # LineFugg — Suivi de création
 
-Mis à jour : 13 septembre 2026 à 01:24 Europe/Paris. Version : `0.6.0`. Changelog : `CHANGELOG.md`.
+Mis à jour : 13 septembre 2026 à 14:52 Europe/Paris. Version : `0.6.0`. Changelog : `CHANGELOG.md`.
 
 Runtime Phaser 4.2.1, stage 390 × 844. Prototype, game design et équilibre validés par l'utilisateur. Direction gameplay : **Orbital Accounting**. Cover runtime : current ; quatre références approuvées conservées et quatre restaurations statiques plein cadre actives.
 
@@ -56,8 +56,9 @@ Aucun blocage technique connu. L'optimisation des images runtime de LineFugg est
 
 - Retour utilisateur : la composition actuelle paraît trop massive et mal calée sur PC ; les trois grands panneaux de résultats sont le principal défaut, car ils consomment beaucoup d'espace, ressemblent à des champs presque vides et relient mal calcul, couleur de ligne et score. L'égalité visuelle des commandes Annuler/Valider reste obligatoire.
 - Une première exploration de quatre variantes proches de la DA historique a été produite puis explicitement refusée comme trop similaire et toujours peu convaincante. Elle reste archivée comme recherche rejetée, sans intégration.
-- Une seconde exploration rompt avec le registre illustré : quatre compositions plates (éditoriale claire, arcade sombre, papier modulaire, ledger minimal) présentent chaque ligne sous forme d'une entrée compacte `repère coloré + calcul + score aligné`, avec un total hiérarchisé séparément.
-- Les sources et la planche comparative sont archivées dans `MiniFugg - Graphic Archive/Games/linefugg/gameplay-art-exploration-2026-09-13/round-02-results-redesign`. Statut : généré et archivé ; revue utilisateur en cours ; aucune piste acceptée, intégrée ou publiée.
+- Une seconde exploration a compacté le registre, mais conservait encore sans justification la grille en tuiles, les trois couleurs historiques, les calculs alignés, le total inférieur et les boutons ronds. Elle est refusée par l'utilisateur comme simple restylage et archivée sous `round-02-results-redesign`.
+- La troisième exploration repart uniquement des invariants mécaniques et propose quatre métaphores complètes : sérigraphie et cartes d'impression, serre dont les trois scores deviennent des fruits, séquenceur musical à trois pistes et master, chantier blueprint dont les scores construisent une tour. Palettes, composition, représentation des tracés, restitution des scores et commandes sont propres à chaque piste ; aucun planisphère ni registre d'équations n'est repris.
+- Les sources et la planche comparative sont archivées dans `MiniFugg - Graphic Archive/Games/linefugg/gameplay-art-exploration-2026-09-13/round-03-full-da-rethink`. Statut : généré et archivé ; revue utilisateur en cours ; aucune piste acceptée, intégrée ou publiée.
 - La version reste `0.6.0` : cette passe ne modifie ni runtime, ni règles, ni assets actifs.
 
 ## Remise aux normes des covers — 12 septembre 2026

@@ -1,5 +1,13 @@
 # Les Brochettes de Vlad — Changelog
 
+## [0.4.2] — 2026-09-13 14:36 Europe/Paris
+
+- La bande clients de droite utilise désormais les assets approuvés extraits de la DA utilisateur : tour de pierre `188×1360` et atlas vertical de 5 personnages `192×1250`, chargés depuis `public/assets/imported/vlads-skewers/` sans redessin ni changement de finesse de pixel.
+- La tour est posée selon les coordonnées mesurées dans la référence 853×1844 (`x=665, y=120`) puis traduite dans le stage canonique 390×844. Les cinq lignes de base sont `184 / 297 / 416 / 529 / 645`.
+- Le sens de la file est inversé : le client actif est maintenant dans la loge du haut, puis les suivants descendent sous lui. Les sprites gardent leur ratio source `192:250`, ne tournent plus et ne bougent que sur des coordonnées entières pour éviter les halos/bleus de rééchantillonnage.
+- La commande du client revient dans la zone haute de la DA, avec un cartouche `136×58` pouvant afficher jusqu’à 5 ingrédients et une horloge de patience intégrée sur la droite du même panneau.
+- La présentation reste séparée du gameplay : aucune modification du score, des collisions, de la physique Matter, de la brochette ou de la validation protégée.
+
 ## [0.4.1] — 2026-09-12 23:24 Europe/Paris
 
 - Les quinze clients sont recalés dans leurs loges : taille uniforme, léger retrait dans l'architecture et ligne de base commune à chaque tablette. Le client actif n'est plus agrandi au point de déborder de sa case.
@@ -43,7 +51,7 @@ Vérifié : formats, dimensions, opacité, payload lossless, build/typecheck, pu
 
 - La brochette est raccourcie beaucoup plus strictement : `110 / 150 / 190 / 230` unités pour des recettes de `2 / 3 / 4 / 5` ingrédients, avec une tige ramenée à `10` unités de largeur. Sa capacité visuelle correspond désormais réellement à la commande, sans place apparente pour un ou deux aliments supplémentaires.
 - Une recette complète reste visible et protégée pendant `1 s` avant la livraison automatique. Durant cette seconde, la pointe n'accepte plus aucune collision : aucun ingrédient supplémentaire ne peut ruiner accidentellement une brochette déjà validée.
-- La patience du client reçoit un minimum de sécurité pendant ce court temps de présentation afin qu'une recette terminée ne puisse pas expirer pendant le temps de présentation.
+- La patience du client reçoit un minimum de sécurité pendant ce court temps de présentation afin qu'une commande finie ne puisse pas expirer pendant le temps de présentation.
 - La goutte de sang est entièrement redessinée comme une grosse goutte pixel-art construite sur grille de `2 px`, avec contour sombre, masse rouge saturée et reflet clair ; les anciennes primitives lissées cercle/triangle sont supprimées.
 - Le harpon, la pile et le bras sont davantage quantifiés sur des coordonnées entières pour éviter les décalages subpixel et rapprocher la granularité des éléments procéduraux du reste de la scène.
 

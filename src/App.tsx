@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { GameFeed } from './core/GameFeed'
+import { CoverCalibrationLab } from './core/CoverCalibrationLab'
 import { HomeBisLab } from './core/HomeBisLab'
 import { LayoutLab, type LayoutTemplate } from './core/LayoutLab'
 import { MusicLab } from './core/MusicLab'
@@ -21,6 +22,12 @@ function opensLayoutLab() {
   if (typeof window === 'undefined') return false
   const query = new URL(window.location.href).searchParams
   return query.get('usr') === 'moigod' && query.get('lab') === 'layout'
+}
+
+function opensCoverCalibrationLab() {
+  if (typeof window === 'undefined') return false
+  const query = new URL(window.location.href).searchParams
+  return query.get('usr') === 'moigod' && query.get('lab') === 'layout' && query.get('view') === 'cover-calibration'
 }
 
 function opensHomeBisLab() {
@@ -56,6 +63,7 @@ export default function App() {
       {!homeBisEntered && <PlatformEntryScene handoff="home-bis" onLaunch={(arm) => { setHomeBisArm(arm); setHomeBisEntered(true) }} />}
     </>
   )
+  if (opensCoverCalibrationLab()) return <CoverCalibrationLab />
   const guideView = layoutGuideView()
   if (guideView) return <LayoutLab focus={guideView} />
   if (opensLayoutLab()) return <LayoutLab />

@@ -381,6 +381,7 @@ export function LayoutLab({ focus }: { focus?: LayoutTemplate }) {
         <small>MINIFUGG · ZONES MINIFUGG</small>
         <h1>Un cadre.<br />Une composition.</h1>
         <p>MiniFugg produit ses écrans en portrait sur une largeur logique de 390. Cette page sépare le MASTER, ses zones recadrables et les vrais espaces EXTRA, puis montre les zones Core avant toute création d’assets.</p>
+        <a className="mf-layout-calibration-link" href="?usr=moigod&lab=layout&view=cover-calibration">OUVRIR L’OUTIL DE CALAGE DES COVERS ↗</a>
       </header>
 
       <section className="mf-layout-guides" aria-label="Gabarits canoniques">

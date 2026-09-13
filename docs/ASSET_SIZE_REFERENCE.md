@@ -4,9 +4,9 @@ Le guide interactif est disponible sur `/?usr=moigod&lab=layout`. Il affiche le 
 
 ## Dimensions
 
-Le MASTER portrait mesure `390 × 844` unités logiques. CENTRE mesure `390 × 662`, de `y 91` à `y 753`. HAUT et BAS appartiennent au MASTER et peuvent être recadrés. EXTRA HAUT/BAS sont hors MASTER et n’apparaissent que sur un viewport proportionnellement plus haut.
+Le MASTER portrait mesure `390 × 844` unités logiques. La zone exploitable officielle mesure `360 × 650` pixels CSS. Dans le MASTER 390, elle équivaut à `390 × 704,17`, centrée environ de `y 69,92` à `y 774,08`. HAUT et BAS appartiennent au MASTER et peuvent être recadrés. EXTRA HAUT/BAS sont hors MASTER et n’apparaissent que sur un viewport proportionnellement plus haut.
 
-Les captures du 8 septembre 2026 donnent environ `360 × 611` CSS dans Brave et `360 × 656` dans Chrome sur le même A54. Ces nombres sont des **pixels CSS de viewport utile**, pas des pixels physiques ni une taille d’image. Le mode PWA ou Capacitor donnera encore une autre hauteur utile.
+Les captures physiques donnent environ `360 × 656` CSS dans Chrome sur A54 et, après normalisation, `360 × 657` dans Safari sur iPhone 13 Pro. La référence officielle retient donc `360 × 650` avec une petite marge. Brave avec toutes ses barres reste un cas dégradé à environ `360 × 611`. Ces nombres sont des **pixels CSS de viewport utile**, pas des pixels physiques ni une taille d’image. Le mode PWA ou Capacitor donnera encore davantage de hauteur utile.
 
 À densité de rendu 2, un fond ou une cover MASTER ne dépasse normalement pas `780 × 1688` pixels. Pour un composant affiché à `W × H` unités, le dérivé runtime maximal est `ceil(W × 2) × ceil(H × 2)`. Recadrer l’alpha au contenu, scinder les atlases dépassant 2048 pixels quand c’est utile et archiver séparément les masters de travail plus grands.
 

@@ -32,7 +32,7 @@ try {
   assert.equal(await runtimeFrame.locator('.mf-phaser-host').getAttribute('data-authored-vertical-anchor'), 'bottom')
   assert.equal(await runtimeFrame.locator('.mf-phaser-host').getAttribute('data-effective-vertical-anchor'), 'bottom')
   const frameSize = await page.locator('[data-testid="gameplay-runtime-frame"]').evaluate(frame => ({ width: frame.contentWindow.innerWidth, height: frame.contentWindow.innerHeight }))
-  assert.deepEqual(frameSize, { width: 360, height: 611 })
+  assert.deepEqual(frameSize, { width: 360, height: 650 })
 
   await page.getByRole('button', { name: 'HAUT', exact: true }).click()
   await page.frameLocator('[data-testid="gameplay-runtime-frame"]').locator('.mf-phaser-host[data-effective-vertical-anchor="top"]').waitFor()
@@ -53,9 +53,10 @@ try {
   const exportPath = `${output}/${download.suggestedFilename()}`
   await download.saveAs(exportPath)
   const exported = JSON.parse(await fs.readFile(exportPath, 'utf8'))
-  assert.equal(exported.schema, 'minifugg-gameplay-calibration/v1')
+  assert.equal(exported.schema, 'minifugg-gameplay-calibration/v2')
   assert.deepEqual(exported.master, { width: 390, height: 844 })
-  assert.equal(exported.minimumViewport.height, 662)
+  assert.deepEqual(exported.minimumViewport, { width: 360, height: 650 })
+  assert.equal(Math.round(exported.minimumViewportInMaster.height * 100) / 100, 704.17)
   const vlad = exported.items.find(item => item.key === 'game:vlads-skewers')
   assert.equal(vlad.anchor, 'top')
   assert.equal(vlad.needsAdaptation, true)

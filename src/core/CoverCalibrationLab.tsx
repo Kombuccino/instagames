@@ -1,17 +1,20 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { gameRegistry } from './gameRegistry'
 import { CoinConsole90s } from './CoinConsole90s'
+import { MINIFUGG_PORTRAIT_CENTRE_HEIGHT, MINIFUGG_REFERENCE_VIEWPORT } from './runtime/gameRuntimePolicy'
 import type { GameWelcomeVariant } from './types'
 import './layoutLab.css'
 import './coinConsole90s.css'
 import './coverCalibrationLab.css'
 
 const MASTER = { width: 390, height: 844 } as const
-const MINIMUM_VIEWPORT = { width: 390, height: 662 } as const
-const MAX_WINDOW_TOP = MASTER.height - MINIMUM_VIEWPORT.height
+const MAX_WINDOW_TOP = MASTER.height - MINIFUGG_PORTRAIT_CENTRE_HEIGHT
+const CENTER_WINDOW_TOP = MAX_WINDOW_TOP / 2
 const CONSOLE_HEIGHT = MASTER.width * 534 / 2099
-const STORAGE_KEY = 'minifugg-cover-calibration/v1'
-const SCHEMA = 'minifugg-cover-calibration/v1'
+const STORAGE_KEY = 'minifugg-cover-calibration/v2'
+const LEGACY_STORAGE_KEY = 'minifugg-cover-calibration/v1'
+const LEGACY_MAX_WINDOW_TOP = 182
+const SCHEMA = 'minifugg-cover-calibration/v2'
 
 type CoverItem = {
   key: string
@@ -56,6 +59,10 @@ function clampWindowTop(value: number) {
   return Math.min(MAX_WINDOW_TOP, Math.max(0, Math.round(value * 10) / 10))
 }
 
+function migrateLegacyWindowTop(value: number) {
+  return clampWindowTop(value / LEGACY_MAX_WINDOW_TOP * MAX_WINDOW_TOP)
+}
+
 function objectPositionPercent(position?: string) {
   if (!position) return 50
   const normalized = position.toLowerCase()
@@ -87,12 +94,16 @@ function loadCalibrations(): CalibrationMap {
   const defaults = buildDefaults()
   if (typeof window === 'undefined') return defaults
   try {
-    const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? '{}') as CalibrationMap
+    const currentDraft = window.localStorage.getItem(STORAGE_KEY)
+    const saved = JSON.parse(currentDraft ?? window.localStorage.getItem(LEGACY_STORAGE_KEY) ?? '{}') as CalibrationMap
+    const legacyDraft = currentDraft === null
     for (const item of COVERS) {
       const entry = saved[item.key]
       if (!entry) continue
       defaults[item.key] = {
-        windowTop: clampWindowTop(Number(entry.windowTop) || 0),
+        windowTop: legacyDraft
+          ? migrateLegacyWindowTop(Number(entry.windowTop) || 0)
+          : clampWindowTop(Number(entry.windowTop) || 0),
         reviewed: Boolean(entry.reviewed),
         needsAdaptation: Boolean(entry.needsAdaptation),
         adaptationComment: typeof entry.adaptationComment === 'string' ? entry.adaptationComment : '',
@@ -118,7 +129,8 @@ function exportPayload(calibrations: CalibrationMap) {
     instructions: 'Annotation de cadrage uniquement. Ne pas modifier les masters sans needsSourceAdaptation=true.',
     master: MASTER,
     minimumViewport: {
-      ...MINIMUM_VIEWPORT,
+      ...MINIFUGG_REFERENCE_VIEWPORT,
+      logicalEquivalent: { width: MASTER.width, height: MINIFUGG_PORTRAIT_CENTRE_HEIGHT },
       movableWindowTop: { min: 0, max: MAX_WINDOW_TOP },
     },
     playOverlay: {
@@ -127,7 +139,7 @@ function exportPayload(calibrations: CalibrationMap) {
       anchor: 'bottom',
       logicalBoundsInViewport: {
         x: 0,
-        y: Math.round((MINIMUM_VIEWPORT.height - CONSOLE_HEIGHT) * 100) / 100,
+        y: Math.round((MINIFUGG_PORTRAIT_CENTRE_HEIGHT - CONSOLE_HEIGHT) * 100) / 100,
         width: MASTER.width,
         height: Math.round(CONSOLE_HEIGHT * 100) / 100,
       },
@@ -148,8 +160,8 @@ function exportPayload(calibrations: CalibrationMap) {
         cropWindow: {
           x: 0,
           y: calibration.windowTop,
-          width: MINIMUM_VIEWPORT.width,
-          height: MINIMUM_VIEWPORT.height,
+          width: MASTER.width,
+          height: MINIFUGG_PORTRAIT_CENTRE_HEIGHT,
         },
         recommendedObjectPosition: recommendedObjectPosition(calibration.windowTop),
         reviewed: calibration.reviewed,
@@ -252,7 +264,8 @@ export function CoverCalibrationLab() {
     if (!file) return
     try {
       const parsed = JSON.parse(await file.text()) as { schema?: string, covers?: ImportedCalibration[] }
-      if (parsed.schema && parsed.schema !== SCHEMA) throw new Error(`Format non reconnu : ${parsed.schema}`)
+      if (parsed.schema && !['minifugg-cover-calibration/v1', SCHEMA].includes(parsed.schema)) throw new Error(`Format non reconnu : ${parsed.schema}`)
+      const legacyImport = parsed.schema === 'minifugg-cover-calibration/v1'
       if (!Array.isArray(parsed.covers)) throw new Error('Liste covers absente')
       let imported = 0
       const entries = new Map<string, ImportedCalibration>()
@@ -268,7 +281,9 @@ export function CoverCalibrationLab() {
           const windowTop = entry.windowTop ?? entry.cropWindow?.y
           next[key] = {
             ...next[key],
-            windowTop: Number.isFinite(Number(windowTop)) ? clampWindowTop(Number(windowTop)) : next[key].windowTop,
+            windowTop: Number.isFinite(Number(windowTop))
+              ? legacyImport ? migrateLegacyWindowTop(Number(windowTop)) : clampWindowTop(Number(windowTop))
+              : next[key].windowTop,
             reviewed: typeof entry.reviewed === 'boolean' ? entry.reviewed : next[key].reviewed,
             needsAdaptation: Boolean(entry.needsSourceAdaptation ?? entry.needsAdaptation ?? next[key].needsAdaptation),
             adaptationComment: typeof entry.adaptationComment === 'string' ? entry.adaptationComment : next[key].adaptationComment,
@@ -285,10 +300,10 @@ export function CoverCalibrationLab() {
   }
 
   const windowTopPercent = calibration.windowTop / MASTER.height * 100
-  const viewportHeightPercent = MINIMUM_VIEWPORT.height / MASTER.height * 100
-  const windowBottom = calibration.windowTop + MINIMUM_VIEWPORT.height
+  const viewportHeightPercent = MINIFUGG_PORTRAIT_CENTRE_HEIGHT / MASTER.height * 100
+  const windowBottom = calibration.windowTop + MINIFUGG_PORTRAIT_CENTRE_HEIGHT
   const windowBottomPercent = windowBottom / MASTER.height * 100
-  const consoleTopInMaster = calibration.windowTop + MINIMUM_VIEWPORT.height - CONSOLE_HEIGHT
+  const consoleTopInMaster = calibration.windowTop + MINIFUGG_PORTRAIT_CENTRE_HEIGHT - CONSOLE_HEIGHT
 
   return (
     <main className="mf-layout-lab mf-cover-calibration-lab">
@@ -296,7 +311,7 @@ export function CoverCalibrationLab() {
         <div>
           <small>MINIFUGG · OUTIL DE CALAGE</small>
           <h1>Calage des covers.</h1>
-          <p>Déplace le cadre vert verticalement sur chaque master. Il représente exactement la fenêtre minimale 390 × 662 ; le pupitre JOUER affiché dedans est celui du Core actuel.</p>
+          <p>Déplace le cadre vert verticalement sur chaque master. Il représente exactement la fenêtre exploitable officielle 360 × 650 ; le pupitre JOUER affiché dedans est celui du Core actuel.</p>
         </div>
         <a href="?usr=moigod&lab=layout">RETOUR AUX GABARITS ↗</a>
       </header>
@@ -304,7 +319,7 @@ export function CoverCalibrationLab() {
       <section className="mf-cover-calibration-summary" aria-label="Avancement">
         <span><b>{reviewedCount}</b> / {COVERS.length} cadrages validés</span>
         <span><b>{adaptationCount}</b> cover{adaptationCount > 1 ? 's' : ''} à adapter</span>
-        <span><b>{MAX_WINDOW_TOP}</b> px de débattement vertical</span>
+        <span><b>{Math.round(MAX_WINDOW_TOP * 10) / 10}</b> unités de débattement vertical</span>
       </section>
 
       <section className="mf-cover-calibration-workbench">
@@ -408,12 +423,12 @@ export function CoverCalibrationLab() {
 
           <div className="mf-cover-calibration-presets">
             <button type="button" onClick={() => patchCalibration({ windowTop: 0 })}>HAUT</button>
-            <button type="button" onClick={() => patchCalibration({ windowTop: 91 })}>CENTRE</button>
-            <button type="button" onClick={() => patchCalibration({ windowTop: 182 })}>BAS</button>
+            <button type="button" onClick={() => patchCalibration({ windowTop: clampWindowTop(CENTER_WINDOW_TOP) })}>CENTRE</button>
+            <button type="button" onClick={() => patchCalibration({ windowTop: clampWindowTop(MAX_WINDOW_TOP) })}>BAS</button>
           </div>
 
           <label className="mf-cover-calibration-range">
-            <span>POSITION VERTICALE · {calibration.windowTop} px</span>
+            <span>POSITION VERTICALE · {calibration.windowTop} unités</span>
             <input
               type="range"
               min={0}

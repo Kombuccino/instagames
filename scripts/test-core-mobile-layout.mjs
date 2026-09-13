@@ -7,8 +7,10 @@ const output = 'artifacts/core-mobile-layout'
 await fs.mkdir(output, { recursive: true })
 
 const scenarios = [
+  { name: 'official-chrome-safari', width: 360, height: 650, screenWidth: 360, screenHeight: 800, touch: true, mobile: true, desktop: false },
   { name: 'a54-brave', width: 360, height: 611, screenWidth: 360, screenHeight: 800, touch: true, mobile: true, desktop: false },
   { name: 'a54-chrome', width: 360, height: 656, screenWidth: 360, screenHeight: 800, touch: true, mobile: true, desktop: false },
+  { name: 'iphone13-safari', width: 390, height: 712, screenWidth: 390, screenHeight: 844, touch: true, mobile: true, desktop: false },
   // Reproduces a phone browser exposing a desktop-sized CSS layout viewport.
   { name: 'touch-desktop-viewport', width: 980, height: 1663, screenWidth: 360, screenHeight: 800, touch: true, mobile: true, dpr: 1, desktop: false },
   { name: 'tablet', width: 1024, height: 768, screenWidth: 1024, screenHeight: 768, touch: true, mobile: true, dpr: 1, desktop: true },
@@ -29,7 +31,7 @@ try {
 
   for (const scenario of scenarios) {
     const expectedFeedWidth = scenario.desktop
-      ? Math.min(scenario.width, scenario.height / 662 * 390)
+      ? Math.min(scenario.width, scenario.height * 360 / 650)
       : scenario.width
     const context = await browser.newContext({
       viewport: { width: scenario.width, height: scenario.height },
@@ -145,7 +147,7 @@ try {
       closeTo(stageBox.width, expectedFeedWidth, `${scenario.name} width-driven Phaser stage`)
       closeTo(stageBox.x, 0, `${scenario.name} Phaser stage x`)
     } else {
-      const expectedStageWidth = scenario.height / 662 * 390
+      const expectedStageWidth = scenario.height * 360 / 650
       closeTo(stageBox.width, expectedStageWidth, `${scenario.name} height-driven Phaser stage`)
       closeTo(stageBox.x, feedBox.x, `${scenario.name} Phaser stage x`)
     }

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { MINIFUGG_PORTRAIT_CENTRE_HEIGHT, MINIFUGG_REFERENCE_VIEWPORT } from './runtime/gameRuntimePolicy'
 import './layoutLab.css'
 
 export type LayoutTemplate = 'home' | 'cover' | 'cover-beta' | 'cover-caca' | 'game' | 'game-over' | 'ladder'
@@ -22,11 +23,13 @@ type ScreenPreset = {
 }
 
 const STAGE = { width: 390, height: 844, label: 'PORTRAIT + COVER' } as const
+const MINIMUM_TOP = (STAGE.height - MINIFUGG_PORTRAIT_CENTRE_HEIGHT) / 2
 
 const SCREENS: ScreenPreset[] = [
-  { id: 'a54-brave', label: 'A54 · Brave web', width: 360, height: 611 },
+  { id: 'official-minimum', label: 'OFFICIEL · Chrome/Safari', ...MINIFUGG_REFERENCE_VIEWPORT },
   { id: 'a54-chrome', label: 'A54 · Chrome web', width: 360, height: 656 },
-  { id: 'phone-minimum', label: 'CENTRE seule', width: 390, height: 662 },
+  { id: 'iphone13-safari', label: 'iPhone 13 Pro · Safari', width: 390, height: 712 },
+  { id: 'a54-brave', label: 'A54 · Brave dégradé', width: 360, height: 611 },
   { id: 'phone-reference', label: 'MASTER entier', width: 390, height: 844 },
   { id: 'phone-extra', label: 'Mobile très haut', width: 360, height: 820 },
   { id: 'tablet', label: 'Tablette', width: 768, height: 1024 },
@@ -63,7 +66,7 @@ function downloadStageGuide(mode: 'game' | 'cover') {
   for (let x = grid; x < stage.width; x += grid) { context.beginPath(); context.moveTo(x, 0); context.lineTo(x, stage.height); context.stroke() }
   for (let y = grid; y < stage.height; y += grid) { context.beginPath(); context.moveTo(0, y); context.lineTo(stage.width, y); context.stroke() }
 
-  const safe = { x: 0, y: 91, width: 390, height: 662 }
+  const safe = { x: 0, y: MINIMUM_TOP, width: STAGE.width, height: MINIFUGG_PORTRAIT_CENTRE_HEIGHT }
   context.fillStyle = 'rgba(146, 255, 101, .055)'
   context.fillRect(safe.x, safe.y, safe.width, safe.height)
   context.strokeStyle = '#92ff65'
@@ -72,7 +75,7 @@ function downloadStageGuide(mode: 'game' | 'cover') {
   context.fillStyle = '#92ff65'
   context.font = 'bold 11px monospace'
   context.textAlign = 'center'
-  context.fillText('CENTRE - 390 x 662', safe.x + safe.width / 2, safe.y + safe.height / 2)
+  context.fillText('ZONE EXPLOITABLE - 360 x 650', safe.x + safe.width / 2, safe.y + safe.height / 2)
 
   context.fillStyle = '#eef2e7'
   context.font = 'bold 9px monospace'
@@ -175,7 +178,7 @@ function StageArtwork({ mode = 'combined', fullSurface = false }: { mode?: Guide
         <Zone className="mf-layout-guide__band is-top" name="HAUT" detail="recadrable" />
         <div className="mf-layout-guide__critical">
           <b>CENTRE</b>
-          <small>390 × 662 · zone minimale commune.</small>
+          <small>360 × 650 · zone exploitable officielle.</small>
         </div>
         <Zone className="mf-layout-guide__band is-bottom" name="BAS" detail="recadrable" />
         <span className="mf-layout-guide__axis is-x">{stage.width} unités logiques</span>
@@ -212,14 +215,14 @@ function TemplateMenu({ active }: { active: LayoutTemplate }) {
 }
 
 function ScreenSimulator() {
-  const [screenId, setScreenId] = useState('a54-chrome')
+  const [screenId, setScreenId] = useState('official-minimum')
   const stage = STAGE
   const screen = SCREENS.find((item) => item.id === screenId) ?? SCREENS[0]
 
   const geometry = useMemo(() => {
     const desktop = screen.width >= 760
     const surfaceHeight = screen.height
-    const scale = desktop ? surfaceHeight / 662 : screen.width / stage.width
+    const scale = desktop ? surfaceHeight / MINIFUGG_PORTRAIT_CENTRE_HEIGHT : screen.width / stage.width
     const displayedWidth = stage.width * scale
     const displayedHeight = stage.height * scale
     const surfaceWidth = desktop ? displayedWidth : screen.width
@@ -319,7 +322,7 @@ function Vocabulary() {
   const words = [
     ['MASTER', 'Le cadre artistique complet 390 × 844.'],
     ['HAUT', 'Partie supérieure du MASTER, recadrable.'],
-    ['CENTRE', 'Zone commune 390 × 662, toujours visible.'],
+    ['CENTRE', 'Zone exploitable officielle 360 × 650.'],
     ['BAS', 'Partie inférieure du MASTER, recadrable.'],
     ['EXTRA HAUT', 'Espace réel au-dessus du MASTER si le viewport est plus haut.'],
     ['EXTRA BAS', 'Espace réel sous le MASTER si le viewport est plus haut.'],

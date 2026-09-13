@@ -11,6 +11,7 @@ import {
 import { PhoneWelcomeScreen } from './graphics/PhoneWelcomeScreen'
 import { ProjectiveDomSurface } from './graphics/ProjectiveDomSurface'
 import { createPlatformEntryMusic, type PlatformEntryMusicController } from './platformEntryMusic'
+import { MINIFUGG_PORTRAIT_CENTRE_HEIGHT } from './runtime/gameRuntimePolicy'
 import './platformEntryScene.css'
 import './phoneProjectiveSurface.css'
 import './platformEntrySceneHandoff.css'
@@ -206,7 +207,7 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
       const layoutWidth = Math.min(viewportWidth, viewportHeight * 1.7768)
       const layoutLeft = (viewportWidth - layoutWidth) / 2
       const rightInset = layoutWidth * (viewportWidth <= 1050 ? 0.015 : 0.055)
-      const masterScale = viewportHeight / 662
+      const masterScale = viewportHeight / MINIFUGG_PORTRAIT_CENTRE_HEIGHT
       const masterWidth = 390 * masterScale
       const masterHeight = 844 * masterScale
       const wrapLeft = layoutLeft + layoutWidth - rightInset - masterWidth

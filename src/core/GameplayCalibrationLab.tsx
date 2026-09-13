@@ -1,14 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { gameRegistry } from './gameRegistry'
 import { GAMEPLAY_DA_LAB_ASSETS } from './gameplayDaLabCatalog'
-import type { MiniFuggVerticalAnchor } from './runtime/gameRuntimePolicy'
+import {
+  MINIFUGG_PORTRAIT_CENTRE_HEIGHT,
+  MINIFUGG_REFERENCE_VIEWPORT,
+  type MiniFuggVerticalAnchor,
+} from './runtime/gameRuntimePolicy'
 import './gameplayCalibrationLab.css'
 
 const MASTER = { width: 390, height: 844 }
-const MINIMUM_HEIGHT = 662
-const STORAGE_KEY = 'minifugg-gameplay-calibration/v1'
+const STORAGE_KEY = 'minifugg-gameplay-calibration/v2'
+const LEGACY_STORAGE_KEY = 'minifugg-gameplay-calibration/v1'
 const DB_NAME = 'minifugg-gameplay-da-lab'
-const SCHEMA = 'minifugg-gameplay-calibration/v1'
+const SCHEMA = 'minifugg-gameplay-calibration/v2'
 
 type ScreenPreset = {
   id: string
@@ -19,8 +23,10 @@ type ScreenPreset = {
 }
 
 const SCREENS: ScreenPreset[] = [
-  { id: 'a54-brave', label: 'A54 · Brave', width: 360, height: 611, axis: 'width' },
+  { id: 'official-minimum', label: 'OFFICIEL · Chrome/Safari', ...MINIFUGG_REFERENCE_VIEWPORT, axis: 'width' },
   { id: 'a54-chrome', label: 'A54 · Chrome', width: 360, height: 656, axis: 'width' },
+  { id: 'iphone13-safari', label: 'iPhone 13 Pro · Safari', width: 390, height: 712, axis: 'width' },
+  { id: 'a54-brave', label: 'A54 · Brave dégradé', width: 360, height: 611, axis: 'width' },
   { id: 'mobile-app', label: 'Téléphone · app', width: 390, height: 844, axis: 'width' },
   { id: 'mobile-tall', label: 'Téléphone très haut', width: 430, height: 932, axis: 'width' },
   { id: 'desktop', label: 'PC · 16:9', width: 1280, height: 720, axis: 'height' },
@@ -73,7 +79,7 @@ function defaultCalibration(source?: Source): Calibration {
 
 function readStoredCalibrations(): Record<string, Calibration> {
   try {
-    const value = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}') as Record<string, Partial<Calibration>>
+    const value = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY) ?? '{}') as Record<string, Partial<Calibration>>
     return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, { ...DEFAULT_CALIBRATION, ...item }]))
   } catch {
     return {}
@@ -124,7 +130,7 @@ function measureImage(file: File) {
 function geometryFor(screen: ScreenPreset, anchor: MiniFuggVerticalAnchor) {
   const scale = screen.axis === 'width'
     ? screen.width / MASTER.width
-    : Math.min(screen.height / MINIMUM_HEIGHT, screen.width / MASTER.width)
+    : Math.min(screen.height / MINIFUGG_PORTRAIT_CENTRE_HEIGHT, screen.width / MASTER.width)
   const width = MASTER.width * scale
   const height = MASTER.height * scale
   const remainder = screen.height - height
@@ -144,7 +150,8 @@ function downloadJson(sources: Source[], calibrations: Record<string, Calibratio
     schema: SCHEMA,
     exportedAt: new Date().toISOString(),
     master: MASTER,
-    minimumViewport: { width: 390, height: MINIMUM_HEIGHT },
+    minimumViewport: MINIFUGG_REFERENCE_VIEWPORT,
+    minimumViewportInMaster: { width: MASTER.width, height: MINIFUGG_PORTRAIT_CENTRE_HEIGHT },
     items: sources.map((source) => ({
       key: source.key,
       type: source.kind,
@@ -182,7 +189,7 @@ function DaArtwork({ source, calibration, geometry }: { source: Source, calibrat
 export function GameplayCalibrationLab() {
   const [uploads, setUploads] = useState<UploadedDa[]>([])
   const [selectedKey, setSelectedKey] = useState('game:vlads-skewers')
-  const [screenId, setScreenId] = useState('a54-brave')
+  const [screenId, setScreenId] = useState('official-minimum')
   const [calibrations, setCalibrations] = useState<Record<string, Calibration>>(readStoredCalibrations)
   const [message, setMessage] = useState('Choisis un jeu ou ajoute une DA.')
   const fileInputRef = useRef<HTMLInputElement>(null)

@@ -4,13 +4,13 @@ Validate every surface against its named model in [Zones MiniFugg](MINIFUGG_ZONE
 
 Living record of the platform visual decisions already approved by the user. Update this file whenever a visual direction is accepted/rejected so later work does not drift back to older concepts.
 
-## Mobile viewport behavior — locked 12 September 2026
+## Mobile viewport behavior — locked 13 September 2026
 
 On a touch phone, the complete Core column always follows the useful width: the logical `390` units fill that width, the available browser/app height defines the visible window, and a shorter window never shrinks the composition horizontally. Covers stay anchored at the top, so only their expendable lower continuation is cropped as the browser chrome changes.
 
-This phone rule remains active when a mobile browser exposes a desktop-sized CSS layout viewport (for example a `980px` viewport in a desktop-site mode). On a true tablet or PC, the centered Core column keeps the same vertical `390 × 662` geometry as gameplay: CENTRE fills the useful height and determines the displayed width. Large-screen mode applies only when both the layout viewport and the physical CSS screen are at least `760px` wide, so a narrow phone cannot be misclassified by its artificial layout viewport. Gameplay on a phone remains width-driven; its individual `top | center | bottom` vertical anchor is still owned by each game.
+The official exploitable phone viewport is `360 × 650`. This phone rule remains active when a mobile browser exposes a desktop-sized CSS layout viewport (for example a `980px` viewport in a desktop-site mode). On a true tablet or PC, the centered Core column keeps the same `360 × 650` ratio as gameplay: CENTRE fills the useful height and determines the displayed width. Large-screen mode applies only when both the layout viewport and the physical CSS screen are at least `760px` wide, so a narrow phone cannot be misclassified by its artificial layout viewport. Gameplay on a phone remains width-driven; its individual `top | center | bottom` vertical anchor is still owned by each game.
 
-Regression coverage: A54 Brave `360 × 611`, A54 Chrome `360 × 656`, narrow-phone/desktop-layout `980 × 1663`, tablet `1024 × 768`, and desktop `1280 × 720`, including Cover → Phaser. The phone cases use the full viewport width; tablet and desktop preserve the centered vertical Core column with Cover and Phaser at the same width.
+Regression coverage: official Chrome/Safari `360 × 650`, A54 Chrome `360 × 656`, iPhone 13 Pro Safari `390 × 712` (about `360 × 657` normalized), A54 Brave `360 × 611` as a degraded below-minimum case, narrow-phone/desktop-layout `980 × 1663`, tablet `1024 × 768`, and desktop `1280 × 720`, including Cover → Phaser. The phone cases use the full viewport width; tablet and desktop preserve the centered vertical Core column with Cover and Phaser at the same width.
 
 The Core overlay follows that same displayed width. At and below the canonical
 `390px`, the validated phone sizes are a legibility floor. Above `390px`, the

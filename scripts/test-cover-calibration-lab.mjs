@@ -34,7 +34,7 @@ try {
   await page.getByRole('button', { name: /CrazyPapers Constructivist Clerk/ }).click()
 
   const slider = page.locator('[data-testid="cover-window-top"]')
-  closeTo(Number(await slider.inputValue()), 182, 'existing bottom-center mapping', .1)
+  closeTo(Number(await slider.inputValue()), 139.8, 'existing bottom-center mapping', .1)
 
   const stage = page.locator('[data-testid="cover-calibration-stage"]')
   const windowFrame = page.locator('[data-testid="cover-calibration-window"]')
@@ -46,8 +46,8 @@ try {
     windowFrame.boundingBox(), console.boundingBox(), play.boundingBox(),
   ])
   assert.ok(stageBox && windowBox && consoleBox && playBox)
-  closeTo(windowBox.y, stageBox.y + stageInterior.clientTop + 182 / 844 * stageInterior.clientHeight, 'movable viewport y')
-  closeTo(windowBox.height, stageInterior.clientHeight * 662 / 844, 'minimum viewport height')
+  closeTo(windowBox.y, stageBox.y + stageInterior.clientTop + 139.8 / 844 * stageInterior.clientHeight, 'movable viewport y')
+  closeTo(windowBox.height, stageInterior.clientHeight * (650 * 390 / 360) / 844, 'minimum viewport height')
   closeTo(consoleBox.height, consoleBox.width * 534 / 2099, 'real console aspect ratio')
   closeTo(consoleBox.y + consoleBox.height, windowBox.y + windowBox.height, 'console bottom anchor', 4)
   closeTo(playBox.x, consoleBox.x + consoleBox.width * .3349, 'PLAY x', 1.5)
@@ -58,14 +58,14 @@ try {
   await page.mouse.down()
   await page.mouse.move(windowBox.x + windowBox.width / 2, windowBox.y + windowBox.height / 2 - 14, { steps: 3 })
   await page.mouse.up()
-  assert.ok(Number(await slider.inputValue()) < 182, 'the green viewport must move with the mouse')
+  assert.ok(Number(await slider.inputValue()) < 139.8, 'the green viewport must move with the mouse')
 
   await slider.evaluate(input => {
     const setValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set
-    setValue.call(input, '150')
+    setValue.call(input, '110')
     input.dispatchEvent(new Event('input', { bubbles: true }))
   })
-  closeTo(Number(await slider.inputValue()), 150, 'custom crop after range input', .1)
+  closeTo(Number(await slider.inputValue()), 110, 'custom crop after range input', .1)
   await page.locator('[data-testid="cover-needs-adaptation"]').check()
   await page.locator('[data-testid="cover-adaptation-comment"]').fill('Prolonger le corps sous le bouton PLAY sans modifier le style ni le titre.')
   await page.getByRole('button', { name: 'VALIDER & SUIVANTE →' }).click()
@@ -76,14 +76,16 @@ try {
   const exportPath = `${output}/${download.suggestedFilename()}`
   await download.saveAs(exportPath)
   const exported = JSON.parse(await fs.readFile(exportPath, 'utf8'))
-  assert.equal(exported.schema, 'minifugg-cover-calibration/v1')
+  assert.equal(exported.schema, 'minifugg-cover-calibration/v2')
   assert.deepEqual(exported.master, { width: 390, height: 844 })
-  assert.equal(exported.minimumViewport.height, 662)
+  assert.equal(exported.minimumViewport.width, 360)
+  assert.equal(exported.minimumViewport.height, 650)
+  closeTo(exported.minimumViewport.logicalEquivalent.height, 650 * 390 / 360, 'logical equivalent height', .001)
   assert.equal(exported.covers.length, 23)
   const constructivist = exported.covers.find(cover => cover.key === 'crazy-papers/constructivist-clerk')
   assert.ok(constructivist)
-  assert.equal(constructivist.cropWindow.y, 150)
-  assert.equal(constructivist.recommendedObjectPosition, 'center 82.4%')
+  assert.equal(constructivist.cropWindow.y, 110)
+  assert.equal(constructivist.recommendedObjectPosition, 'center 78.7%')
   assert.equal(constructivist.reviewed, true)
   assert.equal(constructivist.needsSourceAdaptation, true)
   assert.match(constructivist.adaptationComment, /Prolonger le corps/)
@@ -92,7 +94,7 @@ try {
   await page.reload()
   await page.locator('[data-testid="cover-game-filter"]').selectOption('crazy-papers')
   await page.getByRole('button', { name: /CrazyPapers Constructivist Clerk/ }).click()
-  closeTo(Number(await page.locator('[data-testid="cover-window-top"]').inputValue()), 150, 'persisted crop', .1)
+  closeTo(Number(await page.locator('[data-testid="cover-window-top"]').inputValue()), 110, 'persisted crop', .1)
   assert.equal(await page.locator('[data-testid="cover-needs-adaptation"]').isChecked(), true)
   assert.match(await page.locator('[data-testid="cover-adaptation-comment"]').inputValue(), /Prolonger le corps/)
 
@@ -100,7 +102,7 @@ try {
   closeTo(Number(await page.locator('[data-testid="cover-window-top"]').inputValue()), 0, 'temporary local edit', .1)
   await page.locator('[data-testid="cover-import-json"]').setInputFiles(exportPath)
   await page.getByText('23 réglages importés.').waitFor()
-  closeTo(Number(await page.locator('[data-testid="cover-window-top"]').inputValue()), 150, 'crop restored by JSON import', .1)
+  closeTo(Number(await page.locator('[data-testid="cover-window-top"]').inputValue()), 110, 'crop restored by JSON import', .1)
 
   const screenshot = `${output}/desktop-workbench.png`
   await page.screenshot({ path: screenshot, fullPage: true })

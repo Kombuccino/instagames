@@ -30,9 +30,9 @@ A game may declare another fixed logical size when the mechanic genuinely requir
 
 The runtime scales the stage uniformly. Mobile uses the full useful width; desktop/big screen scales from CENTRE's full useful height. Conceptually:
 
-`scale = mobile ? availableWidth / 390 : availableHeight / 662`
+`scale = mobile ? availableWidth / 390 : availableHeight / (390 × 650 / 360)`
 
-The MASTER is `390 × 844`. CENTRE (`y 91→753`) is guaranteed. On mobile, only HAUT/BAS may be cropped; on a proportionally taller viewport, EXTRA HAUT/BAS may exist outside MASTER. On desktop CENTRE fills the height and HAUT/BAS are cropped; remaining space is lateral Core space.
+The MASTER is `390 × 844`. The official exploitable viewport is `360 × 650`, equivalent to a `390 × 704.17` logical window in the MASTER. On mobile, only HAUT/BAS may be cropped; on a proportionally taller viewport, EXTRA HAUT/BAS may exist outside MASTER. On desktop the exploitable window fills the height and HAUT/BAS are cropped; remaining space is lateral Core space.
 
 Positions, distances, hit boxes, cameras and authored layer relationships stay in logical units.
 

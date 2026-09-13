@@ -6,7 +6,11 @@ export const DEFAULT_LOGICAL_VIEWPORTS = {
 } as const satisfies Record<string, GameLogicalViewport>
 
 export const DEFAULT_RENDER_PIXEL_RATIO_CAP = 2
-export const MINIFUGG_PORTRAIT_CENTRE_HEIGHT = 662
+/** Product reference measured on Chrome/Safari, expressed in CSS viewport pixels. */
+export const MINIFUGG_REFERENCE_VIEWPORT = { width: 360, height: 650 } as const
+/** Same reference ratio projected into the fixed 390-wide authored MASTER. */
+export const MINIFUGG_PORTRAIT_CENTRE_HEIGHT = DEFAULT_LOGICAL_VIEWPORTS.portrait.width
+  * MINIFUGG_REFERENCE_VIEWPORT.height / MINIFUGG_REFERENCE_VIEWPORT.width
 export const MINIFUGG_DESKTOP_BREAKPOINT = 760
 export const MINIFUGG_DESKTOP_MEDIA_QUERY = `(min-width: ${MINIFUGG_DESKTOP_BREAKPOINT}px) and (min-device-width: ${MINIFUGG_DESKTOP_BREAKPOINT}px)`
 

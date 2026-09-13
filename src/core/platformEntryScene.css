@@ -90,7 +90,7 @@
   inset: 0;
   z-index: 3;
   transform-origin: 44.1% 47.5%;
-  transform: translate3d(122px,139px,0) scale(.91) rotate(-1.6deg);
+  transform: translate3d(0,139px,0) scale(.91) rotate(-1.6deg);
   will-change: transform, opacity;
   animation: none;
 }
@@ -249,7 +249,7 @@
 @keyframes mf-entry-hand-deliver {
   0% {
     opacity: 1;
-    transform: translate3d(122px,139px,0) scale(.91) rotate(-1.6deg);
+    transform: translate3d(0,139px,0) scale(.91) rotate(-1.6deg);
   }
   38% {
     opacity: 1;
@@ -320,7 +320,7 @@
   }
 
   .mf-entry-scene__hand-group {
-    transform: translate3d(122px,139px,0) scale(.91) rotate(-1.6deg);
+    transform: translate3d(0,139px,0) scale(.91) rotate(-1.6deg);
   }
 
   .mf-entry-scene.is-entering .mf-entry-scene__hand-group {

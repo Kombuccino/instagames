@@ -34,6 +34,9 @@ const SWIPE_THRESHOLD_PX = 42
 const METRO_SCENE_ROOT = '/assets/generated/platform/entry-scenes/metro-sunset'
 const METRO_PARALLAX_V3_ROOT = `${METRO_SCENE_ROOT}/parallax-v3`
 const METRO_PARALLAX_V3_REVISION = '20260913-v37'
+const MOBILE_STAGE_WIDTH = 390
+const DESKTOP_STAGE_WIDTH = 1671
+const DESKTOP_STAGE_HEIGHT = 941
 const ARM_ROOT = `${METRO_SCENE_ROOT}/arms-screen-cutout`
 const armAsset = (variant: string) => `${ARM_ROOT}/arm-${variant}.png?v=${METRO_PARALLAX_V3_REVISION}`
 const ARM_VARIANTS = Array.from({ length: 8 }, (_, index) => armAsset(String(index + 1).padStart(2, '0')))
@@ -174,17 +177,17 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
     const stage = stageRef.current
     if (!stage) return
 
-    const updateMobileStageScale = () => {
-      if (window.innerWidth > 760) {
-        stage.style.removeProperty('--mf-entry-mobile-scale')
-        return
-      }
-      stage.style.setProperty('--mf-entry-mobile-scale', String(window.innerWidth / 390))
+    const updateStageScale = () => {
+      const isMobile = window.innerWidth <= 760
+      const scale = isMobile
+        ? window.innerWidth / MOBILE_STAGE_WIDTH
+        : Math.max(window.innerWidth / DESKTOP_STAGE_WIDTH, window.innerHeight / DESKTOP_STAGE_HEIGHT)
+      stage.style.setProperty('--mf-entry-stage-scale', String(scale))
     }
 
-    updateMobileStageScale()
-    window.addEventListener('resize', updateMobileStageScale)
-    return () => window.removeEventListener('resize', updateMobileStageScale)
+    updateStageScale()
+    window.addEventListener('resize', updateStageScale)
+    return () => window.removeEventListener('resize', updateStageScale)
   }, [])
 
   useLayoutEffect(() => {
@@ -217,18 +220,38 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
       const targetTop = wrapTop + bezel
       const targetRight = wrapLeft + masterWidth - bezel
       const targetBottom = wrapTop + masterHeight - bezel
-      const rigRect = rig.getBoundingClientRect()
       const source = PHONE_SCREEN_QUAD.map(([x, y]) => [x * width, y * height] as const)
+      const stage = stageRef.current
+      if (!stage) return
+      const stageRect = stage.getBoundingClientRect()
+      const stageScale = stageRect.width / stage.offsetWidth
+      if (!Number.isFinite(stageScale) || stageScale <= 0) return
+      const rigLeft = rig.offsetLeft
+      const rigTop = rig.offsetTop
       const destination = [
-        [targetLeft - rigRect.left, targetTop - rigRect.top],
-        [targetRight - rigRect.left, targetTop - rigRect.top],
-        [targetRight - rigRect.left, targetBottom - rigRect.top],
-        [targetLeft - rigRect.left, targetBottom - rigRect.top],
+        [(targetLeft - stageRect.left) / stageScale - rigLeft, (targetTop - stageRect.top) / stageScale - rigTop],
+        [(targetRight - stageRect.left) / stageScale - rigLeft, (targetTop - stageRect.top) / stageScale - rigTop],
+        [(targetRight - stageRect.left) / stageScale - rigLeft, (targetBottom - stageRect.top) / stageScale - rigTop],
+        [(targetLeft - stageRect.left) / stageScale - rigLeft, (targetBottom - stageRect.top) / stageScale - rigTop],
       ] as const
 
       const transform = quadToQuadMatrix(source, destination, width, height)
       rig.style.setProperty('--mf-entry-final-transform', transform)
-      document.documentElement.style.setProperty('--mf-entry-home-final-transform', transform)
+
+      const homeRigWidth = viewportHeight * 0.5628
+      const homeRigHeight = viewportHeight
+      const homeRigLeft = viewportWidth - viewportWidth * 0.08 - homeRigWidth
+      const homeSource = PHONE_SCREEN_QUAD.map(([x, y]) => [x * homeRigWidth, y * homeRigHeight] as const)
+      const homeDestination = [
+        [targetLeft - homeRigLeft, targetTop],
+        [targetRight - homeRigLeft, targetTop],
+        [targetRight - homeRigLeft, targetBottom],
+        [targetLeft - homeRigLeft, targetBottom],
+      ] as const
+      document.documentElement.style.setProperty(
+        '--mf-entry-home-final-transform',
+        quadToQuadMatrix(homeSource, homeDestination, homeRigWidth, homeRigHeight),
+      )
     }
 
     const observer = new ResizeObserver(updateHandoffTransform)

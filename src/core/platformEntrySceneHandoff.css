@@ -31,7 +31,7 @@
 @keyframes mf-entry-hand-deliver-seamless {
   0% {
     opacity: 1;
-    transform: translate3d(15%,20%,0) scale(.91) rotate(-1.6deg);
+    transform: translate3d(0,139px,0) scale(.91) rotate(-1.6deg);
   }
   38% {
     opacity: 1;
@@ -59,8 +59,8 @@
   }
 }
 
-/* The wide pilot uses one viewport for both rooms. The portrait artwork is a
- * separate phone rig, while the metro plate fills the desktop stage. */
+/* Wagon and phone use fixed coordinates in one authored scene. The viewport
+ * scales and crops that complete scene instead of positioning the hand again. */
 @media (max-width: 760px) {
   .mf-entry-scene.is-metro-v2 .mf-entry-scene__stage {
     position: absolute;
@@ -68,7 +68,7 @@
     top: 50%;
     width: 390px;
     height: 844px;
-    transform: translate(-50%, -50%) scale(var(--mf-entry-mobile-scale, 1));
+    transform: translate(-50%, -50%) scale(var(--mf-entry-stage-scale, 1));
     transform-origin: 50% 50%;
   }
 
@@ -84,12 +84,21 @@
     height: 693.33px;
     transform: none;
   }
+
+  .mf-entry-scene.is-metro-v2 .mf-entry-scene__hand-group {
+    transform: translate3d(0,139px,0) scale(.91) rotate(-1.6deg);
+  }
 }
 
 @media (min-width: 761px) {
   .mf-entry-scene.is-metro-v2 .mf-entry-scene__stage {
-    width: 100vw;
-    height: 100dvh;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 1671px;
+    height: 941px;
+    transform: translate(-50%, -50%) scale(var(--mf-entry-stage-scale, 1));
+    transform-origin: 50% 50%;
   }
 
   .mf-entry-scene.is-metro-v2 .mf-entry-scene__wagon {
@@ -101,9 +110,9 @@
   }
 
   .mf-entry-scene.is-metro-v2 .mf-entry-scene__phone-rig {
-    inset: 5dvh 22.5% auto auto;
-    width: 66.41dvh;
-    height: 118dvh;
+    inset: 47px auto auto 671px;
+    width: 625px;
+    height: 1110px;
     will-change: transform;
   }
 

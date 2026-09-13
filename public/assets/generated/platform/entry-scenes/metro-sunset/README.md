@@ -9,7 +9,7 @@ Approved entry-scene plate selected on 12 September 2026.
 
 The runtime defaults to the 20% closer camera. `?metroDistance=30` switches the entry pilot to the 30% alternate without changing layout or handoff geometry.
 
-The existing MiniFugg phone shell and live projected phone screen remain independent Core layers. `arms/` and `arms-screen-cutout/` contain the eight production derivatives on a wider transparent canvas. The original 941-pixel-wide source remains pixel-identical. Each missing sleeve section uses a restrained faceted palette sampled from that arm's own clothing, follows the original angle and leaves through the bottom without widening toward the right edge. No mirror or shared recoloured extension is used. PNG files are the lossless masters and lossless WebP files are served at runtime with PNG fallback.
+The existing MiniFugg phone shell and live projected phone screen remain independent Core layers. `arms/` and `arms-screen-cutout/` contain the eight production derivatives on a wider transparent canvas. The original 941-pixel-wide source remains pixel-identical. Each missing sleeve section directly continues that variant's existing raster texture, follows the original angle and leaves through the bottom without widening toward the right edge. No newly invented palette or shared recoloured extension is used. PNG files are the lossless masters and lossless WebP files are served at runtime with PNG fallback.
 
 The active Home uses `parallax-v3/` for the 20% composition:
 

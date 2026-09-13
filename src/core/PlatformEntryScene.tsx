@@ -32,9 +32,10 @@ const TAP_SLOP_PX = 14
 const SWIPE_THRESHOLD_PX = 42
 const METRO_SCENE_ROOT = '/assets/generated/platform/entry-scenes/metro-sunset'
 const METRO_PARALLAX_V3_ROOT = `${METRO_SCENE_ROOT}/parallax-v3`
-const METRO_PARALLAX_V3_REVISION = '20260913-v34'
+const METRO_PARALLAX_V3_REVISION = '20260913-v35'
 const ARM_ROOT = `${METRO_SCENE_ROOT}/arms`
-const ARM_VARIANTS = Array.from({ length: 8 }, (_, index) => `${ARM_ROOT}/arm-${String(index + 1).padStart(2, '0')}.png`)
+const armAsset = (variant: string) => `${ARM_ROOT}/arm-${variant}.png?v=${METRO_PARALLAX_V3_REVISION}`
+const ARM_VARIANTS = Array.from({ length: 8 }, (_, index) => armAsset(String(index + 1).padStart(2, '0')))
 const ARM_STORAGE_KEY = 'minifugg:entry-arm:v1'
 const METRO_PARALLAX_V3_LOOPS = ['water-strip', 'water-sparkle-strip', 'skyline-far-strip', 'skyline-near-strip', 'shore-bridge-strip'] as const
 
@@ -132,7 +133,7 @@ function chooseArm() {
   if (typeof window === 'undefined') return ARM_VARIANTS[0]
 
   const forcedVariant = new URL(window.location.href).searchParams.get('entryArm')
-  if (/^0[1-8]$/.test(forcedVariant ?? '')) return `${ARM_ROOT}/arm-${forcedVariant}.png`
+  if (/^0[1-8]$/.test(forcedVariant ?? '')) return armAsset(forcedVariant!)
 
   let previous = -1
   try {

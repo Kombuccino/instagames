@@ -22,8 +22,8 @@ export const gameDefinition: InstagameDefinition = {
   welcome: TETRAMINDFCK_WELCOME,
   component: TetraMindFck,
   release: {
-    version: '0.8.0',
-    updatedAt: '2026-09-13T10:48:00+02:00',
+    version: '0.8.1',
+    updatedAt: '2026-09-13T23:31:00+02:00',
     changelogPath: 'src/games/calc-drop/CHANGELOG.md',
   },
   instructions: {

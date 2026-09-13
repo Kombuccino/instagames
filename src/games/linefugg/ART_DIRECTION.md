@@ -1,6 +1,6 @@
 # LineFugg — Art Direction
 
-Status: runtime canonical **Orbital Accounting** approved 2026-09-06 ; replacement direction **Solar Origami** selected in principle 2026-09-13, corrected v2 production tilesets prepared for review, final integration still pending.
+Status: runtime canonical **Solar Origami v2**, integrated 2026-09-14 after the user authorized the in-game replacement. Final artistic review in the live composition remains open. **Orbital Accounting** is retained below as superseded history.
 Cover status: current static collection, integrated 2026-09-07 after explicit user request. Preserve the four approved originals identified in ASSET_MANIFEST.md; animation is deferred, not a reason to retain the migration badge. Cover art follows DA_COVER.md, independently from the gameplay medium below.
 
 ## Replacement direction — Solar Origami, 2026-09-13
@@ -15,9 +15,9 @@ The board has one neutral faceted family with clearly different operator silhoue
 
 No persistent free-form ribbon joins an arbitrary board selection to a result craft. Phaser keeps the selected line on the board, then on commit emits a short moving origami-energy transfer from the chosen line toward its fixed result slot. The transfer fades on arrival; only the three fixed result-to-51 energy links persist and move subtly. Reduced motion replaces travel with an immediate color/energy state change. All curves, particles, tint and timing are engine-owned; no selected path, score or charged state is baked into the environment.
 
-Raster production includes a consistent generated numeric/math atlas. Required cell-face frames are `1…9`, `−1…−4`, `×2`, `×3`, `÷2`, `÷3` (17 faces). A separate composable score atlas contains `0…9`, `−`, `+`, `×`, `÷`, decimal point and `=` so live and final values, including decimals, never depend on a system font. A second generated tileset supplies the nine letters needed by `ANNULER` / `VALIDER` and their two icons. Clean derivatives, explicit frame metadata and source sheets live under `public/assets/generated/linefugg/solar-origami/`.
+Raster production includes a consistent generated numeric/math atlas. Required cell-face frames are `1…9`, `−1…−4`, `×2`, `×3`, `÷2`, `÷3` (17 faces). A separate composable score atlas contains `0…9`, `−`, `+`, `×`, `÷`, decimal point and `=` so live and final values, including decimals, never depend on a system font. The final transparent control board contains the English actions `UNDO` / `VALIDATE` and their icons. Clean derivatives, explicit frame metadata and source sheets live under `public/assets/generated/linefugg/solar-origami-v2/`.
 
-Visible text allowlist remains closed: gameplay values and the functional actions `ANNULER` / `VALIDER` only. The production board now covers zero, one, two and three committed lines in MASTER and exact PC CENTRE crops, plus a four-frame transfer storyboard. Neutral/charged states, operator silhouettes and generated glyph atlases are technically prepared. The current runtime remains unchanged until this pack is reviewed and integration is explicitly started.
+Visible text allowlist remains closed: gameplay values and the functional actions `UNDO` / `VALIDATE` only. No slogan, lore label or decorative microcopy belongs in the gameplay raster. The v2 pack is now active in Phaser: neutral/charged states, operator silhouettes, raster glyphs, selection segments and energy frames are assembled dynamically inside the `390×844` stage and its exact PC CENTRE crop.
 
 ## Continuity contract — 2026-09-07
 

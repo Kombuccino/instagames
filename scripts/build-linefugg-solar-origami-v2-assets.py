@@ -169,12 +169,32 @@ def main() -> None:
     mega_source = SOURCES / "solar-origami-mega-tileset-chroma-v2.png"
     glyph_source = SOURCES / "solar-origami-glyphs-chroma-v2.png"
     fx_source = SOURCES / "solar-origami-fx-chroma-v2.png"
+    controls_source = SOURCES / "solar-origami-controls-english-alpha-v3.png"
+    background_source = SOURCES / "solar-origami-background-source-v2.png"
     mega = chroma_to_alpha(open_rgba(mega_source))
     glyph_sheet = chroma_to_alpha(open_rgba(glyph_source))
     fx = chroma_to_alpha(open_rgba(fx_source))
+    controls_sheet = open_rgba(controls_source)
+    background = open_rgba(background_source)
+    control_x = equal_edges(controls_sheet.width, 2)
+    control_y = equal_edges(controls_sheet.height, 2)
+    compact_controls = []
+    for row in range(2):
+        for col in range(2):
+            compact_controls.append(normalized(
+                controls_sheet.crop((control_x[col], control_y[row], control_x[col + 1], control_y[row + 1])),
+                (300, 100), 4,
+            ))
+    # The first generated general sheet carried French labels. Keep it as a source
+    # trace, but replace that entire authored row in the canonical alpha master.
+    mega.paste((0, 0, 0, 0), (0, 740, mega.width, 880))
+    for index, control in enumerate(compact_controls):
+        mega.alpha_composite(control, (round(index * mega.width / 4) + 6, 755))
     save_image(mega, MASTERS / "solar-origami-mega-tileset-alpha-v2.png")
     save_image(glyph_sheet, MASTERS / "solar-origami-glyphs-alpha-v2.png")
     save_image(fx, MASTERS / "solar-origami-fx-alpha-v2.png")
+    save_image(background, MASTERS / "solar-origami-background-master-v2.png")
+    save_image(background.resize((780, 1688), Image.Resampling.LANCZOS), RUNTIME / "background/solar-origami-background-v2.png")
 
     cells = slice_row(mega, ["cell-additive-neutral", "cell-multiply-neutral", "cell-divide-neutral",
                              "cell-selected-red", "cell-selected-violet", "cell-selected-yellow"],
@@ -185,9 +205,11 @@ def main() -> None:
     suns = slice_row(mega, ["sun-neutral", "sun-red", "sun-red-violet", "sun-final-tricolor",
                             "debris-cluster-warm", "debris-cluster-navy"],
                      (485, 725), (256, 256), "sun-and-clusters")
-    buttons = slice_row(mega, ["button-undo-normal", "button-undo-pressed",
-                               "button-validate-disabled", "button-validate-ready"],
-                        (750, 870), (512, 160), "controls", equal_edges(mega.width, 4), 6)
+    buttons = slice_row(controls_sheet, ["button-undo-normal", "button-undo-pressed"],
+                        (0, round(controls_sheet.height / 2)), (512, 160), "controls", control_x, 6)
+    buttons.update(slice_row(controls_sheet, ["button-validate-disabled", "button-validate-ready"],
+                             (round(controls_sheet.height / 2), controls_sheet.height),
+                             (512, 160), "controls", control_x, 6))
     modules = slice_row(mega, ["selection-node-neutral", "selection-node-red", "selection-node-violet",
                                "selection-node-yellow", "flow-straight-neutral", "flow-straight-red",
                                "flow-straight-violet", "flow-straight-yellow", "flow-elbow-neutral",
@@ -251,7 +273,8 @@ def main() -> None:
     save_json({
         "pack": "linefugg-solar-origami-v2",
         "status": "generated-and-technically-validated-pending-user-review",
-        "authoredSources": [str(path.relative_to(ROOT)).replace("\\", "/") for path in (mega_source, glyph_source, fx_source)],
+        "authoredSources": [str(path.relative_to(ROOT)).replace("\\", "/") for path in
+                            (mega_source, glyph_source, fx_source, controls_source, background_source)],
         "palette": {"red": "#FF5A36", "violet": "#A54DFF", "yellow": "#FFC72C"},
         "counts": {"cells": len(cells), "cellFaces": len(faces), "results": len(results), "sunAndClusters": len(suns),
                    "buttons": len(buttons), "modules": len(modules), "debris": len(debris), "glyphs": len(glyphs),

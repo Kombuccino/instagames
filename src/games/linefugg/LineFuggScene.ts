@@ -1,7 +1,6 @@
 import Phaser from 'phaser'
 import type { GameSessionApi } from '../../core/types'
 import { DEFAULT_LOGICAL_VIEWPORTS } from '../../core/runtime/gameRuntimePolicy'
-import { artFrame, fitText, centerTextInk } from './orbitalArt'
 
 export const LINEFUGG_SCENE_KEY = 'linefugg-main'
 
@@ -12,51 +11,39 @@ const MAX_LINE_CELLS = 5
 const GAME_ID = 'linefugg'
 
 // Fixed logical composition. Generated grid spacing is never used for hit testing.
-const BOARD_REFERENCE_SIZE = 322
 const BOARD_X = 55
-const BOARD_Y = 180
+const BOARD_Y = 128
 const BOARD_SIZE = 280
-const BOARD_SCALE = BOARD_SIZE / BOARD_REFERENCE_SIZE
 const CELL_SIZE = BOARD_SIZE / GRID_SIZE
-const BOARD_CENTER_X = BOARD_X + BOARD_SIZE / 2
-const BOARD_CENTER_Y = BOARD_Y + BOARD_SIZE / 2
-
-const HISTORY_Y = 488
-const HISTORY_ROW_HEIGHT = 42
-const HISTORY_PANEL_HEIGHT = HISTORY_ROW_HEIGHT * MAX_LINES
-const TOTAL_Y = 638
-const TOTAL_HEIGHT = 40
-const CONTROL_Y = 695
+const RESULT_Y = 505
+const RESULT_POSITIONS = [92, 195, 298] as const
+const SUN_Y = 628
+const CONTROL_Y = 714
 const CONTROL_BUTTON_SIZE = 48
-// Shared canonical lower-console geometry, matched to DA2.
-const INDICATOR_CENTERS = [139, 195, 251]
-const INDICATOR_Y = CONTROL_Y - 9
-const PIP_Y = CONTROL_Y + 14
-const UNDO_X = 59
-const VALIDATE_X = 331
+const CONTROL_BUTTON_WIDTH = 150
+const UNDO_X = 97
+const VALIDATE_X = 293
 
-const ASSET_ROOT = '/assets/imported/linefugg'
+const ASSET_ROOT = '/assets/generated/linefugg/solar-origami-v2/runtime'
 
 const ASSETS = {
-  boardPanel: ['linefugg-orbital-board', `${ASSET_ROOT}/ui/orbital-board.webp`],
-  armillary: ['linefugg-armillary', `${ASSET_ROOT}/props/orbital-armillary-key.webp`],
-  cellMultiply: ['linefugg-orbital-cell-multiply', `${ASSET_ROOT}/ui/orbital-cell-multiply-v3.webp`],
-  cellDivide: ['linefugg-orbital-cell-divide', `${ASSET_ROOT}/ui/orbital-cell-divide-v3.webp`],
-  validateReady: ['linefugg-validate-ready', `${ASSET_ROOT}/ui/orbital-validate-ready-v5.webp`],
-  validateDisabled: ['linefugg-validate-disabled', `${ASSET_ROOT}/ui/orbital-validate-disabled-v5.webp`],
-  validateAmber: ['linefugg-validate-amber', '/assets/generated/linefugg/ui/runtime/validate-amber-source.webp'],
-  indicators: ['linefugg-glass-indicators', '/assets/generated/linefugg/ui/runtime/glass-indicators.webp'],
-  ledgerDecor: ['linefugg-ledger-decor', `${ASSET_ROOT}/ui/orbital-history-row-v5.webp`],
-  console: ['linefugg-accounting-panels', '/assets/generated/linefugg/ui/runtime/accounting-panels.webp'],
+  cells: ['linefugg-solar-cells', `${ASSET_ROOT}/cells/cell-faces-atlas-v2.webp`, `${ASSET_ROOT}/cells/cell-faces-atlas-v2.json`],
+  results: ['linefugg-solar-results', `${ASSET_ROOT}/results/result-crafts-atlas-v2.webp`, `${ASSET_ROOT}/results/result-crafts-atlas-v2.json`],
+  suns: ['linefugg-solar-suns', `${ASSET_ROOT}/results/sun-and-clusters-atlas-v2.webp`, `${ASSET_ROOT}/results/sun-and-clusters-atlas-v2.json`],
+  controls: ['linefugg-solar-controls', `${ASSET_ROOT}/controls/control-buttons-atlas-v2.webp`, `${ASSET_ROOT}/controls/control-buttons-atlas-v2.json`],
+  glyphs: ['linefugg-solar-glyphs', `${ASSET_ROOT}/glyphs/gameplay-glyphs-atlas-v2.webp`, `${ASSET_ROOT}/glyphs/gameplay-glyphs-atlas-v2.json`],
+  nodes: ['linefugg-solar-nodes', `${ASSET_ROOT}/fx/selection-nodes-atlas-v2.webp`, `${ASSET_ROOT}/fx/selection-nodes-atlas-v2.json`],
+  segments: ['linefugg-solar-segments', `${ASSET_ROOT}/fx/selection-segments-atlas-v2.webp`, `${ASSET_ROOT}/fx/selection-segments-atlas-v2.json`],
+  arrivals: ['linefugg-solar-arrivals', `${ASSET_ROOT}/fx/arrival-particles-atlas-v2.webp`, `${ASSET_ROOT}/fx/arrival-particles-atlas-v2.json`],
+  debris: ['linefugg-solar-debris', `${ASSET_ROOT}/decor/debris-atlas-v2.webp`, `${ASSET_ROOT}/decor/debris-atlas-v2.json`],
+  transferRed: ['linefugg-solar-transfer-red', `${ASSET_ROOT}/fx/transfer-red-atlas-v2.webp`, `${ASSET_ROOT}/fx/transfer-red-atlas-v2.json`],
+  transferViolet: ['linefugg-solar-transfer-violet', `${ASSET_ROOT}/fx/transfer-violet-atlas-v2.webp`, `${ASSET_ROOT}/fx/transfer-violet-atlas-v2.json`],
+  transferYellow: ['linefugg-solar-transfer-yellow', `${ASSET_ROOT}/fx/transfer-yellow-atlas-v2.webp`, `${ASSET_ROOT}/fx/transfer-yellow-atlas-v2.json`],
 } as const
 
-const INK_NAVY = 0x061424
-const BRASS_LIGHT = 0xd9a24a
-const PARCHMENT_LIGHT = 0xf3e3bd
 const ERROR = 0xff5b3d
 
 const LINE_COLORS = [0xff5a36, 0xa54dff, 0xffc72c] as const
-const LINE_COLOR_STRINGS = ['#ff5a36', '#a54dff', '#ffc72c'] as const
 
 const DIRECTIONS = [
   [-1, -1], [-1, 0], [-1, 1],
@@ -97,12 +84,11 @@ type DragState = {
   pointerY: number
 }
 
-type HistoryRow = {
+type GlyphDisplay = {
   container: Phaser.GameObjects.Container
-  arrow: Phaser.GameObjects.Text
-  tiles: Phaser.GameObjects.Image[]
-  values: Phaser.GameObjects.Text[]
-  score: Phaser.GameObjects.Text
+  images: Phaser.GameObjects.Image[]
+  text: string
+  styleKey: string
 }
 
 type AmbientStar = {
@@ -258,34 +244,31 @@ export class LineFuggScene extends Phaser.Scene {
   private lineGraphics!: Phaser.GameObjects.Graphics
   private energyGraphics!: Phaser.GameObjects.Graphics
   private ambientGraphics!: Phaser.GameObjects.Graphics
-  private indicatorOrbs: Phaser.GameObjects.Image[] = []
-  private indicatorPips: Phaser.GameObjects.Image[][] = []
   private controlPulseGraphics!: Phaser.GameObjects.Graphics
 
-  private cellTexts: Phaser.GameObjects.Text[] = []
   private cellBaseImages: Phaser.GameObjects.Image[] = []
-  private cellMaterialImages: Phaser.GameObjects.Image[] = []
+  private cellSelectionImages: Phaser.GameObjects.Image[] = []
+  private lineSegmentImages: Phaser.GameObjects.Image[] = []
+  private lineArrowImages: Phaser.GameObjects.Image[] = []
   private cellDimensionSlots: number[] = []
   private rerolling = false
   private ambientStars: AmbientStar[] = []
 
   private liveContainer!: Phaser.GameObjects.Container
   private liveBackground!: Phaser.GameObjects.Graphics
-  private liveText!: Phaser.GameObjects.Text
+  private liveValue!: GlyphDisplay
 
-  private historyRows: HistoryRow[] = []
-  private undoIcon!: Phaser.GameObjects.Text
-  private validateAmber!: Phaser.GameObjects.Image
   private validateHovered = false
-  private totalText!: Phaser.GameObjects.Text
+  private resultCrafts: Phaser.GameObjects.Image[] = []
+  private resultValues: GlyphDisplay[] = []
+  private sun!: Phaser.GameObjects.Image
+  private totalValue!: GlyphDisplay
+  private flowShards: Phaser.GameObjects.Image[] = []
 
   private undoButton!: Phaser.GameObjects.Image
   private validateButton!: Phaser.GameObjects.Image
   private reducedMotion = false
   private motionQuery: MediaQueryList | null = null
-  private sparks!: Phaser.GameObjects.Particles.ParticleEmitter
-  private orbitRing?: Phaser.GameObjects.Image
-  private satellites: Phaser.GameObjects.Image[] = []
   private effectTime = 0
   private stateReader = () => JSON.stringify({
     game: GAME_ID, coordinateSystem: '390x844; origin top-left; x right, y down',
@@ -295,7 +278,7 @@ export class LineFuggScene extends Phaser.Scene {
     })), total: this.totalScore(), drag: this.drag,
     rerolling: this.rerolling, dimensionSlots: this.cellDimensionSlots,
     validating: this.validating, finished: this.finished,
-    undoHovered: this.undoHovered, validateHovered: this.validateHovered, validateAppearance: !this.validateEnabled() ? "disabled" : this.validateHovered ? "amber" : "green", undoEnabled: this.undoEnabled(), validateEnabled: this.validateEnabled(),
+    undoHovered: this.undoHovered, validateHovered: this.validateHovered, validateAppearance: !this.validateEnabled() ? "disabled" : this.validateHovered ? "hover" : "ready", undoEnabled: this.undoEnabled(), validateEnabled: this.validateEnabled(),
     controls: {
       undo: { x: UNDO_X, y: CONTROL_Y, visualSize: CONTROL_BUTTON_SIZE },
       validate: { x: VALIDATE_X, y: CONTROL_Y, visualSize: CONTROL_BUTTON_SIZE },
@@ -314,9 +297,9 @@ export class LineFuggScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.maxParallelDownloads = 2
-    Object.values(ASSETS).forEach(([key, url]) => {
-      if (!this.textures.exists(key)) this.load.image(key, url)
+    this.load.maxParallelDownloads = 4
+    Object.values(ASSETS).forEach(([key, textureUrl, atlasUrl]) => {
+      if (!this.textures.exists(key)) this.load.atlas(key, textureUrl, atlasUrl)
     })
   }
 
@@ -335,7 +318,7 @@ export class LineFuggScene extends Phaser.Scene {
     this.refreshPresentation()
     this.bridge.session.setScore(0)
     if (import.meta.env.DEV) {
-      Object.assign(window, { render_game_to_text: this.stateReader })
+      Object.assign(window, { render_game_to_text: this.stateReader, render_linefugg_to_text: this.stateReader })
     }
   }
 
@@ -344,16 +327,53 @@ export class LineFuggScene extends Phaser.Scene {
     this.renderAmbient(this.effectTime)
     this.renderEnergy(this.effectTime)
     this.renderControlPulse(this.effectTime)
-    const phase = this.effectTime * 0.00018
-    if (this.orbitRing) this.orbitRing.angle = Math.sin(phase * 0.45) * 3
-    this.satellites.forEach((satellite, i) => {
-      const angle = phase + i * Math.PI
-      satellite.setPosition(195 + Math.cos(angle) * 107, 73 + Math.sin(angle) * 35)
-        .setDepth(Math.sin(angle) > 0 ? 5 : 3)
-    })
   }
 
   private handleMotionChange = (event: MediaQueryListEvent) => { this.reducedMotion = event.matches }
+
+  private lineColorName(index: number) {
+    return (['red', 'violet', 'yellow'] as const)[Phaser.Math.Clamp(index, 0, 2)]
+  }
+
+  private transferTexture(index: number) {
+    return [ASSETS.transferRed[0], ASSETS.transferViolet[0], ASSETS.transferYellow[0]][Phaser.Math.Clamp(index, 0, 2)]
+  }
+
+  private cellFrame(cell: Cell) {
+    if (cell.kind === 'multiply') return `times-${cell.value}`
+    if (cell.kind === 'divide') return `divide-${cell.value}`
+    if (cell.value < 0) return `minus-${Math.abs(cell.value)}`
+    return String(cell.value)
+  }
+
+  private createGlyphDisplay(x: number, y: number): GlyphDisplay {
+    return { container: this.add.container(x, y), images: [], text: '', styleKey: '' }
+  }
+
+  private setGlyphDisplay(display: GlyphDisplay, value: string, height: number, color: number) {
+    const text = value.replaceAll('-', '−')
+    const styleKey = `${height}:${color}`
+    if (display.text === text && display.styleKey === styleKey) return
+    display.images.forEach((image) => image.destroy())
+    display.images = []
+    display.text = text
+    display.styleKey = styleKey
+    const widths = Array.from(text).map((character) => character === '.' ? height * 0.30 : character === '−' ? height * 0.58 : height * 0.68)
+    const totalWidth = widths.reduce((sum, width) => sum + width, 0)
+    let cursor = -totalWidth / 2
+    Array.from(text).forEach((character, index) => {
+      const frame = character === ' ' ? null : character
+      if (!frame || !this.textures.get(ASSETS.glyphs[0]).has(frame)) return
+      const width = widths[index]
+      const isDot = character === '.'
+      const image = this.add.image(cursor + width / 2, isDot ? height * 0.28 : 0, ASSETS.glyphs[0], frame)
+        .setDisplaySize(isDot ? height * 0.22 : width, isDot ? height * 0.22 : height)
+        .setTint(color).setTintMode(Phaser.TintModes.FILL)
+      display.container.add(image)
+      display.images.push(image)
+      cursor += width
+    })
+  }
 
   private resetRunState() {
     this.dayId = currentUtcDayId()
@@ -364,17 +384,17 @@ export class LineFuggScene extends Phaser.Scene {
     this.validating = false
     this.undoHovered = false
     this.validateHovered = false
-    this.indicatorOrbs = []
-    this.indicatorPips = []
     this.undoPressed = false
     this.validatePressed = false
-    this.cellTexts = []
     this.cellBaseImages = []
-    this.cellMaterialImages = []
+    this.cellSelectionImages = []
+    this.lineSegmentImages = []
+    this.lineArrowImages = []
     this.cellDimensionSlots = Array(GRID_SIZE * GRID_SIZE).fill(0)
     this.rerolling = false
-    this.historyRows = []
-    this.satellites = []
+    this.resultCrafts = []
+    this.resultValues = []
+    this.flowShards = []
     this.effectTime = 0
 
     const random = mulberry32(hashString(`linefugg-stars:${this.bridge.seed}:${this.dayId}`))
@@ -388,212 +408,70 @@ export class LineFuggScene extends Phaser.Scene {
   }
 
   private createBackground() {
-    // The illustrated observatory backdrop is CSS-owned by LineFugg.tsx so it can
-    // cover/crop inside the Core game surface independently of the fixed 390x844 stage.
-    // Keep Phaser transparent here: no second copy, no seams, no accidental contain-fit.
+    // The static star field is CSS-owned so it crops with the Core game surface.
+    // All independently moving rocks remain Phaser-owned below the gameplay.
     this.ambientGraphics = this.add.graphics().setDepth(3)
-    if (!this.textures.exists('linefugg-spark')) {
-      const stamp = this.make.graphics({ x: 0, y: 0 })
-      stamp.fillStyle(0xffffff).fillCircle(4, 4, 2)
-      stamp.generateTexture('linefugg-spark', 8, 8)
-      stamp.destroy()
-    }
-    this.sparks = this.add.particles(0, 0, 'linefugg-spark', {
-      emitting: false, lifespan: { min: 240, max: 480 }, speed: { min: 12, max: 45 },
-      scale: { start: 0.8, end: 0 }, alpha: { start: 0.65, end: 0 },
-      maxParticles: 32, maxAliveParticles: 24, blendMode: Phaser.BlendModes.ADD,
-    }).setDepth(24)
-    // Color key is a native Phaser 4 filter on small object-local areas only.
-    // Canvas fallback omits this optional ornament instead of showing magenta.
-    if (this.renderer.type === Phaser.WEBGL) {
-      const key = ASSETS.armillary[0]
-      artFrame(this, key, 'ring', [64, 175, 1052, 510], 1774)
-      artFrame(this, key, 'globe', [1298, 220, 403, 400], 1774)
-      const piece = (frame: string, x: number, y: number, width: number) => {
-        const object = this.add.image(x, y, key, frame)
-        object.setScale(width / object.width).setDepth(4)
-        object.enableFilters()
-        object.filters?.internal.addKey({ color: '#ff00ff', alpha: 1, threshold: 0.72, feather: 0.14 })
-        return object
-      }
-      this.orbitRing = piece('ring', 195, 118, 230)
-      piece('globe', 195, 118, 48).setDepth(5)
-      this.satellites = [piece('globe', 106, 118, 16), piece('globe', 284, 118, 11)]
-    }
+    const placements = [
+      [22, 102, 1, 22], [365, 116, 4, 18], [25, 455, 6, 16], [366, 446, 2, 20],
+      [30, 620, 3, 16], [360, 645, 7, 18], [30, 790, 5, 26], [360, 805, 0, 24],
+    ] as const
+    placements.forEach(([x, y, frameIndex, size], index) => {
+      const rock = this.add.image(x, y, ASSETS.debris[0], `debris-${String((frameIndex % 7) + 1).padStart(2, '0')}`)
+        .setDisplaySize(size, size).setAlpha(0.62).setDepth(4).setAngle(index * 29)
+      if (!this.reducedMotion) this.tweens.add({ targets: rock, y: y + (index % 2 ? 5 : -5), angle: rock.angle + 8, duration: 2600 + index * 170, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' })
+    })
   }
 
   private createBoardObjects() {
-    const [boardKey] = ASSETS.boardPanel
-
-    // Authored brass pieces surround exact engine geometry. No stretched baked grid.
-    const piece = (name: string, rect: readonly number[], x: number, y: number, width: number, height: number) => {
-      const frame = artFrame(this, boardKey, name, rect, 1254)
-      return this.add.image(x, y, boardKey, frame).setDisplaySize(width, height).setDepth(8)
-    }
-    piece('rail-top', [171, 66, 912, 68], BOARD_CENTER_X, BOARD_Y - 11 * BOARD_SCALE, BOARD_SIZE, 24 * BOARD_SCALE)
-    piece('rail-bottom', [171, 1115, 912, 64], BOARD_CENTER_X, BOARD_Y + BOARD_SIZE + 11 * BOARD_SCALE, BOARD_SIZE, 24 * BOARD_SCALE)
-    piece('rail-left', [84, 150, 75, 952], BOARD_X - 12 * BOARD_SCALE, BOARD_CENTER_Y, 25 * BOARD_SCALE, BOARD_SIZE)
-    piece('rail-right', [1095, 150, 75, 952], BOARD_X + BOARD_SIZE + 12 * BOARD_SCALE, BOARD_CENTER_Y, 25 * BOARD_SCALE, BOARD_SIZE)
-    const corners = [
-      { rect: [54, 44, 123, 115], x: BOARD_X - 9 * BOARD_SCALE, y: BOARD_Y - 9 * BOARD_SCALE },
-      { rect: [1078, 44, 123, 115], x: BOARD_X + BOARD_SIZE + 9 * BOARD_SCALE, y: BOARD_Y - 9 * BOARD_SCALE },
-      { rect: [54, 1082, 123, 115], x: BOARD_X - 9 * BOARD_SCALE, y: BOARD_Y + BOARD_SIZE + 9 * BOARD_SCALE },
-      { rect: [1078, 1082, 123, 115], x: BOARD_X + BOARD_SIZE + 9 * BOARD_SCALE, y: BOARD_Y + BOARD_SIZE + 9 * BOARD_SCALE },
-    ]
-    corners.forEach((corner, index) => piece(`corner-${index}`, corner.rect, corner.x, corner.y, 43 * BOARD_SCALE, 40 * BOARD_SCALE))
-    const tileFrame = artFrame(this, boardKey, 'enamel-cell', [158, 133, 139, 142], 1254)
-    this.cellBaseImages = this.board.map((_cell, index) => {
+    this.cellBaseImages = this.board.map((cell, index) => {
       const position = cellCenter({ row: Math.floor(index / GRID_SIZE), col: index % GRID_SIZE })
-      return this.add.image(position.x, position.y, boardKey, tileFrame)
-        .setDisplaySize(CELL_SIZE, CELL_SIZE).setDepth(9)
+      return this.add.image(position.x, position.y, ASSETS.cells[0], this.cellFrame(cell))
+        .setDisplaySize(CELL_SIZE - 2, CELL_SIZE - 2).setDepth(10)
     })
-
-    this.cellMaterialImages = this.board.map((cell, index) => {
-      const row = Math.floor(index / GRID_SIZE)
-      const col = index % GRID_SIZE
-      const key = cell.kind === 'divide' ? ASSETS.cellDivide[0] : ASSETS.cellMultiply[0]
-      return this.add.image(
-        BOARD_X + (col + 0.5) * CELL_SIZE,
-        BOARD_Y + (row + 0.5) * CELL_SIZE,
-        key,
-      ).setDisplaySize(CELL_SIZE - 4, CELL_SIZE - 4).setDepth(10).setVisible(cell.kind !== 'add')
+    this.cellSelectionImages = this.board.map((_cell, index) => {
+      const position = cellCenter({ row: Math.floor(index / GRID_SIZE), col: index % GRID_SIZE })
+      return this.add.image(position.x, position.y, ASSETS.nodes[0], 'node-neutral')
+        .setDisplaySize(CELL_SIZE + 8, CELL_SIZE + 8).setDepth(9).setVisible(false)
     })
 
     this.boardOverlayGraphics = this.add.graphics().setDepth(18)
-    this.lineGraphics = this.add.graphics().setDepth(20)
+    this.lineGraphics = this.add.graphics().setDepth(19)
     this.energyGraphics = this.add.graphics().setDepth(22)
-
-    this.cellTexts = this.board.map((cell, index) => {
-      const row = Math.floor(index / GRID_SIZE)
-      const col = index % GRID_SIZE
-      const color = cell.kind === 'multiply'
-        ? '#fff1c9'
-        : cell.kind === 'divide'
-          ? '#f9ebff'
-          : '#f5e6c1'
-
-      return this.add.text(
-        BOARD_X + (col + 0.5) * CELL_SIZE,
-        BOARD_Y + (row + 0.5) * CELL_SIZE,
-        cell.label,
-        {
-          fontFamily: 'Georgia, "Times New Roman", serif',
-          fontSize: '23px',
-          resolution: 2,
-          color,
-          shadow: {
-            offsetX: 0,
-            offsetY: 2,
-            color: '#000000',
-            blur: 3,
-            fill: true,
-          },
-        },
-      ).setOrigin(0.5).setDepth(30)
-    })
+    for (let index = 0; index < MAX_LINES + 1; index += 1) {
+      this.lineSegmentImages.push(this.add.image(0, 0, ASSETS.segments[0], 'segment-neutral').setDepth(8).setVisible(false))
+      this.lineArrowImages.push(this.add.image(0, 0, ASSETS.arrivals[0], 'shard-ivory-01').setDepth(11).setVisible(false))
+    }
   }
 
   private createLiveValue() {
     this.liveBackground = this.add.graphics()
-    this.liveText = this.add.text(0, 0, '', {
-      fontFamily: 'Georgia, "Times New Roman", serif',
-      fontSize: '18px',
-      fontStyle: 'bold',
-      color: '#20170e',
-    }).setOrigin(0.5)
-
-    this.liveContainer = this.add.container(0, 0, [this.liveBackground, this.liveText])
+    this.liveValue = this.createGlyphDisplay(0, 0)
+    this.liveContainer = this.add.container(0, 0, [this.liveBackground, this.liveValue.container])
       .setDepth(60)
       .setVisible(false)
   }
 
   private createHistory() {
-    const key = ASSETS.console[0]
-    const panel = artFrame(this, key, 'ledger', [92, 8, 1354, 491], 1536)
-    this.add.image(195, HISTORY_Y + HISTORY_PANEL_HEIGHT / 2, key, panel)
-      .setDisplaySize(320, HISTORY_PANEL_HEIGHT).setDepth(40)
-    const decorKey = ASSETS.ledgerDecor[0]
-    const leftDecor = artFrame(this, decorKey, 'left-ornament', [8, 167, 235, 367], 2172)
-    const rightDecor = artFrame(this, decorKey, 'right-ornament', [1928, 167, 235, 367], 2172)
     for (let index = 0; index < MAX_LINES; index++) {
-      const y = HISTORY_Y + HISTORY_ROW_HEIGHT / 2 + index * HISTORY_ROW_HEIGHT
-      this.add.image(35, y, decorKey, leftDecor).setDisplaySize(22, 39).setDepth(41)
-      this.add.image(355, y, decorKey, rightDecor).setDisplaySize(22, 39).setDepth(41)
+      this.resultCrafts.push(this.add.image(
+        RESULT_POSITIONS[index], RESULT_Y, ASSETS.results[0], `result-${index + 1}-inactive`,
+      ).setDisplaySize(90, 90).setDepth(31))
+      this.resultValues.push(this.createGlyphDisplay(RESULT_POSITIONS[index], RESULT_Y + 1))
+      this.resultValues[index].container.setDepth(33)
+      this.flowShards.push(this.add.image(0, 0, this.transferTexture(index), `transfer-${this.lineColorName(index)}-01`)
+        .setDisplaySize(28, 14).setDepth(29).setVisible(false))
     }
-    const cellKey = ASSETS.boardPanel[0]
-    const chipFrame = artFrame(this, cellKey, 'ledger-chip', [158, 133, 139, 142], 1254)
-    for (let index = 0; index < MAX_LINES; index++) {
-      const y = HISTORY_Y + HISTORY_ROW_HEIGHT / 2 + index * HISTORY_ROW_HEIGHT
-      const container = this.add.container(0, y).setDepth(42)
-      const arrow = this.add.text(48, 0, '➜', {
-        fontFamily: 'Georgia, serif', fontSize: '26px', fontStyle: 'bold',
-        color: LINE_COLOR_STRINGS[index], stroke: '#5c341d', strokeThickness: 0.5, resolution: 2,
-      }).setOrigin(0.5)
-      const tiles: Phaser.GameObjects.Image[] = []
-      const values: Phaser.GameObjects.Text[] = []
-      for (let slot = 0; slot < MAX_LINE_CELLS; slot++) {
-        const x = 83 + slot * 34
-        const tile = this.add.image(x, 0, cellKey, chipFrame).setDisplaySize(31, 32).setVisible(false)
-        const value = this.add.text(x, 0, '', {
-          fontFamily: 'Georgia, serif', fontSize: '18px', color: '#f5e6c1', resolution: 2,
-        }).setOrigin(0.5)
-        container.add([tile, value]); tiles.push(tile); values.push(value)
-      }
-      const score = this.add.text(345, 0, '', {
-        fontFamily: 'Georgia, serif', fontSize: '22px', fontStyle: 'bold', color: '#21170d', resolution: 2,
-      }).setOrigin(1, 0.5)
-      container.add([arrow, score])
-      this.historyRows.push({ container, arrow, tiles, values, score })
-    }
-    const totalFrame = artFrame(this, key, 'total', [80, 518, 1376, 176], 1536)
-    this.add.image(195, TOTAL_Y, key, totalFrame).setDisplaySize(320, TOTAL_HEIGHT).setDepth(40)
-    const sigma = this.add.text(151, TOTAL_Y, 'Σ', {
-      fontFamily: 'Georgia, serif', fontSize: '30px', color: '#f5e5b9', resolution: 2,
-    }).setOrigin(0.5).setDepth(42)
-    centerTextInk(sigma)
-    this.totalText = this.add.text(226, TOTAL_Y, '0', {
-      fontFamily: 'Georgia, serif', fontSize: '30px', color: '#f5e5b9', resolution: 2,
-    }).setOrigin(0.5).setDepth(42)
+    this.sun = this.add.image(195, SUN_Y, ASSETS.suns[0], 'sun-neutral').setDisplaySize(116, 116).setDepth(32)
+    this.totalValue = this.createGlyphDisplay(195, SUN_Y + 1)
+    this.totalValue.container.setDepth(34)
   }
 
   private createControls() {
-    const key = ASSETS.console[0]
-    const dock = artFrame(this, key, 'dock', [116, 724, 570, 249], 1536)
-    this.add.image(195, CONTROL_Y, key, dock).setDisplaySize(180, 58).setDepth(44)
-    this.createGlassIndicators()
     this.controlPulseGraphics = this.add.graphics().setDepth(47)
-    const button = (x: number, name: string, rect: number[]) => {
-      const frame = artFrame(this, key, name, rect, 1536)
-      const source = this.textures.getFrame(key, frame)
-      const image = this.add.image(x, CONTROL_Y, key, frame)
-        .setDisplaySize(CONTROL_BUTTON_SIZE, CONTROL_BUTTON_SIZE).setDepth(48)
-        .setInteractive(new Phaser.Geom.Circle(source.width / 2, source.height / 2, Math.min(source.width, source.height) / 2), Phaser.Geom.Circle.Contains)
-      if (image.input) image.input.cursor = 'pointer'
-      const mask = this.make.graphics({ x: 0, y: 0 })
-      mask.fillStyle(0xffffff).fillCircle(x, CONTROL_Y, CONTROL_BUTTON_SIZE / 2)
-      image.setMask(mask.createGeometryMask())
-      this.events.once('shutdown', () => mask.destroy())
-      this.events.once('destroy', () => mask.destroy())
-      return image
-    }
-    this.undoButton = button(UNDO_X, 'undo', [761, 714, 274, 272])
-    const validateFrame = 'validate-visual'
-    artFrame(this, ASSETS.validateReady[0], validateFrame, [6, 5, 244, 244], 256)
-    artFrame(this, ASSETS.validateDisabled[0], validateFrame, [6, 5, 244, 244], 256)
-    this.validateButton = this.add.image(VALIDATE_X, CONTROL_Y, ASSETS.validateDisabled[0], validateFrame)
-      .setDisplaySize(CONTROL_BUTTON_SIZE, CONTROL_BUTTON_SIZE).setDepth(48)
-      .setInteractive({ useHandCursor: true })
-    const amberFrame = artFrame(this, ASSETS.validateAmber[0], 'amber-glass', [252, 250, 748, 748], 1254)
-    this.validateAmber = this.add.image(VALIDATE_X, CONTROL_Y, ASSETS.validateAmber[0], amberFrame)
-      .setDisplaySize(29, 29).setDepth(49).setVisible(false)
-    const amberMask = this.make.graphics({ x: 0, y: 0 })
-    amberMask.fillStyle(0xffffff).fillCircle(VALIDATE_X, CONTROL_Y, 14.5)
-    this.validateAmber.setMask(amberMask.createGeometryMask())
-    this.events.once('shutdown', () => amberMask.destroy())
-    this.events.once('destroy', () => amberMask.destroy())
-    this.undoIcon = this.add.text(UNDO_X, CONTROL_Y - 1, '↶', {
-      fontFamily: 'Arial, sans-serif', fontSize: '34px', fontStyle: 'bold', color: '#fff0c8', resolution: 2,
-    }).setOrigin(0.5).setDepth(49)
+    this.undoButton = this.add.image(UNDO_X, CONTROL_Y, ASSETS.controls[0], 'button-undo-normal')
+      .setDisplaySize(CONTROL_BUTTON_WIDTH, CONTROL_BUTTON_SIZE).setDepth(48).setInteractive({ useHandCursor: true })
+    this.validateButton = this.add.image(VALIDATE_X, CONTROL_Y, ASSETS.controls[0], 'button-validate-disabled')
+      .setDisplaySize(CONTROL_BUTTON_WIDTH, CONTROL_BUTTON_SIZE).setDepth(48).setInteractive({ useHandCursor: true })
     this.undoButton.on('pointerover', this.handleUndoOver, this)
     this.undoButton.on('pointerdown', this.handleUndoDown, this)
     this.undoButton.on('pointerup', this.handleUndoUp, this)
@@ -621,8 +499,9 @@ export class LineFuggScene extends Phaser.Scene {
     this.input?.off('gameout', this.handleValidateOut, this)
     this.events.off('destroy', this.handleShutdown, this)
     this.motionQuery?.removeEventListener('change', this.handleMotionChange)
-    const debugWindow = window as Window & { render_game_to_text?: () => string }
+    const debugWindow = window as Window & { render_game_to_text?: () => string; render_linefugg_to_text?: () => string }
     if (debugWindow.render_game_to_text === this.stateReader) delete debugWindow.render_game_to_text
+    if (debugWindow.render_linefugg_to_text === this.stateReader) delete debugWindow.render_linefugg_to_text
     this.input?.off('pointerdown', this.handlePointerDown, this)
     this.input?.off('pointermove', this.handlePointerMove, this)
     this.input?.off('pointerup', this.handlePointerUp, this)
@@ -815,7 +694,7 @@ export class LineFuggScene extends Phaser.Scene {
           lineLimit: MAX_LINE_CELLS,
           runtimeSeed: this.bridge.seed,
           rerollKeys: this.lines.map((line) => line.rerollKey).join(','),
-          artDirection: 'orbital-accounting',
+          artDirection: 'solar-origami',
         },
       })
       this.scene.pause()
@@ -823,31 +702,36 @@ export class LineFuggScene extends Phaser.Scene {
   }
 
   private pulseNewLine(index: number) {
-    const row = this.historyRows[index]
-    if (!row) return
-
-    if (this.reducedMotion) return
-    this.tweens.killTweensOf(row.container)
-    row.container.setX(-5).setAlpha(0.5)
-    this.tweens.add({ targets: row.container, x: 0, alpha: 1, duration: 180, ease: 'Sine.easeOut' })
     const end = this.lines[index]?.end
-    if (end) {
-      const position = cellCenter(end)
-      this.sparks.setParticleTint(LINE_COLORS[index])
-      this.sparks.explode(9, position.x, position.y)
-    }
+    if (!end) return
+    const start = cellCenter(end)
+    const target = { x: RESULT_POSITIONS[index], y: RESULT_Y }
+    if (this.reducedMotion) { this.spawnArrival(index, target.x, target.y); return }
+    const color = this.lineColorName(index)
+    const sprite = this.add.image(start.x, start.y, this.transferTexture(index), `transfer-${color}-01`)
+      .setDisplaySize(34, 17).setDepth(35)
+    const progress = { value: 0 }
+    this.tweens.add({
+      targets: progress, value: 1, duration: 430, ease: 'Sine.easeInOut',
+      onUpdate: () => {
+        const t = progress.value
+        const control = { x: (start.x + target.x) / 2, y: start.y + 48 }
+        const oneMinus = 1 - t
+        sprite.setPosition(
+          oneMinus * oneMinus * start.x + 2 * oneMinus * t * control.x + t * t * target.x,
+          oneMinus * oneMinus * start.y + 2 * oneMinus * t * control.y + t * t * target.y,
+        ).setFrame(`transfer-${color}-${String(Math.min(8, Math.floor(t * 8) + 1)).padStart(2, '0')}`)
+      },
+      onComplete: () => { sprite.destroy(); this.spawnArrival(index, target.x, target.y) },
+    })
+  }
 
-    for (const point of this.lines[index]?.cells ?? []) {
-      const text = this.cellTexts[point.row * GRID_SIZE + point.col]
-      if (!text) continue
-      text.setScale(1.11)
-      this.tweens.add({
-        targets: text,
-        scale: 1,
-        duration: 210,
-        ease: 'Sine.easeOut',
-      })
-    }
+  private spawnArrival(index: number, x: number, y: number) {
+    const color = this.lineColorName(index)
+    const burst = this.add.image(x, y, ASSETS.arrivals[0], `arrival-${color}`).setDisplaySize(54, 54).setDepth(36)
+    if (this.reducedMotion) { burst.setAlpha(0.75); this.time.delayedCall(90, () => burst.destroy()); return }
+    burst.setScale(0.35)
+    this.tweens.add({ targets: burst, scale: 1.25, alpha: 0, duration: 320, ease: 'Sine.easeOut', onComplete: () => burst.destroy() })
   }
 
   private flashInvalid(x: number, y: number) {
@@ -1009,32 +893,14 @@ export class LineFuggScene extends Phaser.Scene {
   private setCellFlip(index: number, factor: number) {
     const widthFactor = Math.max(0.02, factor)
     const base = this.cellBaseImages[index]
-    if (base) base.setScale((CELL_SIZE / base.width) * widthFactor, CELL_SIZE / base.height)
-    const material = this.cellMaterialImages[index]
-    if (material) material.setScale(((CELL_SIZE - 4) / material.width) * widthFactor, (CELL_SIZE - 4) / material.height)
-    const text = this.cellTexts[index]
-    if (text) text.setScale(widthFactor, 1)
+    if (base) base.setScale(((CELL_SIZE - 2) / base.width) * widthFactor, (CELL_SIZE - 2) / base.height)
+    const selection = this.cellSelectionImages[index]
+    if (selection) selection.setScale(((CELL_SIZE + 5) / selection.width) * widthFactor, (CELL_SIZE + 5) / selection.height)
   }
 
   private refreshBoardCell(index: number) {
     const cell = this.board[index]
-    const material = this.cellMaterialImages[index]
-    if (material) {
-      if (cell.kind === 'add') material.setVisible(false)
-      else material
-        .setTexture(cell.kind === 'multiply' ? ASSETS.cellMultiply[0] : ASSETS.cellDivide[0])
-        .setDisplaySize(CELL_SIZE - 4, CELL_SIZE - 4)
-        .setVisible(true)
-    }
-
-    const text = this.cellTexts[index]
-    if (!text) return
-    const color = cell.kind === 'multiply'
-      ? '#fff1c9'
-      : cell.kind === 'divide'
-        ? '#f9ebff'
-        : '#f5e6c1'
-    text.setText(cell.label).setColor(color)
+    this.cellBaseImages[index]?.setTexture(ASSETS.cells[0], this.cellFrame(cell)).setDisplaySize(CELL_SIZE - 2, CELL_SIZE - 2)
   }
 
   private refreshBoardCells() {
@@ -1057,138 +923,56 @@ export class LineFuggScene extends Phaser.Scene {
   }
 
   private renderBoardOverlays() {
-    const usedCounts = new Map<string, number>()
-    for (const line of this.lines) {
+    const usedBy = new Map<string, number[]>()
+    this.lines.forEach((line, lineIndex) => {
       for (const point of line.cells) {
         const key = pointKey(point)
-        usedCounts.set(key, (usedCounts.get(key) ?? 0) + 1)
+        usedBy.set(key, [...(usedBy.get(key) ?? []), lineIndex])
       }
-    }
+    })
 
     const preview = new Set(this.drag?.cells.map(pointKey) ?? [])
-    const previewColor = this.drag?.valid
-      ? LINE_COLORS[Math.min(this.lines.length, MAX_LINES - 1)]
-      : ERROR
-
     this.boardOverlayGraphics.clear()
 
     this.board.forEach((_cell, index) => {
       const row = Math.floor(index / GRID_SIZE)
       const col = index % GRID_SIZE
-      const x = BOARD_X + col * CELL_SIZE
-      const y = BOARD_Y + row * CELL_SIZE
       const key = `${row}:${col}`
-      const useCount = usedCounts.get(key) ?? 0
+      const lineIndices = usedBy.get(key) ?? []
       const dimensionSlot = this.cellDimensionSlots[index] ?? -1
-
-      if (_cell.kind === 'add' && useCount === 0 && dimensionSlot >= 0 && dimensionSlot < MAX_LINES) {
-        // Use the exact RGB of the active line. The stronger translucent enamel wash
-        // keeps the cell artwork readable while making the current dimension unmistakable.
-        const activeLineColor = LINE_COLORS[dimensionSlot]
-        this.boardOverlayGraphics.fillStyle(activeLineColor, 0.30)
-        this.boardOverlayGraphics.fillRoundedRect(x + 4, y + 4, CELL_SIZE - 8, CELL_SIZE - 8, 6)
-        this.boardOverlayGraphics.lineStyle(1.25, activeLineColor, 0.42)
-        this.boardOverlayGraphics.strokeRoundedRect(x + 4, y + 4, CELL_SIZE - 8, CELL_SIZE - 8, 6)
-      }
-
-      if (useCount > 0) {
-        this.boardOverlayGraphics.fillStyle(0xffffff, 0.045 + Math.min(useCount, 2) * 0.025)
-        this.boardOverlayGraphics.fillRoundedRect(x + 4, y + 4, CELL_SIZE - 8, CELL_SIZE - 8, 6)
-      }
-
-      if (useCount > 1) {
-        this.boardOverlayGraphics.lineStyle(2, BRASS_LIGHT, 0.92)
-        this.boardOverlayGraphics.strokeCircle(x + CELL_SIZE / 2, y + CELL_SIZE / 2, CELL_SIZE * 0.34)
-      }
-
-      if (preview.has(key)) {
-        this.boardOverlayGraphics.fillStyle(previewColor, this.drag?.valid ? 0.13 : 0.20)
-        this.boardOverlayGraphics.fillRoundedRect(x + 3, y + 3, CELL_SIZE - 6, CELL_SIZE - 6, 6)
-        this.boardOverlayGraphics.lineStyle(2, previewColor, 0.76)
-        this.boardOverlayGraphics.strokeCircle(x + CELL_SIZE / 2, y + CELL_SIZE / 2, CELL_SIZE * 0.31)
-      }
+      const marker = this.cellSelectionImages[index]
+      let frame = ''
+      let alpha = 1
+      if (preview.has(key)) frame = this.drag?.valid ? `node-${this.lineColorName(this.lines.length)}` : 'node-hover'
+      else if (lineIndices.length === 2) frame = `node-shared-${this.lineColorName(lineIndices[0])}-${this.lineColorName(lineIndices[1])}`
+      else if (lineIndices.length === 1) frame = `node-${this.lineColorName(lineIndices[0])}`
+      else if (dimensionSlot >= 0 && dimensionSlot < MAX_LINES) { frame = `node-${this.lineColorName(dimensionSlot)}`; alpha = 0.18 }
+      marker.setVisible(Boolean(frame)).setAlpha(alpha)
+      if (frame && this.textures.get(ASSETS.nodes[0]).has(frame)) marker.setFrame(frame)
     })
   }
 
   private renderLines() {
     this.lineGraphics.clear()
-
-    this.lines.forEach((line, index) => {
-      this.drawOrbitalLine(line.start, line.end, LINE_COLORS[index] ?? 0xffffff, 1)
+    const visible: Array<{ line: { start: Point; end: Point }; index: number; valid: boolean }> =
+      this.lines.map((line, index) => ({ line, index, valid: true }))
+    if (this.drag?.end) visible.push({ line: { start: this.drag.start, end: this.drag.end }, index: this.lines.length, valid: this.drag.valid })
+    this.lineSegmentImages.forEach((segment, index) => {
+      const item = visible[index]
+      const arrow = this.lineArrowImages[index]
+      if (!item) { segment.setVisible(false); arrow.setVisible(false); return }
+      const start = cellCenter(item.line.start)
+      const end = cellCenter(item.line.end)
+      const dx = end.x - start.x
+      const dy = end.y - start.y
+      const length = Math.hypot(dx, dy)
+      const angle = Math.atan2(dy, dx)
+      const frame = item.valid ? `segment-${this.lineColorName(item.index)}` : 'segment-neutral'
+      segment.setVisible(true).setFrame(frame).setPosition((start.x + end.x) / 2, (start.y + end.y) / 2)
+        .setDisplaySize(length, 12).setRotation(angle).setTint(item.valid ? 0xffffff : ERROR)
+      arrow.setVisible(true).setPosition(end.x, end.y).setDisplaySize(18, 18).setRotation(angle)
+        .setTint(item.valid ? LINE_COLORS[Math.min(item.index, 2)] : ERROR).setTintMode(Phaser.TintModes.FILL)
     })
-
-    if (this.drag?.end) {
-      const color = this.drag.valid
-        ? LINE_COLORS[Math.min(this.lines.length, MAX_LINES - 1)]
-        : ERROR
-      this.drawOrbitalLine(this.drag.start, this.drag.end, color, this.drag.valid ? 0.96 : 0.88)
-    }
-  }
-
-  private drawOrbitalLine(startPoint: Point, endPoint: Point, color: number, alpha: number) {
-    const start = cellCenter(startPoint)
-    const end = cellCenter(endPoint)
-    const dx = end.x - start.x
-    const dy = end.y - start.y
-    const length = Math.hypot(dx, dy)
-    if (length === 0) return
-
-    const ux = dx / length
-    const uy = dy / length
-    const arrowLength = 13 * BOARD_SCALE
-    const arrowHalfWidth = 6.5 * BOARD_SCALE
-    const arrowTipX = end.x - ux * 9 * BOARD_SCALE
-    const arrowTipY = end.y - uy * 9 * BOARD_SCALE
-    const baseX = arrowTipX - ux * arrowLength
-    const baseY = arrowTipY - uy * arrowLength
-
-    this.lineGraphics.lineStyle(14 * BOARD_SCALE, color, 0.10 * alpha)
-    this.lineGraphics.beginPath()
-    this.lineGraphics.moveTo(start.x, start.y)
-    this.lineGraphics.lineTo(end.x, end.y)
-    this.lineGraphics.strokePath()
-
-    this.lineGraphics.lineStyle(7 * BOARD_SCALE, color, 0.32 * alpha)
-    this.lineGraphics.beginPath()
-    this.lineGraphics.moveTo(start.x, start.y)
-    this.lineGraphics.lineTo(end.x, end.y)
-    this.lineGraphics.strokePath()
-
-    this.lineGraphics.lineStyle(3.6 * BOARD_SCALE, color, 0.98 * alpha)
-    this.lineGraphics.beginPath()
-    this.lineGraphics.moveTo(start.x, start.y)
-    this.lineGraphics.lineTo(end.x, end.y)
-    this.lineGraphics.strokePath()
-
-    this.lineGraphics.lineStyle(1.15 * BOARD_SCALE, 0xffffff, 0.70 * alpha)
-    this.lineGraphics.beginPath()
-    this.lineGraphics.moveTo(start.x, start.y)
-    this.lineGraphics.lineTo(end.x, end.y)
-    this.lineGraphics.strokePath()
-
-    this.lineGraphics.fillStyle(color, 0.98 * alpha)
-    this.lineGraphics.fillTriangle(
-      arrowTipX,
-      arrowTipY,
-      baseX - uy * arrowHalfWidth,
-      baseY + ux * arrowHalfWidth,
-      baseX + uy * arrowHalfWidth,
-      baseY - ux * arrowHalfWidth,
-    )
-
-    this.drawNode(start.x, start.y, color, alpha)
-    this.drawNode(end.x, end.y, color, alpha)
-  }
-
-  private drawNode(x: number, y: number, color: number, alpha: number) {
-    this.lineGraphics.fillStyle(color, 0.08 * alpha)
-    this.lineGraphics.fillCircle(x, y, 21 * BOARD_SCALE)
-    this.lineGraphics.lineStyle(6 * BOARD_SCALE, color, 0.16 * alpha)
-    this.lineGraphics.strokeCircle(x, y, 16 * BOARD_SCALE)
-    this.lineGraphics.lineStyle(1.7 * BOARD_SCALE, color, alpha)
-    this.lineGraphics.strokeCircle(x, y, 16 * BOARD_SCALE)
-    this.lineGraphics.lineStyle(BOARD_SCALE, 0xffedbe, 0.65 * alpha)
-    this.lineGraphics.strokeCircle(x, y, 18 * BOARD_SCALE)
   }
 
   private renderLiveValue() {
@@ -1199,44 +983,30 @@ export class LineFuggScene extends Phaser.Scene {
 
     const valid = this.drag.valid
     const result = valid ? formatScore(scoreCells(this.drag.cells, this.board)) : '×'
-    this.liveText.setText(valid ? `= ${result}` : result).setColor(valid ? '#25180d' : '#6a1208')
-
-    const width = Math.max(68, this.liveText.width + 28)
-    const height = 38
+    this.setGlyphDisplay(this.liveValue, valid ? `=${result}` : result, 24, valid ? 0x071526 : 0x6a1208)
+    const width = Math.max(66, (valid ? result.length + 1 : 1) * 20 + 22)
+    const height = 36
     this.liveBackground.clear()
-    this.liveBackground.fillStyle(valid ? PARCHMENT_LIGHT : 0xffb0a0, 0.98)
-    this.liveBackground.fillRoundedRect(-width / 2, -height / 2, width, height, 10)
-    this.liveBackground.lineStyle(2, valid ? BRASS_LIGHT : ERROR, 0.92)
-    this.liveBackground.strokeRoundedRect(-width / 2, -height / 2, width, height, 10)
+    this.liveBackground.fillStyle(valid ? 0xf8efe8 : 0xffb0a0, 0.94)
+    this.liveBackground.fillPoints([
+      new Phaser.Math.Vector2(0, -height / 2), new Phaser.Math.Vector2(width / 2, 0),
+      new Phaser.Math.Vector2(0, height / 2), new Phaser.Math.Vector2(-width / 2, 0),
+    ], true)
 
-    const x = Phaser.Math.Clamp(this.drag.pointerX, width / 2 + 8, STAGE_WIDTH - width / 2 - 8)
-    const y = Phaser.Math.Clamp(this.drag.pointerY + 36, height / 2 + 8, HISTORY_Y - height / 2 - 5)
-    this.liveContainer.setPosition(x, y).setVisible(true)
+    this.liveContainer.setPosition(STAGE_WIDTH / 2, BOARD_Y + BOARD_SIZE + 27).setVisible(true)
   }
 
   private renderHistory() {
-    this.historyRows.forEach((row, index) => {
+    this.resultCrafts.forEach((craft, index) => {
       const line = this.lines[index]
-      row.arrow.setAlpha(line ? 1 : index === this.lines.length ? 0.75 : 0.35)
-      row.tiles.forEach((tile, slot) => {
-        const point = line?.cells[slot]
-        tile.setVisible(Boolean(point))
-        const value = row.values[slot]
-        if (!point) { value.setText(''); return }
-        const cell = this.board[point.row * GRID_SIZE + point.col]
-        if (cell.kind === 'multiply') tile.setTexture(ASSETS.cellMultiply[0])
-        else if (cell.kind === 'divide') tile.setTexture(ASSETS.cellDivide[0])
-        else tile.setTexture(ASSETS.boardPanel[0], 'ledger-chip')
-        tile.clearTint().setDisplaySize(31, 32)
-        value.setText(slot > 0 && cell.kind === 'add' && cell.value > 0 ? `+${cell.value}` : cell.label)
-        fitText(value, 27)
-      })
-      row.score.setText(line ? `= ${formatScore(line.score)}` : '')
-      fitText(row.score, 94)
+      craft.setFrame(line ? `result-${index + 1}-active-${this.lineColorName(index)}` : `result-${index + 1}-inactive`)
+        .setAlpha(line ? 1 : index === this.lines.length ? 0.92 : 0.58)
+      this.resultValues[index].container.setVisible(Boolean(line))
+      if (line) this.setGlyphDisplay(this.resultValues[index], formatScore(line.score), 21, 0x071526)
     })
-    this.totalText.setText(formatScore(this.totalScore()))
-    fitText(this.totalText, 112)
-    centerTextInk(this.totalText)
+    const sunFrame = ['sun-neutral', 'sun-red', 'sun-red-violet', 'sun-final-tricolor'][this.lines.length]
+    this.sun.setFrame(sunFrame)
+    this.setGlyphDisplay(this.totalValue, formatScore(this.totalScore()), 31, 0x071526)
   }
 
   private renderControls() {
@@ -1246,64 +1016,25 @@ export class LineFuggScene extends Phaser.Scene {
 
 
     this.undoButton
-      .setDisplaySize(this.undoPressed ? CONTROL_BUTTON_SIZE - 4 : CONTROL_BUTTON_SIZE, this.undoPressed ? CONTROL_BUTTON_SIZE - 4 : CONTROL_BUTTON_SIZE)
-      .setTint(undoEnabled ? this.undoHovered ? 0xffdd8b : 0xffffff : 0x807569)
-      .setAlpha(undoEnabled ? 1 : 0.72)
+      .setFrame(this.undoPressed ? 'button-undo-pressed' : 'button-undo-normal')
+      .setDisplaySize(this.undoPressed ? CONTROL_BUTTON_WIDTH - 6 : CONTROL_BUTTON_WIDTH, this.undoPressed ? CONTROL_BUTTON_SIZE - 3 : CONTROL_BUTTON_SIZE)
+      .setTint(undoEnabled ? this.undoHovered ? 0xffefff : 0xffffff : 0x807589)
+      .setAlpha(undoEnabled ? 1 : 0.48)
 
     this.validateButton
-      .setTexture(validateEnabled ? ASSETS.validateReady[0] : ASSETS.validateDisabled[0], 'validate-visual')
-      .setDisplaySize(this.validatePressed ? CONTROL_BUTTON_SIZE - 4 : CONTROL_BUTTON_SIZE, this.validatePressed ? CONTROL_BUTTON_SIZE - 4 : CONTROL_BUTTON_SIZE)
-      .clearTint().setAlpha(1)
-
-    this.undoIcon.setAlpha(undoEnabled ? 1 : 0.45).setAngle(this.undoHovered && undoEnabled ? -12 : 0)
-    this.validateAmber.setVisible(validateEnabled && this.validateHovered).setDisplaySize(this.validatePressed ? 27 : 29, this.validatePressed ? 27 : 29)
-    this.renderIndicators()
-  }
-
-  private createGlassIndicators() {
-    const key = ASSETS.indicators[0]
-    const maskArt = this.make.graphics({ x: 0, y: 0 })
-    maskArt.fillStyle(0xffffff)
-    const mask = maskArt.createGeometryMask()
-    for (let index = 0; index < MAX_LINES; index++) {
-      const x = INDICATOR_CENTERS[index]
-      const sourceX = [82, 460, 838][index]
-      const orb = artFrame(this, key, `orb-${index}`, [sourceX, 312, 338, 338], 1254)
-      const bead = artFrame(this, key, `bead-${index}`, [[167, 543, 921][index], 774, 168, 168], 1254)
-      maskArt.fillCircle(x, INDICATOR_Y, 16)
-      this.indicatorOrbs.push(this.add.image(x, INDICATOR_Y, key, orb)
-        .setDisplaySize(28, 28).setDepth(47).setMask(mask))
-      const pips: Phaser.GameObjects.Image[] = []
-      for (let pip = 0; pip < MAX_LINE_CELLS; pip++) {
-        const px = x + (pip - 2) * 8
-        maskArt.fillCircle(px, PIP_Y, 3.2)
-        pips.push(this.add.image(px, PIP_Y, key, bead).setDisplaySize(6.4, 6.4).setDepth(47).setMask(mask))
-      }
-      this.indicatorPips.push(pips)
-    }
-    this.events.once('shutdown', () => maskArt.destroy())
-    this.events.once('destroy', () => maskArt.destroy())
-  }
-
-  private renderIndicators() {
-    for (let index = 0; index < MAX_LINES; index++) {
-      const line = this.lines[index]
-      const previewLine = this.drag && this.lines.length === index ? this.drag : null
-      const lit = line?.cells.length ?? previewLine?.cells.length ?? 0
-      const occupied = Boolean(line || previewLine)
-      const next = !occupied && index === this.lines.length && this.lines.length < MAX_LINES
-      this.indicatorOrbs[index].setAlpha(occupied ? 1 : next ? 0.7 : 0.38)
-      this.indicatorPips[index].forEach((pip, n) => pip.setAlpha(n < lit ? 1 : 0.22))
-    }
+      .setFrame(validateEnabled ? 'button-validate-ready' : 'button-validate-disabled')
+      .setDisplaySize(this.validatePressed ? CONTROL_BUTTON_WIDTH - 6 : CONTROL_BUTTON_WIDTH, this.validatePressed ? CONTROL_BUTTON_SIZE - 3 : CONTROL_BUTTON_SIZE)
+      .clearTint()
+      .setAlpha(validateEnabled ? 1 : 0.78)
   }
 
   private renderAmbient(time: number) {
     this.ambientGraphics.clear()
 
     for (const star of this.ambientStars) {
-      if (star.y > 132 && star.y < 824) continue
+      if (star.y > 112 && star.y < 780) continue
       const alpha = 0.10 + (Math.sin(star.phase + time * star.speed) + 1) * 0.18
-      this.ambientGraphics.fillStyle(PARCHMENT_LIGHT, alpha)
+      this.ambientGraphics.fillStyle(0xf8eee3, alpha)
       this.ambientGraphics.fillCircle(star.x, star.y, star.radius)
     }
   }
@@ -1311,43 +1042,35 @@ export class LineFuggScene extends Phaser.Scene {
   private renderEnergy(time: number) {
     this.energyGraphics.clear()
 
-    this.lines.forEach((line, index) => {
-      const start = cellCenter(line.start)
-      const end = cellCenter(line.end)
-      const travel = (time * 0.00042 + index * 0.29) % 1
-      const x = start.x + (end.x - start.x) * travel
-      const y = start.y + (end.y - start.y) * travel
+    this.lines.forEach((_line, index) => {
+      const start = new Phaser.Math.Vector2(RESULT_POSITIONS[index], RESULT_Y + 34)
+      const end = new Phaser.Math.Vector2(195, SUN_Y - 40)
+      const control = new Phaser.Math.Vector2(RESULT_POSITIONS[index] + (index - 1) * 18, 570)
+      const curve = new Phaser.Curves.QuadraticBezier(start, control, end)
       const color = LINE_COLORS[index]
-
-      this.energyGraphics.fillStyle(color, 0.12)
-      this.energyGraphics.fillCircle(x, y, 8)
-      this.energyGraphics.fillStyle(color, 0.48)
-      this.energyGraphics.fillCircle(x, y, 4.3)
-      this.energyGraphics.fillStyle(0xffffff, 0.9)
-      this.energyGraphics.fillCircle(x, y, 1.6)
+      const points = curve.getPoints(24)
+      this.energyGraphics.lineStyle(10, color, 0.08).strokePoints(points)
+      this.energyGraphics.lineStyle(4, color, 0.44).strokePoints(points)
+      this.energyGraphics.lineStyle(1.2, 0xffffff, 0.62).strokePoints(points)
+      const travel = this.reducedMotion ? 0.72 : (time * 0.00025 + index * 0.31) % 1
+      const point = curve.getPoint(travel)
+      const tangent = curve.getTangent(travel)
+      const shard = this.flowShards[index]
+      const frame = `transfer-${this.lineColorName(index)}-${String(Math.min(8, Math.floor(travel * 8) + 1)).padStart(2, '0')}`
+      shard.setVisible(true).setFrame(frame).setPosition(point.x, point.y).setRotation(Math.atan2(tangent.y, tangent.x))
     })
-    // Slow traveling brass reflection, away from cell contents. No full-screen FX.
-    if (!this.reducedMotion) {
-      const phase = (time * 0.00008) % 1
-      const x = BOARD_X + BOARD_SIZE * phase
-      const y = BOARD_Y - 13
-      const alpha = Math.sin(phase * Math.PI) * 0.5
-      this.energyGraphics.lineStyle(1, PARCHMENT_LIGHT, alpha)
-      this.energyGraphics.lineBetween(x - 7, y, x + 7, y)
-      this.energyGraphics.lineBetween(x, y - 3, x, y + 3)
-    }
+    for (let index = this.lines.length; index < this.flowShards.length; index += 1) this.flowShards[index].setVisible(false)
   }
 
   private renderControlPulse(time: number) {
     this.controlPulseGraphics.clear()
 
     if (this.undoHovered && this.undoEnabled()) {
-      this.controlPulseGraphics.lineStyle(2, 0xffdf8e, 0.85)
-      this.controlPulseGraphics.strokeCircle(UNDO_X, CONTROL_Y, 26)
+      this.controlPulseGraphics.lineStyle(2, 0xa54dff, 0.55)
+      this.controlPulseGraphics.strokeRoundedRect(UNDO_X - CONTROL_BUTTON_WIDTH / 2, CONTROL_Y - CONTROL_BUTTON_SIZE / 2, CONTROL_BUTTON_WIDTH, CONTROL_BUTTON_SIZE, 10)
     }
     if (!this.validateEnabled()) return
 
-    // Let the authored glass carry the light; no flat rings over the artwork.
     this.validateButton.setAlpha(this.reducedMotion ? 1 : 0.96 + Math.sin(time * 0.003) * 0.04)
   }
 }

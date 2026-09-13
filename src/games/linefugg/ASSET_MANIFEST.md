@@ -1,10 +1,10 @@
 # LineFugg — Production asset manifest
 
-État canonique : 12 septembre 2026, version `0.6.0`, direction **Orbital Accounting**. Appliquer `docs/GAME_ART_PRODUCTION_PIPELINE.md` et `docs/ASSET_PIPELINE.md`.
+État canonique : 14 septembre 2026, version `0.7.0`, direction active **Solar Origami v2**. Appliquer `docs/GAME_ART_PRODUCTION_PIPELINE.md` et `docs/ASSET_PIPELINE.md`.
 
-Les PNG approuvés et sources de travail sont conservés. **Le runtime gameplay ne charge plus aucun de ces gros PNG : ses 11 images actives sont des dérivés WebP lossless pré-dimensionnés.** Les quatre covers suivent le même principe, avec masters PNG distincts et dérivés WebP Core.
+Les PNG approuvés et sources de travail sont conservés. **Le runtime gameplay charge uniquement les 13 dérivés WebP lossless Solar Origami nécessaires à la scène ; les grandes planches transparentes restent des sources de production.** Les quatre covers suivent le même principe, avec masters PNG distincts et dérivés WebP Core.
 
-## Pack Solar Origami v2 — produit, décomposé, non intégré
+## Pack Solar Origami v2 — actif
 
 Le premier pack `solar-origami/` est conservé uniquement comme trace d'une proposition refusée le 13 septembre : typographie trop éloignée de la maquette, boutons reconstruits, astres trop monochromes et flux insuffisamment détaillés. Il ne doit pas être intégré.
 
@@ -16,11 +16,13 @@ Le remplacement est `public/assets/generated/linefugg/solar-origami-v2/`. Trois 
 | Glyphes | `0…9`, `−`, `+`, `×`, `÷`, `.`, `=` dans une fonte raster générée conforme à la maquette |
 | Résultats | 3 astres ivoire inactifs et 3 astres actifs multicolores, chacun gardant ivoire, or et bleu en plus de sa couleur de ligne |
 | Soleil | neutre, rouge, rouge+violet, final tricolore ; 2 grappes et 7 cailloux isolés ; 4 étincelles |
-| Commandes | Annuler normal/enfoncé et Valider inactif/prêt, quatre textures transparentes de même gabarit `512×160` |
+| Commandes | Undo normal/enfoncé et Validate inactif/prêt, quatre textures transparentes de même gabarit `512×160` |
 | Sélection | 8 nœuds : neutre, survol, trois couleurs et trois partages bicolores ; 8 segments droits/diagonaux/coude |
 | Flux | 8 frames rouges, 8 violettes, 8 jaunes ; impacts neutres/couleurs, éclats ivoire et poussières colorées |
 
-Masters transparents : `masters/solar-origami-{mega-tileset,glyphs,fx}-alpha-v2.{png,webp}`. Chaque objet existe séparément sous `components/`; les atlases runtime et leurs frames nommées sont sous `runtime/`. `solar-origami-v2-inventory.json` donne les quantités, chemins et SHA-256. La planche de contrôle complète est `previews/solar-origami-complete-components-board-v2.png`. Statut : **préparé et techniquement vérifié, en attente de validation utilisateur, aucun branchement Phaser**.
+Masters transparents : `masters/solar-origami-{mega-tileset,glyphs,fx}-alpha-v2.{png,webp}`. Chaque objet existe séparément sous `components/`; les atlases runtime et leurs frames nommées sont sous `runtime/`. La source corrigée des commandes est `sources/solar-origami-controls-english-alpha-v3.png`. `solar-origami-v2-inventory.json` donne les quantités, chemins et SHA-256. La planche de contrôle complète est `previews/solar-origami-complete-components-board-v2.png`. Statut : **intégré dans Phaser, techniquement vérifié, revue artistique finale utilisateur encore ouverte**.
+
+Le runtime actif charge le fond spatial et douze atlases WebP/JSON : faces de cases, astres de résultat, soleils, commandes, glyphes, nœuds, segments, impacts, débris et trois flux colorés. Total image : **3 266 252 octets = 3,27 Mo = 3,11 Mio**. Aucune grande planche PNG ni texture Orbital n'est chargée par la scène.
 
 ## Pack de remplacement Solar Origami v1 — refusé, non intégré
 
@@ -40,7 +42,7 @@ Couleurs exactes : `#ff5a36`, `#a54dff`, `#ffc72c`. Les aperçus `previews/solar
 
 Le script `scripts/build-linefugg-solar-origami-assets.py` reconstruit les dérivés, atlases, métadonnées, états et planches sans modifier les sources. Le pack est **préparé pour revue et intégration**, mais aucun chemin n'est encore chargé par `LineFuggScene.ts` : le runtime public reste Orbital Accounting `0.6.0`.
 
-## Assets gameplay actifs
+## Assets Orbital Accounting — historiques, inactifs
 
 | Fonction | Source conservée | URL runtime / dimensions | Octets runtime | Ownership / notes |
 | --- | --- | --- | ---: | --- |
@@ -66,13 +68,13 @@ SHA-256 des trois nouveaux dérivés :
 - `glass-indicators.webp` — `83430edbe2c30fd55f2cf0a1e239f15be186c0978dea72150c32fd05264813c5` ;
 - `validate-amber-source.webp` — `3ca900b3df58d5eeeccb128e628919586ca710c4584f20fbbfc7569aae69258e`.
 
-## Géométrie et ownership dynamique
+## Géométrie et ownership dynamique active
 
-Stage logique `390×844`. Plateau `(55,180)`, taille `280²`, cellules `40²`. Registre `y=488`, trois lignes de `42` ; total centre `y=638` ; contrôles centre `y=695`, diamètre visuel `48`. Le bouton Retour Core adopte la même taille CSS effective que ces commandes sur PC. Les coordonnées exactes restent dans `LineFuggScene.ts`.
+Stage logique `390×844`. Plateau `(55,128)`, taille `280²`, cellules `40²`. Les trois astres sont centrés à `y=505`, le soleil-total à `y=628` et les deux commandes anglaises `150×48` à `y=714`. Tous les éléments essentiels tiennent dans le crop PC CENTRE `y=91…753`. Les coordonnées exactes restent dans `LineFuggScene.ts`.
 
 `artFrame()` reçoit toujours les largeurs des **sources de mesure** (plateau 1254, armillaire 1774, registre 2172, console 1536, indicateurs/verre 1254) et calcule le ratio vers le dérivé chargé. Le passage aux WebP n'altère donc ni les frames ni la géométrie du jeu.
 
-Phaser possède valeurs, signes, chemins, flèches, halos, calculs, total, pips, états, hover et FX. Aucun score ou état mutable n'est cuit dans les fonds. L'armillaire conserve ses orbites lentes, les reflets locaux et les particules bornées ; mouvement réduit désactive les animations non essentielles.
+Phaser possède valeurs, chemins, flèches, scores, états, hover et FX. Aucun score ou état mutable n'est cuit dans le fond. Les faces et nombres proviennent des atlases raster, tandis que les segments sont tournés/mis à l'échelle depuis les centres de cases. Débris et flux restent bornés ; mouvement réduit désactive les trajets non essentiels.
 
 `OrbitalImageFile` a été supprimé : LineFugg utilise maintenant le loader Phaser standard `load.image`. Le navigateur ne télécharge plus une source surdimensionnée avant de la réduire sur Canvas.
 
@@ -93,10 +95,10 @@ Les sources et masters sont des PNG opaques, mono-frame. Les quatre WebP actifs 
 
 ## Vérification
 
-- `scripts/test-linefugg-runtime-assets.mjs` vérifie les 11 fichiers WebP actifs, leur signature, leur somme exacte `4 573 098` octets, le fond WebP et l'absence de PNG dans le bloc `ASSETS` Phaser.
+- `scripts/test-linefugg-runtime-assets.mjs` vérifie les 13 fichiers WebP actifs, leur signature, leur budget cumulé inférieur à 4,6 Mo, le fond Solar Origami et l'absence de PNG ou de référence Orbital dans les chemins actifs.
 - Passe finale : `npm run build` réussi.
 - Scénario navigateur 390×844 DPR2 tactile réussi : tracé, reroll, trois lignes, Undo, Valider, replay/retour ; aucune erreur HTTP/JavaScript.
-- Captures `empty`, `drag`, `reroll-cascade`, `one`, `three`, `submitted` produites. Contrôle visuel des états `empty` et `three` : rendu Orbital cohérent, textures présentes et lisibles, aucune dégradation évidente liée aux dérivés.
+- Captures `empty`, `drag`, `reroll-cascade`, `one`, `three`, `submitted` produites. Contrôle visuel téléphone et PC : grille, scores, astres, soleil, flux et commandes anglaises présents, lisibles et entièrement contenus dans le canvas utile.
 - Les matrices historiques de `scripts/test-linefugg-browser.mjs` et `scripts/test-linefugg-covers.mjs` restent les preuves multi-écrans. Profilage sur téléphone physique et acceptation artistique finale utilisateur restent distincts.
 - Remise aux normes cover : les quatre sources prolongées, masters `390×844` et dérivés `780×1688` sont décodés, opaques et mono-frame ; les WebP sont lossless. Le contrôle d'usage vérifie le plein cadre statique, l'ancrage haut et le chevauchement du bouton JOUER sur la seule zone décorative basse.
 

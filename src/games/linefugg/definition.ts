@@ -22,8 +22,8 @@ export const gameDefinition: InstagameDefinition = {
   welcome: LINEFUGG_WELCOME,
   component: LineFugg,
   release: {
-    version: '0.6.0',
-    updatedAt: '2026-09-12T12:46:00+02:00',
+    version: '0.7.0',
+    updatedAt: '2026-09-14T00:10:00+02:00',
     changelogPath: 'src/games/linefugg/CHANGELOG.md',
   },
   instructions: {

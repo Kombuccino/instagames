@@ -1,5 +1,14 @@
 # LineFugg — Changelog
 
+## [0.7.0] — 2026-09-14 00:10 Europe/Paris
+
+- La DA gameplay **Solar Origami** remplace Orbital Accounting sans modifier les règles : grille facettée compacte, astres de résultat ivoire puis rouge/violet/jaune, soleil de total progressif et décor spatial animé avec retenue.
+- Les anciens panneaux de calcul disparaissent au profit de trois objets-résultats lisibles. La sélection utilise les nœuds et segments du nouveau pack, puis un flux d'énergie animé rejoint l'astre correspondant ; le mode mouvement réduit conserve un retour immédiat.
+- Les 17 faces de cases et tous les scores utilisent les glyphes raster générés. Multiplications et divisions se distinguent aussi par leur silhouette.
+- Les commandes transparentes, strictement de même gabarit, sont désormais libellées **UNDO** et **VALIDATE**. Le résultat temporaire reste sous la grille afin de ne masquer aucune case.
+
+Vérifié : build/typecheck, budget et intégrité des assets, scénario complet tactile/souris et matrice téléphone/tablette/PC, y compris mouvement réduit.
+
 ## [0.6.0] — 2026-09-12 12:46 Europe/Paris
 
 - Les quatre jaquettes approuvées occupent désormais le vrai cadre MiniFugg `390 × 844`, sans ancien letterbox ni fond diffus autour de l'image.

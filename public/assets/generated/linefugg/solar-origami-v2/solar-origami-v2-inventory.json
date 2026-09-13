@@ -4,7 +4,9 @@
   "authoredSources": [
     "public/assets/generated/linefugg/solar-origami-v2/sources/solar-origami-mega-tileset-chroma-v2.png",
     "public/assets/generated/linefugg/solar-origami-v2/sources/solar-origami-glyphs-chroma-v2.png",
-    "public/assets/generated/linefugg/solar-origami-v2/sources/solar-origami-fx-chroma-v2.png"
+    "public/assets/generated/linefugg/solar-origami-v2/sources/solar-origami-fx-chroma-v2.png",
+    "public/assets/generated/linefugg/solar-origami-v2/sources/solar-origami-controls-english-alpha-v3.png",
+    "public/assets/generated/linefugg/solar-origami-v2/sources/solar-origami-background-source-v2.png"
   ],
   "palette": {
     "red": "#FF5A36",
@@ -212,35 +214,35 @@
     },
     {
       "path": "public/assets/generated/linefugg/solar-origami-v2/components/controls/button-undo-normal-v2.png",
-      "sha256": "3bcf37f07a5445bd070d20de496ac3d20d19e4649a1bd346f43bf36ece70f5f4"
+      "sha256": "599fc37010262fc7aecee1b44065050dc241e43f28fce79192bfee31dba488f4"
     },
     {
       "path": "public/assets/generated/linefugg/solar-origami-v2/components/controls/button-undo-normal-v2.webp",
-      "sha256": "f5525d46fb8f8aad5efd058ede5a753dcf03f743ae9dc9fb29c9c4425d2130b9"
+      "sha256": "6324154556777529f7ae28697325a1f2b2303b175f9e7fab6391fe0ee489f02a"
     },
     {
       "path": "public/assets/generated/linefugg/solar-origami-v2/components/controls/button-undo-pressed-v2.png",
-      "sha256": "15235892a53e52842f608146918fc9d3159dcf4815cc2948ef0d5b47c12a8241"
+      "sha256": "2f21fbd060395d85fd579825da1e58082521e71bdcc02ff84317987cea4cbd2a"
     },
     {
       "path": "public/assets/generated/linefugg/solar-origami-v2/components/controls/button-undo-pressed-v2.webp",
-      "sha256": "a49eaf0c105d907291d0003f69c80506f0ac3bc060887072ec35b0d0c6bfa095"
+      "sha256": "cf9470b2e27aab652716a9345707b48962ddae83af2488a6198c6a3bdbc9b728"
     },
     {
       "path": "public/assets/generated/linefugg/solar-origami-v2/components/controls/button-validate-disabled-v2.png",
-      "sha256": "762e002da067e53b8d1c55a45aa49356869e76e2bef5bdf2cfe77a494167fd56"
+      "sha256": "08e5186a7adc2c7566426252f84a7a2558faaa26046ea54fc25b470d1e028ed1"
     },
     {
       "path": "public/assets/generated/linefugg/solar-origami-v2/components/controls/button-validate-disabled-v2.webp",
-      "sha256": "ecb1231698382be3740c2aa7441035c333e9c6005de4d391370c85d7b6b04dc4"
+      "sha256": "8551c19aa0daee0f4c29db793ffeff84853d01461a160f7ded1c8ed824874f1c"
     },
     {
       "path": "public/assets/generated/linefugg/solar-origami-v2/components/controls/button-validate-ready-v2.png",
-      "sha256": "61e21acd6a521ce2a726ff1f79a55af1d935e03ea15b2aef963f3f13dfa9273e"
+      "sha256": "ab0c51d1f75cdd88d8708c6b41465d5d6406b490b0a14ac09342194ebafbcbdb"
     },
     {
       "path": "public/assets/generated/linefugg/solar-origami-v2/components/controls/button-validate-ready-v2.webp",
-      "sha256": "3deaa4e81ee0bd65289a139ca277dd838d4aff790c3bf6395c05a6feddabb4be"
+      "sha256": "e6e96d48190a92e246f11fece55bbd02d20b629a09488e363ce0c085ce506b34"
     },
     {
       "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/debris-01-v2.png",
@@ -1067,6 +1069,14 @@
       "sha256": "c99f1ca1948bd5990bc0ac61d77d4a0af9d0a346b43b1e7816eb66c94df2c782"
     },
     {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/masters/solar-origami-background-master-v2.png",
+      "sha256": "1fd9aae92c1c20cbcd9d73466d2aaffddbb1e0fd167371bcb893e5d22872927c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/masters/solar-origami-background-master-v2.webp",
+      "sha256": "384e2469164305f08dabb3716ee2f3d712416f089cd6814ce55f3df6193b8239"
+    },
+    {
       "path": "public/assets/generated/linefugg/solar-origami-v2/masters/solar-origami-fx-alpha-v2.png",
       "sha256": "c5ce4b476f567559a4b7cf4a7203afda8cd5ebdc849351c5a5432fd149061df8"
     },
@@ -1084,15 +1094,23 @@
     },
     {
       "path": "public/assets/generated/linefugg/solar-origami-v2/masters/solar-origami-mega-tileset-alpha-v2.png",
-      "sha256": "79a96adb018a027ef0523d4bc8b6fbb6b42a0f5dd877a8464496c52c9cf57e8f"
+      "sha256": "d1fbb89d74b106199e4c22409f5380d268a006454339a8f5414167376a6d4e08"
     },
     {
       "path": "public/assets/generated/linefugg/solar-origami-v2/masters/solar-origami-mega-tileset-alpha-v2.webp",
-      "sha256": "df1abf3e9a80f3338b1941d87f0d6c6cca77e0e2dd695b1d7c2a2fbde15df982"
+      "sha256": "ce6309fd283c807fea7526495996103e4391059d299b6a47a8c7134de9d2f2b8"
     },
     {
       "path": "public/assets/generated/linefugg/solar-origami-v2/previews/solar-origami-complete-components-board-v2.png",
-      "sha256": "ef690e4b2994481b8382940579dd8a8580c519d1eb7844de206787587cfb3d3c"
+      "sha256": "7ce7b7113860fb0066e7ca772d28dbb9c31fff16cb031712c7a3b0feca90c8c6"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/background/solar-origami-background-v2.png",
+      "sha256": "679b88799594469eade07477f112e2c3ce70c5b2ecb48fd451da729b01fb60eb"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/background/solar-origami-background-v2.webp",
+      "sha256": "1a676e9e6997489f4f9da2b351ba028b1f12e0f16fde052bcdd9816b7a59e8c1"
     },
     {
       "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/cells/cell-faces-atlas-v2.json",
@@ -1124,11 +1142,11 @@
     },
     {
       "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/controls/control-buttons-atlas-v2.png",
-      "sha256": "c52143eee1c52d430b9143ae6e2c2c23ac60b4960b13f4163fcbf2a1daea0ecb"
+      "sha256": "c36c7450b18313a8004281ee8824b110b37edec561baad94bd9198fea7519b1b"
     },
     {
       "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/controls/control-buttons-atlas-v2.webp",
-      "sha256": "16d45df0f5f354e33b1974508bc165acb871412cd7eac53f03aab2bd8501a784"
+      "sha256": "375d43d98f5ce4148d57b451e8b7135061df15d9b03e53fed489eb506478cc5f"
     },
     {
       "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/decor/debris-atlas-v2.json",
@@ -1261,6 +1279,14 @@
     {
       "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/results/sun-and-clusters-atlas-v2.webp",
       "sha256": "6de538cabdc2fbac141399ec78e29ef23b13e866b3193213dc4c6cc47a3fe33f"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/sources/solar-origami-background-source-v2.png",
+      "sha256": "1fd9aae92c1c20cbcd9d73466d2aaffddbb1e0fd167371bcb893e5d22872927c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/sources/solar-origami-controls-english-alpha-v3.png",
+      "sha256": "779f239546e8d80ca46b1d18f9107d148ddc4754a8d676c061fe0412852435c1"
     },
     {
       "path": "public/assets/generated/linefugg/solar-origami-v2/sources/solar-origami-fx-chroma-v2.png",

@@ -1,0 +1,230 @@
+{
+  "version": 1,
+  "files": [
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/previews/solar-origami-one-line-master-v1.png",
+      "bytes": 462339,
+      "sha256": "5ee195fef25aecdf4e58d897900a3e8906b18a625d0c94a144a5193d40fccbdc"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/previews/solar-origami-one-line-pc-centre-v1.png",
+      "bytes": 357620,
+      "sha256": "68d43e05d4a1711f6482a24833f28cf95e85bdfd5e7a634516601f0490b4727f"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/previews/solar-origami-three-lines-master-v1.png",
+      "bytes": 459021,
+      "sha256": "97b946b6150dc0dfa6d1fa5e292d3bfe4f9cdfb33506660209e8f6999eaff1a9"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/previews/solar-origami-three-lines-pc-centre-v1.png",
+      "bytes": 354288,
+      "sha256": "5ba230b32674cf04645e377f027089cbd3889fc9a66fb5ac4002f903cb65f915"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/previews/solar-origami-transfer-storyboard-v1.png",
+      "bytes": 414236,
+      "sha256": "c58509967e83d234f7ff833f61c41cf886faed8f9e26ed698eb5adf53a307e96"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/previews/solar-origami-two-lines-master-v1.png",
+      "bytes": 460980,
+      "sha256": "8bb405f67df707ddd558e2f568cebf7854791ff431b949aa85b40dd630662c47"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/previews/solar-origami-two-lines-pc-centre-v1.png",
+      "bytes": 356222,
+      "sha256": "f2d11283c845df44b7b7f1b57cc103224f0665ac3cb1459ec0e1810e3590a210"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/previews/solar-origami-zero-lines-master-v1.png",
+      "bytes": 463965,
+      "sha256": "650346069fd8a96e6786b01b682a1f6cc0f9dbbbd5f1774ca2b6a5830a1c190a"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/previews/solar-origami-zero-lines-pc-centre-v1.png",
+      "bytes": 359163,
+      "sha256": "26e6a0862c690bf56f805eeba0327d497e9f81d5a8e7137bc7de49e8e9ea591a"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/background/solar-origami-background-master-v1.png",
+      "bytes": 385103,
+      "sha256": "1fd9aae92c1c20cbcd9d73466d2aaffddbb1e0fd167371bcb893e5d22872927c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/background/solar-origami-background-v1.webp",
+      "bytes": 743444,
+      "sha256": "1a676e9e6997489f4f9da2b351ba028b1f12e0f16fde052bcdd9816b7a59e8c1"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/cells/cell-bases-atlas-v1.json",
+      "bytes": 495,
+      "sha256": "80839b43e96dbe14b0ddbec5ba7fe2bf06f6d50738318a16fdd3422413a41096"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/cells/cell-bases-atlas-v1.png",
+      "bytes": 32033,
+      "sha256": "ebe2812b8bed672520996da4d96fa6f03975ddafad97d51e37672054349e2ad7"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/cells/cell-bases-atlas-v1.webp",
+      "bytes": 19876,
+      "sha256": "0e565edf8900e40f5ed964df3455e3dba33f88938ff6d15edae1e89e66964fc0"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/cells/cell-faces-atlas-v1.json",
+      "bytes": 2649,
+      "sha256": "aa49780457cc6b3282c914cd1dee7a25e38240a83a13520c25dfd8989f132333"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/cells/cell-faces-atlas-v1.png",
+      "bytes": 112276,
+      "sha256": "4080d0a2bf7bd3b882f372672eed7d0061c666c1c5b1f9077218028ad75b5220"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/cells/cell-faces-atlas-v1.webp",
+      "bytes": 78832,
+      "sha256": "f24f257026deed87efe145b28ace25041f0a49a5f22d7a7339687f5d5a13ff84"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/fx/energy-shard-atlas-v1.json",
+      "bytes": 604,
+      "sha256": "cea4c229faea786a12e5c17b845d0ea64d9b1dac64210ca7d8d61654ef43d40d"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/fx/energy-shard-atlas-v1.png",
+      "bytes": 5676,
+      "sha256": "a4d638ad0fe7c06eea20e6e3be8fb380ee27653988b41ae83f443b3f5513a251"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/fx/energy-shard-atlas-v1.webp",
+      "bytes": 5020,
+      "sha256": "501a5ca3908613a88aa1efd2329ab0b1d2ffb8cee1eb964468ee9b5f1740f46f"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/glyphs/score-glyphs-atlas-v1.json",
+      "bytes": 2018,
+      "sha256": "1a4d92aa1fe5b79ab50e28378f723e69e6c0456d45e254ec210f11106ac29d87"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/glyphs/score-glyphs-atlas-v1.png",
+      "bytes": 107373,
+      "sha256": "7d745def795e112776f9d85ff1a6ed6c168cf7bdff60c609d2dd34780d5c8878"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/glyphs/score-glyphs-atlas-v1.webp",
+      "bytes": 77032,
+      "sha256": "11e2eedfeba612b5f7ca40c213a22aab2bd9b4ca85bff5178e3a5acf30292d8c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/results/result-crafts-atlas-v1.json",
+      "bytes": 1086,
+      "sha256": "2ade024fe241a071596576bef3a4036cccbae439c9043cd7d1faaadb05277f57"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/results/result-crafts-atlas-v1.png",
+      "bytes": 190310,
+      "sha256": "5c4e820c6fc93e84e2eb197c9430024060771a5ec2de53d330195b94ea9a002c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/results/result-crafts-atlas-v1.webp",
+      "bytes": 124066,
+      "sha256": "54d658f730d831cd844ad2d3026ceacf74d0760b24761e8dd8d11a652589fc3b"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/results/total-star-v1.png",
+      "bytes": 61344,
+      "sha256": "b45b8de6be81e3f92a7e30047e422b6dc81cf84c05fa331db474d48445623711"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/results/total-star-v1.webp",
+      "bytes": 45350,
+      "sha256": "7af5b47b470c03d500dfb225e225ee22b88ee03be9c7e0bdc471086b1adf9af9"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/ui/control-content-atlas-v1.json",
+      "bytes": 642,
+      "sha256": "22acb329fa81706837dee88d529d8c5db1c842c40fc1a445dadd41683560c3f2"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/ui/control-content-atlas-v1.png",
+      "bytes": 24373,
+      "sha256": "5e0e216baf86f244be04f0e371a91fe232656864c93c6c515378e468356378c7"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/ui/control-content-atlas-v1.webp",
+      "bytes": 17908,
+      "sha256": "ef1f34c19dcb87c1aaa9fd3725f2b50bf11a4bf9465589b483b3de246fa223db"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/ui/control-plate-v1.png",
+      "bytes": 1279,
+      "sha256": "e509ffafec8c1b9d9c5340016e9579bb7a2d43dc131fda58f24dbb2c0466f523"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/runtime/ui/control-plate-v1.webp",
+      "bytes": 572,
+      "sha256": "968939b61bcf6fc2a1dc084647452da152cf6e830e640050eb8d28c7f2c57e44"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/solar-origami-runtime-recipe-v1.json",
+      "bytes": 1803,
+      "sha256": "6f2041d459943b59dda1db20ebc5252dc96da3e3b4f2dab8ab106b5ab311ef39"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/sources/background/solar-origami-background-source-v1.png",
+      "bytes": 1577453,
+      "sha256": "e20cffbb6255a5a58b93cf5c44ccdfb49c56790f2483787984e21ef483811bcf"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/sources/cells/cell-additive-source-v1.png",
+      "bytes": 710672,
+      "sha256": "e9312e9e5376cdcbcdb25b452e66c3c2de2e8da49bb6aae22b7af782af3b6c6e"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/sources/cells/cell-divide-source-v1.png",
+      "bytes": 618072,
+      "sha256": "7a8a69d739799106eb50bf78c9179c268f6783ac5b2f0bd75d9f8ebddc47cabd"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/sources/cells/cell-multiply-source-v1.png",
+      "bytes": 768139,
+      "sha256": "8b7024f87c0eddf29c53c4f4565efec4572c884423cd02a4f3100f5158dc9043"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/sources/fx/energy-shard-source-v1.png",
+      "bytes": 364341,
+      "sha256": "a4f90ac4096900a8c53a34104f301851b3cc99adcfd38b1e4dddac1b494cb157"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/sources/glyphs-score-generated-source-v2.png",
+      "bytes": 2152490,
+      "sha256": "8216141a6a704d5b619110c46ef7a17b71a8e9cd7d5c07fc9af3b559ee83a4af"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/sources/glyphs-ui-generated-source-v1.png",
+      "bytes": 710638,
+      "sha256": "677cbfd890385f1f92bcd36acc68441f20cce0c06674f5ed3cf4605975354499"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/sources/results/result-craft-1-source-v1.png",
+      "bytes": 558788,
+      "sha256": "6be59ef63bff4e08fc217c1f16a2ad774c9bff4a8fad844fde1cec7d8781f2fc"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/sources/results/result-craft-2-source-v1.png",
+      "bytes": 1059710,
+      "sha256": "312193eb7b80df6a42ea56cf875c31f80c654a5189059ab93d5e2e84b546cf75"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/sources/results/result-craft-3-source-v1.png",
+      "bytes": 419100,
+      "sha256": "c0541052bcbc588ff9182138ebbb52ca1738e5891ae5e867e4ecbfce35396708"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami/sources/results/total-star-source-v1.png",
+      "bytes": 1220639,
+      "sha256": "59c64ef56cc1e1d89fd26ede7873db7d61343a042f89d9b0c9431326f0eaf259"
+    }
+  ]
+}

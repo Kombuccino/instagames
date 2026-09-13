@@ -1,6 +1,6 @@
 # LineFugg — Suivi de création
 
-Mis à jour : 13 septembre 2026 à 17:25 Europe/Paris. Version : `0.6.0`. Changelog : `CHANGELOG.md`.
+Mis à jour : 13 septembre 2026 à 22:46 Europe/Paris. Version : `0.6.0`. Changelog : `CHANGELOG.md`.
 
 Runtime Phaser 4.2.1, stage 390 × 844. Prototype, game design et équilibre validés par l'utilisateur. Direction gameplay : **Orbital Accounting**. Cover runtime : current ; quatre références approuvées conservées et quatre restaurations statiques plein cadre actives.
 
@@ -18,7 +18,7 @@ Références : [ART_DIRECTION.md](ART_DIRECTION.md), [ASSET_MANIFEST.md](ASSET_M
 | --- | --- | --- |
 | Prototype / GD / équilibre | Validés utilisateur | Rien à rouvrir sans nouvelle demande |
 | Gameplay Phaser | Fonctionnel et vérifié | Profilage téléphone physique seulement |
-| DA gameplay | Intégrée mais refusée visuellement le 13 septembre | Recomposition complète en exploration ; aucune nouvelle piste acceptée ni intégrée |
+| DA gameplay | Solar Origami retenue en principe ; pack complet préparé | Revue utilisateur du pack, puis mini-tranche Phaser avant remplacement complet |
 | Inputs / responsive | Vérifiés en émulation | Contrôle appareil réel recommandé |
 | Animations / FX | Intégrés et bornés | Aucun changement demandé |
 | Audio | Musiques conservées | Écoute finale du mix/SFX restant à faire |
@@ -46,8 +46,8 @@ Les matrices historiques plus larges de `scripts/test-linefugg-browser.mjs` et `
 
 ## Prochaines actions
 
-1. Choisir ou recadrer la nouvelle direction gameplay, particulièrement le registre des trois lignes.
-2. Produire la planche de traduction DA → composants avant toute intégration.
+1. Revoir les assets Solar Origami et la planche d'états préparés.
+2. Après accord, intégrer une mini-tranche Phaser : cases + première ligne + transfert + premier astre.
 3. Profilage sur téléphone physique et écoute finale du mix/SFX.
 
 Aucun blocage technique connu. L'optimisation des images runtime de LineFugg est terminée ; ne pas rouvrir gameplay ou DA pour une simple optimisation de fichiers.
@@ -64,6 +64,9 @@ Aucun blocage technique connu. L'optimisation des images runtime de LineFugg est
 - Retour canvas sur la piste origami : la première composition avait le bon ratio mais plaçait les commandes dans BAS, donc hors de la fenêtre PC centrée. La correction `v3` garde toutes les informations et commandes dans CENTRE `y=91…753`, avec la grille entièrement visible après crop ; HAUT/BAS ne contiennent plus que le décor spatial recadrable. Masters de contrôle : `390×844` et crop PC exact `390×662`, PNG opaques décodés ; contrôle visuel des deux cadrages effectué. Toujours aucune intégration avant validation utilisateur.
 - Palette demandée pour la piste origami : ligne 1 et score `8` rouges, ligne 2 et score `19` bleu-violet, ligne 3 et score `24` jaunes, conformément aux covers majoritaires et aux couleurs runtime existantes. Le lien sélection → objet ne doit pas être un ruban persistant : Phaser conserve le tracé dynamique entre centres de cases, puis anime à la validation un transfert temporaire vers le slot de résultat ; seules les trois liaisons fixes résultat → `51` persistent. Cette solution accepte toute position et orientation sans accumuler de croisements. Master et crop PC recolorés, contrôlés et archivés ; comportement encore exploratoire, non intégré.
 - Précisions utilisateur : chaque astre de résultat reste blanc/ivoire avant création de sa ligne et ne prend sa couleur canonique qu'après commit ; Undo l'éteint. Multiplicateurs et diviseurs auront des silhouettes distinctes en plus de `×`/`÷`. Le pack prévoit un atlas raster des 17 faces possibles et un atlas numérique/mathématique composable pour les scores. Le flux sélection → astre sera une animation d'énergie temporaire calculée depuis la ligne réelle ; les flux fixes astres → `51` pourront rester subtilement animés. Direction Solar Origami retenue en principe, planche de production et intégration encore à valider.
+- Lot de production préparé sous `public/assets/generated/linefugg/solar-origami/` : fond 390×844 et WebP 2×, trois bases de cases, atlas des 17 faces, atlas composable des seize chiffres/opérateurs, tileset généré des lettres/icônes de commandes, six états d'astres, astre total, éclat d'énergie teintable et châssis de bouton unique. Les polices système ont été écartées après retour utilisateur : tous les caractères visibles des aperçus proviennent désormais des deux tilesets ImageGen.
+- Planche de traduction livrée en fichiers propres : états zéro/une/deux/trois lignes en MASTER 390×844 et crop PC exact 390×662, plus storyboard quatre temps du transfert. Contrôle visuel agent : astres ivoire et vides avant commit, scores progressifs `0`, `8`, `27`, `51`, opérateurs distincts par silhouette, palette exacte et boutons de même taille ; aucun texte hors allowlist.
+- Contrôle technique : fond/aperçus décodés aux dimensions attendues ; tous les atlases et objets isolés ont un alpha réel et des métadonnées de frames. Le tileset numérique brut avait un damier peint malgré le prompt ; il est conservé comme source générée et nettoyé de manière reproductible par sélection des composantes bleu nuit. Deux supports de bouton ImageGen présentant le même défaut ont été rejetés dans l'archive locale ; le châssis final est déterministe. Aucun asset n'est chargé par le jeu à ce stade.
 - La version reste `0.6.0` : cette passe ne modifie ni runtime, ni règles, ni assets actifs.
 
 ## Remise aux normes des covers — 12 septembre 2026

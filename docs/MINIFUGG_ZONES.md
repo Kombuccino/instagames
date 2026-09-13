@@ -1,6 +1,6 @@
 # MiniFugg — Zones MiniFugg
 
-**Zones MiniFugg** est le vocabulaire canonique des compositions portrait. Le guide visuel et ses modèles sont disponibles sur `/?usr=moigod&lab=layout`.
+**Zones MiniFugg** est le vocabulaire canonique des compositions portrait. Le guide visuel et ses modèles sont disponibles sur `/?usr=moigod&lab=layout`. Son outil de calage des covers est disponible sur `/?usr=moigod&lab=layout&view=cover-calibration` : il déplace la fenêtre minimale et la console Core sur les masters sans modifier les images, conserve un brouillon local et exporte les décisions en JSON.
 
 ## État de la décision
 

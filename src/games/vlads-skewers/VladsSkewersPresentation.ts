@@ -171,7 +171,7 @@ function bindApprovedCustomers(internals: PresentationInternals) {
   const firstVisible = internals.customerSlots[0]
   internals.clientCountText
     .setText(`RESTE ×${internals.customers.length}`)
-    .setPosition(340, firstVisible?.visible ? 72 : 172)
+    .setPosition(340, firstVisible?.actor.visible ? 72 : 172)
     .setVisible(internals.customers.length > 0)
 }
 

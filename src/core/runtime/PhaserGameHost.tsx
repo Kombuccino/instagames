@@ -5,6 +5,7 @@ import {
   clampRenderPixelRatio,
   fitMiniFuggGameplayViewport,
   MINIFUGG_DESKTOP_MEDIA_QUERY,
+  readGameplayCalibrationAnchor,
   type MiniFuggVerticalAnchor,
 } from './gameRuntimePolicy'
 
@@ -63,6 +64,8 @@ export function PhaserGameHost({
     if (!viewport || !parent) return
 
     const density = clampRenderPixelRatio(renderPixelRatio)
+    const calibrationAnchor = readGameplayCalibrationAnchor()
+    const effectiveVerticalAnchor = calibrationAnchor ?? verticalAnchor
     const renderWidth = Math.round(logicalViewport.width * density)
     const renderHeight = Math.round(logicalViewport.height * density)
     let game: Phaser.Game | null = null
@@ -76,7 +79,7 @@ export function PhaserGameHost({
       }
       const scaleAxis = desktopLayout.matches ? 'height' : 'width'
       const layout = fitMiniFuggGameplayViewport(logicalViewport, available, {
-        verticalAnchor,
+        verticalAnchor: effectiveVerticalAnchor,
         scaleAxis,
       })
 
@@ -166,6 +169,8 @@ export function PhaserGameHost({
     <div
       ref={viewportRef}
       className={className ? `mf-phaser-host ${className}` : 'mf-phaser-host'}
+      data-authored-vertical-anchor={verticalAnchor}
+      data-effective-vertical-anchor={readGameplayCalibrationAnchor() ?? verticalAnchor}
       role="application"
       aria-label={ariaLabel}
       style={{

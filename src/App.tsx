@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { GameFeed } from './core/GameFeed'
 import { CoverCalibrationLab } from './core/CoverCalibrationLab'
+import { GameplayCalibrationLab } from './core/GameplayCalibrationLab'
+import { GameplayCalibrationRuntime } from './core/GameplayCalibrationRuntime'
 import { HomeBisLab } from './core/HomeBisLab'
 import { LayoutLab, type LayoutTemplate } from './core/LayoutLab'
 import { MusicLab } from './core/MusicLab'
@@ -36,6 +38,18 @@ function opensCoverCalibrationLab() {
   return query.get('usr') === 'moigod' && query.get('lab') === 'layout' && query.get('view') === 'cover-calibration'
 }
 
+function opensGameplayCalibrationLab() {
+  if (typeof window === 'undefined') return false
+  const query = new URL(window.location.href).searchParams
+  return query.get('usr') === 'moigod' && query.get('lab') === 'layout' && query.get('view') === 'gameplay-calibration'
+}
+
+function opensGameplayCalibrationRuntime() {
+  if (typeof window === 'undefined') return false
+  const query = new URL(window.location.href).searchParams
+  return query.get('usr') === 'moigod' && query.get('lab') === 'gameplay-runtime'
+}
+
 function opensHomeBisLab() {
   if (typeof window === 'undefined') return false
   const query = new URL(window.location.href).searchParams
@@ -63,6 +77,7 @@ export default function App() {
   const [homeBisEntered, setHomeBisEntered] = useState(() => !opensHomeBisEntryTest())
   const [homeBisArm, setHomeBisArm] = useState<string | null>(null)
 
+  if (opensGameplayCalibrationRuntime()) return <GameplayCalibrationRuntime />
   if (opensHomeBisLab()) return (
     <>
       <HomeBisLab handoffArm={homeBisArm} />
@@ -70,6 +85,7 @@ export default function App() {
     </>
   )
   if (opensCoverCalibrationLab()) return <CoverCalibrationLab />
+  if (opensGameplayCalibrationLab()) return <GameplayCalibrationLab />
   const guideView = layoutGuideView()
   if (guideView) return <LayoutLab focus={guideView} />
   if (opensLayoutLab()) return <LayoutLab />

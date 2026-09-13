@@ -2,6 +2,8 @@
 
 **Zones MiniFugg** est le vocabulaire canonique des compositions portrait. Le guide visuel et ses modèles sont disponibles sur `/?usr=moigod&lab=layout`. Son outil de calage des covers est disponible sur `/?usr=moigod&lab=layout&view=cover-calibration` : il déplace la fenêtre minimale et la console Core sur les masters sans modifier les images, conserve un brouillon local et exporte les décisions en JSON.
 
+Le banc DA/gameplay est disponible sur `/?usr=moigod&lab=layout&view=gameplay-calibration`. Il accepte une image locale ou une référence enregistrée dans `src/core/gameplayDaLabCatalog.ts`, et peut aussi ouvrir chaque jeu du registre dans son vrai runtime. Il simule les viewports de contrôle, teste les ancrages `top | center | bottom`, conserve les décisions localement et exporte un JSON avec les adaptations demandées. Une image importée reste intacte ; ses réglages d'échelle/décalage sont des indications de traduction, jamais une validation automatique ni une modification du master.
+
 ## État de la décision
 
 - **Cible validée — 11 septembre 2026 :** largeur mobile prioritaire, hauteur PC prioritaire, aucun décor de jeu ou de cover ajouté sur les côtés ; les jeux peuvent choisir un ancrage vertical `top`, `center` ou `bottom` selon l'endroit qui doit rester stable quand la hauteur utile varie.

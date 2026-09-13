@@ -34,7 +34,7 @@ try {
   await page.getByRole('button', { name: /CrazyPapers Constructivist Clerk/ }).click()
 
   const slider = page.locator('[data-testid="cover-window-top"]')
-  closeTo(Number(await slider.inputValue()), 127.4, 'existing center 70% mapping', .1)
+  closeTo(Number(await slider.inputValue()), 182, 'existing bottom-center mapping', .1)
 
   const stage = page.locator('[data-testid="cover-calibration-stage"]')
   const windowFrame = page.locator('[data-testid="cover-calibration-window"]')
@@ -46,7 +46,7 @@ try {
     windowFrame.boundingBox(), console.boundingBox(), play.boundingBox(),
   ])
   assert.ok(stageBox && windowBox && consoleBox && playBox)
-  closeTo(windowBox.y, stageBox.y + stageInterior.clientTop + 127.4 / 844 * stageInterior.clientHeight, 'movable viewport y')
+  closeTo(windowBox.y, stageBox.y + stageInterior.clientTop + 182 / 844 * stageInterior.clientHeight, 'movable viewport y')
   closeTo(windowBox.height, stageInterior.clientHeight * 662 / 844, 'minimum viewport height')
   closeTo(consoleBox.height, consoleBox.width * 534 / 2099, 'real console aspect ratio')
   closeTo(consoleBox.y + consoleBox.height, windowBox.y + windowBox.height, 'console bottom anchor', 4)
@@ -56,9 +56,9 @@ try {
 
   await page.mouse.move(windowBox.x + windowBox.width / 2, windowBox.y + windowBox.height / 2)
   await page.mouse.down()
-  await page.mouse.move(windowBox.x + windowBox.width / 2, windowBox.y + windowBox.height / 2 + 14, { steps: 3 })
+  await page.mouse.move(windowBox.x + windowBox.width / 2, windowBox.y + windowBox.height / 2 - 14, { steps: 3 })
   await page.mouse.up()
-  assert.ok(Number(await slider.inputValue()) > 127.4, 'the green viewport must move with the mouse')
+  assert.ok(Number(await slider.inputValue()) < 182, 'the green viewport must move with the mouse')
 
   await slider.evaluate(input => {
     const setValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set

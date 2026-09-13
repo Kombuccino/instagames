@@ -63,23 +63,32 @@
 .mf-game-fullscreen-box {
   display: grid;
   place-items: center;
-  border: max(2px, .5128cqw) solid #817968;
-  border-radius: 13%;
+  border: 0;
   color: #fff7dc;
-  background:
-    linear-gradient(#171917, #090a09) padding-box,
-    linear-gradient(135deg, #cec5ae, #514c42) border-box;
-  box-shadow:
-    inset 0 0 0 max(2px, .5128cqw) #292b27,
-    inset 0 -4px 6px rgba(0, 0, 0, .72),
-    0 2px 3px rgba(0, 0, 0, .58);
+  background: transparent;
+  box-shadow: none;
 }
 
 .mf-game-fullscreen-box::before {
   content: '';
   position: absolute;
-  inset: 8%;
-  border: 1px solid rgba(255, 67, 57, .7);
+  /* EXIT's 100 × 93 artwork uses only x2…98 / y2…91 as opaque chassis. */
+  inset: 5.5% 2%;
+  border: max(2px, .5128cqw) solid #817968;
+  border-radius: 13%;
+  background: linear-gradient(#171917, #090a09);
+  box-shadow:
+    inset 0 0 0 max(2px, .5128cqw) #292b27,
+    inset 0 -4px 6px rgba(0, 0, 0, .72),
+    0 2px 3px rgba(0, 0, 0, .58);
+  pointer-events: none;
+}
+
+.mf-game-fullscreen-box::after {
+  content: '';
+  position: absolute;
+  inset: 12%;
+  border: 1px solid rgba(255, 67, 57, .62);
   border-radius: 8%;
   pointer-events: none;
 }
@@ -91,8 +100,10 @@
 }
 
 .mf-game-fullscreen-icon {
-  width: 48%;
-  height: 48%;
+  position: relative;
+  z-index: 1;
+  width: 40%;
+  height: 40%;
   stroke: currentColor;
   stroke-width: 2.1;
   stroke-linecap: square;

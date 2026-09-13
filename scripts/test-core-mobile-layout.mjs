@@ -112,8 +112,17 @@ try {
     const exitControlBox = await exitControl.boundingBox()
     const fullscreenControlBox = await fullscreenControl.boundingBox()
     assert.ok(exitControlBox && fullscreenControlBox)
-    closeTo(fullscreenControlBox.width, exitControlBox.width, `${scenario.name} fullscreen width matches Exit`)
-    closeTo(fullscreenControlBox.height, exitControlBox.height, `${scenario.name} fullscreen height matches Exit`)
+    closeTo(fullscreenControlBox.width, exitControlBox.width, `${scenario.name} fullscreen touch width matches Exit`)
+    closeTo(fullscreenControlBox.height, exitControlBox.height, `${scenario.name} fullscreen touch height matches Exit`)
+    const fullscreenVisual = await fullscreenControl.evaluate(element => {
+      const style = getComputedStyle(element, '::before')
+      return {
+        width: Number.parseFloat(style.width) + Number.parseFloat(style.borderLeftWidth) + Number.parseFloat(style.borderRightWidth),
+        height: Number.parseFloat(style.height) + Number.parseFloat(style.borderTopWidth) + Number.parseFloat(style.borderBottomWidth),
+      }
+    })
+    closeTo(fullscreenVisual.width, exitControlBox.width * .96, `${scenario.name} fullscreen visible width matches Exit opaque chassis`, 1.5)
+    closeTo(fullscreenVisual.height, exitControlBox.height * .89, `${scenario.name} fullscreen visible height matches Exit opaque chassis`, 1.5)
     assert.ok(fullscreenControlBox.x > exitControlBox.x + exitControlBox.width, `${scenario.name} fullscreen sits next to Exit`)
     assert.equal(await fullscreenControl.getAttribute('aria-label'), 'Enter fullscreen')
     if (scenario.touch) await fullscreenControl.tap()

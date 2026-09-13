@@ -1,5 +1,5 @@
 import type { InstagameDefinition } from '../../core/types'
-import { STANDARD_FEATURES } from '../../core/gameDefinitionDefaults'
+import { DAILY_CHALLENGE_FEATURES } from '../../core/gameDefinitionDefaults'
 import { LineFugg } from './LineFugg'
 import { LINEFUGG_WELCOME } from './welcome'
 
@@ -36,5 +36,5 @@ export const gameDefinition: InstagameDefinition = {
     ],
     controls: ['Glisse pour tracer une ligne', 'Relâche pour valider', 'Annule avant le 3e trait'],
   },
-  features: STANDARD_FEATURES,
+  features: DAILY_CHALLENGE_FEATURES,
 }

@@ -12,8 +12,8 @@ import {
   updateMyProfile,
 } from './platformApi'
 import type { GameComment, GameSocialStats } from './social'
-import type { GameFinishPayload, GameLeaderboardPeriod, InstagameDefinition } from './types'
-import { PlatformCoverShell, formatSocialCount, type PlatformPanel } from './PlatformCoverShell'
+import type { GameFinishPayload, GameLeaderboardMode, GameLeaderboardPeriod, GameLeaderboardScope, InstagameDefinition } from './types'
+import { PlatformCoverShell, formatSocialCount, type PlatformCommentsStatus, type PlatformPanel } from './PlatformCoverShell'
 import { CoinConsole90s } from './CoinConsole90s'
 import { gameCoinCost, useCoreCoinBalance } from './platformEconomy'
 import { readWelcomeBestScore, recordWelcomeBestScore } from './welcomeProgress'
@@ -48,8 +48,8 @@ function formatScore(value: number) {
   return value.toFixed(2).replace(/0+$/, '').replace(/\.$/, '')
 }
 
-function utcDayId() {
-  return new Date().toISOString().slice(0, 10)
+function utcDayId(date = new Date()) {
+  return date.toISOString().slice(0, 10)
 }
 
 function isoWeekId(date = new Date()) {
@@ -61,22 +61,45 @@ function isoWeekId(date = new Date()) {
   return `${value.getUTCFullYear()}-W${String(week).padStart(2, '0')}`
 }
 
+function leaderboardModeFor(game: InstagameDefinition): GameLeaderboardMode {
+  const config = game.features?.leaderboard
+  return config && config.enabled ? config.mode ?? 'periodic' : 'periodic'
+}
+
 function periodsFor(game: InstagameDefinition): GameLeaderboardPeriod[] {
   const config = game.features?.leaderboard
   if (!config || !config.enabled) return []
-  return config.periods?.length ? config.periods : ['global']
+  if ((config.mode ?? 'periodic') === 'daily-challenge') return ['daily']
+  const periods = (config.periods?.length ? config.periods : ['weekly', 'global']).filter((period) => period !== 'daily')
+  return periods.length ? periods : ['weekly', 'global']
 }
 
 function boardIdFor(period: GameLeaderboardPeriod) {
-  if (period === 'daily') return `day:${utcDayId()}`
   if (period === 'weekly') return `week:${isoWeekId()}`
+  if (period === 'daily') return utcDayId()
   return 'global'
 }
 
 function periodLabel(period: GameLeaderboardPeriod) {
-  if (period === 'daily') return 'DAY'
   if (period === 'weekly') return 'WEEK'
-  return 'GLOBAL'
+  if (period === 'global') return 'EVER'
+  return 'DAY'
+}
+
+function shiftUtcDay(dayId: string, delta: number) {
+  const value = new Date(`${dayId}T00:00:00.000Z`)
+  value.setUTCDate(value.getUTCDate() + delta)
+  return utcDayId(value)
+}
+
+function formatDayLabel(dayId: string) {
+  return new Intl.DateTimeFormat('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(`${dayId}T00:00:00.000Z`)).toUpperCase()
 }
 
 function CloseIcon() {
@@ -87,7 +110,7 @@ function CloseIcon() {
   )
 }
 
-export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntimeProps) {
+export function GameRuntime({ game, seed, active, mounted }: GameRuntimeProps) {
   const rootRef = useRef<HTMLElement>(null)
   const launchTimerRef = useRef<number | null>(null)
   const playRecordedRef = useRef(false)
@@ -100,6 +123,7 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
   const [bestScore, setBestScore] = useState(() => readWelcomeBestScore(game.id))
   const [social, setSocial] = useState<GameSocialStats>(EMPTY_SOCIAL)
   const [comments, setComments] = useState<GameComment[]>([])
+  const [commentsStatus, setCommentsStatus] = useState<PlatformCommentsStatus>('idle')
   const [nickname, setNickname] = useState(() => getSavedNickname())
   const [commentText, setCommentText] = useState('')
   const [launchError, setLaunchError] = useState('')
@@ -108,12 +132,15 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(false)
   const periods = useMemo(() => periodsFor(game), [game])
+  const leaderboardMode = useMemo(() => leaderboardModeFor(game), [game])
   const [leaderboardPeriod, setLeaderboardPeriod] = useState<GameLeaderboardPeriod>(periods[0] ?? 'global')
+  const [leaderboardScope, setLeaderboardScope] = useState<GameLeaderboardScope>('global')
+  const [leaderboardDay, setLeaderboardDay] = useState(() => utcDayId())
   const leaderboardConfig = game.features?.leaderboard || false
   const leaderboardEnabled = Boolean(leaderboardConfig && leaderboardConfig.enabled)
   const leaderboardLimit = leaderboardConfig ? leaderboardConfig.limit ?? 100 : 100
   const leaderboardSort = leaderboardConfig ? leaderboardConfig.sort ?? 'desc' : 'desc'
-  const selectedBoardId = boardIdFor(leaderboardPeriod)
+  const selectedBoardId = leaderboardMode === 'daily-challenge' ? leaderboardDay : boardIdFor(leaderboardPeriod)
   const orientation = game.orientation ?? 'portrait'
   const cost = gameCoinCost(game.status)
   const { balance: coins, spend } = useCoreCoinBalance()
@@ -124,7 +151,14 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
   }, [game.id])
 
   const refreshComments = useCallback(async () => {
-    setComments(await listGameComments(game.id, 50))
+    setCommentsStatus('loading')
+    try {
+      setComments(await listGameComments(game.id, 50))
+      setCommentsStatus('ready')
+    } catch {
+      setComments([])
+      setCommentsStatus('unavailable')
+    }
   }, [game.id])
 
   const refreshLeaderboard = useCallback(async () => {
@@ -133,9 +167,9 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
       return
     }
     setLoadingLeaderboard(true)
-    setLeaderboard(await listLeaderboard(game.id, selectedBoardId, leaderboardLimit, leaderboardSort))
+    setLeaderboard(await listLeaderboard(game.id, selectedBoardId, leaderboardLimit, leaderboardSort, leaderboardScope))
     setLoadingLeaderboard(false)
-  }, [game.id, leaderboardEnabled, leaderboardLimit, leaderboardSort, selectedBoardId])
+  }, [game.id, leaderboardEnabled, leaderboardLimit, leaderboardScope, leaderboardSort, selectedBoardId])
 
   useEffect(() => {
     setPhase('cover')
@@ -147,8 +181,11 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
     setLaunchError('')
     setSocial(EMPTY_SOCIAL)
     setComments([])
+    setCommentsStatus('idle')
     setBestScore(readWelcomeBestScore(game.id))
     setLeaderboardPeriod(periodsFor(game)[0] ?? 'global')
+    setLeaderboardScope('global')
+    setLeaderboardDay(utcDayId())
     playRecordedRef.current = false
     void refreshSocial()
   }, [game.id, refreshSocial, seed])
@@ -187,11 +224,11 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
         nickname: cleanNickname,
         score: next.score,
         periods,
-        boardId: next.boardId,
+        boardId: next.boardId ?? (leaderboardMode === 'daily-challenge' ? utcDayId() : undefined),
         metadata: next.metadata,
       })
     }
-  }, [game.id, leaderboardEnabled, nickname, periods])
+  }, [game.id, leaderboardEnabled, leaderboardMode, nickname, periods])
 
   const session = useMemo(() => ({
     setScore: (value: number) => setScore(normalizeScore(value)),
@@ -267,15 +304,18 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
   const postComment = useCallback(async () => {
     const cleanNickname = nickname.trim().slice(0, 20)
     const cleanComment = commentText.trim().slice(0, 500)
-    if (!cleanNickname || !cleanComment) return
+    if (!cleanNickname || !cleanComment || commentsStatus !== 'ready') return
     saveNickname(cleanNickname)
     void updateMyProfile({ displayName: cleanNickname })
-    const comment = await addGameComment(game.id, cleanNickname, cleanComment)
-    if (!comment) return
-    setCommentText('')
-    setComments((current) => [comment, ...current])
-    await refreshSocial()
-  }, [commentText, game.id, nickname, refreshSocial])
+    try {
+      const comment = await addGameComment(game.id, cleanNickname, cleanComment)
+      setCommentText('')
+      setComments((current) => [comment, ...current])
+      await refreshSocial()
+    } catch {
+      setCommentsStatus('unavailable')
+    }
+  }, [commentText, commentsStatus, game.id, nickname, refreshSocial])
 
   const changeGame = useCallback((direction: -1 | 1 = 1) => {
     const slot = rootRef.current?.closest<HTMLElement>('.game-slot')
@@ -311,6 +351,8 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
     setLeaderboardOrigin(null)
   }, [leaderboardOrigin])
 
+  const canAdvanceLeaderboardDay = leaderboardDay < utcDayId()
+
   return (
     <article ref={rootRef} className={`game-card game-orientation-${orientation}`} data-preferred-orientation={orientation} data-phase={phase} aria-label={game.title}>
       <div className="game-surface">
@@ -325,13 +367,13 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
         <div className={phase === 'launching' ? 'mf-cover-transition is-launching' : 'mf-cover-transition'}>
           <PlatformCoverShell
             game={game}
-            catalog={catalog}
             active={active}
             seed={seed}
             coins={coins}
             cost={cost}
             social={social}
             comments={comments}
+            commentsStatus={commentsStatus}
             bestScore={bestScore}
             panel={panel}
             nickname={nickname}
@@ -380,18 +422,30 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
             <div><small className="mf-ui-meta">{game.title}</small><strong className="mf-ui-h2">LEADERBOARD</strong></div>
             <button className="mf-ui-icon-action" type="button" onClick={closeLeaderboard} aria-label="Back"><CloseIcon /></button>
           </header>
-          {periods.length > 1 && (
-            <div className="mf-leaderboard-tabs mf-ui-tabs">
-              {periods.map((period) => <button key={period} type="button" className={`mf-ui-tab mf-ui-label${leaderboardPeriod === period ? ' is-active' : ''}`} onClick={() => setLeaderboardPeriod(period)}>{periodLabel(period)}</button>)}
+          <div className="mf-leaderboard-controls">
+            <div className="mf-leaderboard-tabs mf-ui-tabs" aria-label="Leaderboard scope">
+              <button type="button" className={`mf-ui-tab mf-ui-label${leaderboardScope === 'global' ? ' is-active' : ''}`} onClick={() => setLeaderboardScope('global')}>GLOBAL</button>
+              <button type="button" className={`mf-ui-tab mf-ui-label${leaderboardScope === 'friends' ? ' is-active' : ''}`} onClick={() => setLeaderboardScope('friends')}>FRIENDS</button>
             </div>
-          )}
+            {leaderboardMode === 'daily-challenge' ? (
+              <div className="mf-leaderboard-tabs mf-ui-tabs" aria-label="Challenge day">
+                <button type="button" className="mf-ui-tab mf-ui-label" onClick={() => setLeaderboardDay((day) => shiftUtcDay(day, -1))} aria-label="Previous day">‹</button>
+                <strong className="mf-ui-label">{formatDayLabel(leaderboardDay)}</strong>
+                <button type="button" className="mf-ui-tab mf-ui-label" onClick={() => setLeaderboardDay((day) => shiftUtcDay(day, 1))} disabled={!canAdvanceLeaderboardDay} aria-label="Next day">›</button>
+              </div>
+            ) : periods.length > 1 ? (
+              <div className="mf-leaderboard-tabs mf-ui-tabs" aria-label="Leaderboard period">
+                {periods.map((period) => <button key={period} type="button" className={`mf-ui-tab mf-ui-label${leaderboardPeriod === period ? ' is-active' : ''}`} onClick={() => setLeaderboardPeriod(period)}>{periodLabel(period)}</button>)}
+              </div>
+            ) : null}
+          </div>
           <div className="mf-leaderboard-list mf-ui-scroll">
             {loadingLeaderboard ? <p className="mf-ui-body">LOADING…</p> : leaderboard.length ? (
               <ol className="mf-ui-list">{leaderboard.map((entry, index) => {
-                const isCurrent = Boolean(nickname.trim()) && entry.nickname.toLowerCase() === nickname.trim().toLowerCase()
+                const isCurrent = Boolean(entry.isCurrent) || (Boolean(nickname.trim()) && entry.nickname.toLowerCase() === nickname.trim().toLowerCase())
                 return <li className={`mf-ui-list-row${isCurrent ? ' is-current' : ''}`} key={entry.id}><span><b>{index + 1}</b><span className="mf-ui-player-name mf-ui-label">{entry.nickname}</span></span><strong>{formatScore(entry.score)}</strong></li>
               })}</ol>
-            ) : <p className="mf-ui-body">NO SCORE YET.</p>}
+            ) : <p className="mf-ui-body">{leaderboardScope === 'friends' ? 'NO FRIEND SCORE FOR THIS BOARD YET.' : 'NO SCORE YET.'}</p>}
           </div>
         </section>
       )}

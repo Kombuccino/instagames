@@ -9,12 +9,24 @@ export const STANDARD_FEATURES: GameFeatureConfig = {
   bookmark: true,
   leaderboard: {
     enabled: true,
-    periods: ['daily', 'weekly'],
+    mode: 'periodic',
+    periods: ['weekly', 'global'],
     sort: 'desc',
     limit: 100,
   },
   share: true,
   remix: false,
+}
+
+export const DAILY_CHALLENGE_FEATURES: GameFeatureConfig = {
+  ...STANDARD_FEATURES,
+  leaderboard: {
+    enabled: true,
+    mode: 'daily-challenge',
+    periods: ['daily'],
+    sort: 'desc',
+    limit: 100,
+  },
 }
 
 // A temporary navigation cover is not an artistic approval.

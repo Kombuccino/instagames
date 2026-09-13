@@ -1,6 +1,6 @@
 import http from 'node:http'
 import { randomUUID } from 'node:crypto'
-import { readFile } from 'node:fs/promises'
+import { readFile, readdir } from 'node:fs/promises'
 import { Pool } from 'pg'
 
 const PORT = Number(process.env.PORT || 3000)
@@ -18,8 +18,12 @@ if (!DATABASE_URL) throw new Error('DATABASE_URL is required')
 const pool = new Pool({ connectionString: DATABASE_URL })
 
 async function migrate() {
-  const sql = await readFile(new URL('../migrations/001_init.sql', import.meta.url), 'utf8')
-  await pool.query(sql)
+  const migrationsUrl = new URL('../migrations/', import.meta.url)
+  const files = (await readdir(migrationsUrl)).filter((file) => /^\d+_.+\.sql$/.test(file)).sort()
+  for (const file of files) {
+    const sql = await readFile(new URL(file, migrationsUrl), 'utf8')
+    await pool.query(sql)
+  }
 }
 
 function json(res, status, payload, headers = {}) {
@@ -61,7 +65,7 @@ function cookieHeader(identityId) {
 
 async function ensureIdentity(req, res) {
   const cookies = parseCookies(req.headers.cookie)
-  let identityId = validUuid(cookies[COOKIE_NAME]) ? cookies[COOKIE_NAME] : randomUUID()
+  const identityId = validUuid(cookies[COOKIE_NAME]) ? cookies[COOKIE_NAME] : randomUUID()
   await pool.query(
     `INSERT INTO identities (id) VALUES ($1)
      ON CONFLICT (id) DO UPDATE SET last_seen_at = now()`,
@@ -158,49 +162,51 @@ function boardWindow(boardId) {
   return { start: null, end: null, special: true }
 }
 
-function utcDayId(date = new Date()) {
-  return `day:${date.toISOString().slice(0, 10)}`
-}
-
-function isoWeekId(date = new Date()) {
-  const value = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))
-  const day = value.getUTCDay() || 7
-  value.setUTCDate(value.getUTCDate() + 4 - day)
-  const yearStart = new Date(Date.UTC(value.getUTCFullYear(), 0, 1))
-  const week = Math.ceil((((value.getTime() - yearStart.getTime()) / 86_400_000) + 1) / 7)
-  return `week:${value.getUTCFullYear()}-W${String(week).padStart(2, '0')}`
-}
-
-function responseBoardId(input) {
-  if (typeof input.boardId === 'string' && input.boardId.trim()) return input.boardId.trim().slice(0, 80)
-  if (Array.isArray(input.periods)) {
-    if (input.periods.includes('daily')) return utcDayId()
-    if (input.periods.includes('weekly')) return isoWeekId()
-  }
-  return 'global'
-}
-
-async function leaderboard(gameId, boardId, limit, sort) {
+async function leaderboard(gameId, boardId, limit, sort, identityId, scope) {
   const direction = sort === 'asc' ? 'ASC' : 'DESC'
   const window = boardWindow(boardId)
   const values = [gameId]
-  let where = 'game_id = $1'
+  let where = 's.game_id = $1'
 
   if (window.special) {
     values.push(boardId)
-    where += ` AND board_id = $${values.length}`
+    where += ` AND s.board_id = $${values.length}`
   } else if (window.start && window.end) {
     values.push(window.start.toISOString(), window.end.toISOString())
-    where += ` AND created_at >= $${values.length - 1} AND created_at < $${values.length}`
-  } else {
-    where += ` AND (board_id IS NULL OR board_id = 'global')`
+    where += ` AND s.created_at >= $${values.length - 1} AND s.created_at < $${values.length}`
+  }
+
+  if (scope === 'friends') {
+    values.push(identityId)
+    const identityParam = values.length
+    where += ` AND (
+      s.identity_id = $${identityParam}
+      OR s.identity_id IN (
+        SELECT CASE
+          WHEN f.identity_id = $${identityParam} THEN f.friend_identity_id
+          ELSE f.identity_id
+        END
+        FROM friendships f
+        WHERE f.status = 'accepted'
+          AND (f.identity_id = $${identityParam} OR f.friend_identity_id = $${identityParam})
+      )
+    )`
   }
 
   values.push(limit)
   const { rows } = await pool.query(
-    `SELECT id, game_id, nickname, score, created_at
-       FROM scores
-      WHERE ${where}
+    `WITH ranked AS (
+       SELECT s.id, s.game_id, s.identity_id, s.nickname, s.score, s.created_at,
+              row_number() OVER (
+                PARTITION BY COALESCE(s.identity_id::text, s.id::text)
+                ORDER BY s.score ${direction}, s.created_at ASC
+              ) AS player_run_rank
+         FROM scores s
+        WHERE ${where}
+     )
+     SELECT id, game_id, identity_id, nickname, score, created_at
+       FROM ranked
+      WHERE player_run_rank = 1
       ORDER BY score ${direction}, created_at ASC
       LIMIT $${values.length}`,
     values,
@@ -213,6 +219,7 @@ async function leaderboard(gameId, boardId, limit, sort) {
     nickname: row.nickname,
     score: Number(row.score),
     createdAt: new Date(row.created_at).toISOString(),
+    isCurrent: row.identity_id === identityId,
   }))
 }
 
@@ -385,10 +392,11 @@ async function handler(req, res) {
       return json(res, 201, {
         id: row.id,
         gameId: row.game_id,
-        boardId: responseBoardId(body),
+        boardId: boardId || 'global',
         nickname: row.nickname,
         score: Number(row.score),
         createdAt: new Date(row.created_at).toISOString(),
+        isCurrent: true,
       })
     } catch (error) {
       if (error?.code === '23505' && runId) return json(res, 409, { error: 'run_already_submitted' })
@@ -402,7 +410,8 @@ async function handler(req, res) {
     const boardId = decodeURIComponent(leaderboardMatch[2])
     const limit = clampLimit(url.searchParams.get('limit'), 10, 100)
     const sort = url.searchParams.get('sort') === 'asc' ? 'asc' : 'desc'
-    return json(res, 200, await leaderboard(gameId, boardId, limit, sort))
+    const scope = url.searchParams.get('scope') === 'friends' ? 'friends' : 'global'
+    return json(res, 200, await leaderboard(gameId, boardId, limit, sort, identityId, scope))
   }
 
   if (leaderboardMatch && req.method === 'POST') {
@@ -428,6 +437,7 @@ async function handler(req, res) {
       nickname: row.nickname,
       score: Number(row.score),
       createdAt: new Date(row.created_at).toISOString(),
+      isCurrent: true,
     })
   }
 

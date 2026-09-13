@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import type { GameComment, GameSocialStats } from './social'
 import type { InstagameDefinition } from './types'
+import { MINIFUGG_CREATOR } from './creatorIdentity'
 import { PLATFORM_ALPHA_POLICY } from './platformAlphaPolicy'
 import { StaticCoverArt } from './StaticCoverArt'
 import { CoinConsole90s } from './CoinConsole90s'
@@ -8,16 +9,17 @@ import './platformCover.css'
 import './coinConsole90s.css'
 
 export type PlatformPanel = 'info' | 'comments' | null
+export type PlatformCommentsStatus = 'idle' | 'loading' | 'ready' | 'unavailable'
 
 type Props = {
   game: InstagameDefinition
-  catalog: InstagameDefinition[]
   active: boolean
   seed: number
   coins: number
   cost: number
   social: GameSocialStats
   comments: GameComment[]
+  commentsStatus: PlatformCommentsStatus
   bestScore: number
   panel: PlatformPanel
   nickname: string
@@ -38,16 +40,12 @@ type Props = {
   onSelectCover: (variantId: string) => void
 }
 
-type IconName = 'info' | 'heart' | 'comment' | 'bookmark' | 'share' | 'close' | 'chevron' | 'send' | 'replyHeart' | 'more'
-type CommentRole = 'free' | 'creator' | '999'
+type IconName = 'info' | 'heart' | 'comment' | 'bookmark' | 'share' | 'close' | 'chevron' | 'send'
 type CommentThread = {
   id: string
   nickname: string
   body: string
   age: string
-  likes: number
-  role: CommentRole
-  replies?: CommentThread[]
 }
 
 export function formatSocialCount(value: number) {
@@ -65,14 +63,13 @@ export function formatSocialCount(value: number) {
 function Icon({ name, filled = false }: { name: IconName, filled?: boolean }) {
   let content: ReactNode
   if (name === 'info') content = <><circle cx="12" cy="12" r="9" /><path d="M12 10.5v6" /><circle cx="12" cy="7.2" r=".7" fill="currentColor" stroke="none" /></>
-  else if (name === 'heart' || name === 'replyHeart') content = <path d="M12 20.1S4.3 15.6 2.4 11.3C.8 7.7 3 4.2 6.7 4.1c2.2 0 4.1 1.2 5.3 3 1.2-1.8 3.1-3 5.3-3 3.7.1 5.9 3.6 4.3 7.2-1.9 4.3-9.6 8.8-9.6 8.8Z" />
+  else if (name === 'heart') content = <path d="M12 20.1S4.3 15.6 2.4 11.3C.8 7.7 3 4.2 6.7 4.1c2.2 0 4.1 1.2 5.3 3 1.2-1.8 3.1-3 5.3-3 3.7.1 5.9 3.6 4.3 7.2-1.9 4.3-9.6 8.8-9.6 8.8Z" />
   else if (name === 'comment') content = <path d="M20.5 11.2a8.4 8.4 0 0 1-8.6 8.2 9.5 9.5 0 0 1-3.3-.6L4 20l1.4-3.8a7.7 7.7 0 0 1-1.9-5A8.4 8.4 0 0 1 12.2 3a8.4 8.4 0 0 1 8.3 8.2Z" />
   else if (name === 'bookmark') content = <path d="M6.3 3.2h11.4c.7 0 1.3.6 1.3 1.3v16.2l-7-4.5-7 4.5V4.5c0-.7.6-1.3 1.3-1.3Z" />
   else if (name === 'share') content = <><circle cx="18" cy="5" r="2" /><circle cx="6" cy="12" r="2" /><circle cx="18" cy="19" r="2" /><path d="m8 11 8-5M8 13l8 5" /></>
   else if (name === 'close') content = <><path d="M5 5l14 14" /><path d="M19 5 5 19" /></>
   else if (name === 'chevron') content = <path d="m9 5 7 7-7 7" />
-  else if (name === 'send') content = <><path d="m3.5 4.5 17 7.5-17 7.5 3-7.5-3-7.5Z" /><path d="M6.5 12h14" /></>
-  else content = <><circle cx="6" cy="12" r="1" fill="currentColor" stroke="none" /><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" /><circle cx="18" cy="12" r="1" fill="currentColor" stroke="none" /></>
+  else content = <><path d="m3.5 4.5 17 7.5-17 7.5 3-7.5-3-7.5Z" /><path d="M6.5 12h14" /></>
 
   return <svg className={`mf-platform-icon mf-platform-icon-${name}`} viewBox="0 0 24 24" aria-hidden="true" fill={filled ? 'currentColor' : 'none'}>{content}</svg>
 }
@@ -105,75 +102,61 @@ function seededActiveVariant(game: InstagameDefinition, seed: number, bestScore:
   return pool[Math.abs(Math.trunc(seed)) % pool.length]?.id ?? variants[0]?.id ?? ''
 }
 
-function fallbackComments(author?: string): CommentThread[] {
-  return [
-    { id: 'mock-1', nickname: 'NovaPixel', body: 'This game is an absolute brain melt (in the best way). Can’t stop chasing a higher score!', age: '2d', likes: 24, role: '999' },
-    {
-      id: 'mock-2', nickname: 'bricks&coffee', body: 'The core idea is genius. Fresh take on a classic.', age: '1d', likes: 12, role: 'free',
-      replies: [{ id: 'mock-2-r1', nickname: author || 'MiniFugg', body: 'So happy you’re enjoying it! More twists coming soon 👀', age: '1d', likes: 28, role: 'creator' }],
-    },
-    {
-      id: 'mock-3', nickname: 'TetrisFan87', body: 'Any tips for getting past 1k? Always choke there…', age: '2d', likes: 6, role: 'free',
-      replies: [{ id: 'mock-3-r1', nickname: author || 'MiniFugg', body: 'Try to keep a 2-line buffer and watch for the rare pieces. Practice mode is on the list.', age: '1d', likes: 14, role: 'creator' }],
-    },
-    { id: 'mock-4', nickname: 'indiepop', body: 'Stunning cover art. Instantly hooked.', age: '3d', likes: 31, role: '999' },
-  ]
-}
-
-function realComments(comments: GameComment[], author?: string): CommentThread[] {
+function realComments(comments: GameComment[]): CommentThread[] {
   return comments.map((comment) => ({
     id: comment.id,
     nickname: comment.nickname || 'MiniFugg player',
     body: comment.body,
     age: new Date(comment.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-    likes: 0,
-    role: author && comment.nickname.toLowerCase() === author.toLowerCase() ? 'creator' : 'free',
   }))
 }
 
-function Avatar({ nickname, role }: { nickname: string, role: CommentRole }) {
+function Avatar({ nickname }: { nickname: string }) {
   const initial = (nickname.trim()[0] || '?').toUpperCase()
-  return <span className={`mf-ui-avatar is-${role}`} aria-hidden="true"><span>{role === 'creator' ? '◆' : role === '999' ? '✦' : initial}</span></span>
+  return <span className="mf-ui-avatar is-free" aria-hidden="true"><span>{initial}</span></span>
 }
 
-function CommentCard({ thread, depth = 0, reportedId, onReport }: { thread: CommentThread, depth?: number, reportedId: string, onReport: (id: string) => void }) {
+function FuggyCreatorAvatar() {
   return (
-    <div className={`mf-comment-thread${depth ? ' is-reply' : ''}`}>
-      <Avatar nickname={thread.nickname} role={thread.role} />
+    <span className="mf-ui-avatar mf-comment-avatar is-creator" aria-hidden="true">
+      <img
+        src={MINIFUGG_CREATOR.avatarSrc}
+        alt=""
+        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 18%', transform: 'scale(1.42)', transformOrigin: '50% 18%' }}
+      />
+    </span>
+  )
+}
+
+function CommentCard({ thread }: { thread: CommentThread }) {
+  return (
+    <div className="mf-comment-thread">
+      <Avatar nickname={thread.nickname} />
       <div className="mf-comment-main">
         <div className="mf-comment-meta">
           <strong className="mf-ui-player-name mf-ui-label">{thread.nickname}</strong>
-          {thread.role === 'creator' && <span className="mf-ui-badge is-creator">Creator</span>}
-          {thread.role === '999' && <span className="mf-ui-badge is-999"><PixelCoin small />999</span>}
           <time className="mf-ui-meta">{thread.age}</time>
-          <button className="mf-comment-more mf-ui-icon-action" type="button" onClick={() => onReport(thread.id)} aria-label="Comment menu"><Icon name="more" /></button>
         </div>
         <p className="mf-ui-body">{thread.body}</p>
-        <div className="mf-comment-actions mf-ui-micro"><button type="button"><Icon name="comment" />Reply</button><button type="button" className="mf-comment-like"><Icon name="replyHeart" />{thread.likes || ''}</button>{reportedId === thread.id && <span>Report</span>}</div>
       </div>
-      {thread.replies?.length ? <div className="mf-comment-replies">{thread.replies.map((reply) => <CommentCard key={reply.id} thread={reply} depth={depth + 1} reportedId={reportedId} onReport={onReport} />)}</div> : null}
     </div>
   )
 }
 
 export function PlatformCoverShell(props: Props) {
   const {
-    game, catalog, seed, coins, cost, social, comments, bestScore, panel, nickname, commentText, launchError, showCoinConsole = true,
+    game, seed, coins, cost, social, comments, commentsStatus, bestScore, panel, nickname, commentText, launchError, showCoinConsole = true,
     onPanel, onClosePanel, onToggleLove, onToggleBookmark, onPlay, onChangeGame, onShare,
     onNicknameChange, onCommentTextChange, onPostComment, onOpenLeaderboard, onSelectCover,
   } = props
   const gesture = useRef<{ pointerId: number, x: number, y: number } | null>(null)
-  const [creatorLimit, setCreatorLimit] = useState(20)
-  const [reportedId, setReportedId] = useState('')
   const variants = useMemo(() => coverVariants(game), [game])
   const defaultVariantId = useMemo(() => seededActiveVariant(game, seed, bestScore), [bestScore, game, seed])
   const [activeVariantId, setActiveVariantId] = useState(defaultVariantId)
 
   useEffect(() => setActiveVariantId(defaultVariantId), [defaultVariantId, game.id])
-  useEffect(() => setCreatorLimit(20), [game.author, game.id])
 
-  const creatorGames = useMemo(() => game.author ? catalog.filter((candidate) => candidate.author === game.author) : [], [catalog, game.author])
-  const threads = comments.length ? [...realComments(comments, game.author), ...fallbackComments(game.author).slice(1, 3)] : fallbackComments(game.author)
+  const threads = realComments(comments)
 
   const beginGesture = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (!event.isPrimary || panel) return
@@ -199,6 +182,7 @@ export function PlatformCoverShell(props: Props) {
   }
 
   const activeCover = variants.find((variant) => variant.id === activeVariantId)
+  const commentsReady = commentsStatus === 'ready'
 
   return (
     <div
@@ -260,7 +244,7 @@ export function PlatformCoverShell(props: Props) {
 
               <section className="mf-game-info-head">
                 <h1 className="mf-ui-h1">{game.title}</h1>
-                <p className="mf-ui-meta">by <strong className="mf-ui-player-name mf-ui-label">{game.author || 'MiniFugg'}</strong></p>
+                <p className="mf-ui-meta">by <strong className="mf-ui-player-name mf-ui-label">{MINIFUGG_CREATOR.displayName}</strong></p>
                 <p className="mf-info-description mf-ui-body">{game.description}</p>
                 {game.release && (
                   <p className="mf-info-version mf-ui-meta">
@@ -281,29 +265,28 @@ export function PlatformCoverShell(props: Props) {
 
               <section className="mf-creator-section">
                 <h2 className="mf-ui-h3">CREATOR</h2>
-                <div className="mf-creator-card"><Avatar nickname={game.author || 'MiniFugg'} role="creator" /><div><strong className="mf-ui-player-name mf-ui-label">{game.author || 'MiniFugg'}</strong><p className="mf-ui-body">Small games. Big thoughts. Tiny experiments built to be played immediately.</p><span className="mf-ui-meta">{creatorGames.length} game{creatorGames.length === 1 ? '' : 's'}</span></div></div>
-                <h3 className="mf-ui-h3">MORE GAMES BY {game.author || 'MINIFUGG'}</h3>
-                <div className="mf-creator-grid">
-                  {creatorGames.slice(0, creatorLimit).map((creatorGame) => (
-                    <article key={creatorGame.id}>
-                      {creatorGame.welcome?.variants?.[0]?.image ? <img src={creatorGame.welcome.variants[0].image} alt="" /> : <div className="mf-creator-cover-fallback">{creatorGame.title.slice(0, 2).toUpperCase()}</div>}
-                      <strong className="mf-ui-label">{creatorGame.title}</strong>
-                    </article>
-                  ))}
+                <div className="mf-creator-card">
+                  <FuggyCreatorAvatar />
+                  <div>
+                    <div className="mf-comment-meta"><strong className="mf-ui-player-name mf-ui-label">{MINIFUGG_CREATOR.displayName}</strong><span className="mf-ui-badge is-creator">Creator</span></div>
+                    <p className="mf-ui-body">{MINIFUGG_CREATOR.bio}</p>
+                  </div>
                 </div>
-                {creatorLimit < creatorGames.length && <button className="mf-show-more mf-ui-action mf-ui-label" type="button" onClick={() => setCreatorLimit((value) => value + 20)}>SHOW 20 MORE</button>}
               </section>
             </div>
           ) : (
             <div className="mf-comments-panel">
               <div className="mf-comments-scroll mf-ui-scroll">
-                {threads.map((thread) => <CommentCard key={thread.id} thread={thread} reportedId={reportedId} onReport={(id) => setReportedId((current) => current === id ? '' : id)} />)}
+                {commentsStatus === 'loading' && <p className="mf-ui-body">LOADING DISCUSSION…</p>}
+                {commentsStatus === 'unavailable' && <p className="mf-ui-body">DISCUSSION UNAVAILABLE. CONNECT TO MINIFUGG CORE TO READ AND POST SHARED COMMENTS.</p>}
+                {commentsReady && threads.length === 0 && <p className="mf-ui-body">NO COMMENTS YET. BE THE FIRST.</p>}
+                {commentsReady && threads.map((thread) => <CommentCard key={thread.id} thread={thread} />)}
               </div>
               <div className="mf-comment-composer">
-                <Avatar nickname={nickname || 'Player'} role="free" />
-                <input className="mf-comment-nickname" value={nickname} onChange={(event) => onNicknameChange(event.target.value.slice(0, 20))} aria-label="Nickname" maxLength={20} />
-                <textarea className="mf-ui-field" value={commentText} onChange={(event) => onCommentTextChange(event.target.value.slice(0, 500))} placeholder="Write a comment…" rows={1} maxLength={500} />
-                <button className="mf-ui-icon-action" type="button" onClick={onPostComment} disabled={!nickname.trim() || !commentText.trim()} aria-label="Post comment"><Icon name="send" /></button>
+                <Avatar nickname={nickname || 'Player'} />
+                <input className="mf-comment-nickname" value={nickname} onChange={(event) => onNicknameChange(event.target.value.slice(0, 20))} aria-label="Nickname" maxLength={20} disabled={!commentsReady} />
+                <textarea className="mf-ui-field" value={commentText} onChange={(event) => onCommentTextChange(event.target.value.slice(0, 500))} placeholder={commentsReady ? 'Write a comment…' : 'Shared discussion is offline'} rows={1} maxLength={500} disabled={!commentsReady} />
+                <button className="mf-ui-icon-action" type="button" onClick={onPostComment} disabled={!commentsReady || !nickname.trim() || !commentText.trim()} aria-label="Post comment"><Icon name="send" /></button>
               </div>
             </div>
           )}

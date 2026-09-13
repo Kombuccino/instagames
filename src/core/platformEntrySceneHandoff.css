@@ -128,9 +128,9 @@
 .mf-entry-scene__metro-v3 { z-index: 1; }
 .mf-entry-scene__metro-v3-sky { z-index: 0; }
 .mf-entry-scene__metro-v3-water-strip { z-index: 1; top: 37.19%; }
-.mf-entry-scene__metro-v3-skyline-far-strip { z-index: 2; top: 24.87%; height: 11.9%; }
-.mf-entry-scene__metro-v3-skyline-near-strip { z-index: 3; top: 18.17%; height: 18.92%; }
-.mf-entry-scene__metro-v3-shore-bridge-strip { z-index: 4; top: 35.39%; height: 2.45%; }
+.mf-entry-scene__metro-v3-skyline-far-strip { z-index: 2; top: 26.57%; height: 9.35%; }
+.mf-entry-scene__metro-v3-skyline-near-strip { z-index: 3; top: 16.9%; height: 20.19%; }
+.mf-entry-scene__metro-v3-shore-bridge-strip { z-index: 4; top: 35.28%; height: 3.08%; }
 .mf-entry-scene__metro-v3-reflection {
   z-index: 5;
   inset: 38.58% auto auto 33.63%;
@@ -180,9 +180,9 @@
 }
 
 .mf-entry-scene__metro-v3-water-strip .mf-entry-scene__metro-v3-track { animation-duration: 22s; }
-.mf-entry-scene__metro-v3-shore-bridge-strip .mf-entry-scene__metro-v3-track { animation-duration: 31s; }
-.mf-entry-scene__metro-v3-skyline-near-strip .mf-entry-scene__metro-v3-track { animation-duration: 49s; }
-.mf-entry-scene__metro-v3-skyline-far-strip .mf-entry-scene__metro-v3-track { animation-duration: 82s; }
+.mf-entry-scene__metro-v3-shore-bridge-strip .mf-entry-scene__metro-v3-track { animation-duration: 29s; }
+.mf-entry-scene__metro-v3-skyline-near-strip .mf-entry-scene__metro-v3-track { animation-duration: 40s; }
+.mf-entry-scene__metro-v3-skyline-far-strip .mf-entry-scene__metro-v3-track { animation-duration: 110s; }
 
 .mf-entry-scene__wagon--v3-base { z-index: 2; }
 .mf-entry-scene__wagon--v3-sunlight {

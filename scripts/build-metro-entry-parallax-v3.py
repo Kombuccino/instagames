@@ -50,13 +50,25 @@ def resize_to_height(image: Image.Image, height: int) -> Image.Image:
     return image.resize((width, height), Image.Resampling.LANCZOS)
 
 
-def skyline_strip(groups: list[Image.Image], indices: list[int], height: int, ground: int, opacity: float) -> Image.Image:
+def skyline_strip(
+    groups: list[Image.Image],
+    indices: list[int],
+    height: int,
+    ground: int,
+    opacity: float,
+    haze: float = 0,
+) -> Image.Image:
     output = Image.new("RGBA", SCENE)
     spacing = SCENE[0] / len(indices)
     for slot, index in enumerate(indices):
         group = resize_to_height(groups[index], height)
         if group.width > spacing * .88:
             group = group.resize((round(spacing * .88), height), Image.Resampling.LANCZOS)
+        if haze:
+            pixels = np.array(group, dtype=np.float32)
+            haze_color = np.array((128, 116, 178), dtype=np.float32)
+            pixels[:, :, :3] = pixels[:, :, :3] * (1 - haze) + haze_color * haze
+            group = Image.fromarray(np.clip(pixels, 0, 255).astype(np.uint8))
         alpha = group.getchannel("A").point(lambda value: round(value * opacity))
         group.putalpha(alpha)
         center = (slot + .5) * spacing
@@ -65,21 +77,24 @@ def skyline_strip(groups: list[Image.Image], indices: list[int], height: int, gr
 
 
 def bridge_strip(source: Image.Image) -> Image.Image:
-    # Preserve the thin bridge language from the approved exterior, then make
-    # a regular modular rail whose spacing also continues across the wrap.
+    # A shallow modular bridge: substantial enough to read as infrastructure,
+    # but still behind the water and carriage rather than as a moving horizon line.
     palette = np.array(source.convert("RGB"))
     rail_color = tuple(int(value) for value in palette[499, 300]) + (230,)
-    dark_color = tuple(int(value) for value in palette[511, 300]) + (205,)
+    dark_color = tuple(int(value) for value in palette[511, 300]) + (235,)
+    shadow_color = (72, 77, 151, 220)
     output = Image.new("RGBA", SCENE)
     draw = ImageDraw.Draw(output)
     y = 350
-    draw.rectangle((0, y - 5, SCENE[0], y - 2), fill=rail_color)
-    draw.rectangle((0, y - 1, SCENE[0], y + 3), fill=dark_color)
+    draw.rectangle((0, y - 7, SCENE[0], y - 4), fill=rail_color)
+    draw.rectangle((0, y - 3, SCENE[0], y + 5), fill=dark_color)
+    draw.rectangle((0, y + 5, SCENE[0], y + 10), fill=shadow_color)
     module = 139.25
     for index in range(12):
         x = round(index * module)
-        draw.rectangle((x - 2, y - 13, x + 2, y + 5), fill=rail_color)
-        draw.polygon(((x - 5, y - 12), (x, y - 17), (x + 5, y - 12)), fill=rail_color)
+        draw.rectangle((x - 2, y - 18, x + 2, y + 6), fill=rail_color)
+        draw.line((x, y - 4, x + round(module / 2), y + 9), fill=shadow_color, width=3)
+        draw.line((x + round(module / 2), y + 9, x + round(module), y - 4), fill=shadow_color, width=3)
     return output
 
 
@@ -90,12 +105,10 @@ def water_layers(source: Image.Image) -> tuple[Image.Image, Image.Image]:
     rgb = np.array(water_source.convert("RGB"), dtype=np.float32)
     red, green, blue = (rgb[:, :, channel] for channel in range(3))
     reflection = np.clip((red - blue - 24) / 125, 0, 1) * np.clip((green - 140) / 105, 0, 1)
-    base = rgb.copy()
-    strength = reflection[:, :, None] * .72
-    neutral = np.stack((blue * .88 + 34, blue * .78 + 25, blue * 1.05), axis=2)
-    base = base * (1 - strength) + neutral * strength
-
-    half = Image.fromarray(np.clip(base, 0, 255).astype(np.uint8)).crop((0, 0, 836, water_height))
+    # The moving texture comes only from a side sample without the sun path.
+    # The direct reflection is rebuilt below as a separate fixed overlay.
+    clean_sample = Image.fromarray(rgb.astype(np.uint8)).crop((40, 0, 690, water_height))
+    half = clean_sample.resize((836, water_height), Image.Resampling.LANCZOS)
     tile = Image.new("RGB", (1672, water_height))
     tile.paste(half, (0, 0))
     tile.paste(half.transpose(Image.Transpose.FLIP_LEFT_RIGHT), (836, 0))
@@ -134,15 +147,15 @@ def main() -> None:
     sky.paste(sky_source.crop((0, SCENE[1] - 1, SCENE[0], SCENE[1])).resize((SCENE[0], 110)), (0, SCENE[1] - 110))
 
     groups = atlas_groups()
-    far = skyline_strip(groups, [0, 2, 4, 6, 8], 112, 346, .68)
-    near = skyline_strip(groups, [1, 5, 7, 9], 178, 349, .96)
+    far = skyline_strip(groups, [0, 2, 4, 6, 8], 88, 338, .52, haze=.34)
+    near = skyline_strip(groups, [1, 5, 7, 9], 190, 349, .98)
     water, reflection = water_layers(source)
     carriage_base, carriage_sunlight = carriage_light_layers()
 
     save(sky, "sky")
-    save(far.crop((0, 234, SCENE[0], 346)), "skyline-far-strip")
-    save(near.crop((0, 171, SCENE[0], 349)), "skyline-near-strip")
-    save(bridge_strip(source).crop((0, 333, SCENE[0], 356)), "shore-bridge-strip")
+    save(far.crop((0, 250, SCENE[0], 338)), "skyline-far-strip")
+    save(near.crop((0, 159, SCENE[0], 349)), "skyline-near-strip")
+    save(bridge_strip(source).crop((0, 332, SCENE[0], 361)), "shore-bridge-strip")
     save(water.crop((0, 350, SCENE[0], SCENE[1])), "water-strip")
     save(reflection.crop((562, 363, 1116, 886)), "water-reflection")
     save(carriage_base, "carriage-base")

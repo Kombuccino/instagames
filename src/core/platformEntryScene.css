@@ -92,7 +92,7 @@
   transform-origin: 44.1% 47.5%;
   transform: translate3d(122px,139px,0) scale(.91) rotate(-1.6deg);
   will-change: transform, opacity;
-  animation: mf-entry-hand-inertia 5.2s linear 90ms infinite both;
+  animation: none;
 }
 
 .mf-entry-scene__arm {
@@ -244,28 +244,6 @@
   77.5% { transform: translate3d(0,0,0); }
   87% { transform: translate3d(-1px,0,0); }
   95% { transform: translate3d(0,1px,0); }
-}
-
-/* Same rail rhythm, delayed and damped, with a tiny rotational inertia cue. */
-@keyframes mf-entry-hand-inertia {
-  0%, 100% { transform: translate3d(122px,139px,0) scale(.91) rotate(-1.6deg); }
-  9% { transform: translate3d(123px,138px,0) scale(.91) rotate(-1.56deg); }
-  18% { transform: translate3d(122px,140px,0) scale(.91) rotate(-1.62deg); }
-  23% { transform: translate3d(121px,140px,0) scale(.911) rotate(-1.66deg); }
-  24.5% { transform: translate3d(123px,138px,0) scale(.909) rotate(-1.54deg); }
-  27.5% { transform: translate3d(122px,139px,0) scale(.91) rotate(-1.6deg); }
-  36% { transform: translate3d(121px,139px,0) scale(.91) rotate(-1.62deg); }
-  44% { transform: translate3d(122px,140px,0) scale(.91) rotate(-1.6deg); }
-  48% { transform: translate3d(121px,140px,0) scale(.911) rotate(-1.66deg); }
-  49.5% { transform: translate3d(123px,138px,0) scale(.909) rotate(-1.54deg); }
-  52.5% { transform: translate3d(122px,139px,0) scale(.91) rotate(-1.6deg); }
-  61% { transform: translate3d(123px,139px,0) scale(.91) rotate(-1.56deg); }
-  69% { transform: translate3d(122px,138px,0) scale(.91) rotate(-1.58deg); }
-  73% { transform: translate3d(121px,140px,0) scale(.911) rotate(-1.66deg); }
-  74.5% { transform: translate3d(123px,138px,0) scale(.909) rotate(-1.54deg); }
-  77.5% { transform: translate3d(122px,139px,0) scale(.91) rotate(-1.6deg); }
-  87% { transform: translate3d(121px,139px,0) scale(.91) rotate(-1.62deg); }
-  95% { transform: translate3d(122px,140px,0) scale(.91) rotate(-1.6deg); }
 }
 
 @keyframes mf-entry-hand-deliver {

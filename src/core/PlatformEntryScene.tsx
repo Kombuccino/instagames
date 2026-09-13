@@ -166,23 +166,24 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
   const timerRef = useRef<number | null>(null)
   const sceneStartedAtRef = useRef(typeof performance === 'undefined' ? 0 : performance.now())
   const musicRef = useRef<PlatformEntryMusicController | null>(null)
+  const stageRef = useRef<HTMLDivElement>(null)
   const phoneRigRef = useRef<HTMLDivElement>(null)
 
   useLayoutEffect(() => {
-    const rig = phoneRigRef.current
-    if (!rig) return
+    const stage = stageRef.current
+    if (!stage) return
 
-    const updateMobileRigScale = () => {
+    const updateMobileStageScale = () => {
       if (window.innerWidth > 760) {
-        rig.style.removeProperty('--mf-entry-mobile-scale')
+        stage.style.removeProperty('--mf-entry-mobile-scale')
         return
       }
-      rig.style.setProperty('--mf-entry-mobile-scale', String(window.innerWidth / 390))
+      stage.style.setProperty('--mf-entry-mobile-scale', String(window.innerWidth / 390))
     }
 
-    updateMobileRigScale()
-    window.addEventListener('resize', updateMobileRigScale)
-    return () => window.removeEventListener('resize', updateMobileRigScale)
+    updateMobileStageScale()
+    window.addEventListener('resize', updateMobileStageScale)
+    return () => window.removeEventListener('resize', updateMobileStageScale)
   }, [])
 
   useLayoutEffect(() => {
@@ -313,7 +314,7 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
       onWheel={handleWheel}
       onKeyDown={handleKeyDown}
     >
-      <div className="mf-entry-scene__stage">
+      <div ref={stageRef} className="mf-entry-scene__stage">
         <div className="mf-entry-scene__carriage" aria-hidden="true">
           {metroCameraDistance === '20' ? (
             <>

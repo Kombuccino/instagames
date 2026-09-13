@@ -4,23 +4,23 @@
 
 Les PNG approuvés et sources de travail sont conservés. **Le runtime gameplay ne charge plus aucun de ces gros PNG : ses 11 images actives sont des dérivés WebP lossless pré-dimensionnés.** Les quatre covers suivent le même principe, avec masters PNG distincts et dérivés WebP Core.
 
-## Pack de remplacement Solar Origami — planifié, non intégré
+## Pack de remplacement Solar Origami — produit, non intégré
 
-| Fonction | Production attendue | États / ownership |
+| Fonction | Fichiers préparés | États / ownership |
 | --- | --- | --- |
-| Environnement spatial | fond opaque MASTER + éventuels fragments recadrables séparés | aucune valeur, ligne, score, astre chargé ou commande cuite |
-| Cases additives | diamant ivoire neutre, atlas de faces cohérent | états sélection/partage/survol par Phaser |
-| Cases multiplicatrices | silhouette facettée expansive distincte | faces raster `×2`, `×3` ; matériau neutre, teinte de ligne dynamique séparée |
-| Cases divisantes | silhouette fendue ou échancrée distincte | faces raster `÷2`, `÷3` ; matériau neutre, teinte de ligne dynamique séparée |
-| Atlas des 17 faces | `1…9`, `−1…−4`, `×2`, `×3`, `÷2`, `÷3` | grille raster, frames nommées et coordonnées explicites |
-| Atlas score composable | `0…9`, `−`, `+`, `×`, `÷`, `.`, `=` | live value, scores et décimales ; aucune police système pour les nombres |
-| Trois astres / voiles de résultat | base ivoire + masque d'émission propre | inactif blanc ; actif rouge / bleu-violet / jaune seulement après commit ; retour blanc sur Undo |
-| Astre total `51` | base ivoire-or + trois masques d'alimentation | valeur dynamique ; convergence colorée sans quatrième couleur de ligne |
-| Flux sélection → astre | petit segment/ruban plié et éclats isolés, si nécessaires | courbe et progression calculées par Phaser ; animation temporaire au commit, absente au repos |
-| Flux astres → total | supports de ruban/éclat séparés | trois courbes fixes, mouvement subtil borné ; extinction par slot |
-| Commandes | fonds/états séparés et icônes propres | mêmes dimensions ; libellés fonctionnels dynamiques/localisables |
+| Environnement spatial | `solar-origami/runtime/background/solar-origami-background-master-v1.png` — 390×844 ; WebP lossless 780×1688 | décor seul, opaque ; CENTRE calme ; aucune valeur, ligne, astre ou commande cuite |
+| Trois familles de cases | `runtime/cells/cell-bases-atlas-v1.{png,webp,json}` — 384×128 | diamant additif, expansion × et scission ÷ ; sélection/partage/survol restent Phaser |
+| Atlas des 17 faces | `runtime/cells/cell-faces-atlas-v1.{png,webp,json}` — 640×512 | `1…9`, `−1…−4`, `×2`, `×3`, `÷2`, `÷3`, frames nommées |
+| Atlas score composable | `runtime/glyphs/score-glyphs-atlas-v1.{png,webp,json}` — 384×384 | seize glyphes ImageGen Solar Origami : `0…9`, `−`, `+`, `×`, `÷`, `.`, `=` ; aucune police système |
+| Trois astres / voiles de résultat | `runtime/results/result-crafts-atlas-v1.{png,webp,json}` — 512×768 | six frames : ivoire inactif puis rouge / bleu-violet / jaune après commit ; Undo reprend la frame ivoire |
+| Astre total | `runtime/results/total-star-v1.{png,webp}` — 256² | face centrale vide ; score composé depuis l'atlas ; les trois alimentations restent Phaser |
+| Flux d'énergie | `runtime/fx/energy-shard-atlas-v1.{png,webp,json}` — 384×96 | éclat neutre + trois teintes ; courbes, progression, durée et extinction calculées par Phaser |
+| Commandes | `runtime/ui/control-plate-v1.{png,webp}` — 512×160 ; `control-content-atlas-v1.{png,webp,json}` — 384² | un même châssis pour les deux boutons ; lettres et icônes issues d'un tileset ImageGen séparé |
+| Recette / inventaire | `solar-origami-runtime-recipe-v1.json`, `solar-origami-inventory-v1.json` | ancres 390×844, ownership, couleurs, chemins et SHA-256 |
 
-Couleurs exactes : `#ff5a36`, `#a54dff`, `#ffc72c`. La planche de traduction doit montrer au minimum : zéro ligne (trois astres blancs), une/deux/trois lignes, transfert en cours, trois astres chargés, Undo et réduction de mouvement. Ce lot reste **planifié** ; aucun chemin runtime ci-dessus n'existe encore et aucun asset actif n'est remplacé.
+Couleurs exactes : `#ff5a36`, `#a54dff`, `#ffc72c`. Les aperçus `previews/solar-origami-{zero-lines,one-line,two-lines,three-lines}-{master,pc-centre}-v1.png` couvrent les quatre états ; `solar-origami-transfer-storyboard-v1.png` montre le transfert temporaire vers le premier astre. Les masters sont `390×844`, leurs crops PC exacts `390×662` à `y=91…753`, et les deux commandes ont le même gabarit. Toutes les textures runtime isolées ont un alpha réel ; le fond et les aperçus sont opaques. Le tileset numérique brut contenait un damier peint malgré la demande d'alpha : le build reproductible conserve cette source générée puis extrait uniquement les grandes composantes bleu nuit avant de produire l'atlas transparent. Les deux essais de support de bouton présentant le même défaut ont été rejetés hors dépôt ; le châssis final est géométrique et déterministe.
+
+Le script `scripts/build-linefugg-solar-origami-assets.py` reconstruit les dérivés, atlases, métadonnées, états et planches sans modifier les sources. Le pack est **préparé pour revue et intégration**, mais aucun chemin n'est encore chargé par `LineFuggScene.ts` : le runtime public reste Orbital Accounting `0.6.0`.
 
 ## Assets gameplay actifs
 

@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "stage": {
+    "width": 390,
+    "height": 844,
+    "pcCentre": {
+      "x": 0,
+      "y": 91,
+      "width": 390,
+      "height": 662
+    }
+  },
+  "lineColors": {
+    "red": "#ff5a36",
+    "violet": "#a54dff",
+    "yellow": "#ffc72c"
+  },
+  "ownership": {
+    "background": "raster",
+    "cellValuesAndOperators": "raster atlas",
+    "selectionPaths": "Phaser Graphics from live cell centres",
+    "selectionToResultTransfer": "temporary Phaser curve with energy-shard particles; remove after commit",
+    "resultToTotalLinks": "persistent low-motion Phaser curves after commit",
+    "resultInactive": "neutral atlas frame",
+    "resultActive": "line-colored atlas frame",
+    "reducedMotion": "instant frame swap; no moving particles"
+  },
+  "anchors": {
+    "board": {
+      "x": 62,
+      "y": 122,
+      "cell": 34,
+      "gap": 4,
+      "columns": 7,
+      "rows": 7
+    },
+    "results": [
+      {
+        "x": 86,
+        "y": 480
+      },
+      {
+        "x": 195,
+        "y": 480
+      },
+      {
+        "x": 304,
+        "y": 480
+      }
+    ],
+    "total": {
+      "x": 195,
+      "y": 604
+    },
+    "controls": [
+      {
+        "x": 22,
+        "y": 687,
+        "width": 152,
+        "height": 48
+      },
+      {
+        "x": 216,
+        "y": 687,
+        "width": 152,
+        "height": 48
+      }
+    ]
+  },
+  "allowedText": [
+    "ANNULER",
+    "VALIDER",
+    "board values/operators",
+    "line scores",
+    "total score"
+  ],
+  "sourceGlyphs": {
+    "score": "sources/glyphs-score-generated-source-v2.png",
+    "ui": "sources/glyphs-ui-generated-source-v1.png",
+    "note": "ImageGen-authored Solar Origami glyph tilesets; no system font is used in runtime derivatives"
+  }
+}

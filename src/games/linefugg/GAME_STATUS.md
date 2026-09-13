@@ -1,6 +1,6 @@
 # LineFugg — Suivi de création
 
-Mis à jour : 13 septembre 2026 à 14:52 Europe/Paris. Version : `0.6.0`. Changelog : `CHANGELOG.md`.
+Mis à jour : 13 septembre 2026 à 15:16 Europe/Paris. Version : `0.6.0`. Changelog : `CHANGELOG.md`.
 
 Runtime Phaser 4.2.1, stage 390 × 844. Prototype, game design et équilibre validés par l'utilisateur. Direction gameplay : **Orbital Accounting**. Cover runtime : current ; quatre références approuvées conservées et quatre restaurations statiques plein cadre actives.
 
@@ -57,8 +57,11 @@ Aucun blocage technique connu. L'optimisation des images runtime de LineFugg est
 - Retour utilisateur : la composition actuelle paraît trop massive et mal calée sur PC ; les trois grands panneaux de résultats sont le principal défaut, car ils consomment beaucoup d'espace, ressemblent à des champs presque vides et relient mal calcul, couleur de ligne et score. L'égalité visuelle des commandes Annuler/Valider reste obligatoire.
 - Une première exploration de quatre variantes proches de la DA historique a été produite puis explicitement refusée comme trop similaire et toujours peu convaincante. Elle reste archivée comme recherche rejetée, sans intégration.
 - Une seconde exploration a compacté le registre, mais conservait encore sans justification la grille en tuiles, les trois couleurs historiques, les calculs alignés, le total inférieur et les boutons ronds. Elle est refusée par l'utilisateur comme simple restylage et archivée sous `round-02-results-redesign`.
-- La troisième exploration repart uniquement des invariants mécaniques et propose quatre métaphores complètes : sérigraphie et cartes d'impression, serre dont les trois scores deviennent des fruits, séquenceur musical à trois pistes et master, chantier blueprint dont les scores construisent une tour. Palettes, composition, représentation des tracés, restitution des scores et commandes sont propres à chaque piste ; aucun planisphère ni registre d'équations n'est repris.
-- Les sources et la planche comparative sont archivées dans `MiniFugg - Graphic Archive/Games/linefugg/gameplay-art-exploration-2026-09-13/round-03-full-da-rethink`. Statut : généré et archivé ; revue utilisateur en cours ; aucune piste acceptée, intégrée ou publiée.
+- La troisième exploration repartait uniquement des invariants mécaniques, mais a été refusée : elle rompait trop avec l'identité spatiale et contenait des slogans, panneaux et micro-textes non demandés. Elle reste archivée sous `round-03-full-da-rethink` comme écart de production ; aucune de ses pistes ne doit servir de référence.
+- Le pipeline commun et le skill artistique imposent désormais une liste fermée recopiée dans le prompt et un rejet avant présentation de toute chaîne, pseudo-chaîne, valeur ou symbole non autorisé.
+- La quatrième exploration conserve le territoire spatial sans reprendre laiton, planisphère, parchemin ni registre d'équations : réseau de balises et noyau, relevé lunaire et canisters, serre orbitale, voiles solaires origami. Les résultats deviennent des objets reliés aux tracés puis convergent vers `51`.
+- Liste fermée de la passe : `ANNULER`, `VALIDER`, valeurs du plateau, `8`, `19`, `24`, `51`. Contrôle visuel : aucun autre texte visible ; commandes libellées, alignées et de même gabarit. Sources et comparaison archivées sous `round-04-space-no-extra-text` ; revue utilisateur en cours ; aucune piste acceptée, intégrée ou publiée.
+- Retour canvas sur la piste origami : la première composition avait le bon ratio mais plaçait les commandes dans BAS, donc hors de la fenêtre PC centrée. La correction `v3` garde toutes les informations et commandes dans CENTRE `y=91…753`, avec la grille entièrement visible après crop ; HAUT/BAS ne contiennent plus que le décor spatial recadrable. Masters de contrôle : `390×844` et crop PC exact `390×662`, PNG opaques décodés ; contrôle visuel des deux cadrages effectué. Toujours aucune intégration avant validation utilisateur.
 - La version reste `0.6.0` : cette passe ne modifie ni runtime, ni règles, ni assets actifs.
 
 ## Remise aux normes des covers — 12 septembre 2026

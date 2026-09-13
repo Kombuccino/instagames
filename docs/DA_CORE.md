@@ -57,6 +57,8 @@ Rejet : [quelques défauts locaux bloquants et test concret de lisibilité/inté
 
 **La liste des textes est fermée.** Pour un asset isolé elle est vide par défaut. Pour une cover, elle contient normalement le titre anglais exact ; pour une UI, uniquement les textes fonctionnels utiles à l'état demandé. Un symbole intrinsèque au jeu peut être autorisé. Toute enseigne, slogan, numéro, micro-légende, pseudo-écriture ou logo non listé est un défaut. Une permission artistique ancienne d'ajouter des « encarts » ou une petite signature n'autorise pas l'agent à inventer leur contenu. Un logo autorisé vient de son fichier canonique, pas d'une régénération.
 
+Une sortie contenant un mot, slogan, cartouche, panneau, annotation ou pseudo-texte hors liste est **rejetée avant présentation**, même si le reste de l'image est réussi et même si ce texte semble cohérent avec l'univers. L'interdiction doit être écrite dans le brief, puis vérifiée sur l'image obtenue : le prompt seul ne vaut pas contrôle. Les nombres variables sont soumis à la même règle et doivent correspondre exactement à l'état fonctionnel demandé.
+
 Les notes de production restent hors du brief d'image : commit des règles lues, statut et preuve d'approbation des références, outil réellement employé, paramètres exposés, limites de contexte et chemins de sortie. Conserver le brief intentionnel ; conserver aussi la requête exacte et les pièces réellement envoyées seulement si l'outil les expose. Ne pas prétendre auditer un prompt interne ou un historique transmis implicitement.
 
 ## Images propres, planches utiles

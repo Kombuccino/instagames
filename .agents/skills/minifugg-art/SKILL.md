@@ -24,7 +24,7 @@ Retrouver registre, `ART_DIRECTION.md`, `ASSET_MANIFEST.md`, `GAME_STATUS.md` et
 
 ## 2. Préparer le micro-brief, pas une présentation
 
-Remplir le [modèle unique](../../../docs/DA_CORE.md#structure-obligatoire-du-micro-brief), sans demander à l'utilisateur de le rédiger. Définir la liste fermée des **textes autorisés** : aucun par défaut pour un asset, titre exact pour une cover, textes fonctionnels pour une UI. Ne pas confondre textes visibles et notes destinées à l'intégrateur.
+Remplir le [modèle unique](../../../docs/DA_CORE.md#structure-obligatoire-du-micro-brief), sans demander à l'utilisateur de le rédiger. Définir la liste fermée des **textes autorisés** : aucun par défaut pour un asset, titre exact pour une cover, textes fonctionnels pour une UI. Copier cette liste exacte dans le prompt et interdire explicitement slogans, panneaux, légendes, annotations, numéros supplémentaires et pseudo-écriture. Ne pas confondre textes visibles et notes destinées à l'intégrateur.
 
 Exprimer la patte positivement et concrètement selon la DA retenue. Pour une exploration, proposer des directions réellement distinctes ; garder constante la géométrie fonctionnelle en gameplay, laisser le point de vue varier en cover. Une nouvelle palette seule ne constitue pas un nouveau style. Les familles sont des ressources, pas un plafond de créativité.
 
@@ -42,7 +42,7 @@ Les scripts ci-dessous n'envoient rien et ne modifient pas les sources. Les PNG 
 
 ## 4. Contrôler séparément art, fichiers et usage
 
-Appliquer les [trois contrôles](../../../docs/DA_CORE.md#contrôles-avant-présentation). Examiner l'image elle-même : sujet, référence, textes parasites, diversité et lisibilité. Puis mesurer format, dimensions, alpha et marges. Enfin essayer les fichiers dans leur usage représentatif avant une grande déclinaison. Aucun score automatique « anti-IA », aucune acceptation artistique déduite du format.
+Appliquer les [trois contrôles](../../../docs/DA_CORE.md#contrôles-avant-présentation). Examiner l'image elle-même : sujet, référence, textes parasites, diversité et lisibilité. Comparer mot à mot tout contenu visible à la liste fermée : une seule chaîne, pseudo-chaîne ou valeur non autorisée impose correction ou rejet avant présentation, jamais une simple réserve dans le compte rendu. Puis mesurer format, dimensions, alpha et marges. Enfin essayer les fichiers dans leur usage représentatif avant une grande déclinaison. Aucun score automatique « anti-IA », aucune acceptation artistique déduite du format.
 
 Outils locaux : Python 3.10+ et Pillow (dépendance d'atelier, pas du jeu). Lire `scripts/art_files.py` seulement pour les utiliser/modifier. Depuis la racine du dépôt :
 

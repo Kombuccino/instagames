@@ -13,6 +13,8 @@ export type PlatformCommentsStatus = 'idle' | 'loading' | 'ready' | 'unavailable
 
 type Props = {
   game: InstagameDefinition
+  /** Kept as an ignored compatibility prop for developer labs; Info no longer lists the catalog. */
+  catalog?: InstagameDefinition[]
   active: boolean
   seed: number
   coins: number

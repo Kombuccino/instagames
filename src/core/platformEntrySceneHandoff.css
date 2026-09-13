@@ -76,9 +76,9 @@
   }
 
   .mf-entry-scene.is-metro-v2 .mf-entry-scene__phone-rig {
-    inset: auto 26% 0 auto;
-    width: 56.28dvh;
-    height: 100dvh;
+    inset: 5dvh 22.5% auto auto;
+    width: 66.41dvh;
+    height: 118dvh;
     will-change: transform;
   }
 

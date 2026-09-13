@@ -32,8 +32,8 @@ const TAP_SLOP_PX = 14
 const SWIPE_THRESHOLD_PX = 42
 const METRO_SCENE_ROOT = '/assets/generated/platform/entry-scenes/metro-sunset'
 const METRO_PARALLAX_V3_ROOT = `${METRO_SCENE_ROOT}/parallax-v3`
-const METRO_PARALLAX_V3_REVISION = '20260913-v36'
-const ARM_ROOT = `${METRO_SCENE_ROOT}/arms`
+const METRO_PARALLAX_V3_REVISION = '20260913-v37'
+const ARM_ROOT = `${METRO_SCENE_ROOT}/arms-screen-cutout`
 const armAsset = (variant: string) => `${ARM_ROOT}/arm-${variant}.png?v=${METRO_PARALLAX_V3_REVISION}`
 const ARM_VARIANTS = Array.from({ length: 8 }, (_, index) => armAsset(String(index + 1).padStart(2, '0')))
 const ARM_STORAGE_KEY = 'minifugg:entry-arm:v1'

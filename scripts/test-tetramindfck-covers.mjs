@@ -194,8 +194,8 @@ try {
     for (let index = 0; index < 4; index++) {
       assert.match(await frames.nth(index).evaluate(element => getComputedStyle(element).backgroundImage), /play-states-atlas\.webp/)
     }
-    assert.match(await idleFrame.evaluate(element => getComputedStyle(element).filter), /brightness\(0\.42\)/,
-      'PLAY must spend its off phase visibly dimmed')
+    assert.match(await idleFrame.evaluate(element => getComputedStyle(element).filter), /brightness\(0\.29\)/,
+      'PLAY must remain visibly amber while reading as unlit')
     assert.equal(await warmFrame.evaluate(element => getComputedStyle(element).animationName), 'mf-play-warm-lamp')
     assert.equal(await hotFrame.evaluate(element => getComputedStyle(element).animationName), 'mf-play-hot-lamp')
     assert.doesNotMatch(await warmFrame.evaluate(element => getComputedStyle(element).animationTimingFunction), /steps/,
@@ -210,13 +210,13 @@ try {
         })),
       }
     })
-    assert.equal(lampCycle.duration, 5200)
+    assert.equal(lampCycle.duration, 4800)
     const hasLampState = (offset, opacity) => lampCycle.keyframes.some(frame =>
       Math.abs(frame.offset - offset) < .001 && Math.abs(frame.opacity - opacity) < .001)
-    assert.ok(hasLampState(.54, 0), 'PLAY lamp must remain off for most of the first half-cycle')
-    assert.ok(hasLampState(.58, 1), 'PLAY lamp must ignite quickly and clearly')
-    assert.ok(hasLampState(.79, 1), 'PLAY lamp must hold a readable lit state')
-    assert.ok(hasLampState(.82, 0), 'PLAY lamp must switch off quickly')
+    assert.ok(hasLampState(.66, 1), 'PLAY lamp must remain lit for most of the cycle')
+    assert.ok(hasLampState(.67, 0), 'PLAY lamp must switch off within one percent of the cycle')
+    assert.ok(hasLampState(.95, 0), 'PLAY lamp off time must stay below half of its lit time')
+    assert.ok(hasLampState(.96, 1), 'PLAY lamp must switch back on directly')
     const playBefore = await play.boundingBox()
     const counterBefore = await counter.boundingBox()
     const coinsBefore = Number.parseInt(await counter.getAttribute('aria-label'), 10)

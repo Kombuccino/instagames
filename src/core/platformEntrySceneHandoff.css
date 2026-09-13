@@ -275,12 +275,12 @@
 
 @keyframes mf-entry-metro-v3-occlusion {
   0%, 7%, 18%, 30%, 43%, 100% { opacity: .74; }
-  11%, 14%, 35%, 40% { opacity: .16; }
+  11%, 14%, 35%, 40% { opacity: 0; }
 }
 
 @keyframes mf-entry-metro-v3-reflection-occlusion {
   0%, 7%, 18%, 30%, 43%, 100% { opacity: .86; }
-  11%, 14%, 35%, 40% { opacity: .14; }
+  11%, 14%, 35%, 40% { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

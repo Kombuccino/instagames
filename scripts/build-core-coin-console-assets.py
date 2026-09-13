@@ -21,6 +21,7 @@ SPECS = {
     "return-exit-focus": (100, 100),
     "return-exit-pressed": (100, 100),
     "coin-counter-frame": (224, 92),
+    "coin-insert-three-quarter": (96, 96),
     "coin-front": (68, 68),
     "coin-yaw-30": (68, 68),
     "coin-yaw-65": (68, 68),
@@ -83,7 +84,14 @@ def play_state_atlas() -> Image.Image:
 
 for name, bounds in SPECS.items():
     source = Image.open(MASTERS / f"{name}.png").convert("RGBA")
-    contain(source, bounds).save(OUTPUT / f"{name}.webp", "WEBP", lossless=True, method=6)
+    runtime = contain(source, bounds)
+    if name == "coin-insert-three-quarter":
+        inner_bounds = (round(bounds[0] * 0.76), round(bounds[1] * 0.76))
+        runtime = contain(source, inner_bounds)
+        canvas = Image.new("RGBA", bounds, (0, 0, 0, 0))
+        canvas.alpha_composite(runtime, ((bounds[0] - runtime.width) // 2, (bounds[1] - runtime.height) // 2))
+        runtime = canvas
+    runtime.save(OUTPUT / f"{name}.webp", "WEBP", lossless=True, method=6)
 
 atlas = play_state_atlas()
 atlas.save(MASTERS / "play-states-atlas.png", "PNG", optimize=True)

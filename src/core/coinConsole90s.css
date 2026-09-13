@@ -216,32 +216,38 @@
 .mf-local-insert-coin {
   position: absolute;
   z-index: 3;
-  left: 77.5%;
-  top: 2.7%;
-  width: 8.72%;
-  height: auto;
-  aspect-ratio: 1;
+  left: 77%;
+  top: 17%;
+  width: 12.5%;
+  height: 66%;
+  overflow: hidden;
   opacity: 0;
-  transform: translate(0, 0) scale(1);
   pointer-events: none;
 }
 
 .mf-local-insert-coin img {
   position: absolute;
-  inset: 0;
+  left: 0;
+  top: 50%;
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: contain;
-  opacity: 0;
+  transform: translate(-4%, -50%) scale(.94);
+  transform-origin: 50% 50%;
 }
 
-.mf-local-insert-coin .is-front { opacity: 1; }
-.mf-coin-console-90s.is-inserting .mf-local-insert-coin.is-1 { animation: mf-local-coin-travel 430ms cubic-bezier(.3, .02, .45, 1) 140ms both; }
-.mf-coin-console-90s.is-inserting .mf-local-insert-coin.is-2 { animation: mf-local-coin-travel 430ms cubic-bezier(.3, .02, .45, 1) 500ms both; }
-.mf-coin-console-90s.is-inserting .mf-local-insert-coin img.is-front { animation: mf-coin-front 430ms steps(1) both; }
-.mf-coin-console-90s.is-inserting .mf-local-insert-coin img.is-yaw-30 { animation: mf-coin-yaw-30 430ms steps(1) both; }
-.mf-coin-console-90s.is-inserting .mf-local-insert-coin img.is-yaw-65 { animation: mf-coin-yaw-65 430ms steps(1) both; }
-.mf-coin-console-90s.is-inserting .mf-local-insert-coin img.is-edge { animation: mf-coin-edge 430ms steps(1) both; }
+.mf-coin-console-90s.is-inserting .mf-local-insert-coin.is-1 {
+  animation: mf-local-coin-visibility 360ms steps(1) 140ms both;
+}
+.mf-coin-console-90s.is-inserting .mf-local-insert-coin.is-2 {
+  animation: mf-local-coin-visibility 360ms steps(1) 500ms both;
+}
+.mf-coin-console-90s.is-inserting .mf-local-insert-coin.is-1 img {
+  animation: mf-local-coin-slide 360ms cubic-bezier(.2, .72, .35, 1) 140ms both;
+}
+.mf-coin-console-90s.is-inserting .mf-local-insert-coin.is-2 img {
+  animation: mf-local-coin-slide 360ms cubic-bezier(.2, .72, .35, 1) 500ms both;
+}
 
 .mf-launch-error {
   position: absolute;
@@ -268,17 +274,16 @@
   100% { opacity: .78; }
 }
 
-@keyframes mf-local-coin-travel {
-  0% { opacity: 0; transform: translate(0, 0) scale(1); }
-  8% { opacity: 1; }
-  72% { opacity: 1; transform: translate(85.3%, 208.8%) scale(.94); }
-  100% { opacity: 0; transform: translate(102.9%, 267.6%) scale(.22); }
+@keyframes mf-local-coin-visibility {
+  0%, 99% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
-@keyframes mf-coin-front { 0%, 24% { opacity: 1; } 25%, 100% { opacity: 0; } }
-@keyframes mf-coin-yaw-30 { 0%, 24% { opacity: 0; } 25%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
-@keyframes mf-coin-yaw-65 { 0%, 49% { opacity: 0; } 50%, 73% { opacity: 1; } 74%, 100% { opacity: 0; } }
-@keyframes mf-coin-edge { 0%, 73% { opacity: 0; } 74%, 100% { opacity: 1; } }
+@keyframes mf-local-coin-slide {
+  0% { transform: translate(-4%, -50%) scale(.94); }
+  18% { transform: translate(0, -50%) scale(1); }
+  100% { transform: translate(90%, -50%) scale(.9); }
+}
 
 @keyframes mf-coin-debit-pop {
   0% { opacity: 0; transform: translate(-50%, 1px) scale(.82); }

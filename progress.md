@@ -1,5 +1,7 @@
 Original prompt: Mettre à jour LineFugg pour rendre les GFX conformes à la DA approuvée, optimiser et utiliser Phaser pour une réalisation plus animée, en préservant le prototype, le GD et l'équilibrage validés.
 
+2026-09-13 — Pièces du monnayeur reprises à la demande : nouvelle pièce Fuggy dorée sans chiffre, vue en trois-quarts et utilisée comme sprite unique. Chaque pièce apparaît près de la fente, glisse sur une courte course horizontale puis disparaît derrière son masque ; les quatre changements d’orientation saccadés ne sont plus utilisés. Génération intégrée et validation en ligne utilisateur en attente.
+
 2026-09-13 — Export de calage utilisateur appliqué aux 10 covers TetraMindFck/CrazyPapers concernées. Les positions verticales suivent exactement le JSON ; neuf titres sont préservés par une lecture statique du bandeau supérieur du même WebP, sans modifier ni régénérer les sources, masters ou runtimes. Le premier essai génératif, jugé trop interprétatif, a été rejeté et n’est pas entré dans le dépôt. Build et matrices Tetra/Crazy réussis ; captures A54/MASTER/desktop inspectées, raccords et JOUER conformes.
 
 2026-09-13 — Tempo final demandé pour le bouton PLAY : cycle ramené à 2 secondes, soit environ 1,5 seconde allumé et 0,5 seconde éteint, transitions rapides de 48 ms comprises. Les rendus validés, l’atlas et le clic mécanique restent inchangés ; validation en ligne utilisateur en attente.

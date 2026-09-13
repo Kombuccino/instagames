@@ -110,10 +110,7 @@ export function CoinConsole90s({ fixed = false, coins, cost, free, launchError, 
 
         {Array.from({ length: Math.min(price, 2) }, (_, index) => (
           <span key={`${sequence}:coin:${index}`} className={`mf-local-insert-coin is-${index + 1}`} aria-hidden="true">
-            <img className="is-front" src={`${ASSET_ROOT}/coin-front.webp`} alt="" />
-            <img className="is-yaw-30" src={`${ASSET_ROOT}/coin-yaw-30.webp`} alt="" />
-            <img className="is-yaw-65" src={`${ASSET_ROOT}/coin-yaw-65.webp`} alt="" />
-            <img className="is-edge" src={`${ASSET_ROOT}/coin-edge.webp`} alt="" />
+            <img src={`${ASSET_ROOT}/coin-insert-three-quarter.webp`} alt="" />
           </span>
         ))}
       </div>

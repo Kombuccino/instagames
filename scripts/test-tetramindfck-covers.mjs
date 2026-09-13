@@ -224,6 +224,15 @@ try {
     assert.ok(hasLampState(.75, 0), 'PLAY lamp must switch off in about 48 milliseconds')
     assert.ok(hasLampState(.976, 0), 'PLAY lamp must stay off for about 0.5 seconds including transitions')
     assert.ok(hasLampState(1, 1), 'PLAY lamp must switch back on in about 48 milliseconds')
+    const insertionCoins = fixedControls.locator('.mf-local-insert-coin')
+    assert.equal(await insertionCoins.count(), 2, 'a paid play must stage two local coin insertions')
+    for (let index = 0; index < 2; index++) {
+      const coin = insertionCoins.nth(index)
+      assert.equal(await coin.locator('img').count(), 1, 'each insertion must use one continuous three-quarter coin sprite')
+      assert.match(await coin.locator('img').getAttribute('src'), /coin-insert-three-quarter\.webp$/)
+      assert.equal(await coin.evaluate(element => getComputedStyle(element).overflow), 'hidden',
+        'the coin must disappear behind the slot mask instead of swapping frames')
+    }
     const playBefore = await play.boundingBox()
     const counterBefore = await counter.boundingBox()
     const coinsBefore = Number.parseInt(await counter.getAttribute('aria-label'), 10)
@@ -241,6 +250,10 @@ try {
     const pressedPath = `${output}/${format.name}-play-pressed.png`
     await page.screenshot({ path: pressedPath })
     report.screenshots.push(pressedPath)
+    await page.waitForTimeout(240)
+    const insertionPath = `${output}/${format.name}-coin-three-quarter-insertion.png`
+    await page.screenshot({ path: insertionPath })
+    report.screenshots.push(insertionPath)
 
     report.scenarios.push({
       name: format.name,

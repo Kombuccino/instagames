@@ -68,6 +68,8 @@ La séquence où une pièce descendait du compteur jusqu’à la fente est expli
 
 La correction de tempo du 13 septembre 2026 remplace la répartition précédente du cycle : le bouton reste désormais allumé environ `1,5 s`, puis éteint environ `0,5 s`, dans une boucle totale de `2 s`. Les transitions validées restent brèves, environ `48 ms` chacune ; les deux rendus, l’alignement et la course mécanique ne changent pas.
 
+La correction des pièces du 13 septembre 2026 remplace la rotation saccadée en quatre images : chaque insertion utilise une unique pièce dorée sans chiffre, lisible en trois-quarts, qui apparaît déjà à proximité immédiate de la fente. Elle glisse horizontalement sur une courte course et disparaît progressivement derrière le masque de la fente ; aucun chiffre, trajet depuis le compteur ou changement d’orientation par frames n’est affiché.
+
 ## Info : panneau entier et scrollable
 
 Conserver les onglets Info/Comments dans la même famille. L'ordre est : sélection des covers ; titre et créateur ; description ; version et dernière mise à jour ; high score personnel et accès au leaderboard ; règles ; section créateur.

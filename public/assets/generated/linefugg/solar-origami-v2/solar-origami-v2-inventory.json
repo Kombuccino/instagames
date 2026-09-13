@@ -1,0 +1,1282 @@
+{
+  "pack": "linefugg-solar-origami-v2",
+  "status": "generated-and-technically-validated-pending-user-review",
+  "authoredSources": [
+    "public/assets/generated/linefugg/solar-origami-v2/sources/solar-origami-mega-tileset-chroma-v2.png",
+    "public/assets/generated/linefugg/solar-origami-v2/sources/solar-origami-glyphs-chroma-v2.png",
+    "public/assets/generated/linefugg/solar-origami-v2/sources/solar-origami-fx-chroma-v2.png"
+  ],
+  "palette": {
+    "red": "#FF5A36",
+    "violet": "#A54DFF",
+    "yellow": "#FFC72C"
+  },
+  "counts": {
+    "cells": 6,
+    "cellFaces": 17,
+    "results": 6,
+    "sunAndClusters": 6,
+    "buttons": 4,
+    "modules": 12,
+    "debris": 11,
+    "glyphs": 16,
+    "fxNodes": 8,
+    "fxSegments": 8,
+    "transferFrames": 24,
+    "arrivalParticles": 12
+  },
+  "files": [
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-1-v2.png",
+      "sha256": "f596edea47b19608120801378d1f4fd565be36f446291467aa9a48d40c45940c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-1-v2.webp",
+      "sha256": "50f43d1565572a1306e660767f967d72562cf0139824f05a5a126fae4335e25b"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-2-v2.png",
+      "sha256": "9d669ca640241f2ee5eba9441cc6c852643fb092f3a8b968bc954975eb5abf11"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-2-v2.webp",
+      "sha256": "8ab9fa16e2fe5ef988cc48f8df0ff7c940479e729a381d0cde6cd394bb21104a"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-3-v2.png",
+      "sha256": "764a9cf588a1bebcac6f04e7c46d9ac264b03d0b25165397d53f4eda1a4f63a4"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-3-v2.webp",
+      "sha256": "51b5708bdaedfe06d12999b0039b95ae6d151f025bb2b537c81ab218343efe7d"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-4-v2.png",
+      "sha256": "9435fc46d7954ad86054ab96de2b1b80604bacf592a910c24422d3fb0492e3a0"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-4-v2.webp",
+      "sha256": "c2fbbb115b579c0133838a2d5382bdbb821a2478408f4c72d05bfd20ca87fc0d"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-5-v2.png",
+      "sha256": "529e52117fc9e35b4d125bd21b59334e6c8b3a5eb67571e4ae10abb947d03391"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-5-v2.webp",
+      "sha256": "cba6f2ff4b6337940a51462b90367abe5045bdd4b3bd861d7036af6c52824ca6"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-6-v2.png",
+      "sha256": "29fdc2be139cc129fb2df7642c6d9979661d1aa98128e2a748e700a285125b18"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-6-v2.webp",
+      "sha256": "a0653b770373f255931725f834fff37b32bffa6dc515205a411026029fc3578d"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-7-v2.png",
+      "sha256": "7384868fdb28edf717ec77de29bc1249a1af27a2e56a8af3c8f8ae537e870b1d"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-7-v2.webp",
+      "sha256": "c12ab9c9a4298b3fc78e74879d7a17ae2e189f5e73643964398a5b7257b97e39"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-8-v2.png",
+      "sha256": "8c2b015f42ba9b195179941d9d8af24dca39d31b2fd1e3a7d4d1d2b54a622733"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-8-v2.webp",
+      "sha256": "bb5bfa14a6d1318c8ab6cce7fd601c98121445386009215cd0eacf624c6a8f35"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-9-v2.png",
+      "sha256": "ef0a4a41977140adfa7e732c684ccb43c6a146554373e81bd4236a3dcc87ce59"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-9-v2.webp",
+      "sha256": "b38358ba06ec4ae079923773cdb3a0baeee5bde9fd7a52262a85d8aeaca0f0cf"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-divide-2-v2.png",
+      "sha256": "37632fb10692c3fe50f773b45fbbcaf1c1d4eb7f8a8d7ef87cadd0e5c05557c9"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-divide-2-v2.webp",
+      "sha256": "52c26ded9266f02c1cd24f72927fea597131f105e1267145d126c722d2b2230b"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-divide-3-v2.png",
+      "sha256": "29a855a9de588b75c5a6c707b6dcb2d9e34fbfe722875e35c8f42b9dc0ee40c4"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-divide-3-v2.webp",
+      "sha256": "40c475e7185e594a4cc7ad31159986cd18918ff2ab45e5f916e5335002613517"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-minus-1-v2.png",
+      "sha256": "8cdaff0be8890cd7b31f16e05952ab2e9c2b6a5bac3cc48321712027f6dbe394"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-minus-1-v2.webp",
+      "sha256": "09504fe81d77e2d448496c44635224d80bb4f4bba063056672de46541e333f5b"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-minus-2-v2.png",
+      "sha256": "ba08bb38763e2420c94b5f9d879bc1a741176171f1eebd0ffc902f5480767be8"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-minus-2-v2.webp",
+      "sha256": "49d0dfab72ab0a374feddf3127b8f94829aaf6bf3ccbfe74155adc06fe1bf285"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-minus-3-v2.png",
+      "sha256": "4cd0374eb1c67574354d3dc5e1f0337998f978113bd7dd01b17ea32b0014ece0"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-minus-3-v2.webp",
+      "sha256": "42ccad39de4a850abb9a58ff3c07c9ea66d11c993ef7f27c338d9b0ab3ee9649"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-minus-4-v2.png",
+      "sha256": "a49bbe2aa746e92d3c675c23d8576e266507e809b1e2b01b609e8beacae82495"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-minus-4-v2.webp",
+      "sha256": "e1f649a3fe41e7680055f6a6036749899c284c1a37efa3bfb7f88a3e4bbdcde8"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-times-2-v2.png",
+      "sha256": "09d6dc73dfa94cd1bb73d23d023a1f415ecfd6a19d442a86883fd67bca9d1516"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-times-2-v2.webp",
+      "sha256": "6282c3ddfb1955a1b03b34ea8fc9151f026b268a37ba145b7482ff467dcfc359"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-times-3-v2.png",
+      "sha256": "3506bceab05e0fda5a0defbfcd919e4e8a3eb4ab3fafa7101683b4ba7c5d6fd5"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cell-faces/cell-times-3-v2.webp",
+      "sha256": "023b25cb2e3305a9d91f6d611bbb2e4f60b9af9a1001c3379789a8cc3132e09c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cells/cell-additive-neutral-v2.png",
+      "sha256": "7ccc8566bb3afc6cb80b2a679d806297f25de11f2b73801d0b66fe16216f5633"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cells/cell-additive-neutral-v2.webp",
+      "sha256": "aada266e7e7a9cd93771a4743425ec954bcb77a7b9ad541183a091cad60222d9"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cells/cell-divide-neutral-v2.png",
+      "sha256": "afedd10a91dc0a08f1ff5af7c199b4027c93eb2d8d041c20a95e8f6537c73479"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cells/cell-divide-neutral-v2.webp",
+      "sha256": "6457cdff56e66175058a4c852ae52fd3ca6236e08cee3f14c0e45b2080ae77c3"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cells/cell-multiply-neutral-v2.png",
+      "sha256": "5f92a1b7fbb837a656e34bc7d5a3b0ec646a486dfdedaa555ebb6c973fb6273e"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cells/cell-multiply-neutral-v2.webp",
+      "sha256": "5cf7c974254b78b5b72ecb0aeb7a3ece2d1de69a911d527b9024a89d2b13e637"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cells/cell-selected-red-v2.png",
+      "sha256": "8721fc765e03a9193a39190b442f14c0a56040a452390cde4da7884a0e5b48fa"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cells/cell-selected-red-v2.webp",
+      "sha256": "5d9e69ea723368e340da6e94cdeeeed50f96d5403395338d890e8a6badceeb3d"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cells/cell-selected-violet-v2.png",
+      "sha256": "46b44b84057a0354625cf33d19b21ac9ec6ea37c037dbcebe169a4f1f3d34ed8"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cells/cell-selected-violet-v2.webp",
+      "sha256": "593c9730bb73055a4c7c51b0f46fb33c2c3c4f378bffeaa25902fd783bc7299d"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cells/cell-selected-yellow-v2.png",
+      "sha256": "374ab1ecc0624070d64e46896381638e3b2bac31beb215652a66861554059bc4"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/cells/cell-selected-yellow-v2.webp",
+      "sha256": "669dd56e8b146d949f74366b49f5dda9eaa07949ce4505deb8eab3f01cd2cd81"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/controls/button-undo-normal-v2.png",
+      "sha256": "3bcf37f07a5445bd070d20de496ac3d20d19e4649a1bd346f43bf36ece70f5f4"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/controls/button-undo-normal-v2.webp",
+      "sha256": "f5525d46fb8f8aad5efd058ede5a753dcf03f743ae9dc9fb29c9c4425d2130b9"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/controls/button-undo-pressed-v2.png",
+      "sha256": "15235892a53e52842f608146918fc9d3159dcf4815cc2948ef0d5b47c12a8241"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/controls/button-undo-pressed-v2.webp",
+      "sha256": "a49eaf0c105d907291d0003f69c80506f0ac3bc060887072ec35b0d0c6bfa095"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/controls/button-validate-disabled-v2.png",
+      "sha256": "762e002da067e53b8d1c55a45aa49356869e76e2bef5bdf2cfe77a494167fd56"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/controls/button-validate-disabled-v2.webp",
+      "sha256": "ecb1231698382be3740c2aa7441035c333e9c6005de4d391370c85d7b6b04dc4"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/controls/button-validate-ready-v2.png",
+      "sha256": "61e21acd6a521ce2a726ff1f79a55af1d935e03ea15b2aef963f3f13dfa9273e"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/controls/button-validate-ready-v2.webp",
+      "sha256": "3deaa4e81ee0bd65289a139ca277dd838d4aff790c3bf6395c05a6feddabb4be"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/debris-01-v2.png",
+      "sha256": "f8fc89e973f4cbd8067fbbffd84808b54b459f8572687c84e3f3e3ed710b2661"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/debris-01-v2.webp",
+      "sha256": "9bd3384e7978f10d8d3992a0c2ab93267eaabe620df1c049360c91b4fc569a15"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/debris-02-v2.png",
+      "sha256": "d9b35a971b424aaa43c2ee8e03580a11e8331375aa318b65b697b11e87be3a69"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/debris-02-v2.webp",
+      "sha256": "ef1bed8d91017a2428bfe18e237be70aafaadb95b8121fe4ba6c6d9f00732d6a"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/debris-03-v2.png",
+      "sha256": "5f712200622dac0eacf4976fb5db28edc4261d314950d5ec5b0560f0edeb2f5a"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/debris-03-v2.webp",
+      "sha256": "6f7c91ee058c4ac4265d4f76a9916a8bfc34b2705743bad37cb156bf389bbe95"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/debris-04-v2.png",
+      "sha256": "b94caf35f79367415b971d7cc686315ca5a65ea3f54d7bc8bbb9144ecd2f8765"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/debris-04-v2.webp",
+      "sha256": "3cd3e12cf15adfc9c5ddfb1a78050232162bbc53439c546155043a3b64b2e0e4"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/debris-05-v2.png",
+      "sha256": "1a5f1dcaee87a99dd4bc823492254ddd7282e67affc020ba72cee57be683a4f7"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/debris-05-v2.webp",
+      "sha256": "4961c7769c0422887fa8f19686026dd98e91e10618b18c6c55aa10b7b068b8cf"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/debris-06-v2.png",
+      "sha256": "5e3c0ee565e37385d5f7690f9d4a9d67baf54a37c7702e203fa4a480302c8672"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/debris-06-v2.webp",
+      "sha256": "7c61af926e814e331375ae46ba83510597835ac24b163de4ee6df48520c59fd8"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/debris-07-v2.png",
+      "sha256": "2e4e29d30c5d9095a1da0787c5a021de233b1e51901fed323014520e2fc3e3d7"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/debris-07-v2.webp",
+      "sha256": "3c01064dd52a0cb849eaec77f7621942a3bbaa6f11f0f39cca341d02ed0fb56a"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/spark-01-v2.png",
+      "sha256": "64da942eabf39fe7dabc5efc269559e2e1a98c29e45b698ba5f6594c366c4593"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/spark-01-v2.webp",
+      "sha256": "956f59b92f9945df0eb62b5ad45065ac17913ebc768bc861095adf68dbfdeff7"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/spark-02-v2.png",
+      "sha256": "cba6373997e7f16ccc3bc19aae6332937ceddb52e66b850fb2e62acbb87dcaa7"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/spark-02-v2.webp",
+      "sha256": "f499efd15472c324d9aff099af57b69233abe5a6c1281e5f90d1126006b0d65e"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/spark-03-v2.png",
+      "sha256": "408e27b83f50736e43724ee7267bf7c1296ac1f0b288003564340c089faf55d3"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/spark-03-v2.webp",
+      "sha256": "85f8582165f6e2344800ae1736d4b5cfb0f6313c1c604527d55a4c99f7bdf982"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/spark-04-v2.png",
+      "sha256": "1f90039ed201fe2778cb663321f02ebd045d321d4e35b319d4cf03b545d76fea"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/debris/spark-04-v2.webp",
+      "sha256": "73dcaac93c3127c83d283dd80b168725febdc3ed3ce2c7b2a6eba59dd58e7b89"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/arrival-neutral-01-v2.png",
+      "sha256": "546235b90f80f991d145ea487b24a332f0f63b12f685cb1a1dfc6b01de6a2c5d"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/arrival-neutral-01-v2.webp",
+      "sha256": "6d09e3051e48deb69b29c7876c9079dc9a41e51123d9bf65930823fd74263eee"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/arrival-neutral-02-v2.png",
+      "sha256": "97f0449ce4c7ebd0180f30cd0ae7e9f99adac5054531d1d70d9a857ede02178e"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/arrival-neutral-02-v2.webp",
+      "sha256": "c2eb0a5ff7ece49a4a4abba89864ce589229203a91b8f4ed1d2b038ca8f67ff0"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/arrival-neutral-03-v2.png",
+      "sha256": "8b2da47e910d42bc7de8a3c5f9ad96ec5e55ad652866d10ad16815375986b0a8"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/arrival-neutral-03-v2.webp",
+      "sha256": "850139521140ef402499ad08fb7f839bdd96e7ce8a723996edf26017c44808aa"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/arrival-red-v2.png",
+      "sha256": "3a0decacc4f4612ca715f1ea00df3fc7cd2d3d9468b114e4972547e395f923fd"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/arrival-red-v2.webp",
+      "sha256": "f8d167d445df332793a5d4e11a1d8577df96f405d463efe2e5b12442ba58ac66"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/arrival-violet-v2.png",
+      "sha256": "0410565b79620cf11994e81c1117260000459914abdf8dd785a1393f0ce71d3c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/arrival-violet-v2.webp",
+      "sha256": "6769f16a7870846658d0b90453d4ecd168bd00de82479c600cb366dadcfb4551"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/arrival-yellow-v2.png",
+      "sha256": "e6ef88a67d21a4ebe4ccdb2344aa5e39f32ea5ff41fec066f9018aad0208479e"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/arrival-yellow-v2.webp",
+      "sha256": "036b200a54727a23cdc243e200147fee881cdde900e75d76669be0a5f4ec9224"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/dust-red-v2.png",
+      "sha256": "7d1eafa91c4285d209643bc35749dc3fbef65f30cedf1365d388434e7f87fb6d"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/dust-red-v2.webp",
+      "sha256": "841543a7aa3870a3ab4cac6bdc8c77a1f7b4f7ba86b13d50aa954c2f93e94bee"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/dust-violet-v2.png",
+      "sha256": "f9026d02cae8e20c9d21660a5eb0f89723e932fbf8659fd9a601162e24a2b361"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/dust-violet-v2.webp",
+      "sha256": "f96803aec5d00cdd5c8519240447feeb1dd0fbd983fc27b454dfe9799c7f595d"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/dust-yellow-v2.png",
+      "sha256": "36adea9d270a123c286b52f159e7aec4ae290bbd95dbfe6ea18e9c720db88515"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/dust-yellow-v2.webp",
+      "sha256": "8e372c38f33a6ecf84c0a7b85f17866853ecf00ffc52b36d2d741d10c9020434"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/shard-ivory-01-v2.png",
+      "sha256": "e93e1cf6a7d11761965a156f14d86806a4f126a4a6669b6f517fa97388489cf7"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/shard-ivory-01-v2.webp",
+      "sha256": "8508af16b6bf39995eb8b7970d64f7938ef58c3708d86e7e242a20101061cd70"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/shard-ivory-02-v2.png",
+      "sha256": "1404a6cc51e59fac15c6e9f0c44f07273e963a7e39f8fbcdb5a89515796b2dde"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/shard-ivory-02-v2.webp",
+      "sha256": "5e80f9bb34e247e8d1391a8be4e1c5e45894536e0e60c0b1c523ab7d8c045809"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/shard-ivory-03-v2.png",
+      "sha256": "b2a11da6b7cb1a05af9e8d402b23a8bbd3f3be08bd1d35d03767a65d6df40a90"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/arrivals/shard-ivory-03-v2.webp",
+      "sha256": "e7d8ac5dcf23b0699d5335602e82f1cf431bc60c0e2104d1980b16bc560dc3c6"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/nodes/node-hover-v2.png",
+      "sha256": "10029fb313051d0af38417a87b07b349e94af8ab1c411e12e3bea475b55149b9"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/nodes/node-hover-v2.webp",
+      "sha256": "ed1fe269b25fc6c76390a1d0b3ba5f7ac7c2ad8ba893e3a6369332a3ace460ed"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/nodes/node-neutral-v2.png",
+      "sha256": "e366178d82836d9cafad8963e37d56e0d49f350f222bc90f29552a3b34fa1bdf"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/nodes/node-neutral-v2.webp",
+      "sha256": "a6343f714ab2900ee18856f872b4c8fb56e53d6dec1070c06d1da83e44eeab3b"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/nodes/node-red-v2.png",
+      "sha256": "b8eaf5acb8ee0c8a33ee4a252490d496f09bf7c30bfce5ed9f69f0ad5c9428d9"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/nodes/node-red-v2.webp",
+      "sha256": "07bf57af68bc02b6d66842f2d6fcf21b7aa4e3b42780c5ea1d1e8685fec12279"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/nodes/node-shared-red-violet-v2.png",
+      "sha256": "f0319af0402d097688a7d584602e778ddc13c109845690727874717b50c31e49"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/nodes/node-shared-red-violet-v2.webp",
+      "sha256": "1e58f324a4186f67cc2f45d2b4c163ae88981ccd3f84fd03e90ae5d1bd444ff9"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/nodes/node-shared-red-yellow-v2.png",
+      "sha256": "05d70452b3437ffb9d67842365645368cb0d393591ad5bf10915f48659dec0c5"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/nodes/node-shared-red-yellow-v2.webp",
+      "sha256": "e7e9e3fdaf03c17764dea2c1f871669fdc32368061a9dc25a091fb10e67002b6"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/nodes/node-shared-violet-yellow-v2.png",
+      "sha256": "f00ba452fb1cefe28a438b33dab19add34e466dee3c77a2633e043e5177fbe7d"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/nodes/node-shared-violet-yellow-v2.webp",
+      "sha256": "4db68ba5b5414160d806f6490005238a1f0f5ad483de0d159ba611400a790fa2"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/nodes/node-violet-v2.png",
+      "sha256": "b84e4523ab7033a45d7ed1e6af72f6d9fe9438c3f55a5c0604ac7ab65141bc21"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/nodes/node-violet-v2.webp",
+      "sha256": "4ae0a50a25696e26452e68deb57ae9eeeeccf67c633f933783e62a49f6fe4e1a"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/nodes/node-yellow-v2.png",
+      "sha256": "cff5ed115b71a267995faedf504d3bec9c7884c9f0fd12d5f4873153f3f7f1fa"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/nodes/node-yellow-v2.webp",
+      "sha256": "1715c724fd3b77ab810405f96fcacd26189bcf9f791d6fa9c48119758caaee13"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/segments/segment-diagonal-red-v2.png",
+      "sha256": "98e3989c2fcbaefdf6b75258f8c28c8aacd1384091f38f663f7bd8a59b81dfbd"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/segments/segment-diagonal-red-v2.webp",
+      "sha256": "446a51ba9caec8fb742b1d88a1e1beb93c4e803f87c7c541c8414c6789775961"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/segments/segment-diagonal-violet-v2.png",
+      "sha256": "85a958a4bf392761b25125e00bf89cdf741acca0f7c2b6a7fa1e642f896cd8fd"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/segments/segment-diagonal-violet-v2.webp",
+      "sha256": "734b08e87b9b74bad7e11ea2811f20e4300ff9bbd04dc2767806c0c52faf6279"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/segments/segment-diagonal-yellow-v2.png",
+      "sha256": "39b8d850e1a94a5ccca34c920bb8a8952236ceff7547c1c82fc537ac3af0a3fe"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/segments/segment-diagonal-yellow-v2.webp",
+      "sha256": "4e498ef0eab3731fa02ee0fb880f7f5e3189f518309c84f7aa2049df58a4aca3"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/segments/segment-elbow-neutral-v2.png",
+      "sha256": "918955c374a966fc5e3928e48235f94bdec5c9105b8f384166d2d84d6081a566"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/segments/segment-elbow-neutral-v2.webp",
+      "sha256": "caae6c33730cc143c401800ee34312af0beb58f073344746409d2e06be156306"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/segments/segment-neutral-v2.png",
+      "sha256": "b8ac45b4b25ec659dcd67dd0901e40fe4b58f7a8eedee2c42fb317d0a8227280"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/segments/segment-neutral-v2.webp",
+      "sha256": "d2e95b426370f353d2b25162899ebeb921e9acf29785b1d964190dfbccf48e41"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/segments/segment-red-v2.png",
+      "sha256": "035f81aa4e26cd801da64900992e2f828e99713915c5297f3ad51ed55a3d5e8d"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/segments/segment-red-v2.webp",
+      "sha256": "af5c20897a202294f61835761bb5ca4bcafe00864bc9457dd6202fa1c46f4b67"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/segments/segment-violet-v2.png",
+      "sha256": "b91933c4b21ed921a9513ad47987eafa5ba4cd79ed245b0eadb960147917fcc2"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/segments/segment-violet-v2.webp",
+      "sha256": "4a4e886ddd83fa2217018d77b946488ad684b7d5b10e7ca34a6bf455c5b5a7d2"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/segments/segment-yellow-v2.png",
+      "sha256": "2cf4e04957c2c71b33d376f60129fc20e4cef64cdeaf19b72758394527fd1f1a"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/segments/segment-yellow-v2.webp",
+      "sha256": "45ef15ae2c2ffc0d6033754cdb05d7e825a453008b3635d331ba1043f853e9d3"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/red/transfer-red-01-v2.png",
+      "sha256": "4f9e04d7d7d5272725f444126f4961000f5f38ef9ce2d7dc885c8875748658df"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/red/transfer-red-01-v2.webp",
+      "sha256": "466aedc8a2a3a3d864e81c76530faed6ec552778943f10dd328f936e298c6e9b"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/red/transfer-red-02-v2.png",
+      "sha256": "76a97ec10805c8331c99eb6598344925828e19f7b6819b4718f7381623ecc4ad"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/red/transfer-red-02-v2.webp",
+      "sha256": "f71d79cbad25d163a8a7f78a72e42f8ba82c23e12b19938587b57455a550be5b"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/red/transfer-red-03-v2.png",
+      "sha256": "0f1b683fe271386a435603604bede49c0e6854a4e948b8fd4f6fecfc97e549dc"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/red/transfer-red-03-v2.webp",
+      "sha256": "3489b25be6ec7da189a00947230d32123b9e9b7490c1714b60162dd93013bf41"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/red/transfer-red-04-v2.png",
+      "sha256": "820f41cb01237eb4e2e41b28815dcedebbc35ba62f9ece1b34e75f970df9d72b"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/red/transfer-red-04-v2.webp",
+      "sha256": "97953e7ef0b1dc4d80cfcca0905ee9cb01884f4c15f6f6c48ad72254485c3886"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/red/transfer-red-05-v2.png",
+      "sha256": "0315c9bc50dc3ceb1873851d13e70a483c8e21972294a1b4c86ef388a080d3d7"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/red/transfer-red-05-v2.webp",
+      "sha256": "5726fa4c2923afd075052863afadbce6ec784190abb560512165ed5cf353f757"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/red/transfer-red-06-v2.png",
+      "sha256": "17397a55e12ed667e1cf26676aa6bd710420b6ad3cc50acaddcdb73e6ac97840"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/red/transfer-red-06-v2.webp",
+      "sha256": "bf9e9f22f3b7cf35691d3e27bd248db41e003dda3b59d6aff4c9687cfba36aa3"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/red/transfer-red-07-v2.png",
+      "sha256": "893282a8d702f681989b9c19944fbe1fcadce3a41530ec7f05b980ec382d545c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/red/transfer-red-07-v2.webp",
+      "sha256": "b54292be4d507e01107415e380ce67e3eee30f33372e02e176ab47427df4921d"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/red/transfer-red-08-v2.png",
+      "sha256": "219bac065e2da46bb37a73c35b7fb8fd402dfb4c18d5257134a0a4125b9c8f15"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/red/transfer-red-08-v2.webp",
+      "sha256": "59dbb77d828e333929a72ff3063f5a8cfc2332ca97c9bc98693b01f6ae202785"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/violet/transfer-violet-01-v2.png",
+      "sha256": "71b297e67c6107b4639f372b6fb2aaeb45aa8370fda8c29ef1c38398f373ac89"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/violet/transfer-violet-01-v2.webp",
+      "sha256": "35151149bcfafe210c960f4043ab6f0912533f937fd5c10331261e282f28cb88"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/violet/transfer-violet-02-v2.png",
+      "sha256": "33cfaa954f05607d61d3c260d15c85ebff34d7f9e610b2797cea4e137bed8272"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/violet/transfer-violet-02-v2.webp",
+      "sha256": "a8560d4429749ac32b3f00ed21a3ba22c82fcd855820406b553a80d43f1e8394"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/violet/transfer-violet-03-v2.png",
+      "sha256": "d33c4017601c736dcf251a6265520d1d59eb7c6b129fa03bcaacddfae1f7cce1"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/violet/transfer-violet-03-v2.webp",
+      "sha256": "68622ca0dbea9567f771c8221d4da4a0c579ea3a700eaf412e8a0df9d2eb88cb"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/violet/transfer-violet-04-v2.png",
+      "sha256": "7fab1ee2f6e37f7545e2879b6834e72f6a58016f2941c0b648cfc601b03f0c4e"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/violet/transfer-violet-04-v2.webp",
+      "sha256": "a376faa3ff97a394e82a60934374b67c13e2b4d5794810667694e4eaf49fd74c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/violet/transfer-violet-05-v2.png",
+      "sha256": "8fadf0aa1d8033ac870344b518d0595b84aaad4a93cc6ba7a736ef48a583685f"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/violet/transfer-violet-05-v2.webp",
+      "sha256": "0b6fb7c566cad9a636f7a4baec0c3bc94c20d9ee689009d814198444cecfb166"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/violet/transfer-violet-06-v2.png",
+      "sha256": "9657a5055980a944d11c80b3ed031db5b2a289972eaf2e1c9cf0ae765a8b6a60"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/violet/transfer-violet-06-v2.webp",
+      "sha256": "78fa3fb59c03fbc14337dc0ebfdc498b91d7aa486840341f45bb09fa38fb51d7"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/violet/transfer-violet-07-v2.png",
+      "sha256": "81d4a4f4eb721c53b8c776411350ccf37a748f2a21cdcbfd03a5612b71414720"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/violet/transfer-violet-07-v2.webp",
+      "sha256": "8df980e6bb905b2dc2950ab9c409b3667ddeb8ad3312fe2f2b7404cb8237fdb6"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/violet/transfer-violet-08-v2.png",
+      "sha256": "c8be585a94ba1c588540120991446150d382b5c16e8eafd8382ac1962d007478"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/violet/transfer-violet-08-v2.webp",
+      "sha256": "406c189251dda7fc1fb6d3d361672e3b7a96871952ca938ce576d001eb32ccab"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/yellow/transfer-yellow-01-v2.png",
+      "sha256": "5b0409e04c030c8b9cb5520ecdeb6a246c8474b504dd92911f65c7168fd07891"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/yellow/transfer-yellow-01-v2.webp",
+      "sha256": "0fbab924c9960359aea78ed3e35dbf079abed318598a102d146a4367dea8fb91"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/yellow/transfer-yellow-02-v2.png",
+      "sha256": "8734063ba62a2c227f72eea0f5a526130a45a356a55aa57bf96a8683b7b2cfff"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/yellow/transfer-yellow-02-v2.webp",
+      "sha256": "43a09a5d0c2e907cbe7671c97f8527193dfba2e7a8da65a6b63d111e540e2623"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/yellow/transfer-yellow-03-v2.png",
+      "sha256": "f5b65a24c8a8be0a79247fd63a26310f3ff21b44395f7c83708a977a4caf60a1"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/yellow/transfer-yellow-03-v2.webp",
+      "sha256": "459692b527a5f053bc32d453e8526dee3c0cc8f92adf6f55a8e12fc9a0f34f04"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/yellow/transfer-yellow-04-v2.png",
+      "sha256": "959f88923c71d8e01b0b91506d1cab42c3b5ceb6e9ff922b7875b830e0eab587"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/yellow/transfer-yellow-04-v2.webp",
+      "sha256": "1586be894b3ff3c9ff42cb178a6278c5e2594968f4395a1294ab42f2b98ab089"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/yellow/transfer-yellow-05-v2.png",
+      "sha256": "65ffccb38c09659382d2de652fcacdd55a4fbecbdaabf83aa3259d42ebc46bfe"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/yellow/transfer-yellow-05-v2.webp",
+      "sha256": "5a375004dff20a8e11f77af773ba7f61924efc2b27bbc143fddcad9d132362cf"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/yellow/transfer-yellow-06-v2.png",
+      "sha256": "bd45a555f7d9c94d795e9f62b0ca5236e7f81867d3ae3e3f758577b6d2d6f63c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/yellow/transfer-yellow-06-v2.webp",
+      "sha256": "4d142816b305f666cf9dd2fb5699a7f4a3420a074fd92e3a301aa4f7d292ec08"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/yellow/transfer-yellow-07-v2.png",
+      "sha256": "fe65996d28a0ae8c4dd77e974b8cb2d8f63d16aa2fb99ecb7ffd3556575d5b70"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/yellow/transfer-yellow-07-v2.webp",
+      "sha256": "7a5e3853e4d7dae847805057b74d6763891f007633139ff35460a38bcba5b540"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/yellow/transfer-yellow-08-v2.png",
+      "sha256": "1eb5c482dadfbf5c3c395de216ee40e7e0a2a7fe9c152002b70fef68628eec18"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/fx/transfers/yellow/transfer-yellow-08-v2.webp",
+      "sha256": "ab081c4b6e12de10d680197d20cf6e0dd5a6cb206057447d6c75b1ed54267dc3"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-0-v2.png",
+      "sha256": "b9dc2527c1f3c39418536dd7c82524d06dcbd096b4e31ed683a1d9f0d70b04e3"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-0-v2.webp",
+      "sha256": "8271a3c1d6c69c070631ba53e03df972e2359933f939a860a07a505babf5afa6"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-1-v2.png",
+      "sha256": "6b067ebdb67c9274080ce156abfce50a578d355e34372678a324a22ae07ffc3b"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-1-v2.webp",
+      "sha256": "33ce8f29086181bf073d65a97421f05ed12517dc9c1f23b6844b52984d1a0a3e"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-2-v2.png",
+      "sha256": "87d6903bc564c4920142c8ef395518de4033964e53cacc1d1aa25853750e0e23"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-2-v2.webp",
+      "sha256": "2728d81667ad627448209000995cf125a2153c7c47562f7e4e3c1cd8ebce6365"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-3-v2.png",
+      "sha256": "ffe28a716d0db0b88d8605f5b7ff2181462f07ec28faee750c01c5933ab54c66"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-3-v2.webp",
+      "sha256": "20df381e4aab44cf0fcd6d155047cf7334f6b05d5f6a8732bd0f280434f7cd8a"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-4-v2.png",
+      "sha256": "3d486fde3930f055a3fd96304d583673a0324e679983f0b52f6997f955f8ee53"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-4-v2.webp",
+      "sha256": "7e90e8ae51ba27df44d5c3166fcf4f5d2e8bdbd5f5b4059fdac1c581adb4f36b"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-5-v2.png",
+      "sha256": "d88685824737642295c34e735356bbec8e159859d8e1c1dd1ccfe204056e683e"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-5-v2.webp",
+      "sha256": "1d73fe50885eba6fc3427ce5e7493643b51ff76c67057b2a72769d2d0cd69d3a"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-6-v2.png",
+      "sha256": "c9224d0bd0fb3f248d7b4ffc2cadf8804b867fba998ee8f2dbfbd76076687e1c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-6-v2.webp",
+      "sha256": "181890a203b57ce69c0d884ea4e986930654bdef6577ab2ba1093c98bf2a74d5"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-7-v2.png",
+      "sha256": "951d0ba2b379b9ca8f82839cad3ec87509c889aadd806dac721917172b202540"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-7-v2.webp",
+      "sha256": "686f980db5f0cbecb337657e28872c47b60cc052a56551e69d5782584fc7ebec"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-8-v2.png",
+      "sha256": "f02f2acd83a8abd24eba4223b13d5b97c2d0473c06742c5961fc0844c5bef5b7"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-8-v2.webp",
+      "sha256": "e396296b209685f20d34014523ee35a795617e65d93e1c132a63421d0c757710"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-9-v2.png",
+      "sha256": "59a17a5a4c70e681bbc53395886b6171a37f5f6b0c8f45e49b6512029691143c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-9-v2.webp",
+      "sha256": "fe21314e7ce7e5cf8fa539f1e0118fd003776d19900d74c72eb04f5f9c246321"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-divide-v2.png",
+      "sha256": "072e28996f971c9ad8f5c9840fec8726ff034b6210cd02523ad5ff7588629f8d"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-divide-v2.webp",
+      "sha256": "1d66c67a80ffcb9beb5cd5a89163ffc1ed32b1bc11bcfad2f602ec3aee52dee8"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-dot-v2.png",
+      "sha256": "b33a5aa13cfc739b589700dae235c955d82c68669102330655fa6edebbc88b50"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-dot-v2.webp",
+      "sha256": "26b75a67e4308e5f8e49bb98b38f7bf87cd833728d59dde2574202a9abf04f1c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-equals-v2.png",
+      "sha256": "2b19129deb7dccd16aa1cd5d4f529fa31980b1ed31943b2f5df809302c548bce"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-equals-v2.webp",
+      "sha256": "4c41b32acdad452aced170cec5aae7accb813dce6a75e73fe2d843299d850f7d"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-minus-v2.png",
+      "sha256": "bdb7c58da37f15cfde3d42741804de47075752c9c70b68ba2034af6838a8821a"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-minus-v2.webp",
+      "sha256": "547ca3467281d8e6b40ce69e93209fd5c92cb84d1e58b831daccb83e8220178f"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-plus-v2.png",
+      "sha256": "d1e09ee111baf7ee645ad3991672e6afc9fe22e14ec94b5f271101e7ab261b4e"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-plus-v2.webp",
+      "sha256": "19df61e451bd6b05499ea900c6ed1f29c0926c00542ecbf0796bf7a922699304"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-times-v2.png",
+      "sha256": "2751569bed0e89670b6ad574aa3d91169a4596e598db35907f15c0733848b5d5"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/glyphs/glyph-times-v2.webp",
+      "sha256": "b62fcad4b9bfa63249947c48a79f29a8e59718a289a59d3ac85fc1a425838671"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/energy-shard-v2.png",
+      "sha256": "ea9fb8f48bf4bf94b7526c4e265ab267b4826f00cc80495dd891c005d170e820"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/energy-shard-v2.webp",
+      "sha256": "269151e917fdab263fac410fb57cf7550d821119deb9319c038e20324192c1f6"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/flow-arrow-v2.png",
+      "sha256": "dc251710a476248d809690bcc9ceed3545db0986efe81604a2814becdaa6d74f"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/flow-arrow-v2.webp",
+      "sha256": "61a1f4ecb324babe1427c885eef4c3d40ee01e3a9faa320bd0a7c1a874afd7a9"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/flow-elbow-neutral-v2.png",
+      "sha256": "85b496c95d8ad3e44595bf278b8dc3d32bef417cb87afcda446ed7c2c2e49dc2"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/flow-elbow-neutral-v2.webp",
+      "sha256": "821fd4f5706b74978cc8e5bab8d946b412d29ced526a0367d4621f6a55f8d134"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/flow-end-cap-v2.png",
+      "sha256": "9aff271667b8d78993e5931cbd74ed194d50304611240d4bac341ec0227e6642"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/flow-end-cap-v2.webp",
+      "sha256": "502859579fcc2685d1adaa398ea0e2997e232bf8d03c6c3083b8100ac37e2a26"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/flow-straight-neutral-v2.png",
+      "sha256": "868df09b953e35224830372ce325ec85dc9fd47c8f7e3642663c4a8c439cacbb"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/flow-straight-neutral-v2.webp",
+      "sha256": "08d0e32ae8515af0f58291d5ff87a0755b8ecae195d72427e7b5527fa255fc55"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/flow-straight-red-v2.png",
+      "sha256": "2278627e9b8a6101f18741540be9747afca5ed413b6efd3000bc6ef3c555ea0a"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/flow-straight-red-v2.webp",
+      "sha256": "3d8550710e60c30afaef2bd3b2b8e52d126974df87448a0e4bad19af8c0d1d93"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/flow-straight-violet-v2.png",
+      "sha256": "bb59d00fe505aff991dd1ce40270e7d2425454016a5939c1bc26d847d39ec192"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/flow-straight-violet-v2.webp",
+      "sha256": "64bde57b7091932eba923b871a14a8df90989d4e9a0648cf1d08a10e6f1498b6"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/flow-straight-yellow-v2.png",
+      "sha256": "5647867698099bf03b0ccc648eb5c00dd7c9500b8a3fdb30c1af6b4f42e3e42c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/flow-straight-yellow-v2.webp",
+      "sha256": "60453365d5f1dd12c6c01ef597d7ee28d618427a42443e5637fabf0fa5817c65"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/selection-node-neutral-v2.png",
+      "sha256": "710e7eb9c6b15d1313106766484c968b995f3300f1b308ba79574b966da2ec53"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/selection-node-neutral-v2.webp",
+      "sha256": "aff1625cec29d2f7ca85803cb16746b270d8f82090b8742a76d82e1e94692cb6"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/selection-node-red-v2.png",
+      "sha256": "74dc7f6e47c891d75c673939773c41b144fb906a2f6658d7ad47cdb9db4fb872"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/selection-node-red-v2.webp",
+      "sha256": "95ac7a16e92038e510976e05ea75d54ee5f6828c29d1ce68af97f4dc1f8197a6"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/selection-node-violet-v2.png",
+      "sha256": "97c240103715aaa37fff679c3892ba388aa23bc1bfe36ac0a947cf2e6a94f892"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/selection-node-violet-v2.webp",
+      "sha256": "7920eca34a53862dbb702395efa8f29ce4c8551b9caf9c2f1f664cf2aa98c8bd"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/selection-node-yellow-v2.png",
+      "sha256": "6a9c3b4fc3fcc65b5e45978b757f654d53b7a5cacc323697c0ca1bef4ed11dd8"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/modules/selection-node-yellow-v2.webp",
+      "sha256": "91eae9f2a00cbc7a1fcfbd0f4acb0119a61b492d1d19f310f90215d1badb44bf"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/results/result-1-active-red-v2.png",
+      "sha256": "44ec51fd6291b601b82d4d6342a20f8b0a2e3eed03ab4a987ba18d33a2532672"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/results/result-1-active-red-v2.webp",
+      "sha256": "7023dadfac0f77983be9569a5b76a59bb378222d2ee81a24805632b3b8c757e4"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/results/result-1-inactive-v2.png",
+      "sha256": "be63de7e348ee73bdd183383a1e73355201bc46a3365efc629765fc1d8180ad1"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/results/result-1-inactive-v2.webp",
+      "sha256": "8ff45747f401eba799d0a7fcbdce596a3fdac4d7b0bfedb49f1152a3843c3b60"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/results/result-2-active-violet-v2.png",
+      "sha256": "84f401cbfc70d9375c421b3509c47b166b8bbf928fde02c80987e339f0b3a0fa"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/results/result-2-active-violet-v2.webp",
+      "sha256": "7aeb4e0d6da21d7b9648ba6d445b728f6618e5fbb730a37f73fa2d7b2eb4ef59"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/results/result-2-inactive-v2.png",
+      "sha256": "42bbb8dd5887735b584c4491936c98b967fce8fdf0ab46af77e42d7d0849d285"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/results/result-2-inactive-v2.webp",
+      "sha256": "7c538ddc511ad003ce30266495a1b8c45bb4e1f96a972575dcb8e08baa5862d1"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/results/result-3-active-yellow-v2.png",
+      "sha256": "0dae995bb5861ecc7e4dfd1531f00b3d4556c63c536201824f8618514646a846"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/results/result-3-active-yellow-v2.webp",
+      "sha256": "9e96f86490fa8e1e2c7bcc46bfabd2a8fa304b9a341ee4cede4e4804b5e77f05"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/results/result-3-inactive-v2.png",
+      "sha256": "3cffb6ce219c3e2895b4937ce4c49ea67ba00193a1180b8aa067f9ce4185bf8a"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/results/result-3-inactive-v2.webp",
+      "sha256": "3a59bab7b144b28d0c65282439a32978d11b4464f14d27dfc12fa2a33e822bf1"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/sun-and-clusters/debris-cluster-navy-v2.png",
+      "sha256": "7932d09ce23c85ae2d3cf2d2bf8eb39d37a1a1fa76ac9263184ea42ef6d1958c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/sun-and-clusters/debris-cluster-navy-v2.webp",
+      "sha256": "29199ab5f96df57d52ca731d5aeee9b4e6290843cd099e9476d9437c3ce9d6a1"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/sun-and-clusters/debris-cluster-warm-v2.png",
+      "sha256": "99b6b4789d4396ec3d1286af329331cebde78bd326f6dafc17642b4c5d03fdc9"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/sun-and-clusters/debris-cluster-warm-v2.webp",
+      "sha256": "8dd9b78df64d873df263791162c93e4da76447c780548a71842fd5aec79f5e0d"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/sun-and-clusters/sun-final-tricolor-v2.png",
+      "sha256": "43663ddc949051e6db6a5906c42f0a45b947ba92607251a2022131632ccbcde7"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/sun-and-clusters/sun-final-tricolor-v2.webp",
+      "sha256": "ca7743378bc79f7e7370614d8da8b2f2d129be97744068ec5682a15c82644dbc"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/sun-and-clusters/sun-neutral-v2.png",
+      "sha256": "476358bdb63b62d5a2d6cbc11cefb399a2a4aad05dc87098a99bbe79a536cd0a"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/sun-and-clusters/sun-neutral-v2.webp",
+      "sha256": "c83492bf502dc3746b7262a809f6a43e71dbdac153141799a650912f83d02814"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/sun-and-clusters/sun-red-v2.png",
+      "sha256": "f6eb7b599cd5f23eea7d6ad7842b8b379d82f453ab3753cde6cd9622b78191c7"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/sun-and-clusters/sun-red-v2.webp",
+      "sha256": "cf4c5522ea07b9bd6d6a9ddf39b8e71e337aa9113b899697d3f66f2d24524402"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/sun-and-clusters/sun-red-violet-v2.png",
+      "sha256": "75bd13ac0888abf072176e2271aa6cbf25d8b4d51c30834620ed066a2e9812ff"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/components/sun-and-clusters/sun-red-violet-v2.webp",
+      "sha256": "c99f1ca1948bd5990bc0ac61d77d4a0af9d0a346b43b1e7816eb66c94df2c782"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/masters/solar-origami-fx-alpha-v2.png",
+      "sha256": "c5ce4b476f567559a4b7cf4a7203afda8cd5ebdc849351c5a5432fd149061df8"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/masters/solar-origami-fx-alpha-v2.webp",
+      "sha256": "b6c97491bdf80016f0f9b75d93086c2fc8199c3f545a7a1a0eafa7eb3dd4788a"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/masters/solar-origami-glyphs-alpha-v2.png",
+      "sha256": "578d253900906a5bc9ab96437ca3682101cea2a2be2a05dcf912a426cda798b8"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/masters/solar-origami-glyphs-alpha-v2.webp",
+      "sha256": "cf1a44f5044efa03359ba56f6e863f4d0308f1b71c5b3e028f4ed7395cc1b9f6"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/masters/solar-origami-mega-tileset-alpha-v2.png",
+      "sha256": "79a96adb018a027ef0523d4bc8b6fbb6b42a0f5dd877a8464496c52c9cf57e8f"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/masters/solar-origami-mega-tileset-alpha-v2.webp",
+      "sha256": "df1abf3e9a80f3338b1941d87f0d6c6cca77e0e2dd695b1d7c2a2fbde15df982"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/previews/solar-origami-complete-components-board-v2.png",
+      "sha256": "ef690e4b2994481b8382940579dd8a8580c519d1eb7844de206787587cfb3d3c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/cells/cell-faces-atlas-v2.json",
+      "sha256": "b00b52256e2f43c1785d3164c150d98a58f3081655d168785dee2aa6cc90b25c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/cells/cell-faces-atlas-v2.png",
+      "sha256": "1b778bb63492e0c26bc310189fe8981152664f6342b0a10ffdf97fc75e7ea80d"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/cells/cell-faces-atlas-v2.webp",
+      "sha256": "289bd1c2ed6e5bdd18ee0aa4a97fe1220c63076819788b1bd30f9ff6b6ee050e"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/cells/cell-states-atlas-v2.json",
+      "sha256": "5353fbbfceeb1e2cfd2b490dd54e91826850951ecb4becfe1a635d0f2b4f6ccf"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/cells/cell-states-atlas-v2.png",
+      "sha256": "7f332256861900bebf4d3e0ee830467475e65162e08978a373c290e8beedf483"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/cells/cell-states-atlas-v2.webp",
+      "sha256": "6de667bf45281608cc1e780ab5dc0960f33cf3428f57e3edc765fdd2267ef851"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/controls/control-buttons-atlas-v2.json",
+      "sha256": "a9ddabec4c9206800b077044a84745f0896b60f679e64cc96f440dc50c106545"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/controls/control-buttons-atlas-v2.png",
+      "sha256": "c52143eee1c52d430b9143ae6e2c2c23ac60b4960b13f4163fcbf2a1daea0ecb"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/controls/control-buttons-atlas-v2.webp",
+      "sha256": "16d45df0f5f354e33b1974508bc165acb871412cd7eac53f03aab2bd8501a784"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/decor/debris-atlas-v2.json",
+      "sha256": "25272b6080c91d0866c23132b6aa88c95e48dac2f1123ad77b933fa449db5b6e"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/decor/debris-atlas-v2.png",
+      "sha256": "0d15b0e1d77e37ea3657f686575e313036cebec3401c3979cc71d869525e660a"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/decor/debris-atlas-v2.webp",
+      "sha256": "c3eadeebbdc725ecfd2be0743f44d024b9ecaaced8c525e900f2a834182fd1d7"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/arrival-particles-atlas-v2.json",
+      "sha256": "1488b56f78ddc2143b940cdd699e2955389edf9d71b1c50da685ed900953c001"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/arrival-particles-atlas-v2.png",
+      "sha256": "beeda031800fc2cd7a591736e24b4b45e3efab09334f369bcebdc4820388bb92"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/arrival-particles-atlas-v2.webp",
+      "sha256": "47356b2d312d285db9b03c400a42f6daad09b3e3386408c0b483b8a9b4d57755"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/selection-modules-atlas-v2.json",
+      "sha256": "790c92dfb8dbb55440f7a36482c90cb1d7fd2755697e952fbd0a74be22fad50a"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/selection-modules-atlas-v2.png",
+      "sha256": "9bc95741fde05e440a1da591937cae741a53d5a8a9dbe4d5ae8c8836456e4dfe"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/selection-modules-atlas-v2.webp",
+      "sha256": "02d15e395dbf0a0fc716e97514f6c9f987fc3ff88124a0ceef56fa22baa79899"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/selection-nodes-atlas-v2.json",
+      "sha256": "08f7263192469d602f272f4866f1d91e886b9def79b7bdec1ee4c4cf729207d0"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/selection-nodes-atlas-v2.png",
+      "sha256": "d0ddbf00204de78e404e7b483983d21ea399741c13c0d50db9c08fe6c142fa82"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/selection-nodes-atlas-v2.webp",
+      "sha256": "a671808a6137aa72077229c88d3bcfbce234202f013a7d2560f8a789d1e9bfb6"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/selection-segments-atlas-v2.json",
+      "sha256": "2b51e50374795802bf0256f02d6a597aaf3064ae27356300e73ce1e9314f96ea"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/selection-segments-atlas-v2.png",
+      "sha256": "55827249b29a389232f0ddf48a4e3c96a6ccd369465c553a3e4025d6389362cf"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/selection-segments-atlas-v2.webp",
+      "sha256": "3cb6833ca26ca9cbbf731ad04c311932611e65ab91acee55dac1ee679df3ebce"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/transfer-red-atlas-v2.json",
+      "sha256": "c40824be64fe9c28c44bee6dc28f94e9bc418f2a6dead2671aa54eb4552bb0a6"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/transfer-red-atlas-v2.png",
+      "sha256": "950f2c26d3894a331b7d79629f31ca2bda7cdcefac4ae61a826f2d610bdb285e"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/transfer-red-atlas-v2.webp",
+      "sha256": "f64bcb16fb5ecc916f2760e1595923ecd54b6320ac5fb9cdf05306f72eb7d89e"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/transfer-violet-atlas-v2.json",
+      "sha256": "b6ba707587d5a1b061f97f6ffc512174776a13d7a8d73735d6595286496e2a23"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/transfer-violet-atlas-v2.png",
+      "sha256": "cbe65bfcfb98e9d088bb3ac52689b98299a8b1304eacecc668e8413e2145fb6d"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/transfer-violet-atlas-v2.webp",
+      "sha256": "9caaf1ffb1e663fa5c88a70bb66a6deee7c772622ad384652a5a083a645455c3"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/transfer-yellow-atlas-v2.json",
+      "sha256": "35dd10c2325a1e22caa14b42ed708fcebe49b9a7303203e97e7b2c800a24b604"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/transfer-yellow-atlas-v2.png",
+      "sha256": "d374c5f20edf7afc54c9d3ea8948c5683dd9094ed5cab9450358ebb35dfab370"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/fx/transfer-yellow-atlas-v2.webp",
+      "sha256": "7f80331742d3a3ade48770c4e3b82e610abca18ab10057e0522530e26ea23003"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/glyphs/gameplay-glyphs-atlas-v2.json",
+      "sha256": "cce35a77887876e84c4b0adca9128f38786973ba6e32ef60f4b9962ba5fc238c"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/glyphs/gameplay-glyphs-atlas-v2.png",
+      "sha256": "4e10a4c5ee3784e311df2def9fbe6d2ea8a80c573b4a16b3ad1b5d8254497ca1"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/glyphs/gameplay-glyphs-atlas-v2.webp",
+      "sha256": "67de1f0a11276be4e0013e6bf5563e3520a97a8712e4e9a4134024baaf6080fa"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/results/result-crafts-atlas-v2.json",
+      "sha256": "c44f65cdff0263161567cd26fd1b5018caf3213cd0959ea1b3d5c4ef826748d4"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/results/result-crafts-atlas-v2.png",
+      "sha256": "0b8bf295d38dda22a27b29afa4dc0f90b4f1f5b1629d3d98494ddb4dcdaf31ac"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/results/result-crafts-atlas-v2.webp",
+      "sha256": "0c00525404ce252677d153951ee6eed7ad9b0b67a030ff90476ec770e777feac"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/results/sun-and-clusters-atlas-v2.json",
+      "sha256": "f0508a31743da438cbb7b5a364de7f58d0a785392b88869b2f670ceb21b80b47"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/results/sun-and-clusters-atlas-v2.png",
+      "sha256": "9429e982168bb77c98623f206f46a39aa997f5bc738f947da09dc5a6e1c4b149"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/runtime/results/sun-and-clusters-atlas-v2.webp",
+      "sha256": "6de538cabdc2fbac141399ec78e29ef23b13e866b3193213dc4c6cc47a3fe33f"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/sources/solar-origami-fx-chroma-v2.png",
+      "sha256": "810b7560e9f26be6eba9e02d533ee1968cb2c1cacffe365df33465e7e1521eb3"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/sources/solar-origami-glyphs-chroma-v2.png",
+      "sha256": "1d0c666095f070de5538ae69cb79e02d02d5b2da013a909d4ccaf2a921c157fb"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/sources/solar-origami-mega-tileset-chroma-v2.png",
+      "sha256": "9e03cea31599d759ed66a370c1a9a920687c512c8b5635c1a9f7e7a301169bda"
+    },
+    {
+      "path": "public/assets/generated/linefugg/solar-origami-v2/sources/solar-origami-mega-tileset-source-v2.png",
+      "sha256": "6d49aa27a4853de5575940e76c176361dbeb281c6a9503243a01a1743f19672a"
+    }
+  ]
+}

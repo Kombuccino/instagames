@@ -1,0 +1,107 @@
+{
+  "frames": {
+    "selection-node-neutral": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 160
+      }
+    },
+    "selection-node-red": {
+      "frame": {
+        "x": 160,
+        "y": 0,
+        "w": 160,
+        "h": 160
+      }
+    },
+    "selection-node-violet": {
+      "frame": {
+        "x": 320,
+        "y": 0,
+        "w": 160,
+        "h": 160
+      }
+    },
+    "selection-node-yellow": {
+      "frame": {
+        "x": 480,
+        "y": 0,
+        "w": 160,
+        "h": 160
+      }
+    },
+    "flow-straight-neutral": {
+      "frame": {
+        "x": 0,
+        "y": 160,
+        "w": 160,
+        "h": 160
+      }
+    },
+    "flow-straight-red": {
+      "frame": {
+        "x": 160,
+        "y": 160,
+        "w": 160,
+        "h": 160
+      }
+    },
+    "flow-straight-violet": {
+      "frame": {
+        "x": 320,
+        "y": 160,
+        "w": 160,
+        "h": 160
+      }
+    },
+    "flow-straight-yellow": {
+      "frame": {
+        "x": 480,
+        "y": 160,
+        "w": 160,
+        "h": 160
+      }
+    },
+    "flow-elbow-neutral": {
+      "frame": {
+        "x": 0,
+        "y": 320,
+        "w": 160,
+        "h": 160
+      }
+    },
+    "flow-end-cap": {
+      "frame": {
+        "x": 160,
+        "y": 320,
+        "w": 160,
+        "h": 160
+      }
+    },
+    "flow-arrow": {
+      "frame": {
+        "x": 320,
+        "y": 320,
+        "w": 160,
+        "h": 160
+      }
+    },
+    "energy-shard": {
+      "frame": {
+        "x": 480,
+        "y": 320,
+        "w": 160,
+        "h": 160
+      }
+    }
+  },
+  "meta": {
+    "size": {
+      "w": 640,
+      "h": 480
+    },
+    "scale": "1"
+  }
+}

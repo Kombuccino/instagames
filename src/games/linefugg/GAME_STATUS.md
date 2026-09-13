@@ -18,7 +18,7 @@ Références : [ART_DIRECTION.md](ART_DIRECTION.md), [ASSET_MANIFEST.md](ASSET_M
 | --- | --- | --- |
 | Prototype / GD / équilibre | Validés utilisateur | Rien à rouvrir sans nouvelle demande |
 | Gameplay Phaser | Fonctionnel et vérifié | Profilage téléphone physique seulement |
-| DA gameplay | Solar Origami retenue en principe ; pack complet préparé | Revue utilisateur du pack, puis mini-tranche Phaser avant remplacement complet |
+| DA gameplay | Solar Origami retenue en principe ; pack v1 refusé, tilesets v2 complets préparés | Revue utilisateur du v2, puis mini-tranche Phaser avant remplacement complet |
 | Inputs / responsive | Vérifiés en émulation | Contrôle appareil réel recommandé |
 | Animations / FX | Intégrés et bornés | Aucun changement demandé |
 | Audio | Musiques conservées | Écoute finale du mix/SFX restant à faire |
@@ -68,6 +68,9 @@ Aucun blocage technique connu. L'optimisation des images runtime de LineFugg est
 - Planche de traduction livrée en fichiers propres : états zéro/une/deux/trois lignes en MASTER 390×844 et crop PC exact 390×662, plus storyboard quatre temps du transfert. Contrôle visuel agent : astres ivoire et vides avant commit, scores progressifs `0`, `8`, `27`, `51`, opérateurs distincts par silhouette, palette exacte et boutons de même taille ; aucun texte hors allowlist.
 - Contrôle technique : fond/aperçus décodés aux dimensions attendues ; tous les atlases et objets isolés ont un alpha réel et des métadonnées de frames. Le tileset numérique brut avait un damier peint malgré le prompt ; il est conservé comme source générée et nettoyé de manière reproductible par sélection des composantes bleu nuit. Deux supports de bouton ImageGen présentant le même défaut ont été rejetés dans l'archive locale ; le châssis final est déterministe. Aucun asset n'est chargé par le jeu à ce stade.
 - La version reste `0.6.0` : cette passe ne modifie ni runtime, ni règles, ni assets actifs.
+- Retour sur le premier pack de production : refusé pour sa police éloignée de la maquette, ses boutons insuffisamment transparents, ses astres trop blancs et l'absence de vraie décomposition sélection/flux. Il reste archivé et ne doit pas être branché.
+- Pack correctif `solar-origami-v2/` : trois grandes planches détourées à alpha réel, puis chaque élément livré seul et en atlas. Inventaire : 6 états de cases, 17 faces, 16 glyphes, 6 états d'astres, 4 soleils progressifs, 13 éléments de roches/étincelles, 4 boutons égaux, 8 nœuds de sélection, 8 segments, 24 frames de transfert et 12 impacts/particules. Les astres actifs sont multicolores ; les astres inactifs restent ivoire. Aucun texte hors valeurs, `ANNULER` et `VALIDER`.
+- Le pack v2 est techniquement préparé mais pas encore approuvé ni intégré. La version publique reste `0.6.0`.
 
 ## Remise aux normes des covers — 12 septembre 2026
 

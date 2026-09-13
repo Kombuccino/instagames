@@ -1,0 +1,75 @@
+{
+  "frames": {
+    "segment-neutral": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 128
+      }
+    },
+    "segment-red": {
+      "frame": {
+        "x": 256,
+        "y": 0,
+        "w": 256,
+        "h": 128
+      }
+    },
+    "segment-violet": {
+      "frame": {
+        "x": 512,
+        "y": 0,
+        "w": 256,
+        "h": 128
+      }
+    },
+    "segment-yellow": {
+      "frame": {
+        "x": 768,
+        "y": 0,
+        "w": 256,
+        "h": 128
+      }
+    },
+    "segment-diagonal-red": {
+      "frame": {
+        "x": 0,
+        "y": 128,
+        "w": 256,
+        "h": 128
+      }
+    },
+    "segment-diagonal-violet": {
+      "frame": {
+        "x": 256,
+        "y": 128,
+        "w": 256,
+        "h": 128
+      }
+    },
+    "segment-diagonal-yellow": {
+      "frame": {
+        "x": 512,
+        "y": 128,
+        "w": 256,
+        "h": 128
+      }
+    },
+    "segment-elbow-neutral": {
+      "frame": {
+        "x": 768,
+        "y": 128,
+        "w": 256,
+        "h": 128
+      }
+    }
+  },
+  "meta": {
+    "size": {
+      "w": 1024,
+      "h": 256
+    },
+    "scale": "1"
+  }
+}

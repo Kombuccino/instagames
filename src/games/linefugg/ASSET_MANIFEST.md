@@ -4,7 +4,25 @@
 
 Les PNG approuvés et sources de travail sont conservés. **Le runtime gameplay ne charge plus aucun de ces gros PNG : ses 11 images actives sont des dérivés WebP lossless pré-dimensionnés.** Les quatre covers suivent le même principe, avec masters PNG distincts et dérivés WebP Core.
 
-## Pack de remplacement Solar Origami — produit, non intégré
+## Pack Solar Origami v2 — produit, décomposé, non intégré
+
+Le premier pack `solar-origami/` est conservé uniquement comme trace d'une proposition refusée le 13 septembre : typographie trop éloignée de la maquette, boutons reconstruits, astres trop monochromes et flux insuffisamment détaillés. Il ne doit pas être intégré.
+
+Le remplacement est `public/assets/generated/linefugg/solar-origami-v2/`. Trois grandes planches ImageGen ont été produites puis détourées en alpha réel : une planche générale, une planche des glyphes et une planche FX/sélection. Le script `scripts/build-linefugg-solar-origami-v2-assets.py` reconstruit tous les composants PNG/WebP, les atlases et leurs JSON sans redessiner les illustrations.
+
+| Famille v2 | Contenu décomposé |
+| --- | --- |
+| Cases | 3 silhouettes neutres additif / multiplication / division ; 3 sélections rouge / violet / jaune ; 17 faces jouables |
+| Glyphes | `0…9`, `−`, `+`, `×`, `÷`, `.`, `=` dans une fonte raster générée conforme à la maquette |
+| Résultats | 3 astres ivoire inactifs et 3 astres actifs multicolores, chacun gardant ivoire, or et bleu en plus de sa couleur de ligne |
+| Soleil | neutre, rouge, rouge+violet, final tricolore ; 2 grappes et 7 cailloux isolés ; 4 étincelles |
+| Commandes | Annuler normal/enfoncé et Valider inactif/prêt, quatre textures transparentes de même gabarit `512×160` |
+| Sélection | 8 nœuds : neutre, survol, trois couleurs et trois partages bicolores ; 8 segments droits/diagonaux/coude |
+| Flux | 8 frames rouges, 8 violettes, 8 jaunes ; impacts neutres/couleurs, éclats ivoire et poussières colorées |
+
+Masters transparents : `masters/solar-origami-{mega-tileset,glyphs,fx}-alpha-v2.{png,webp}`. Chaque objet existe séparément sous `components/`; les atlases runtime et leurs frames nommées sont sous `runtime/`. `solar-origami-v2-inventory.json` donne les quantités, chemins et SHA-256. La planche de contrôle complète est `previews/solar-origami-complete-components-board-v2.png`. Statut : **préparé et techniquement vérifié, en attente de validation utilisateur, aucun branchement Phaser**.
+
+## Pack de remplacement Solar Origami v1 — refusé, non intégré
 
 | Fonction | Fichiers préparés | États / ownership |
 | --- | --- | --- |

@@ -1,9 +1,11 @@
 # LineFugg — Art Direction
 
-Status: runtime canonical **Orbital Accounting** approved 2026-09-06 ; replacement direction **Solar Origami** selected in principle 2026-09-13, production pack and translation board prepared for review, final integration still pending.
+Status: runtime canonical **Orbital Accounting** approved 2026-09-06 ; replacement direction **Solar Origami** selected in principle 2026-09-13, corrected v2 production tilesets prepared for review, final integration still pending.
 Cover status: current static collection, integrated 2026-09-07 after explicit user request. Preserve the four approved originals identified in ASSET_MANIFEST.md; animation is deferred, not a reason to retain the migration badge. Cover art follows DA_COVER.md, independently from the gameplay medium below.
 
 ## Replacement direction — Solar Origami, 2026-09-13
+
+Production correction after user review: `solar-origami/` v1 is rejected and must not be integrated. The v2 authority is the three transparent master tilesets in `public/assets/generated/linefugg/solar-origami-v2/`. It restores the mockup's plain heavy raster numerals, uses four genuinely transparent equal-size button states, keeps result objects ivory before commit and makes their active forms genuinely multicolored. The sun has four progressive color states plus separate floating-rock clusters. Selection and energy are no longer placeholders: neutral/hover/three-color/shared nodes, straight/diagonal/elbow segments, 24 travel frames and arrival particles are individually available. No unrequested copy was introduced.
 
 The retained exploration keeps LineFugg spatial while replacing the brass astrolabe, planisphere, parchment ledger and repeated calculation rows with faceted ivory nodes, folded solar-sail result craft and a central score star. The canvas-safe reference is `linefugg-r4-d-solar-origami-canonical-colors-390x844.png` in the private graphic archive; the exact PC review crop is `390×662`, centered at `y=91…753`. These files are references, not runtime backgrounds.
 

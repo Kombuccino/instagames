@@ -1,0 +1,75 @@
+{
+  "frames": {
+    "transfer-violet-01": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 128
+      }
+    },
+    "transfer-violet-02": {
+      "frame": {
+        "x": 256,
+        "y": 0,
+        "w": 256,
+        "h": 128
+      }
+    },
+    "transfer-violet-03": {
+      "frame": {
+        "x": 512,
+        "y": 0,
+        "w": 256,
+        "h": 128
+      }
+    },
+    "transfer-violet-04": {
+      "frame": {
+        "x": 768,
+        "y": 0,
+        "w": 256,
+        "h": 128
+      }
+    },
+    "transfer-violet-05": {
+      "frame": {
+        "x": 0,
+        "y": 128,
+        "w": 256,
+        "h": 128
+      }
+    },
+    "transfer-violet-06": {
+      "frame": {
+        "x": 256,
+        "y": 128,
+        "w": 256,
+        "h": 128
+      }
+    },
+    "transfer-violet-07": {
+      "frame": {
+        "x": 512,
+        "y": 128,
+        "w": 256,
+        "h": 128
+      }
+    },
+    "transfer-violet-08": {
+      "frame": {
+        "x": 768,
+        "y": 128,
+        "w": 256,
+        "h": 128
+      }
+    }
+  },
+  "meta": {
+    "size": {
+      "w": 1024,
+      "h": 256
+    },
+    "scale": "1"
+  }
+}

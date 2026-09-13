@@ -185,16 +185,38 @@ try {
     const play = fixedControls.locator('.mf-console-play')
     const visual = play.locator('.mf-console-play-visual')
     const frames = play.locator('.mf-console-play-frame')
+    const idleFrame = play.locator('.mf-console-play-frame.is-idle')
     const warmFrame = play.locator('.mf-console-play-frame.is-warm')
+    const hotFrame = play.locator('.mf-console-play-frame.is-hot')
     assert.equal(await play.locator('img').count(), 0, 'PLAY must not swap independent image elements')
     assert.equal(await visual.count(), 1, 'PLAY must keep one fixed visual assembly')
     assert.equal(await frames.count(), 4, 'PLAY must crop four aligned states from one atlas')
     for (let index = 0; index < 4; index++) {
       assert.match(await frames.nth(index).evaluate(element => getComputedStyle(element).backgroundImage), /play-states-atlas\.webp/)
     }
-    assert.equal(await warmFrame.evaluate(element => getComputedStyle(element).animationName), 'mf-play-warm-breathe')
+    assert.match(await idleFrame.evaluate(element => getComputedStyle(element).filter), /brightness\(0\.42\)/,
+      'PLAY must spend its off phase visibly dimmed')
+    assert.equal(await warmFrame.evaluate(element => getComputedStyle(element).animationName), 'mf-play-warm-lamp')
+    assert.equal(await hotFrame.evaluate(element => getComputedStyle(element).animationName), 'mf-play-hot-lamp')
     assert.doesNotMatch(await warmFrame.evaluate(element => getComputedStyle(element).animationTimingFunction), /steps/,
-      'PLAY breathing must crossfade continuously instead of jumping between atlas cells')
+      'PLAY ignition must use a short physical ramp instead of jumping between atlas cells')
+    const lampCycle = await warmFrame.evaluate(element => {
+      const animation = element.getAnimations()[0]
+      return {
+        duration: Number(animation.effect.getTiming().duration),
+        keyframes: animation.effect.getKeyframes().map(frame => ({
+          offset: frame.offset,
+          opacity: Number(frame.opacity),
+        })),
+      }
+    })
+    assert.equal(lampCycle.duration, 5200)
+    const hasLampState = (offset, opacity) => lampCycle.keyframes.some(frame =>
+      Math.abs(frame.offset - offset) < .001 && Math.abs(frame.opacity - opacity) < .001)
+    assert.ok(hasLampState(.54, 0), 'PLAY lamp must remain off for most of the first half-cycle')
+    assert.ok(hasLampState(.58, 1), 'PLAY lamp must ignite quickly and clearly')
+    assert.ok(hasLampState(.79, 1), 'PLAY lamp must hold a readable lit state')
+    assert.ok(hasLampState(.82, 0), 'PLAY lamp must switch off quickly')
     const playBefore = await play.boundingBox()
     const counterBefore = await counter.boundingBox()
     const coinsBefore = Number.parseInt(await counter.getAttribute('aria-label'), 10)

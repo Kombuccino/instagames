@@ -173,16 +173,17 @@
 .mf-console-play-frame.is-idle {
   background-position: 0 0;
   opacity: 1;
+  filter: brightness(.42) saturate(.68) contrast(1.08);
 }
 
 .mf-console-play-frame.is-warm {
   background-position: 33.333333% 0;
-  animation: mf-play-warm-breathe 3.2s ease-in-out infinite;
+  animation: mf-play-warm-lamp 5.2s linear infinite;
 }
 
 .mf-console-play-frame.is-hot {
   background-position: 66.666667% 0;
-  animation: mf-play-hot-breathe 3.2s ease-in-out infinite;
+  animation: mf-play-hot-lamp 5.2s linear infinite;
 }
 
 .mf-console-play-frame.is-down {
@@ -255,16 +256,24 @@
   text-shadow: 0 2px 5px #000;
 }
 
-@keyframes mf-play-warm-breathe {
-  0%, 100% { opacity: .08; }
-  32%, 68% { opacity: .74; }
-  50% { opacity: .92; }
+@keyframes mf-play-warm-lamp {
+  0%, 54% { opacity: 0; }
+  55% { opacity: .08; }
+  56.5% { opacity: .78; }
+  58%, 79% { opacity: 1; }
+  80.5% { opacity: .38; }
+  82%, 100% { opacity: 0; }
 }
 
-@keyframes mf-play-hot-breathe {
-  0%, 24%, 76%, 100% { opacity: 0; }
-  43%, 57% { opacity: .54; }
-  50% { opacity: .78; }
+@keyframes mf-play-hot-lamp {
+  0%, 56% { opacity: 0; }
+  57% { opacity: .12; }
+  58.5% { opacity: .82; }
+  60% { opacity: .68; }
+  62% { opacity: .82; }
+  78% { opacity: .76; }
+  79.5% { opacity: .2; }
+  81%, 100% { opacity: 0; }
 }
 
 @keyframes mf-local-coin-travel {
@@ -288,7 +297,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .mf-console-play-frame.is-warm {
-    opacity: .62;
+    opacity: .78;
     animation: none;
   }
   .mf-console-play-frame.is-hot { display: none; }

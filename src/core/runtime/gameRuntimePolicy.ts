@@ -18,6 +18,14 @@ export type MiniFuggGameplayViewportOptions = {
   scaleAxis?: MiniFuggScaleAxis
 }
 
+export function readGameplayCalibrationAnchor(): MiniFuggVerticalAnchor | null {
+  if (typeof window === 'undefined') return null
+  const query = new URL(window.location.href).searchParams
+  if (query.get('lab') !== 'gameplay-runtime') return null
+  const anchor = query.get('anchor')
+  return anchor === 'top' || anchor === 'center' || anchor === 'bottom' ? anchor : null
+}
+
 export function clampRenderPixelRatio(value = 1) {
   if (!Number.isFinite(value)) return 1
   return Math.max(1, Math.min(DEFAULT_RENDER_PIXEL_RATIO_CAP, value))

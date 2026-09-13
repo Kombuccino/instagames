@@ -1,0 +1,130 @@
+body:has(.mf-gameplay-calibration-lab) { overflow: auto; }
+body:has(.mf-gameplay-runtime) { overflow: hidden; }
+
+.mf-gameplay-runtime { position: fixed; inset: 0; overflow: hidden; background: #08080a; }
+.mf-gameplay-runtime .game-card { width: 100%; height: 100%; }
+.mf-gameplay-runtime__readout {
+  position: absolute; z-index: 100; right: 5px; bottom: 5px; display: none;
+  padding: 3px 5px; background: rgba(0,0,0,.75); color: white; font: 8px monospace;
+}
+.mf-gameplay-runtime-error { display: grid; min-height: 100dvh; place-items: center; background: #08080a; }
+
+.mf-gameplay-calibration-lab { --game-green: #92ff65; --game-amber: #ffb347; padding-inline: clamp(12px, 2vw, 28px); }
+.mf-gameplay-calibration-hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 28px; }
+.mf-gameplay-calibration-hero > small,
+.mf-gameplay-calibration-hero > h1,
+.mf-gameplay-calibration-hero > p { grid-column: 1; }
+.mf-gameplay-calibration-hero h1 { font-size: clamp(42px, 6vw, 74px); }
+.mf-gameplay-calibration-hero nav { grid-column: 2; grid-row: 1 / span 3; display: grid; align-content: end; gap: 7px; }
+.mf-gameplay-calibration-hero a { padding: 11px 13px; border: 1px solid var(--layout-cyan); color: var(--layout-cyan); font-size: 9px; font-weight: 900; text-align: center; text-decoration: none; }
+
+.mf-gameplay-calibration-summary,
+.mf-gameplay-calibration-workbench { width: min(1580px, 100%); margin-inline: auto; }
+.mf-gameplay-calibration-summary { display: flex; gap: 1px; margin-top: 18px; border: 1px solid rgba(238,242,231,.2); background: rgba(238,242,231,.2); }
+.mf-gameplay-calibration-summary span { flex: 1; padding: 12px 14px; background: #0d1215; color: var(--layout-muted); font-size: 10px; }
+.mf-gameplay-calibration-summary b { color: var(--game-green); font-size: 15px; }
+.mf-gameplay-calibration-workbench { display: grid; grid-template-columns: minmax(230px,.62fr) minmax(420px,1.35fr) minmax(280px,.72fr); gap: clamp(12px,1.8vw,26px); align-items: start; margin-top: 18px; }
+
+.mf-gameplay-calibration-catalogue,
+.mf-gameplay-calibration-controls { position: sticky; top: 14px; max-height: calc(100dvh - 28px); overflow: hidden; border: 1px solid rgba(238,242,231,.22); background: rgba(13,18,21,.97); }
+.mf-gameplay-calibration-catalogue { display: grid; grid-template-rows: auto minmax(0,1fr); }
+.mf-gameplay-calibration-add { display: grid; gap: 7px; padding: 12px; border-bottom: 1px solid rgba(238,242,231,.14); }
+.mf-gameplay-calibration-add button,
+.mf-gameplay-calibration-export button,
+.mf-gameplay-calibration-anchor button,
+.mf-gameplay-calibration-da-controls button { min-height: 39px; border: 1px solid rgba(238,242,231,.28); background: #080b0d; color: var(--layout-paper); font-size: 8px; font-weight: 900; cursor: pointer; }
+.mf-gameplay-calibration-add button { border-color: var(--layout-cyan); color: var(--layout-cyan); }
+.mf-gameplay-calibration-add small { color: var(--layout-muted); font-size: 7px; line-height: 1.45; }
+.mf-gameplay-calibration-list { overflow-y: auto; overscroll-behavior: contain; }
+.mf-gameplay-calibration-list > b { display: block; padding: 10px 11px 7px; color: var(--game-green); font-size: 8px; letter-spacing: .1em; }
+.mf-gameplay-calibration-list > button { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 8px; align-items: center; width: 100%; min-height: 60px; padding: 9px 10px; border: 0; border-top: 1px solid rgba(238,242,231,.1); background: transparent; color: var(--layout-paper); text-align: left; cursor: pointer; }
+.mf-gameplay-calibration-list > button[data-active="true"] { background: var(--layout-paper); color: var(--layout-ink); }
+.mf-gameplay-calibration-list span,
+.mf-gameplay-calibration-list b,
+.mf-gameplay-calibration-list small { min-width: 0; }
+.mf-gameplay-calibration-list span > b,
+.mf-gameplay-calibration-list span > small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mf-gameplay-calibration-list span > b { font-size: 9px; }
+.mf-gameplay-calibration-list span > small { margin-top: 4px; opacity: .64; font-size: 7px; }
+.mf-gameplay-calibration-list i { padding: 4px 5px; border: 1px solid var(--layout-muted); color: var(--layout-muted); font-size: 6px; font-style: normal; font-weight: 900; }
+.mf-gameplay-calibration-list i[data-state="OK"] { border-color: var(--game-green); color: #4f9d34; }
+.mf-gameplay-calibration-list i[data-state="ADAPTER"] { border-color: var(--game-amber); color: var(--game-amber); }
+.mf-gameplay-calibration-list button[data-active="true"] i[data-state="ADAPTER"] { color: #985000; }
+
+.mf-gameplay-calibration-preview { min-width: 0; }
+.mf-gameplay-calibration-preview-head { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; border: 1px solid rgba(238,242,231,.2); background: rgba(238,242,231,.2); }
+.mf-gameplay-calibration-preview-head > span { min-width: 0; padding: 9px 11px; background: #0d1215; }
+.mf-gameplay-calibration-preview-head small,
+.mf-gameplay-calibration-preview-head b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mf-gameplay-calibration-preview-head small { color: var(--layout-muted); font-size: 7px; }
+.mf-gameplay-calibration-preview-head b { margin-top: 4px; color: var(--game-green); font-size: 10px; }
+.mf-gameplay-calibration-screen-tabs { display: grid; grid-template-columns: repeat(5,1fr); gap: 4px; margin-top: 8px; }
+.mf-gameplay-calibration-screen-tabs button { min-height: 45px; border: 1px solid rgba(238,242,231,.2); background: #0d1215; color: var(--layout-paper); font-size: 7px; cursor: pointer; }
+.mf-gameplay-calibration-screen-tabs button small { display: block; margin-top: 3px; opacity: .55; font-size: 6px; }
+.mf-gameplay-calibration-screen-tabs button[data-active="true"] { border-color: var(--game-green); background: rgba(146,255,101,.08); color: var(--game-green); }
+.mf-gameplay-calibration-device-wrap { position: relative; max-width: 100%; margin: 12px auto 0; }
+.mf-gameplay-calibration-device { position: absolute; top: 0; left: 0; overflow: hidden; transform-origin: top left; outline: 2px solid var(--layout-paper); background: repeating-conic-gradient(#1b2023 0 25%,#111518 0 50%) 0 0/20px 20px; box-shadow: 12px 12px 0 rgba(238,242,231,.07); }
+.mf-gameplay-calibration-device iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #08080a; }
+.mf-gameplay-calibration-art-stage { position: absolute; overflow: hidden; background: #0a0d0f; }
+.mf-gameplay-calibration-art-stage img { position: absolute; width: 100%; height: 100%; object-fit: contain; transform-origin: center; }
+.mf-gameplay-calibration-visible-frame { position: absolute; z-index: 20; inset: 0; box-shadow: inset 0 0 0 4px var(--game-green), inset 0 0 42px rgba(146,255,101,.12); pointer-events: none; }
+.mf-gameplay-calibration-visible-frame span { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); padding: 4px 7px; background: var(--game-green); color: #061006; font-size: 7px; font-weight: 900; white-space: nowrap; }
+.mf-gameplay-calibration-extra { position: absolute; z-index: 15; inset: 0; display: grid; place-items: end center; padding-bottom: 8px; background: linear-gradient(transparent 75%,rgba(98,217,255,.18)); pointer-events: none; }
+.mf-gameplay-calibration-extra span { padding: 3px 6px; background: var(--layout-cyan); color: #061014; font-size: 7px; font-weight: 900; }
+.mf-gameplay-calibration-readout { display: grid; grid-template-columns: repeat(4,1fr); margin: 12px 0 0; border: 1px solid rgba(238,242,231,.18); }
+.mf-gameplay-calibration-readout div { min-width: 0; padding: 8px; border-right: 1px solid rgba(238,242,231,.12); }
+.mf-gameplay-calibration-readout dt { color: var(--layout-muted); font-size: 7px; }
+.mf-gameplay-calibration-readout dd { overflow: hidden; margin: 4px 0 0; color: var(--game-green); font-size: 9px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+.mf-gameplay-calibration-matrix { display: grid; grid-template-columns: repeat(5,1fr); gap: 5px; margin-top: 8px; }
+.mf-gameplay-calibration-matrix > div { display: grid; grid-template-columns: 1fr 14px; column-gap: 7px; min-width: 0; padding: 7px; border: 1px solid rgba(238,242,231,.16); background: #0d1215; }
+.mf-gameplay-calibration-matrix b,
+.mf-gameplay-calibration-matrix small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mf-gameplay-calibration-matrix b { align-self: end; font-size: 7px; }
+.mf-gameplay-calibration-matrix small { align-self: start; color: var(--layout-muted); font-size: 6px; }
+.mf-gameplay-calibration-matrix i { position: relative; grid-column: 2; grid-row: 1 / span 2; width: 12px; height: 42px; border: 1px solid rgba(238,242,231,.35); background: #050708; }
+.mf-gameplay-calibration-matrix i span { position: absolute; left: 1px; right: 1px; min-height: 2px; background: var(--game-green); }
+.mf-gameplay-calibration-warning { padding: 9px 10px; border: 1px solid var(--game-amber); background: rgba(255,179,71,.08); color: var(--game-amber); font-size: 8px; line-height: 1.5; }
+
+.mf-gameplay-calibration-controls { overflow-y: auto; padding: 14px; }
+.mf-gameplay-calibration-controls > small,
+.mf-gameplay-calibration-label,
+.mf-gameplay-calibration-comment > span,
+.mf-gameplay-calibration-da-controls label > span { color: var(--game-green); font-size: 8px; font-weight: 900; letter-spacing: .08em; }
+.mf-gameplay-calibration-controls h2 { margin: 5px 0 6px; font-size: 22px; letter-spacing: -.04em; }
+.mf-gameplay-calibration-controls > p { margin: 0; color: var(--layout-muted); font-size: 8px; line-height: 1.45; }
+.mf-gameplay-calibration-label { display: block; margin-top: 16px; }
+.mf-gameplay-calibration-anchor { display: grid; grid-template-columns: repeat(3,1fr); gap: 5px; margin-top: 7px; }
+.mf-gameplay-calibration-anchor button[data-active="true"] { border-color: var(--game-green); background: var(--game-green); color: var(--layout-ink); }
+.mf-gameplay-calibration-help { margin-top: 8px !important; }
+.mf-gameplay-calibration-da-controls { display: grid; gap: 11px; margin-top: 15px; padding-top: 13px; border-top: 1px solid rgba(238,242,231,.16); }
+.mf-gameplay-calibration-da-controls label { display: grid; gap: 6px; }
+.mf-gameplay-calibration-da-controls input { width: 100%; accent-color: var(--game-green); }
+.mf-gameplay-calibration-check { display: grid; grid-template-columns: 22px 1fr; gap: 9px; align-items: start; margin-top: 13px; padding: 10px; border: 1px solid rgba(238,242,231,.17); cursor: pointer; }
+.mf-gameplay-calibration-check.is-adaptation:has(input:checked) { border-color: var(--game-amber); background: rgba(255,179,71,.07); }
+.mf-gameplay-calibration-check input { width: 17px; height: 17px; margin: 0; accent-color: var(--game-green); }
+.mf-gameplay-calibration-check b,
+.mf-gameplay-calibration-check small { display: block; }
+.mf-gameplay-calibration-check b { font-size: 9px; }
+.mf-gameplay-calibration-check small { margin-top: 4px; color: var(--layout-muted); font-size: 7px; line-height: 1.4; }
+.mf-gameplay-calibration-comment { display: grid; gap: 7px; margin-top: 13px; }
+.mf-gameplay-calibration-comment textarea { width: 100%; border: 1px solid rgba(238,242,231,.28); border-radius: 0; padding: 9px; resize: vertical; background: #070a0c; color: var(--layout-paper); font-size: 9px; line-height: 1.45; }
+.mf-gameplay-calibration-export { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 13px; padding-top: 13px; border-top: 1px solid rgba(238,242,231,.16); }
+.mf-gameplay-calibration-export button:first-child { border-color: var(--layout-cyan); color: var(--layout-cyan); }
+.mf-gameplay-calibration-message { min-height: 26px; margin-top: 10px !important; }
+
+@media (max-width: 1150px) {
+  .mf-gameplay-calibration-workbench { grid-template-columns: minmax(220px,.55fr) minmax(410px,1fr); }
+  .mf-gameplay-calibration-controls { position: static; grid-column: 1 / -1; max-height: none; }
+}
+
+@media (max-width: 760px) {
+  .mf-gameplay-calibration-hero { display: block; }
+  .mf-gameplay-calibration-hero nav { display: grid; margin-top: 14px; }
+  .mf-gameplay-calibration-summary { display: grid; }
+  .mf-gameplay-calibration-workbench { grid-template-columns: 1fr; }
+  .mf-gameplay-calibration-catalogue { position: static; max-height: 340px; }
+  .mf-gameplay-calibration-controls { grid-column: auto; }
+  .mf-gameplay-calibration-screen-tabs { grid-template-columns: repeat(2,1fr); }
+  .mf-gameplay-calibration-readout { grid-template-columns: 1fr 1fr; }
+  .mf-gameplay-calibration-matrix { grid-template-columns: repeat(2,1fr); }
+}

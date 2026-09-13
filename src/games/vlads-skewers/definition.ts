@@ -22,13 +22,14 @@ export const gameDefinition: InstagameDefinition = {
   welcome: VLADS_SKEWERS_WELCOME,
   component: VladsSkewers,
   release: {
-    version: '0.4.1',
-    updatedAt: '2026-09-12T23:24:00+02:00',
+    version: '0.4.2',
+    updatedAt: '2026-09-13T14:36:00+02:00',
     changelogPath: 'src/games/vlads-skewers/CHANGELOG.md',
   },
   instructions: {
     goal: 'Prépare les brochettes demandées et sers le plus de clients possible.',
     rules: [
+      'Le client actif est tout en haut de la tour et sa commande reste lisible à côté de lui.',
       'Empale les ingrédients dans l’ordre exact de la commande.',
       'Chaque ingrédient glisse jusqu’à la garde puis la brochette s’empile vers la pointe.',
       'Les bras et jambes embrochés suivent la gravité Matter et réagissent aux déplacements de la brochette sans impulsion artificielle.',

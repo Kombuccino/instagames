@@ -1,81 +1,86 @@
 # Les Brochettes de Vlad — Asset manifest
 
-Base : `390 × 844` logical units. Production route: local Codex → `public/assets/generated/vlads-skewers/`.
+Base : `390 × 844` logical units.
 
-The three approved DA files under `GFX/crea-chatgpt/game/` are **REFERENCE ONLY**. They contain mutable score/order/lives/gameplay and must never be loaded as flattened runtime backgrounds.
+Production routes actives :
 
-| Asset | Family | Logical use / bounds | Alpha | Motion / states | Owner above | Status |
+- assets locaux historiques : `public/assets/generated/vlads-skewers/` ;
+- assets issus de ChatGPT/Drive : `public/assets/imported/vlads-skewers/` après vérification de la synchro GitHub.
+
+Les DA aplaties restent **REFERENCE ONLY** dès qu'elles contiennent score, personnages, commandes, ingrédients, vies ou autre état mutable. Elles ne sont jamais chargées telles quelles comme écran de gameplay.
+
+## Gameplay — assets canoniques
+
+| Asset | Famille | Usage logique | Alpha | Mouvement / état | Owner dynamique au-dessus | Statut |
 | --- | --- | --- | --- | --- | --- | --- |
-| `backgrounds/pixel-grill-arena-unlit.png` | permanent environment | full stage `390×844`; widened fall field x `38..326`, y `118..690` | opaque | architecture, fixtures and grill only; no flame, HUD, client or skewer baked | Phaser fire layers, score, order, lives, clients, ingredients | integrated |
-| `sprites/ingredient-bodies-v2.png` fixed 4×3 grid | gameplay characters | falling display ~`78×78`; stacked body ~`70×70` | real | 11 faceless/limbless foods + one empty cell; no state baked | Phaser eyes, mouths, arms, legs, cooked colour, grill marks, char/ash | integrated |
-| `sprites/bone-in-beef.png` | gameplay character body | falling/stacked beef body, wider than the other foods | real | isolated bone-in rib steak; no face, limb, drool or cooked state baked | Phaser eyes, mouth, limbs, cooked colour and grill marks | integrated |
-| `sprites/character-parts-v3.png` fixed 4×4 grid | stateful character pieces | food facial/limb overlays and customer drool | real | 4 eye states, 4 mouths, authored arms/legs, drool, grill marks, ash and juice | Phaser animation/physics; drool frame used only by customers | integrated |
-| `sprites/customer-atlas.png` fixed 5×3 grid | animatable decoration / customers | right architecture portrait ~`96×96` | real | 15 distinct hungry/joyful clients; idle/cheer through pose, hop and mouth-anchored drool | Phaser order bubble, patience, queue state | integrated |
-| `props/vlad-skewer-hand.png` frame `shaft` | animatable prop | runtime tige `10×110 / 150 / 190 / 230` selon recette 2 / 3 / 4 / 5 | real | taille liée à la commande ; l'apex du harpon est la seule collision ; aucune hitbox visible | Phaser stack, collision, hold de validation, livraison | integrated |
-| `props/vlad-arm-grip.png` | canonical animatable prop | fixed `290×435` long arm; handle axis aligned to runtime shaft | real alpha | hand visibly wraps red/gold handle; guard above, pommel below, full sleeve to bottom | rigid shaft and food stack | integrated |
-| `ui/life-skewer.png` | structural HUD prop | three vertical skewers at left x `25..48`, y `185..294` | real | full/lost; lost state created by fall/rotation, not separate baked score | Phaser life count | integrated |
-| `ui/component-atlas.png` manually cropped components | structural UI | order board, score plaque and speech bubble | real | irregular authored bounds preserved; values and states remain dynamic | Phaser texts, food icons and patience | integrated |
-| `fx/pixel-fire-atlas.png` fixed 4×2 crop grid, cells `443×443` | FX support | fixtures, rear room, lower grill and food fire | real alpha | 4 broad torch frames + 4 broad barbecue frames with white-yellow cores | Phaser dense rear/foreground sparks, smoke, juice and ash | integrated |
-| procedural blood drop v2 | gameplay bonus | ~`24×42` autour du centre de chute | transparent | grosse goutte construite uniquement avec rectangles sur grille `2 px`, contour bordeaux sombre, rouge saturé, reflet clair ; aucune primitive lissée | Phaser rotation/chute/bonus de patience | integrated 0.3.4 |
-| `ui/gothic-digits.png` fixed 12-glyph strip | structural UI | dynamic score | real alpha | digits `0..9`, `X`, `+` authored from the approved DA typography | Phaser dynamic values | integrated |
-| `public/assets/imported/vlads-skewers/welcome/vlad-cover-c-graphic-poster-approved-2026-09-07.png` | validated static Cover C | Core Cover master, `941×1672` source | opaque | exact approved black/red/cream poster; never regenerate | Core overlay remains live | validated source, not integrated |
-| articulated ingredient limbs | dynamic gameplay | four independent appendages around each body | procedural pixel graphics | two segments, elbow/knee, small hand/foot; gesture sets for joy, realization, panic and death | Phaser | integrated |
-| impact drops and callouts | dynamic FX | large tapered juice pixels with 2.2–3.9 s life; stacked text callouts | procedural pixel graphics/text | progressive entry, persistent debris, displaced callouts and fade-out | Phaser | integrated |
+| `public/assets/generated/vlads-skewers/backgrounds/pixel-grill-arena-unlit.png` | environnement permanent | stage `390×844`, décor central/grill | opaque | fixe | flammes, clients, ingrédients, HUD Phaser | integrated |
+| `public/assets/imported/vlads-skewers/backgrounds/vlad-customer-tower.png` | environnement / structure clients | bande droite `x=304`, `y=55`, `86×622` ; source PNG `188×1360` | oui/selon source | fixe ; 5 niches | portraits variables + bave + commande | integrated `0.4.2` |
+| `public/assets/imported/vlads-skewers/backgrounds/vlad-customer-tower-master.png` | master source | master PNG de la tour droite | oui/selon source | source uniquement | aucun | source preserved |
+| `public/assets/imported/vlads-skewers/sprites/vlad-customer-atlas.png` | personnages / décoration animable | 5 frames verticales `192×250`; rendu `88×114` logiques | réel | portrait variable par client ; position entière, aucune rotation | bave Phaser | integrated `0.4.2` |
+| `public/assets/imported/vlads-skewers/sprites/vlad-customer-atlas-master.png` | master source | atlas PNG original `192×1250` | réel | source uniquement | aucun | source preserved |
+| `public/assets/generated/vlads-skewers/sprites/ingredient-bodies-v2.png` | personnages gameplay | chute ~`78×78`, pile ~`70×70` | réel | corps seuls | yeux, bouche, membres, grill marks, feu | integrated |
+| `public/assets/generated/vlads-skewers/sprites/bone-in-beef.png` | corps gameplay | bœuf, plus large | réel | corps seul | visage/membres/cuisson | integrated |
+| `public/assets/generated/vlads-skewers/sprites/character-parts-v3.png` | pièces état/FX | expressions, membres, marques | réel | états Phaser | animation/physics | integrated |
+| `public/assets/generated/vlads-skewers/props/vlad-skewer-hand.png` | prop animable | tige runtime `10×110/150/190/230` | réel | longueur selon recette | pile, collision, livraison | integrated |
+| `public/assets/generated/vlads-skewers/props/vlad-arm-grip.png` | prop animable | bras fixe `290×435` | réel | suit la poignée | tige + pile | integrated |
+| `public/assets/generated/vlads-skewers/ui/life-skewer.png` | HUD structural | 3 vies à gauche | réel | full/lost | compteur Phaser | integrated |
+| `public/assets/generated/vlads-skewers/ui/component-atlas.png` | UI structurale | panneaux/bulle authored | réel | surface fixe | valeurs, recette, timer Phaser | integrated |
+| `public/assets/generated/vlads-skewers/ui/gothic-digits.png` | UI structurale | score dynamique | réel | chiffres | valeur Phaser | integrated |
+| `public/assets/generated/vlads-skewers/fx/pixel-fire-atlas.png` | FX support | torches/grill/food fire | réel | animation courte | particules/smoke | integrated |
+| goutte de sang procédurale | gameplay bonus | ~`24×42` | transparent | chute/rotation | bonus patience/slow | integrated |
+| membres articulés Matter | gameplay dynamique | 4 appendages à 2 segments | procédural pixel | gravité monde, vitesse bornée | Phaser Matter | integrated |
+| impacts / jus / commentaires grill | FX dynamique | chute/grill/impact | procédural | borné et nettoyé | Phaser | integrated |
 
-Runtime texts and values stay dynamic: score, level, secondary client counter, order icons, patience, comic impact cry, multiplier, active bonus, `BRUTALITY!` and end state.
+## Tour clients approuvée — contrat `0.4.2`
 
-## Covers statiques remises aux normes — 12 septembre 2026
+Référence utilisateur : DA `853×1844` renvoyée le 13 septembre 2026. **Seule la bande droite de cette version** est l'autorité pour la tour et les cinq personnages ; les régénérations intermédiaires ne doivent pas être réintroduites.
 
-Les cinq PNG approuvés du 10 septembre sous `public/assets/imported/vlads-skewers/welcome/variants/` restent les références artistiques inchangées. Les nouveaux fichiers corrigent uniquement le format : prolongement authored vers le bas, suppression des bandes floues/mirroirs et, sur l'échoppe japonaise, retrait du petit texte secondaire `串焼き` pour ne conserver que le titre principal `ヴラッドの串焼き`.
+Mesures récupérées sur la référence :
 
-| Édition | Source restaurée | Master exact | Dérivé Core actif |
-| --- | --- | --- | --- |
-| Chaos | `sources/vlad-cover-01-chaos-source.png` — 853×1844 | `masters/vlad-cover-01-chaos-master.png` — 390×844 | `runtime/vlad-cover-01-chaos.webp` — 780×1688, 2 202 142 octets |
-| Nature morte | `sources/vlad-cover-02-still-life-source.png` — 853×1844 | `masters/vlad-cover-02-still-life-master.png` — 390×844 | `runtime/vlad-cover-02-still-life.webp` — 780×1688, 1 822 494 octets |
-| Portrait japonais | `sources/vlad-cover-03-japanese-portrait-source.png` — 853×1844 | `masters/vlad-cover-03-japanese-portrait-master.png` — 390×844 | `runtime/vlad-cover-03-japanese-portrait.webp` — 780×1688, 2 052 080 octets |
-| Château | `sources/vlad-cover-04-castle-sign-source.png` — 853×1844 | `masters/vlad-cover-04-castle-sign-master.png` — 390×844 | `runtime/vlad-cover-04-castle-sign.webp` — 780×1688, 2 209 820 octets |
-| Échoppe japonaise | `sources/vlad-cover-05-japanese-stall-source.png` — 852×1846 | `masters/vlad-cover-05-japanese-stall-master.png` — 390×844 | `runtime/vlad-cover-05-japanese-stall.webp` — 780×1688, 2 186 958 octets |
+- crop tour source : `x=665`, `y=120`, `w=188`, `h=1360` ;
+- traduction stage : `x=304`, `y=55`, `w=86`, `h=622` ;
+- lignes de base des cinq loges : `184 / 297 / 416 / 529 / 645` ;
+- atlas : `192×1250`, 5 frames `192×250` ;
+- rendu en jeu : `88×114` logiques, ratio source conservé ;
+- aucun angle animé et aucun scale pulsé : uniquement des positions entières pour protéger la finesse pixel-art.
 
-Tous ces chemins sont relatifs à `public/assets/generated/vlads-skewers/welcome/variants/`. Les masters/sources sont des PNG opaques mono-frame ; les dérivés actifs sont des WebP opaques mono-frame au payload `VP8L` lossless. `welcome.ts` conserve cinq variantes statiques, ancrées en haut, sans animation ni couche supplémentaire.
+Ordre de file : client actif en haut, suivants vers le bas. Le décor de tour est statique ; les personnages sont des objets Phaser séparés et variables. La bave reste un overlay dynamique ancré à la bouche, jamais propriétaire de l'architecture.
 
-Micro-brief fermé : conserver titre, personnages, scène, palette et technique de chaque original ; prolonger uniquement le manteau/feu, le velours de nature morte, la cape sérigraphiée, la vallée du château ou l'échoppe en bois. Rejets : bande vide/noire/floue, miroir, étirement, faux cadre abîmé, nouveau sujet, slogan, CTA ou UI.
+Les intérieurs de niches sont assombris sous les portraits pour neutraliser les fragments résiduels du détourage de la tour dans une case vide. Ce masque est structurel et reste derrière les personnages.
+
+## Commande client — contrat `0.4.2`
+
+Le panneau de commande reste un composant authored avec contenu mutable Phaser :
+
+- position stage `x=240`, `y=128` ;
+- gabarit `136×58` ;
+- maximum 5 ingrédients ;
+- broche horizontale dynamique ;
+- timer circulaire intégré à droite dans le même cartouche ;
+- aucune valeur/timer/recette baked dans un raster de décor.
+
+## Covers statiques
+
+Les cinq PNG approuvés du 10 septembre restent les références artistiques. Production active sous `public/assets/generated/vlads-skewers/welcome/variants/` : masters `390×844` et dérivés WebP lossless `780×1688`, sélection `seeded`, runtime statique.
 
 ## Layer order
 
-1. Environment and crisp flames.
-2. Fixed audience balconies, then independently animated clients.
-3. Persistent low-cost embers and old juice chunks.
-4. Falling ingredients and hazards.
-5. Skewer, stacked ingredient bodies and dangling limbs.
-6. Impact bursts, camera shake and combo typography.
-7. Dynamic HUD/order/lives/end state.
+1. Environment et décor permanent.
+2. Tour clients fixe + fonds de niches.
+3. Portraits clients variables + bave.
+4. Embers/FX arrière.
+5. Ingrédients/hazards.
+6. Brochette + pile + membres Matter.
+7. Impacts/FX/combo.
+8. HUD dynamique, cartouche commande/timer, score et fin.
 
 ## Acceptance
 
-- Texture filtering is nearest-neighbour; no blur/post-FX.
-- Procedural gameplay accents added or redrawn from `0.3.4` onward use an explicit coarse logical grid (normally `2 px`) and integer-aligned positions; do not mix smooth vector circles/triangles with the authored coarse pixel vocabulary.
-- Fifteen customer frames are visibly distinct at game size.
-- All eyes, mouths, arms and legs are separate Phaser pieces; no face or limb is baked into a body texture.
-- Customer drool and food grill marks are separate, stateful overlays rather than baked pixels. Foods never receive drool.
-- The blood bonus must read immediately as a blood drop at phone size: dark outline, saturated red body, light glint, no ambiguous red circle.
-- Falling emotion reads joy → realization → worry → frantic last attempt; bodies first cook into appetizing marked food, then missed bodies burn black on the lower grate, ash and disappear.
-- Nearby falling characters can visually grab or repel one another without escaping the bounded fall/grill outcome.
-- Stack limbs are articulated in two readable segments with four independent low-mass angular states; acceleration and direction can make them whirl while bodies remain locked to the skewer.
-- Food hitboxes are slightly inside their visible silhouettes. Foods separate, rebound with gravity, and are pushed directionally by walls; shaft/hand contact never impersonates the tip.
-- Three left life skewers match the approved gold/red spear family and disappear one per missed customer.
-- Normal→×5 impacts have five clearly different visual/audio intensities while scoring stays unchanged.
-- The authored long arm keeps its fixed size and travels with the handle. The runtime shaft is deliberately shorter than before and its visual capacity follows the active recipe: `110 / 150 / 190 / 230` for `2 / 3 / 4 / 5` foods.
-- A complete recipe enters a `1 s` protected presentation state: the full stack stays visible in Vlad's hand, the apex accepts no contact, then the automatic delivery begins. No manual delivery target or side gesture.
-- Customer architecture is fixed, at most five actors are visible, and mouth offsets own drool placement per portrait.
-
-## Built-in ImageGen production prompt set — 2026-09-07
-
-- Environment: “production Transylvanian grill arena background only, portrait 390:844, central empty fall field, empty right booths, large lower grill, crisp coarse pixel art; no mutable UI, people, ingredients or skewer.”
-- Customers: “exact 5×3 atlas of 15 distinct hungry, delighted fantasy adults, consistent booth portrait scale, hard pixel clusters, pure cyan key, no UI or text.”
-- Vlad prop: “one isolated pale hand in black/red sleeve holding a long ornate gold/red vertical skewer, crisp pixel art, pure cyan key.” Its runtime horizontal origin is the authored tip pixel (`128.5/512`), not the transparent image center.
-- Life prop: “one isolated vertical gold point/red grip life skewer matching Vlad-DA-Piques, crisp pixel art, pure cyan key.”
-- UI components: “strict 2×2 atlas: gothic order panel, score plaque, empty speech bubble, empty red-stone booth; no values or characters, pure cyan key.”
-- Final food bodies: “strict 4×3 atlas: beef, pepper, mushroom, tomato / onion, zucchini, eggplant, garlic / chicken, tofu, salmon, empty; body silhouettes only, absolutely no face, limbs, drool, grill marks or cooked state, transparent background.”
-- Character parts: “strict 4×4 transparent atlas with expressions, mouths, arms/legs, customer drool, grill marks, ash and juice; crisp coarse pixel clusters.”
-
-The built-in generator originals remain in Codex generation storage; production-ready assets are the repository paths in the table. Earlier sheets with baked faces/limbs, painted checkerboards, or the rejected cage-like customer booth were removed from production.
+- Nearest-neighbour / `pixelArt` actif ; pas de blur/post-FX global.
+- La tour approuvée doit tomber sur la bande droite sans changement de largeur du monde `390`.
+- Les cinq portraits gardent leur ratio `192:250` et restent contenus dans leur loge.
+- Le client actif est la loge du haut.
+- Aucun mouvement client par rotation fractionnaire ou scaling animé.
+- La bave part de la bouche et reste une couche Phaser séparée ; les aliments ne bavent jamais.
+- Commande lisible de 2 à 5 ingrédients, timer intégré, aucune valeur mutable baked.
+- Aucun changement de scoring, collision, physique Matter ou logique de recette dans cette passe.

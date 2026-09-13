@@ -38,6 +38,21 @@ try {
       hasTouch: scenario.touch,
       isMobile: scenario.mobile,
     })
+    await context.addInitScript(() => {
+      let fullscreenElement = null
+      Object.defineProperty(Document.prototype, 'fullscreenEnabled', { configurable: true, get: () => true })
+      Object.defineProperty(Document.prototype, 'fullscreenElement', { configurable: true, get: () => fullscreenElement })
+      Element.prototype.requestFullscreen = async function requestFullscreen() {
+        fullscreenElement = this
+        window.__minifuggFullscreenTarget = this === document.documentElement ? 'document' : this.tagName.toLowerCase()
+        document.dispatchEvent(new Event('fullscreenchange'))
+      }
+      Document.prototype.exitFullscreen = async function exitFullscreen() {
+        fullscreenElement = null
+        window.__minifuggFullscreenExited = true
+        document.dispatchEvent(new Event('fullscreenchange'))
+      }
+    })
     const page = await context.newPage()
     await page.route('**/api/**', route => route.fulfill({
       status: 503,
@@ -92,6 +107,24 @@ try {
     else await play.click()
     await page.waitForFunction(() => document.querySelector('.game-card[aria-label="LineFugg"]')?.getAttribute('data-phase') === 'playing')
 
+    const exitControl = line.locator('.mf-game-close-box')
+    const fullscreenControl = line.locator('.mf-game-fullscreen-box')
+    const exitControlBox = await exitControl.boundingBox()
+    const fullscreenControlBox = await fullscreenControl.boundingBox()
+    assert.ok(exitControlBox && fullscreenControlBox)
+    closeTo(fullscreenControlBox.width, exitControlBox.width, `${scenario.name} fullscreen width matches Exit`)
+    closeTo(fullscreenControlBox.height, exitControlBox.height, `${scenario.name} fullscreen height matches Exit`)
+    assert.ok(fullscreenControlBox.x > exitControlBox.x + exitControlBox.width, `${scenario.name} fullscreen sits next to Exit`)
+    assert.equal(await fullscreenControl.getAttribute('aria-label'), 'Enter fullscreen')
+    if (scenario.touch) await fullscreenControl.tap()
+    else await fullscreenControl.click()
+    await page.waitForFunction(() => document.querySelector('.mf-game-fullscreen-box')?.getAttribute('aria-label') === 'Exit fullscreen')
+    assert.equal(await page.evaluate(() => window.__minifuggFullscreenTarget), 'document')
+    if (scenario.touch) await fullscreenControl.tap()
+    else await fullscreenControl.click()
+    await page.waitForFunction(() => document.querySelector('.mf-game-fullscreen-box')?.getAttribute('aria-label') === 'Enter fullscreen')
+    assert.equal(await page.evaluate(() => window.__minifuggFullscreenExited), true)
+
     const viewport = line.locator('.mf-phaser-host')
     const stage = viewport.locator(':scope > div')
     await viewport.locator('canvas').waitFor({ state: 'visible' })
@@ -107,6 +140,10 @@ try {
       closeTo(stageBox.width, expectedStageWidth, `${scenario.name} height-driven Phaser stage`)
       closeTo(stageBox.x, feedBox.x, `${scenario.name} Phaser stage x`)
     }
+
+    const gameplayScreenshot = `${output}/${scenario.name}-linefugg-gameplay-controls.png`
+    await page.screenshot({ path: gameplayScreenshot })
+    report.screenshots.push(gameplayScreenshot)
 
     report.scenarios.push({
       name: scenario.name,

@@ -87,6 +87,24 @@ function CloseIcon() {
   )
 }
 
+function FullscreenIcon({ active }: { active: boolean }) {
+  return (
+    <svg className="mf-game-fullscreen-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none">
+      {active ? (
+        <>
+          <path d="M9 4v5H4" /><path d="M15 4v5h5" />
+          <path d="M9 20v-5H4" /><path d="M15 20v-5h5" />
+        </>
+      ) : (
+        <>
+          <path d="M9 4H4v5" /><path d="M15 4h5v5" />
+          <path d="M9 20H4v-5" /><path d="M15 20h5v-5" />
+        </>
+      )}
+    </svg>
+  )
+}
+
 export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntimeProps) {
   const rootRef = useRef<HTMLElement>(null)
   const launchTimerRef = useRef<number | null>(null)
@@ -107,6 +125,10 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
   const [leaderboardOrigin, setLeaderboardOrigin] = useState<LeaderboardOrigin>(null)
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(false)
+  const [fullscreenActive, setFullscreenActive] = useState(false)
+  const fullscreenSupported = typeof document !== 'undefined'
+    && document.fullscreenEnabled
+    && typeof document.documentElement.requestFullscreen === 'function'
   const periods = useMemo(() => periodsFor(game), [game])
   const [leaderboardPeriod, setLeaderboardPeriod] = useState<GameLeaderboardPeriod>(periods[0] ?? 'global')
   const leaderboardConfig = game.features?.leaderboard || false
@@ -174,6 +196,13 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
     if (launchTimerRef.current !== null) window.clearTimeout(launchTimerRef.current)
   }, [])
 
+  useEffect(() => {
+    const syncFullscreenState = () => setFullscreenActive(Boolean(document.fullscreenElement))
+    document.addEventListener('fullscreenchange', syncFullscreenState)
+    syncFullscreenState()
+    return () => document.removeEventListener('fullscreenchange', syncFullscreenState)
+  }, [])
+
   const finish = useCallback((payload: GameFinishPayload) => {
     const next = { ...payload, score: normalizeScore(payload.score) }
     setScore(next.score)
@@ -237,7 +266,19 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
     setGameMountKey((value) => value + 1)
     setRestartToken((value) => value + 1)
     playRecordedRef.current = false
+    if (document.fullscreenElement && typeof document.exitFullscreen === 'function') {
+      void document.exitFullscreen().catch(() => {})
+    }
   }, [])
+
+  const toggleFullscreen = useCallback(() => {
+    if (!fullscreenSupported) return
+    if (document.fullscreenElement) {
+      void document.exitFullscreen().catch(() => {})
+      return
+    }
+    void document.documentElement.requestFullscreen({ navigationUI: 'hide' }).catch(() => {})
+  }, [fullscreenSupported])
 
   const replay = useCallback(() => {
     if (!spend(cost)) {
@@ -367,11 +408,24 @@ export function GameRuntime({ game, catalog, seed, active, mounted }: GameRuntim
       )}
 
       {phase === 'playing' && !finished && (
-        <button type="button" className="mf-game-close-box" onClick={closeGame} aria-label="Exit game and return to cover">
-          <img className="is-idle" src="/assets/generated/platform/ui/coin-console-90s/return-exit-idle.webp" alt="EXIT" />
-          <img className="is-focus" src="/assets/generated/platform/ui/coin-console-90s/return-exit-focus.webp" alt="" />
-          <img className="is-pressed" src="/assets/generated/platform/ui/coin-console-90s/return-exit-pressed.webp" alt="" />
-        </button>
+        <div className="mf-game-utility-controls">
+          <button type="button" className="mf-game-close-box" onClick={closeGame} aria-label="Exit game and return to cover">
+            <img className="is-idle" src="/assets/generated/platform/ui/coin-console-90s/return-exit-idle.webp" alt="EXIT" />
+            <img className="is-focus" src="/assets/generated/platform/ui/coin-console-90s/return-exit-focus.webp" alt="" />
+            <img className="is-pressed" src="/assets/generated/platform/ui/coin-console-90s/return-exit-pressed.webp" alt="" />
+          </button>
+          <button
+            type="button"
+            className="mf-game-fullscreen-box"
+            onClick={toggleFullscreen}
+            disabled={!fullscreenSupported}
+            aria-label={fullscreenSupported ? (fullscreenActive ? 'Exit fullscreen' : 'Enter fullscreen') : 'Fullscreen unavailable'}
+            aria-pressed={fullscreenActive}
+            title={fullscreenSupported ? (fullscreenActive ? 'Quitter le plein écran' : 'Plein écran') : 'Plein écran indisponible'}
+          >
+            <FullscreenIcon active={fullscreenActive} />
+          </button>
+        </div>
       )}
 
       {leaderboardOpen && (

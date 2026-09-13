@@ -98,7 +98,7 @@ La flèche revient au contexte d'origine : Info avec son scroll, ou Game Over. P
 
 ## Gameplay shell et Game Over
 
-Pendant le jeu : presque tout l'écran appartient au gameplay. Garder uniquement le petit contrôle Core de retour/fermeture vers la même cover. Pas de gros header, rail social ou compteur de coins permanent.
+Pendant le jeu : presque tout l'écran appartient au gameplay. Garder le petit contrôle Core de retour/fermeture vers la même cover. Une expérimentation mobile du 13 septembre 2026 ajoute juste à côté un second contrôle de même taille pour demander ou quitter le plein écran natif du navigateur. Il reste désactivé lorsque l'API n'est pas disponible ; quitter le jeu quitte aussi le plein écran. Pas de gros header, rail social ou compteur de coins permanent.
 
 À la fin : conserver le gameplay figé, légèrement assombri, derrière le résultat. **Aucun morceau de cover ni logo MiniFugg.** Score, meilleur score, classement disponible, leaderboard, replay au coût réel et `RAGE QUIT`.
 

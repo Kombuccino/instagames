@@ -1,13 +1,22 @@
-/* Active gameplay keeps one exceptional Core affordance: close the box. */
+/* Active gameplay keeps two compact Core affordances: exit and fullscreen. */
 .game-card[data-phase='playing'] {
   container-type: size;
 }
 
-.mf-game-close-box {
+.mf-game-utility-controls {
   position: absolute;
   z-index: 170;
   top: max(8px, calc(env(safe-area-inset-top, 0px) + 6px));
   left: max(8px, calc(env(safe-area-inset-left, 0px) + 6px));
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(5px, 1.5385cqw, 9px);
+}
+
+.mf-game-close-box,
+.mf-game-fullscreen-box {
+  position: relative;
+  flex: 0 0 auto;
   width: clamp(48px, min(12.3077cqw, 7.2508cqh), 72px);
   height: clamp(48px, min(12.3077cqw, 7.2508cqh), 72px);
   padding: 0;
@@ -21,11 +30,14 @@
 }
 
 .mf-game-close-box:hover,
-.mf-game-close-box:focus-visible {
+.mf-game-close-box:focus-visible,
+.mf-game-fullscreen-box:hover,
+.mf-game-fullscreen-box:focus-visible {
   opacity: 1;
 }
 
-.mf-game-close-box:active { transform: translateY(2px) scale(.97); }
+.mf-game-close-box:active,
+.mf-game-fullscreen-box:active { transform: translateY(2px) scale(.97); }
 
 .mf-game-close-box img {
   position: absolute;
@@ -47,6 +59,46 @@
 .mf-game-close-box:active img.is-idle,
 .mf-game-close-box:active img.is-focus { opacity: 0; }
 .mf-game-close-box:active img.is-pressed { opacity: 1; }
+
+.mf-game-fullscreen-box {
+  display: grid;
+  place-items: center;
+  border: max(2px, .5128cqw) solid #817968;
+  border-radius: 13%;
+  color: #fff7dc;
+  background:
+    linear-gradient(#171917, #090a09) padding-box,
+    linear-gradient(135deg, #cec5ae, #514c42) border-box;
+  box-shadow:
+    inset 0 0 0 max(2px, .5128cqw) #292b27,
+    inset 0 -4px 6px rgba(0, 0, 0, .72),
+    0 2px 3px rgba(0, 0, 0, .58);
+}
+
+.mf-game-fullscreen-box::before {
+  content: '';
+  position: absolute;
+  inset: 8%;
+  border: 1px solid rgba(255, 67, 57, .7);
+  border-radius: 8%;
+  pointer-events: none;
+}
+
+.mf-game-fullscreen-box:disabled {
+  opacity: .38;
+  cursor: not-allowed;
+  filter: grayscale(1) drop-shadow(0 2px 2px rgba(0, 0, 0, .45));
+}
+
+.mf-game-fullscreen-icon {
+  width: 48%;
+  height: 48%;
+  stroke: currentColor;
+  stroke-width: 2.1;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  filter: drop-shadow(0 1px 1px #000);
+}
 
 .game-feed:has(.game-card[data-phase='playing']) {
   overflow-y: hidden;
@@ -233,5 +285,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mf-game-close-box { transition: none; }
+  .mf-game-close-box,
+  .mf-game-fullscreen-box { transition: none; }
 }

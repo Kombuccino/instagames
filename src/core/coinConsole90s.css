@@ -173,7 +173,7 @@
 .mf-console-play-frame.is-idle {
   background-position: 0 0;
   opacity: 1;
-  filter: brightness(.16) saturate(.5) contrast(1.2);
+  filter: brightness(.29) saturate(.62) contrast(1.1);
 }
 
 .mf-console-play-frame.is-warm {

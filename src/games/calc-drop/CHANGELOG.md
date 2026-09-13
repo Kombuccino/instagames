@@ -1,5 +1,12 @@
 # TetraMindFck — Changelog
 
+## 0.8.2 — 2026-09-14 00:47 Europe/Paris
+
+- Retrait du shell raster et de la plate CRT comme couches structurelles runtime : leurs géométries incompatibles provoquaient le grand décalage blanc, des ouvertures parasites et des écrans superposés.
+- Reconstruction d’une seule coque canonique directement sur le stage logique `390 × 844`, avec un corps continu, un rail gauche, une zone de contrôles et exactement cinq CRT alignés sur la géométrie gameplay.
+- Suppression des scanlines/traits décoratifs du grand CRT : seul le vrai quadrillage `10 × 20` du plateau reste visible.
+- Conservation du fond illustré, des atlas chiffres/opérateurs et des boutons raster `up/down` ; aucune règle de gameplay n’est modifiée.
+
 ## 0.8.1 — 2026-09-13 23:31 Europe/Paris
 
 - Remplacement des cases Phaser provisoires par les vrais atlas raster : chiffres `1–9`, multiplicateurs, diviseurs et bonus utilisent désormais les sprites CRT produits pour la DA.

@@ -5,6 +5,8 @@ export type LeaderboardEntry = {
   nickname: string
   score: number
   createdAt: string
+  /** Server-computed identity match. Local fallback may leave this undefined. */
+  isCurrent?: boolean
 }
 
 const STORAGE_KEY = 'minifugg:leaderboard:v1'

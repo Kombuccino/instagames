@@ -17,4 +17,5 @@ jobs:
           node-version: 22
       - run: npm install --no-audit --no-fund
       - run: npm run test:repository
+      - run: node --check api/src/index.mjs
       - run: npm run build

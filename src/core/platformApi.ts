@@ -4,16 +4,14 @@ import {
   type LeaderboardEntry,
 } from './leaderboard'
 import {
-  addLocalComment,
   getLocalSocialStats,
-  listLocalComments,
   recordLocalPlay,
   setLocalBookmark,
   setLocalLove,
   type GameComment,
   type GameSocialStats,
 } from './social'
-import type { FeedPreference, GameLeaderboardPeriod, GameLeaderboardSort } from './types'
+import type { FeedPreference, GameLeaderboardPeriod, GameLeaderboardScope, GameLeaderboardSort } from './types'
 
 export type SubmitScoreInput = {
   gameId: string
@@ -81,7 +79,7 @@ function isoWeekId(date = new Date()) {
 }
 
 function localBoardId(period: GameLeaderboardPeriod) {
-  if (period === 'daily') return `day:${utcDayId()}`
+  if (period === 'daily') return utcDayId()
   if (period === 'weekly') return `week:${isoWeekId()}`
   return 'global'
 }
@@ -182,14 +180,16 @@ export async function listLeaderboard(
   boardId: string,
   limit = 10,
   sort: GameLeaderboardSort = 'desc',
+  scope: GameLeaderboardScope = 'global',
 ): Promise<LeaderboardEntry[]> {
   if (!API_BASE) {
+    if (scope === 'friends') return []
     const entries = getLeaderboard(gameId, boardId, sort === 'asc' ? 500 : limit)
     return sort === 'asc' ? [...entries].reverse().slice(0, limit) : entries
   }
 
   try {
-    const query = new URLSearchParams({ limit: String(Math.max(1, limit)), sort })
+    const query = new URLSearchParams({ limit: String(Math.max(1, limit)), sort, scope })
     const response = await fetch(`${leaderboardEndpoint(gameId, boardId)}?${query}`, {
       headers: { Accept: 'application/json' },
       credentials: 'include',
@@ -199,6 +199,7 @@ export async function listLeaderboard(
     const entries = Array.isArray(payload) ? payload : payload.entries
     return Array.isArray(entries) ? entries : []
   } catch {
+    if (scope === 'friends') return []
     const entries = getLeaderboard(gameId, boardId, sort === 'asc' ? 500 : limit)
     return sort === 'asc' ? [...entries].reverse().slice(0, limit) : entries
   }
@@ -309,32 +310,25 @@ export function setGameBookmark(gameId: string, bookmarked: boolean) {
   return setRemoteFlag(gameId, 'bookmark', bookmarked)
 }
 
+/** Shared discussions are server-authoritative. Never pretend a local-only comment is public. */
 export async function listGameComments(gameId: string, limit = 50): Promise<GameComment[]> {
-  if (!API_BASE) return listLocalComments(gameId, limit)
-  try {
-    const query = new URLSearchParams({ limit: String(Math.max(1, limit)) })
-    const response = await fetch(`${gameEndpoint(gameId, 'comments')}?${query}`, { headers: { Accept: 'application/json' }, credentials: 'include' })
-    if (!response.ok) throw new Error(`Comments API returned ${response.status}`)
-    const payload = await response.json() as GameComment[] | { comments?: GameComment[] }
-    const comments = Array.isArray(payload) ? payload : payload.comments
-    return Array.isArray(comments) ? comments : []
-  } catch {
-    return listLocalComments(gameId, limit)
-  }
+  if (!API_BASE) throw new Error('Comments require the MiniFugg Core API')
+  const query = new URLSearchParams({ limit: String(Math.max(1, limit)) })
+  const response = await fetch(`${gameEndpoint(gameId, 'comments')}?${query}`, { headers: { Accept: 'application/json' }, credentials: 'include' })
+  if (!response.ok) throw new Error(`Comments API returned ${response.status}`)
+  const payload = await response.json() as GameComment[] | { comments?: GameComment[] }
+  const comments = Array.isArray(payload) ? payload : payload.comments
+  return Array.isArray(comments) ? comments : []
 }
 
-export async function addGameComment(gameId: string, nickname: string, body: string): Promise<GameComment | null> {
-  if (!API_BASE) return addLocalComment(gameId, nickname, body)
-  try {
-    const response = await fetch(gameEndpoint(gameId, 'comments'), {
-      method: 'POST',
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ nickname, body }),
-    })
-    if (!response.ok) throw new Error(`Comments API returned ${response.status}`)
-    return await response.json() as GameComment
-  } catch {
-    return addLocalComment(gameId, nickname, body)
-  }
+export async function addGameComment(gameId: string, nickname: string, body: string): Promise<GameComment> {
+  if (!API_BASE) throw new Error('Comments require the MiniFugg Core API')
+  const response = await fetch(gameEndpoint(gameId, 'comments'), {
+    method: 'POST',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ nickname, body }),
+  })
+  if (!response.ok) throw new Error(`Comments API returned ${response.status}`)
+  return await response.json() as GameComment
 }

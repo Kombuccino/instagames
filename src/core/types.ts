@@ -1,6 +1,8 @@
 import type { ComponentType } from 'react'
 
 export type GameLeaderboardPeriod = 'daily' | 'weekly' | 'global'
+export type GameLeaderboardMode = 'periodic' | 'daily-challenge'
+export type GameLeaderboardScope = 'global' | 'friends'
 export type GameLeaderboardSort = 'desc' | 'asc'
 export type GameOrientation = 'portrait' | 'landscape' | 'both'
 export type GameCurationStatus = 'fugg' | 'beta' | 'trash'
@@ -47,6 +49,8 @@ export type GameWelcomeConfig = {
 
 export type GameLeaderboardConfig = {
   enabled: true
+  /** Daily challenge boards navigate by exact challenge date; periodic boards expose WEEK / EVER. */
+  mode?: GameLeaderboardMode
   periods?: GameLeaderboardPeriod[]
   sort?: GameLeaderboardSort
   limit?: number

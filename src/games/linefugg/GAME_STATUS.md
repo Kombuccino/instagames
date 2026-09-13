@@ -1,6 +1,6 @@
 # LineFugg — Suivi de création
 
-Mis à jour : 13 septembre 2026 à 15:16 Europe/Paris. Version : `0.6.0`. Changelog : `CHANGELOG.md`.
+Mis à jour : 13 septembre 2026 à 16:01 Europe/Paris. Version : `0.6.0`. Changelog : `CHANGELOG.md`.
 
 Runtime Phaser 4.2.1, stage 390 × 844. Prototype, game design et équilibre validés par l'utilisateur. Direction gameplay : **Orbital Accounting**. Cover runtime : current ; quatre références approuvées conservées et quatre restaurations statiques plein cadre actives.
 
@@ -62,6 +62,7 @@ Aucun blocage technique connu. L'optimisation des images runtime de LineFugg est
 - La quatrième exploration conserve le territoire spatial sans reprendre laiton, planisphère, parchemin ni registre d'équations : réseau de balises et noyau, relevé lunaire et canisters, serre orbitale, voiles solaires origami. Les résultats deviennent des objets reliés aux tracés puis convergent vers `51`.
 - Liste fermée de la passe : `ANNULER`, `VALIDER`, valeurs du plateau, `8`, `19`, `24`, `51`. Contrôle visuel : aucun autre texte visible ; commandes libellées, alignées et de même gabarit. Sources et comparaison archivées sous `round-04-space-no-extra-text` ; revue utilisateur en cours ; aucune piste acceptée, intégrée ou publiée.
 - Retour canvas sur la piste origami : la première composition avait le bon ratio mais plaçait les commandes dans BAS, donc hors de la fenêtre PC centrée. La correction `v3` garde toutes les informations et commandes dans CENTRE `y=91…753`, avec la grille entièrement visible après crop ; HAUT/BAS ne contiennent plus que le décor spatial recadrable. Masters de contrôle : `390×844` et crop PC exact `390×662`, PNG opaques décodés ; contrôle visuel des deux cadrages effectué. Toujours aucune intégration avant validation utilisateur.
+- Palette demandée pour la piste origami : ligne 1 et score `8` rouges, ligne 2 et score `19` bleu-violet, ligne 3 et score `24` jaunes, conformément aux covers majoritaires et aux couleurs runtime existantes. Le lien sélection → objet ne doit pas être un ruban persistant : Phaser conserve le tracé dynamique entre centres de cases, puis anime à la validation un transfert temporaire vers le slot de résultat ; seules les trois liaisons fixes résultat → `51` persistent. Cette solution accepte toute position et orientation sans accumuler de croisements. Master et crop PC recolorés, contrôlés et archivés ; comportement encore exploratoire, non intégré.
 - La version reste `0.6.0` : cette passe ne modifie ni runtime, ni règles, ni assets actifs.
 
 ## Remise aux normes des covers — 12 septembre 2026

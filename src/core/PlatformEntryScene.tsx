@@ -32,10 +32,15 @@ const TAP_SLOP_PX = 14
 const SWIPE_THRESHOLD_PX = 42
 const METRO_SCENE_ROOT = '/assets/generated/platform/entry-scenes/metro-sunset'
 const METRO_PARALLAX_V3_ROOT = `${METRO_SCENE_ROOT}/parallax-v3`
+const METRO_PARALLAX_V3_REVISION = '20260913-v32'
 const ARM_ROOT = `${METRO_SCENE_ROOT}/arms`
 const ARM_VARIANTS = Array.from({ length: 8 }, (_, index) => `${ARM_ROOT}/arm-${String(index + 1).padStart(2, '0')}.png`)
 const ARM_STORAGE_KEY = 'minifugg:entry-arm:v1'
 const METRO_PARALLAX_V3_LOOPS = ['water-strip', 'skyline-far-strip', 'skyline-near-strip', 'shore-bridge-strip'] as const
+
+function metroParallaxAsset(name: string, extension: 'png' | 'webp') {
+  return `${METRO_PARALLAX_V3_ROOT}/${name}.${extension}?v=${METRO_PARALLAX_V3_REVISION}`
+}
 
 type Matrix3 = [number, number, number, number, number, number, number, number, number]
 
@@ -296,33 +301,33 @@ export function PlatformEntryScene({ onLaunch, handoff = 'default' }: PlatformEn
             <>
               <div className="mf-entry-scene__metro-v3">
                 <picture className="mf-entry-scene__metro-v3-static mf-entry-scene__metro-v3-sky">
-                  <source srcSet={`${METRO_PARALLAX_V3_ROOT}/sky.webp`} type="image/webp" />
-                  <img src={`${METRO_PARALLAX_V3_ROOT}/sky.png`} alt="" draggable={false} decoding="async" loading="eager" />
+                  <source srcSet={metroParallaxAsset('sky', 'webp')} type="image/webp" />
+                  <img src={metroParallaxAsset('sky', 'png')} alt="" draggable={false} decoding="async" loading="eager" />
                 </picture>
                 {METRO_PARALLAX_V3_LOOPS.map((layer) => (
                   <div key={layer} className={`mf-entry-scene__metro-v3-loop mf-entry-scene__metro-v3-${layer}`}>
                     <div className="mf-entry-scene__metro-v3-track">
                       {[0, 1].map((copy) => (
                         <picture key={copy}>
-                          <source srcSet={`${METRO_PARALLAX_V3_ROOT}/${layer}.webp`} type="image/webp" />
-                          <img src={`${METRO_PARALLAX_V3_ROOT}/${layer}.png`} alt="" draggable={false} decoding="async" loading="eager" />
+                          <source srcSet={metroParallaxAsset(layer, 'webp')} type="image/webp" />
+                          <img src={metroParallaxAsset(layer, 'png')} alt="" draggable={false} decoding="async" loading="eager" />
                         </picture>
                       ))}
                     </div>
                   </div>
                 ))}
                 <picture className="mf-entry-scene__metro-v3-static mf-entry-scene__metro-v3-reflection">
-                  <source srcSet={`${METRO_PARALLAX_V3_ROOT}/water-reflection.webp`} type="image/webp" />
-                  <img src={`${METRO_PARALLAX_V3_ROOT}/water-reflection.png`} alt="" draggable={false} decoding="async" loading="eager" />
+                  <source srcSet={metroParallaxAsset('water-reflection', 'webp')} type="image/webp" />
+                  <img src={metroParallaxAsset('water-reflection', 'png')} alt="" draggable={false} decoding="async" loading="eager" />
                 </picture>
               </div>
               <picture className="mf-entry-scene__metro-v3-carriage mf-entry-scene__metro-v3-carriage--base">
-                <source srcSet={`${METRO_PARALLAX_V3_ROOT}/carriage-base.webp`} type="image/webp" />
-                <img className="mf-entry-scene__wagon mf-entry-scene__wagon--wide mf-entry-scene__wagon--v3-base" src={`${METRO_PARALLAX_V3_ROOT}/carriage-base.png`} alt="" draggable={false} decoding="async" loading="eager" />
+                <source srcSet={metroParallaxAsset('carriage-base', 'webp')} type="image/webp" />
+                <img className="mf-entry-scene__wagon mf-entry-scene__wagon--wide mf-entry-scene__wagon--v3-base" src={metroParallaxAsset('carriage-base', 'png')} alt="" draggable={false} decoding="async" loading="eager" />
               </picture>
               <picture className="mf-entry-scene__metro-v3-carriage mf-entry-scene__metro-v3-carriage--sunlight">
-                <source srcSet={`${METRO_PARALLAX_V3_ROOT}/carriage-sunlight.webp`} type="image/webp" />
-                <img className="mf-entry-scene__wagon mf-entry-scene__wagon--wide mf-entry-scene__wagon--v3-sunlight" src={`${METRO_PARALLAX_V3_ROOT}/carriage-sunlight.png`} alt="" draggable={false} decoding="async" loading="eager" />
+                <source srcSet={metroParallaxAsset('carriage-sunlight', 'webp')} type="image/webp" />
+                <img className="mf-entry-scene__wagon mf-entry-scene__wagon--wide mf-entry-scene__wagon--v3-sunlight" src={metroParallaxAsset('carriage-sunlight', 'png')} alt="" draggable={false} decoding="async" loading="eager" />
               </picture>
             </>
           ) : (

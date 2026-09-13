@@ -188,12 +188,12 @@
 .mf-entry-scene__wagon--v3-sunlight {
   z-index: 3;
   opacity: .74;
-  animation: mf-entry-metro-v3-occlusion 12.25s linear infinite;
+  animation: mf-entry-metro-v3-occlusion 40s linear infinite;
 }
 
 .mf-entry-scene__metro-v3-reflection {
   opacity: .86;
-  animation: mf-entry-metro-v3-reflection-occlusion 12.25s linear infinite;
+  animation: mf-entry-metro-v3-reflection-occlusion 40s linear infinite;
 }
 
 .mf-entry-scene.is-home-bis-handoff .mf-entry-scene__handoff-blackout {
@@ -274,13 +274,13 @@
 }
 
 @keyframes mf-entry-metro-v3-occlusion {
-  0%, 34%, 66%, 100% { opacity: .74; }
-  46%, 54% { opacity: .16; }
+  0%, 7%, 18%, 30%, 43%, 100% { opacity: .74; }
+  11%, 14%, 35%, 40% { opacity: .16; }
 }
 
 @keyframes mf-entry-metro-v3-reflection-occlusion {
-  0%, 34%, 66%, 100% { opacity: .86; }
-  46%, 54% { opacity: .14; }
+  0%, 7%, 18%, 30%, 43%, 100% { opacity: .86; }
+  11%, 14%, 35%, 40% { opacity: .14; }
 }
 
 @media (prefers-reduced-motion: reduce) {

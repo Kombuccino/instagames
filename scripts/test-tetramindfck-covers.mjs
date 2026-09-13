@@ -210,13 +210,13 @@ try {
         })),
       }
     })
-    assert.equal(lampCycle.duration, 5200)
+    assert.equal(lampCycle.duration, 4800)
     const hasLampState = (offset, opacity) => lampCycle.keyframes.some(frame =>
       Math.abs(frame.offset - offset) < .001 && Math.abs(frame.opacity - opacity) < .001)
-    assert.ok(hasLampState(.54, 0), 'PLAY lamp must remain off for most of the first half-cycle')
-    assert.ok(hasLampState(.58, 1), 'PLAY lamp must ignite quickly and clearly')
-    assert.ok(hasLampState(.79, 1), 'PLAY lamp must hold a readable lit state')
-    assert.ok(hasLampState(.82, 0), 'PLAY lamp must switch off quickly')
+    assert.ok(hasLampState(.66, 1), 'PLAY lamp must remain lit for most of the cycle')
+    assert.ok(hasLampState(.67, 0), 'PLAY lamp must switch off within one percent of the cycle')
+    assert.ok(hasLampState(.95, 0), 'PLAY lamp off time must stay below half of its lit time')
+    assert.ok(hasLampState(.96, 1), 'PLAY lamp must switch back on directly')
     const playBefore = await play.boundingBox()
     const counterBefore = await counter.boundingBox()
     const coinsBefore = Number.parseInt(await counter.getAttribute('aria-label'), 10)

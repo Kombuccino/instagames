@@ -1,5 +1,7 @@
 Original prompt: Mettre à jour LineFugg pour rendre les GFX conformes à la DA approuvée, optimiser et utiliser Phaser pour une réalisation plus animée, en préservant le prototype, le GD et l'équilibrage validés.
 
+2026-09-13 — Rythme lumineux PLAY validé puis ajusté : les rendus éteint et allumé restent inchangés et parfaitement alignés. Le bouton est maintenant allumé environ 70 % du cycle et éteint environ 30 % ; allumage direct et extinction ramenés à environ 48 ms, sans respiration progressive. Validation du rythme utilisateur en attente.
+
 2026-09-13 — Correction immédiate de l’état éteint PLAY : l’étalonnage précédent à 16 % faisait disparaître le capot dans un aplat noir. Le repos est recalé sur un ambre sombre à 29 % qui supprime la sensation d’ampoule allumée tout en gardant le plastique, ses reflets et le mot PLAY lisibles. Capture runtime contrôlée avant publication ; validation utilisateur en attente.
 
 2026-09-13 — État éteint du bouton PLAY repris après comparaison directe des sources : `play-idle` contenait déjà une ampoule orange à faible intensité ; aucun des quatre assets de production n’était réellement éteint. Le repos applique maintenant un étalonnage ambre beaucoup plus sombre au même cadre, avant l’allumage franc, ce qui conserve l’alignement exact de l’atlas. Validation visuelle utilisateur en attente.

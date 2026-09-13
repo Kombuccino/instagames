@@ -178,12 +178,12 @@
 
 .mf-console-play-frame.is-warm {
   background-position: 33.333333% 0;
-  animation: mf-play-warm-lamp 5.2s linear infinite;
+  animation: mf-play-warm-lamp 4.8s linear infinite;
 }
 
 .mf-console-play-frame.is-hot {
   background-position: 66.666667% 0;
-  animation: mf-play-hot-lamp 5.2s linear infinite;
+  animation: mf-play-hot-lamp 4.8s linear infinite;
 }
 
 .mf-console-play-frame.is-down {
@@ -257,23 +257,16 @@
 }
 
 @keyframes mf-play-warm-lamp {
-  0%, 54% { opacity: 0; }
-  55% { opacity: .08; }
-  56.5% { opacity: .78; }
-  58%, 79% { opacity: 1; }
-  80.5% { opacity: .38; }
-  82%, 100% { opacity: 0; }
+  0%, 66% { opacity: 1; }
+  67%, 95% { opacity: 0; }
+  96%, 100% { opacity: 1; }
 }
 
 @keyframes mf-play-hot-lamp {
-  0%, 56% { opacity: 0; }
-  57% { opacity: .12; }
-  58.5% { opacity: .82; }
-  60% { opacity: .68; }
-  62% { opacity: .82; }
-  78% { opacity: .76; }
-  79.5% { opacity: .2; }
-  81%, 100% { opacity: 0; }
+  0%, 65% { opacity: .78; }
+  67%, 95% { opacity: 0; }
+  96% { opacity: .82; }
+  100% { opacity: .78; }
 }
 
 @keyframes mf-local-coin-travel {

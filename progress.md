@@ -1,5 +1,7 @@
 Original prompt: Mettre à jour LineFugg pour rendre les GFX conformes à la DA approuvée, optimiser et utiliser Phaser pour une réalisation plus animée, en préservant le prototype, le GD et l'équilibrage validés.
 
+2026-09-13 — Tempo final demandé pour le bouton PLAY : cycle ramené à 2 secondes, soit environ 1,5 seconde allumé et 0,5 seconde éteint, transitions rapides de 48 ms comprises. Les rendus validés, l’atlas et le clic mécanique restent inchangés ; validation en ligne utilisateur en attente.
+
 2026-09-13 — Outil de calage des covers demandé : ajout au laboratoire Zones MiniFugg d’un banc visuel qui affiche chaque cover enregistrée sous le cadre minimal 390 × 662 et la console PLAY Core actuelle. Le cadre se déplace verticalement sur le master 390 × 844 ; cadrage, validation, besoin d’adaptation et commentaire restent propres à chaque variante, sont sauvegardés localement et s’exportent/importent dans un JSON de transmission. Les images approuvées ne sont pas modifiées par l’outil.
 
 2026-09-13 — Validation du laboratoire de calage : 23 covers du registre accessibles par jeu ou à la suite ; déplacement à la souris et au curseur, presets HAUT/CENTRE/BAS, persistance locale, export puis réimport JSON vérifiés. Le cadre reste 390 × 662 et la console garde le ratio réel 2099 × 534, son ancrage bas et les coordonnées du PLAY actuel. Build réussi, test navigateur sans erreur et inspection visuelle desktop effectuée ; validation d’usage utilisateur en attente.

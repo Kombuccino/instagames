@@ -1,6 +1,12 @@
 # TetraMindFck — Game Status
 
-Updated: 2026-09-12 Europe/Paris
+Updated: 2026-09-13 Europe/Paris
+
+## Calage final des quatre covers — 2026-09-13
+
+- L’export `minifugg-cover-calibration/v1` validé par l’utilisateur est appliqué : fenêtres à `y 37.6`, `48.8`, `51.2` et `90.4`, soit les positions CSS `20.7%`, `26.8%`, `28.1%` et `49.7%`.
+- Les quatre masters PNG et WebP lossless restent octet pour octet inchangés. Core superpose seulement le bandeau-titre exact du même raster au fond recadré ; aucun personnage, bloc, trait, couleur ou lettrage n’est généré de nouveau.
+- Contrôle visuel effectué sur A54 Brave, MASTER et desktop pour les quatre éditions : sujet remonté au-dessus de JOUER, titre entier, raccord fondu imperceptible, aucune cover animée ni erreur console.
 
 ## Gameplay CRT art integration — 2026-09-12
 

@@ -1,5 +1,11 @@
 # TetraMindFck — Changelog
 
+## 0.7.2 — 2026-09-13 09:34 Europe/Paris
+
+- Application des quatre cadrages validés dans l’outil de calage des covers.
+- Le corps de chaque illustration suit désormais la fenêtre verticale choisie tandis que le bandeau-titre exact reste lisible au sommet.
+- Les masters et WebP approuvés restent inchangés : aucun personnage, bloc, texture ou lettrage n’est régénéré.
+
 ## 0.7.1 — 2026-09-12 21:44 Europe/Paris
 
 - Rétablissement immédiat du cadrage `cover` validé pour les quatre affiches : elles remplissent de nouveau le cadre à leur échelle normale.

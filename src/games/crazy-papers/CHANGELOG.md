@@ -1,5 +1,11 @@
 # CrazyPapers — Changelog
 
+## 0.5.2 — 13 septembre 2026
+
+- Application des six cadrages validés dans l’outil de calage, dont deux ancrages BAS complets.
+- Pour les cinq éditions dont le nouveau cadrage coupe le titre, Core conserve exactement le bandeau-titre de la source et le fond dans la position choisie.
+- Les six sources, masters PNG et WebP lossless restent inchangés ; aucune cover n’est redessinée ou réinterprétée.
+
 ## 0.5.1 — 13 septembre 2026
 
 - La cover `Constructivist Clerk` conserve son image approuvée intacte mais emploie désormais un cadrage focal : le personnage reste visible au-dessus du pupitre PLAY fixe sur mobile court comme sur PC.

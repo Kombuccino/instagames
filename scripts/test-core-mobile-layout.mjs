@@ -72,7 +72,13 @@ try {
     closeTo(feedBox.x, scenario.desktop ? (scenario.width - expectedFeedWidth) / 2 : 0, `${scenario.name} feed x`)
     closeTo(cardBox.y, 0, `${scenario.name} card top`)
     assert.equal(await art.evaluate(image => getComputedStyle(image).objectFit), 'cover')
-    assert.equal(await art.evaluate(image => getComputedStyle(image).objectPosition), '50% 0%')
+    assert.ok(
+      ['50% 20.7%', '50% 26.8%', '50% 28.1%', '50% 49.7%'].includes(
+        await art.evaluate(image => getComputedStyle(image).objectPosition),
+      ),
+      `${scenario.name} must use one of the four calibrated TetraMindFck crops`,
+    )
+    assert.equal(await cover.locator('.mf-static-cover-title-preserver').count(), 1)
 
     const screenshot = `${output}/${scenario.name}-tetramindfck.png`
     await page.screenshot({ path: screenshot })

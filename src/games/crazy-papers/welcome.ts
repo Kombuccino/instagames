@@ -11,7 +11,8 @@ export const CRAZY_PAPERS_WELCOME: GameWelcomeConfig = {
       unlockScore: 0,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'top center',
+      objectPosition: 'center 13.2%',
+      preserveTitleHeight: 155,
     },
     {
       id: 'micro-records',
@@ -20,7 +21,8 @@ export const CRAZY_PAPERS_WELCOME: GameWelcomeConfig = {
       unlockScore: 5_000,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'top center',
+      objectPosition: 'center 26.4%',
+      preserveTitleHeight: 140,
     },
     {
       id: 'graphic-collapse',
@@ -29,7 +31,8 @@ export const CRAZY_PAPERS_WELCOME: GameWelcomeConfig = {
       unlockScore: 15_000,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'top center',
+      objectPosition: 'center 36%',
+      preserveTitleHeight: 145,
     },
     {
       id: 'pulp-clerk',
@@ -38,7 +41,8 @@ export const CRAZY_PAPERS_WELCOME: GameWelcomeConfig = {
       unlockScore: 30_000,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'top center',
+      objectPosition: 'bottom center',
+      preserveTitleHeight: 170,
     },
     {
       id: 'constructivist-clerk',
@@ -47,9 +51,7 @@ export const CRAZY_PAPERS_WELCOME: GameWelcomeConfig = {
       unlockScore: 50_000,
       runtime: 'static',
       fit: 'cover',
-      // This source places its clerk in the expendable BAS. The approved art
-      // stays intact; a focal crop keeps her face above Core's fixed console.
-      objectPosition: 'center 70%',
+      objectPosition: 'bottom center',
     },
     {
       id: 'showa-paper-wave',
@@ -58,7 +60,8 @@ export const CRAZY_PAPERS_WELCOME: GameWelcomeConfig = {
       unlockScore: 75_000,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'top center',
+      objectPosition: 'center 55.4%',
+      preserveTitleHeight: 215,
     },
   ],
 }

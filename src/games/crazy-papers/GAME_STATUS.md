@@ -1,6 +1,12 @@
 # CrazyPapers — Suivi de création
 
-Mis à jour : 12 septembre 2026 à 23:25 Europe/Paris. Version livrable : `0.5.0`. Base combinée avant publication : `63468fedabe845d069d99fcdd6937d35e256f215` (`origin/main`).
+Mis à jour : 13 septembre 2026 à 09:34 Europe/Paris. Version livrable : `0.5.2`.
+
+## Calage final des six covers — 13 septembre 2026
+
+- L’export `minifugg-cover-calibration/v1` validé par l’utilisateur est appliqué : positions `13.2%`, `26.4%`, `36%`, `bottom`, `bottom` et `55.4%` dans l’ordre de la collection.
+- Les sources, masters PNG et WebP lossless restent octet pour octet inchangés. Pour les cinq crops qui coupaient le titre, Core conserve le bandeau supérieur exact du même raster et le fond suit la fenêtre choisie ; `Constructivist Clerk` utilise directement son ancrage BAS.
+- Les 24 cas A54 Brave, A54 Chrome, MASTER et desktop passent pour les six éditions : largeur pleine, titre entier, personnage au-dessus de JOUER, sélection, lancement/retour et aucune erreur console.
 
 ## Correctif affichage 0.4.1 — 12 septembre 2026
 

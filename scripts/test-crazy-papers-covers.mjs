@@ -8,17 +8,18 @@ const output = process.env.CRAZY_PAPERS_COVER_OUTPUT || 'artifacts/crazy-papers-
 await fs.mkdir(output, { recursive: true })
 
 const editions = [
-  ['pulp-disaster', 0, 'v1-pulp-disaster.webp', '50% 0%'],
-  ['micro-records', 5_000, 'v2-micro-records.webp', '50% 0%'],
-  ['graphic-collapse', 15_000, 'v3-graphic-collapse.webp', '50% 0%'],
-  ['pulp-clerk', 30_000, 'v4-pulp-clerk.webp', '50% 0%'],
-  ['constructivist-clerk', 50_000, 'v5-constructivist-clerk.webp', '50% 70%'],
-  ['showa-paper-wave', 75_000, 'v6-showa-paper-wave.webp', '50% 0%'],
-].map(([id, unlockScore, file, position]) => ({
+  ['pulp-disaster', 0, 'v1-pulp-disaster.webp', '50% 13.2%', 155],
+  ['micro-records', 5_000, 'v2-micro-records.webp', '50% 26.4%', 140],
+  ['graphic-collapse', 15_000, 'v3-graphic-collapse.webp', '50% 36%', 145],
+  ['pulp-clerk', 30_000, 'v4-pulp-clerk.webp', '50% 100%', 170],
+  ['constructivist-clerk', 50_000, 'v5-constructivist-clerk.webp', '50% 100%', 0],
+  ['showa-paper-wave', 75_000, 'v6-showa-paper-wave.webp', '50% 55.4%', 215],
+].map(([id, unlockScore, file, position, titleHeight]) => ({
   id,
   unlockScore,
   file,
   position,
+  titleHeight,
   src: `/assets/generated/crazy-papers/welcome/variants/runtime/${file}`,
 }))
 
@@ -48,7 +49,10 @@ try {
   for (const variant of CRAZY_PAPERS_WELCOME.variants) {
     assert.equal(variant.runtime, 'static')
     assert.equal(variant.fit, 'cover')
-    assert.equal(variant.objectPosition, variant.id === 'constructivist-clerk' ? 'center 70%' : 'top center')
+    const expected = editions.find(edition => edition.id === variant.id)
+    const declaredPosition = expected.position === '50% 100%' ? 'bottom center' : expected.position.replace('50%', 'center')
+    assert.equal(variant.objectPosition, declaredPosition)
+    assert.equal(variant.preserveTitleHeight ?? 0, expected.titleHeight)
     assert.ok(!variant.layers?.length)
   }
 
@@ -121,6 +125,8 @@ try {
       assert.ok(value.paintedHeight + 0.01 >= value.boxHeight)
       assert.equal(await shell.getAttribute('data-cover-migration'), 'current')
       assert.equal(await shell.locator('canvas').count(), 0)
+      const titlePreserver = shell.locator('.mf-static-cover-title-preserver')
+      assert.equal(await titlePreserver.count(), editions.find(edition => edition.src === value.src).titleHeight ? 1 : 0)
       return value
     }
 

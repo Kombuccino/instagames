@@ -11,7 +11,8 @@ export const TETRAMINDFCK_WELCOME: GameWelcomeConfig = {
       unlockScore: 0,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'top center',
+      objectPosition: 'center 20.7%',
+      preserveTitleHeight: 150,
     },
     {
       id: 'micro-euro',
@@ -20,7 +21,8 @@ export const TETRAMINDFCK_WELCOME: GameWelcomeConfig = {
       unlockScore: 5_000,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'top center',
+      objectPosition: 'center 26.8%',
+      preserveTitleHeight: 155,
     },
     {
       id: 'graphic-poster',
@@ -29,7 +31,8 @@ export const TETRAMINDFCK_WELCOME: GameWelcomeConfig = {
       unlockScore: 15_000,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'top center',
+      objectPosition: 'center 28.1%',
+      preserveTitleHeight: 148,
     },
     {
       id: 'japanese-edition',
@@ -38,7 +41,8 @@ export const TETRAMINDFCK_WELCOME: GameWelcomeConfig = {
       unlockScore: 30_000,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'top center',
+      objectPosition: 'center 49.7%',
+      preserveTitleHeight: 180,
     },
   ],
 }

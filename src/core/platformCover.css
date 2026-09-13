@@ -40,6 +40,26 @@
   -webkit-user-drag: none;
 }
 
+.mf-static-cover-title-preserver {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  left: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.mf-core-selected-cover .mf-static-cover-title-preserver img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 216.4103cqw;
+  object-fit: fill;
+  object-position: top center;
+}
+
 .mf-pixel-coin {
   display: inline-block;
   width: 20px;

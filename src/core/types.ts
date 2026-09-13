@@ -29,6 +29,8 @@ export type GameWelcomeVariant = {
   image: string
   unlockScore?: number
   objectPosition?: string
+  /** Keep this logical-height title strip fixed while the base art follows its calibrated crop. */
+  preserveTitleHeight?: number
   /** Preserve an uncroppable flat master/title; Core fills the outside with decorative overscan. */
   fit?: 'cover' | 'contain'
   /** Covers are static raster art rendered by Core. */

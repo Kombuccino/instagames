@@ -8,14 +8,16 @@ const output = 'artifacts/tetramindfck-covers'
 await fs.mkdir(output, { recursive: true })
 
 const editions = [
-  ['pulp-euro', 0, 'v1-pulp-euro.webp'],
-  ['micro-euro', 5_000, 'v2-micro-euro.webp'],
-  ['graphic-poster', 15_000, 'v3-graphic-poster.webp'],
-  ['japanese-edition', 30_000, 'v4-japanese-edition.webp'],
-].map(([id, unlockScore, file]) => ({
+  ['pulp-euro', 0, 'v1-pulp-euro.webp', '50% 20.7%', 150],
+  ['micro-euro', 5_000, 'v2-micro-euro.webp', '50% 26.8%', 155],
+  ['graphic-poster', 15_000, 'v3-graphic-poster.webp', '50% 28.1%', 148],
+  ['japanese-edition', 30_000, 'v4-japanese-edition.webp', '50% 49.7%', 180],
+].map(([id, unlockScore, file, position, titleHeight]) => ({
   id,
   unlockScore,
   file,
+  position,
+  titleHeight,
   src: `/assets/generated/tetramindfck/welcome/variants/runtime/${file}`,
 }))
 
@@ -45,7 +47,9 @@ try {
   for (const variant of TETRAMINDFCK_WELCOME.variants) {
     assert.equal(variant.runtime, 'static')
     assert.equal(variant.fit, 'cover')
-    assert.equal(variant.objectPosition, 'top center')
+    const expected = editions.find(edition => edition.id === variant.id)
+    assert.equal(variant.objectPosition, expected.position.replace('50%', 'center'))
+    assert.equal(variant.preserveTitleHeight, expected.titleHeight)
     assert.ok(!variant.layers?.length)
   }
 
@@ -114,13 +118,16 @@ try {
       assert.equal(value.src, editions[index].src)
       assert.deepEqual([value.width, value.height], [780, 1688])
       assert.equal(value.fit, 'cover')
-      assert.equal(value.position, '50% 0%')
+      assert.equal(value.position, editions[index].position)
       assert.equal(value.overflow, 'hidden')
       assert.equal(value.animation, 'none')
       assert.ok(value.paintedWidth + 0.01 >= value.boxWidth)
       assert.ok(value.paintedHeight + 0.01 >= value.boxHeight)
       assert.equal(await shell.getAttribute('data-cover-migration'), 'current')
       assert.equal(await shell.locator('canvas').count(), 0)
+      const titlePreserver = shell.locator('.mf-static-cover-title-preserver')
+      assert.equal(await titlePreserver.count(), 1)
+      assert.equal(Number(await titlePreserver.getAttribute('data-preserved-title-height')), editions[index].titleHeight)
 
       const playBox = await fixedControls.locator('.mf-coin-console-90s').boundingBox()
       const coverBox = await art.boundingBox()
@@ -240,7 +247,7 @@ try {
       passed: true,
       editions: 4,
       input: format.hasTouch ? 'touch' : 'mouse',
-      topAnchoring: true,
+      calibratedCrop: true,
       playOverlapChecked: true,
       consoleControlsAligned: true,
       normalizedPlayAtlas: true,

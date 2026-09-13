@@ -15,12 +15,12 @@ The three imported flat posters remain the approved visual references for their 
 
 - Text allowed in every final cover: the game title only — `TetraMindFck` for the first three editions and the exact localized title `テトラマインドファック` for the Japanese edition.
 - Original title, subject, palette, composition and medium remain authoritative; this pass does not approve reinterpretation.
-- Static images use top anchoring. Lower decoration may be cropped or covered by JOUER; the title must remain above that button.
+- The user-calibrated runtime positions are `20.7%`, `26.8%`, `28.1%` and `49.7%`. Core reads the untouched title strip from the same static raster above the calibrated base crop, so no title or illustration is regenerated.
 - `pulp-euro`: original/cleaned composition is retained above the lower-body blend; the correction continues coat anatomy and restrained Tetra fragments instead of a black void.
 - `micro-euro`: the correction is limited to the lower-body blend and narrow perimeter; the torso, low green-grid environment and normal image surface replace the empty floor and fake old-box frame.
 - `graphic-poster`: only the narrow perimeter is corrected; interior paper grain and the existing lower-body ending are retained while the distressed border/corners are removed.
 - PNG masters and sources are opaque, single-frame and technically decoded. Runtime WebPs are opaque, single-frame and use a `VP8L` lossless payload.
-- The four-edition collection passed twelve browser cases on `360 × 611`, `390 × 844` and `1280 × 720`: static top anchoring, lossless `780 × 1688` WebP decoding, continuous fill, no cover canvas, no console/asset error and JOUER confined to the expendable lower zone.
+- The four-edition collection passed twelve browser cases on `360 × 611`, `390 × 844` and `1280 × 720`: calibrated static crops, lossless `780 × 1688` WebP decoding, continuous fill, preserved titles, no cover canvas, no console/asset error and JOUER confined to the expendable lower zone.
 - The superseded Phaser layer bundles and shared animated-cover runtime were removed after acceptance. Git history preserves the experiment; production contains only the static set.
 
 ## Japanese edition reference recovered — 2026-09-12

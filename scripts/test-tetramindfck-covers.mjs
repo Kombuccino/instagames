@@ -194,8 +194,8 @@ try {
     for (let index = 0; index < 4; index++) {
       assert.match(await frames.nth(index).evaluate(element => getComputedStyle(element).backgroundImage), /play-states-atlas\.webp/)
     }
-    assert.match(await idleFrame.evaluate(element => getComputedStyle(element).filter), /brightness\(0\.42\)/,
-      'PLAY must spend its off phase visibly dimmed')
+    assert.match(await idleFrame.evaluate(element => getComputedStyle(element).filter), /brightness\(0\.29\)/,
+      'PLAY must remain visibly amber while reading as unlit')
     assert.equal(await warmFrame.evaluate(element => getComputedStyle(element).animationName), 'mf-play-warm-lamp')
     assert.equal(await hotFrame.evaluate(element => getComputedStyle(element).animationName), 'mf-play-hot-lamp')
     assert.doesNotMatch(await warmFrame.evaluate(element => getComputedStyle(element).animationTimingFunction), /steps/,

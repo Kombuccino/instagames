@@ -1,5 +1,14 @@
 # TetraMindFck — Changelog
 
+## 0.8.0 — 2026-09-13 10:48 Europe/Paris
+
+- Intégration de la coque raster CRT dans la scène Phaser en remplacement du blockout géométrique temporaire.
+- Tous les CRT sont désormais dimensionnés directement sur les ouvertures mesurées de la coque afin qu’aucun décor de fond n’apparaisse entre l’écran et son logement.
+- Les cinq contrôles utilisent les assets de boutons importés et remplissent leurs logements réels ; l’état appuyé conserve exactement la même emprise avec une compression mécanique légère.
+- La grille `10 × 20` est recalée à l’intérieur du grand CRT avec des cellules carrées, et le score reste dans la bande supérieure du même écran.
+- `LEVEL`, `TARGET`, `NEXT` et `NEXT+1` utilisent les quatre ouvertures CRT latérales réelles ; les previews restent centrées et acceptent la pièce I de quatre cases.
+- Gameplay, RNG, scoring, objectifs de clear, accélération, bonus et lock en 3 ticks restent inchangés.
+
 ## 0.7.2 — 2026-09-13 09:34 Europe/Paris
 
 - Application des quatre cadrages validés dans l’outil de calage des covers.

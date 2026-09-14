@@ -1,5 +1,14 @@
 # LineFugg — Changelog
 
+## [0.8.1] — 2026-09-14 16:38 Europe/Paris
+
+- La composition PC est affinée sans changer la DA : grille légèrement agrandie, astres de résultat mieux proportionnés et soleil recentré dans une hiérarchie plus lisible.
+- Les scores sont recalés et contrastés selon leur astre — sombre sur le rouge, blancs sur le violet et le jaune — avec adaptation conservée pour les valeurs décimales.
+- Les diamants sélectionnés masquent désormais le flux qui passe dessous : les chiffres et opérateurs restent nets, tandis que les liaisons vers le soleil épousent mieux la taille réelle des astres.
+- Les commandes gagnent en largeur mais conservent une hauteur optique identique entre Undo, Validate et le bouton Retour Core sur PC.
+
+Vérifié : assets runtime WebP/atlas, scénario complet, matrice téléphone/tablette/PC et mouvement réduit, contrôle visuel des états vide, une ligne et trois lignes.
+
 ## [0.8.0] — 2026-09-14 12:25 Europe/Paris
 
 - Le pack correctif **Solar Origami v3** remplace les éléments v2 refusés : astres conformes aux trois silhouettes de la DA, glyphes raster fins, commandes claires et flux modulaires.

@@ -1,6 +1,6 @@
 # LineFugg — Suivi de création
 
-Mis à jour : 14 septembre 2026 à 12:25 Europe/Paris. Version : `0.8.0`. Changelog : `CHANGELOG.md`.
+Mis à jour : 14 septembre 2026 à 16:38 Europe/Paris. Version : `0.8.1`. Changelog : `CHANGELOG.md`.
 
 Runtime Phaser 4.2.1, stage 390 × 844. Prototype, game design et équilibre validés par l'utilisateur. Direction gameplay active : **Solar Origami**. Cover runtime : current ; quatre références approuvées conservées et quatre restaurations statiques plein cadre actives.
 
@@ -18,13 +18,13 @@ Références : [ART_DIRECTION.md](ART_DIRECTION.md), [ASSET_MANIFEST.md](ASSET_M
 | --- | --- | --- |
 | Prototype / GD / équilibre | Validés utilisateur | Rien à rouvrir sans nouvelle demande |
 | Gameplay Phaser | Fonctionnel et vérifié | Profilage téléphone physique seulement |
-| DA gameplay | Solar Origami v3 intégrée | Revue artistique utilisateur en jeu |
+| DA gameplay | Solar Origami v3 intégrée et affinée | Revue artistique utilisateur en jeu |
 | Inputs / responsive | Vérifiés en émulation | Contrôle appareil réel recommandé |
 | Animations / FX | Sélection, transfert vers les astres et flux vers le soleil intégrés ; mouvement réduit pris en charge | Revue artistique finale en jeu |
 | Audio | Musiques conservées | Écoute finale du mix/SFX restant à faire |
 | Covers | 4 statiques `390×844` intégrées, ancrées en haut | Revue visuelle utilisateur du lot remis aux normes |
 | Assets runtime | Pack Solar Origami v3 actif ; fond et débris v2 conservés | Revue artistique puis remplacement éventuel du décor hérité |
-| Livraison | `0.8.0` | Déploiement applicatif distinct de la publication GitHub |
+| Livraison | `0.8.1` | Déploiement applicatif distinct de la publication GitHub |
 
 ## Optimisation images runtime — 11 septembre 2026
 

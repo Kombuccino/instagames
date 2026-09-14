@@ -11,17 +11,21 @@ const MAX_LINE_CELLS = 5
 const GAME_ID = 'linefugg'
 
 // Fixed logical composition. Generated grid spacing is never used for hit testing.
-const BOARD_X = 55
-const BOARD_Y = 128
-const BOARD_SIZE = 280
+const BOARD_X = 48
+const BOARD_Y = 116
+const BOARD_SIZE = 294
 const CELL_SIZE = BOARD_SIZE / GRID_SIZE
-const RESULT_Y = 505
+const RESULT_Y = 510
 // DA order is violet left, red centre, yellow right; gameplay line order remains red, violet, yellow.
 const RESULT_POSITIONS = [195, 92, 298] as const
-const SUN_Y = 628
-const CONTROL_Y = 714
+const RESULT_SIZES = [106, 112, 114] as const
+const RESULT_SCORE_Y_OFFSETS = [5, 12, 10] as const
+const RESULT_SCORE_COLORS = [0x071526, 0xffffff, 0xffffff] as const
+const SUN_Y = 629
+const SUN_SIZE = 124
+const CONTROL_Y = 720
 const CONTROL_BUTTON_SIZE = 48
-const CONTROL_BUTTON_WIDTH = 150
+const CONTROL_BUTTON_WIDTH = 160
 const UNDO_X = 97
 const VALIDATE_X = 293
 
@@ -470,13 +474,15 @@ export class LineFuggScene extends Phaser.Scene {
     for (let index = 0; index < MAX_LINES; index++) {
       this.resultCrafts.push(this.add.image(
         RESULT_POSITIONS[index], RESULT_Y, ASSETS.results[0], `result-${index + 1}-inactive`,
-      ).setDisplaySize(90, 90).setDepth(31))
-      this.resultValues.push(this.createGlyphDisplay(RESULT_POSITIONS[index], RESULT_Y + 1))
+      ).setDisplaySize(RESULT_SIZES[index], RESULT_SIZES[index]).setDepth(31))
+      this.resultValues.push(this.createGlyphDisplay(
+        RESULT_POSITIONS[index], RESULT_Y + RESULT_SCORE_Y_OFFSETS[index],
+      ))
       this.resultValues[index].container.setDepth(33)
       this.flowShards.push(this.add.image(0, 0, this.transferTexture(index), `transfer-${this.lineColorName(index)}-01`)
         .setDisplaySize(28, 14).setDepth(29).setVisible(false))
     }
-    this.sun = this.add.image(195, SUN_Y, ASSETS.suns[0], 'sun-neutral').setDisplaySize(116, 116).setDepth(32)
+    this.sun = this.add.image(195, SUN_Y, ASSETS.suns[0], 'sun-neutral').setDisplaySize(SUN_SIZE, SUN_SIZE).setDepth(32)
     this.totalValue = this.createGlyphDisplay(195, SUN_Y + 1)
     this.totalValue.container.setDepth(34)
   }
@@ -1027,7 +1033,9 @@ export class LineFuggScene extends Phaser.Scene {
       this.resultValues[index].container.setVisible(Boolean(line))
       if (line) {
         const value = formatScore(line.score)
-        this.setGlyphDisplay(this.resultValues[index], value, fittedScoreHeight(value, 20, 15, 12), 0x071526)
+        this.setGlyphDisplay(
+          this.resultValues[index], value, fittedScoreHeight(value, 19, 14, 11), RESULT_SCORE_COLORS[index],
+        )
       }
     })
     const sunFrame = ['sun-neutral', 'sun-red', 'sun-red-violet', 'sun-final-tricolor'][this.lines.length]
@@ -1070,9 +1078,9 @@ export class LineFuggScene extends Phaser.Scene {
     this.energyGraphics.clear()
 
     this.lines.forEach((_line, index) => {
-      const start = new Phaser.Math.Vector2(RESULT_POSITIONS[index], RESULT_Y + 34)
-      const end = new Phaser.Math.Vector2(195, SUN_Y - 40)
-      const control = new Phaser.Math.Vector2(RESULT_POSITIONS[index] + (index - 1) * 18, 570)
+      const start = new Phaser.Math.Vector2(RESULT_POSITIONS[index], RESULT_Y + RESULT_SIZES[index] * 0.38)
+      const end = new Phaser.Math.Vector2(195, SUN_Y - SUN_SIZE * 0.42)
+      const control = new Phaser.Math.Vector2(RESULT_POSITIONS[index] + (index - 1) * 22, 570)
       const curve = new Phaser.Curves.QuadraticBezier(start, control, end)
       const color = LINE_COLORS[index]
       const points = curve.getPoints(24)

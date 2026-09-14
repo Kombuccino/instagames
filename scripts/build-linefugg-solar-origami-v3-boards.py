@@ -93,6 +93,9 @@ def colorize_selected_cell(image: Image.Image, color: tuple[int, int, int]) -> I
     colored = target * brightness
     highlight = np.clip((luminance[..., None] - 0.91) / 0.09, 0, 1) * 0.68
     rgba[..., :3] = colored * (1 - highlight) + 255 * highlight
+    # Keep the authored outer glow translucent, but make the diamond itself opaque so
+    # the energy ribbon cannot muddy the rasterised glyph placed above it at runtime.
+    rgba[rgba[..., 3] >= 96, 3] = 255
     return Image.fromarray(np.clip(rgba, 0, 255).astype(np.uint8), "RGBA")
 
 

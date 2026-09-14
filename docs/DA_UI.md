@@ -72,6 +72,8 @@ La correction des pièces du 13 septembre 2026 remplace la rotation saccadée en
 
 La validation du 14 septembre 2026 remplace toutes les recherches de monnaie antérieures par une référence canonique unique : `public/assets/generated/platform/ui/coin-console-90s/sources/coin-fuggy-user-reference.png`, nettoyée sans redessin dans `masters/coin-fuggy-reference.png`. C’est une pièce ronde en or facetté, portant la tête géométrique de Fuggy au centre, `IN FUGG WE THRUST` sur l’arc supérieur, `1 FUGGY` et `2026` en partie basse. Ce dessin exact doit être repris partout ; aucun générateur ne doit en improviser une variante. Le compteur et les petits badges utilisent sa dérivée frontale lossless ; le monnayeur utilise une dérivée mécanique en trois-quarts calculée depuis le même master. Les tailles de référence dans le Core sont `20 px`, `14 px` pour les badges compacts, environ `27 × 31 px` dans le logement du compteur à la largeur logique `390`, et une cellule transparente `96 × 96 px` pour l’insertion locale.
 
+Le solde numérique du compteur est fixé à `22 px` sur téléphone comme sur PC. Il ne suit pas la largeur du cadre et ne doit plus être réduit par une unité `cqw` ou une règle mobile.
+
 ## Info : panneau entier et scrollable
 
 Conserver les onglets Info/Comments dans la même famille. L'ordre est : sélection des covers ; titre et créateur ; description ; version et dernière mise à jour ; high score personnel et accès au leaderboard ; règles ; section créateur.

@@ -1,0 +1,75 @@
+{
+  "frames": {
+    "node-neutral": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 160
+      }
+    },
+    "node-hover": {
+      "frame": {
+        "x": 160,
+        "y": 0,
+        "w": 160,
+        "h": 160
+      }
+    },
+    "node-red": {
+      "frame": {
+        "x": 320,
+        "y": 0,
+        "w": 160,
+        "h": 160
+      }
+    },
+    "node-violet": {
+      "frame": {
+        "x": 480,
+        "y": 0,
+        "w": 160,
+        "h": 160
+      }
+    },
+    "node-yellow": {
+      "frame": {
+        "x": 0,
+        "y": 160,
+        "w": 160,
+        "h": 160
+      }
+    },
+    "node-shared-red-violet": {
+      "frame": {
+        "x": 160,
+        "y": 160,
+        "w": 160,
+        "h": 160
+      }
+    },
+    "node-shared-red-yellow": {
+      "frame": {
+        "x": 320,
+        "y": 160,
+        "w": 160,
+        "h": 160
+      }
+    },
+    "node-shared-violet-yellow": {
+      "frame": {
+        "x": 480,
+        "y": 160,
+        "w": 160,
+        "h": 160
+      }
+    }
+  },
+  "meta": {
+    "size": {
+      "w": 640,
+      "h": 320
+    },
+    "scale": "1"
+  }
+}

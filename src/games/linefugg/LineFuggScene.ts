@@ -16,7 +16,8 @@ const BOARD_Y = 128
 const BOARD_SIZE = 280
 const CELL_SIZE = BOARD_SIZE / GRID_SIZE
 const RESULT_Y = 505
-const RESULT_POSITIONS = [92, 195, 298] as const
+// DA order is violet left, red centre, yellow right; gameplay line order remains red, violet, yellow.
+const RESULT_POSITIONS = [195, 92, 298] as const
 const SUN_Y = 628
 const CONTROL_Y = 714
 const CONTROL_BUTTON_SIZE = 48
@@ -24,21 +25,22 @@ const CONTROL_BUTTON_WIDTH = 150
 const UNDO_X = 97
 const VALIDATE_X = 293
 
-const ASSET_ROOT = '/assets/generated/linefugg/solar-origami-v2/runtime'
+const ASSET_ROOT = '/assets/generated/linefugg/solar-origami-v3/runtime'
+const LEGACY_ASSET_ROOT = '/assets/generated/linefugg/solar-origami-v2/runtime'
 
 const ASSETS = {
-  cells: ['linefugg-solar-cells', `${ASSET_ROOT}/cells/cell-faces-atlas-v2.webp`, `${ASSET_ROOT}/cells/cell-faces-atlas-v2.json`],
-  results: ['linefugg-solar-results', `${ASSET_ROOT}/results/result-crafts-atlas-v2.webp`, `${ASSET_ROOT}/results/result-crafts-atlas-v2.json`],
-  suns: ['linefugg-solar-suns', `${ASSET_ROOT}/results/sun-and-clusters-atlas-v2.webp`, `${ASSET_ROOT}/results/sun-and-clusters-atlas-v2.json`],
-  controls: ['linefugg-solar-controls', `${ASSET_ROOT}/controls/control-buttons-atlas-v2.webp`, `${ASSET_ROOT}/controls/control-buttons-atlas-v2.json`],
-  glyphs: ['linefugg-solar-glyphs', `${ASSET_ROOT}/glyphs/gameplay-glyphs-atlas-v2.webp`, `${ASSET_ROOT}/glyphs/gameplay-glyphs-atlas-v2.json`],
-  nodes: ['linefugg-solar-nodes', `${ASSET_ROOT}/fx/selection-nodes-atlas-v2.webp`, `${ASSET_ROOT}/fx/selection-nodes-atlas-v2.json`],
-  segments: ['linefugg-solar-segments', `${ASSET_ROOT}/fx/selection-segments-atlas-v2.webp`, `${ASSET_ROOT}/fx/selection-segments-atlas-v2.json`],
-  arrivals: ['linefugg-solar-arrivals', `${ASSET_ROOT}/fx/arrival-particles-atlas-v2.webp`, `${ASSET_ROOT}/fx/arrival-particles-atlas-v2.json`],
-  debris: ['linefugg-solar-debris', `${ASSET_ROOT}/decor/debris-atlas-v2.webp`, `${ASSET_ROOT}/decor/debris-atlas-v2.json`],
-  transferRed: ['linefugg-solar-transfer-red', `${ASSET_ROOT}/fx/transfer-red-atlas-v2.webp`, `${ASSET_ROOT}/fx/transfer-red-atlas-v2.json`],
-  transferViolet: ['linefugg-solar-transfer-violet', `${ASSET_ROOT}/fx/transfer-violet-atlas-v2.webp`, `${ASSET_ROOT}/fx/transfer-violet-atlas-v2.json`],
-  transferYellow: ['linefugg-solar-transfer-yellow', `${ASSET_ROOT}/fx/transfer-yellow-atlas-v2.webp`, `${ASSET_ROOT}/fx/transfer-yellow-atlas-v2.json`],
+  cells: ['linefugg-solar-v3-cells', `${ASSET_ROOT}/cells/cell-states-atlas-v3.webp`, `${ASSET_ROOT}/cells/cell-states-atlas-v3.json`],
+  results: ['linefugg-solar-v3-results', `${ASSET_ROOT}/results/result-crafts-atlas-v3.webp`, `${ASSET_ROOT}/results/result-crafts-atlas-v3.json`],
+  suns: ['linefugg-solar-v3-suns', `${ASSET_ROOT}/results/sun-states-atlas-v3.webp`, `${ASSET_ROOT}/results/sun-states-atlas-v3.json`],
+  controls: ['linefugg-solar-v3-controls', `${ASSET_ROOT}/controls/control-buttons-atlas-v3.webp`, `${ASSET_ROOT}/controls/control-buttons-atlas-v3.json`],
+  glyphs: ['linefugg-solar-v3-glyphs', `${ASSET_ROOT}/glyphs/gameplay-glyphs-atlas-v3.webp`, `${ASSET_ROOT}/glyphs/gameplay-glyphs-atlas-v3.json`],
+  nodes: ['linefugg-solar-v3-nodes', `${ASSET_ROOT}/fx/selection-nodes-atlas-v3.webp`, `${ASSET_ROOT}/fx/selection-nodes-atlas-v3.json`],
+  segments: ['linefugg-solar-v3-segments', `${ASSET_ROOT}/fx/selection-segments-atlas-v3.webp`, `${ASSET_ROOT}/fx/selection-segments-atlas-v3.json`],
+  arrivals: ['linefugg-solar-v3-arrivals', `${ASSET_ROOT}/fx/arrival-particles-atlas-v3.webp`, `${ASSET_ROOT}/fx/arrival-particles-atlas-v3.json`],
+  debris: ['linefugg-solar-debris', `${LEGACY_ASSET_ROOT}/decor/debris-atlas-v2.webp`, `${LEGACY_ASSET_ROOT}/decor/debris-atlas-v2.json`],
+  transferRed: ['linefugg-solar-v3-transfer-red', `${ASSET_ROOT}/fx/transfer-red-atlas-v3.webp`, `${ASSET_ROOT}/fx/transfer-red-atlas-v3.json`],
+  transferViolet: ['linefugg-solar-v3-transfer-violet', `${ASSET_ROOT}/fx/transfer-violet-atlas-v3.webp`, `${ASSET_ROOT}/fx/transfer-violet-atlas-v3.json`],
+  transferYellow: ['linefugg-solar-v3-transfer-yellow', `${ASSET_ROOT}/fx/transfer-yellow-atlas-v3.webp`, `${ASSET_ROOT}/fx/transfer-yellow-atlas-v3.json`],
 } as const
 
 const ERROR = 0xff5b3d
@@ -227,6 +229,17 @@ function cellCenter(point: Point) {
   }
 }
 
+function cellGlyphHeight(cell: Cell) {
+  if (cell.kind !== 'add') return 17
+  return cell.value < 0 ? 18 : 21
+}
+
+function fittedScoreHeight(value: string, normal: number, compact: number, minimum: number) {
+  if (value.length <= 2) return normal
+  if (value.length <= 4) return compact
+  return minimum
+}
+
 export class LineFuggScene extends Phaser.Scene {
   private readonly bridge: LineFuggSceneBridge
 
@@ -247,6 +260,7 @@ export class LineFuggScene extends Phaser.Scene {
   private controlPulseGraphics!: Phaser.GameObjects.Graphics
 
   private cellBaseImages: Phaser.GameObjects.Image[] = []
+  private cellGlyphs: GlyphDisplay[] = []
   private cellSelectionImages: Phaser.GameObjects.Image[] = []
   private lineSegmentImages: Phaser.GameObjects.Image[] = []
   private lineArrowImages: Phaser.GameObjects.Image[] = []
@@ -339,13 +353,6 @@ export class LineFuggScene extends Phaser.Scene {
     return [ASSETS.transferRed[0], ASSETS.transferViolet[0], ASSETS.transferYellow[0]][Phaser.Math.Clamp(index, 0, 2)]
   }
 
-  private cellFrame(cell: Cell) {
-    if (cell.kind === 'multiply') return `times-${cell.value}`
-    if (cell.kind === 'divide') return `divide-${cell.value}`
-    if (cell.value < 0) return `minus-${Math.abs(cell.value)}`
-    return String(cell.value)
-  }
-
   private createGlyphDisplay(x: number, y: number): GlyphDisplay {
     return { container: this.add.container(x, y), images: [], text: '', styleKey: '' }
   }
@@ -387,6 +394,7 @@ export class LineFuggScene extends Phaser.Scene {
     this.undoPressed = false
     this.validatePressed = false
     this.cellBaseImages = []
+    this.cellGlyphs = []
     this.cellSelectionImages = []
     this.lineSegmentImages = []
     this.lineArrowImages = []
@@ -423,10 +431,17 @@ export class LineFuggScene extends Phaser.Scene {
   }
 
   private createBoardObjects() {
-    this.cellBaseImages = this.board.map((cell, index) => {
+    this.cellBaseImages = this.board.map((_cell, index) => {
       const position = cellCenter({ row: Math.floor(index / GRID_SIZE), col: index % GRID_SIZE })
-      return this.add.image(position.x, position.y, ASSETS.cells[0], this.cellFrame(cell))
+      return this.add.image(position.x, position.y, ASSETS.cells[0], 'cell-neutral')
         .setDisplaySize(CELL_SIZE - 2, CELL_SIZE - 2).setDepth(10)
+    })
+    this.cellGlyphs = this.board.map((cell, index) => {
+      const position = cellCenter({ row: Math.floor(index / GRID_SIZE), col: index % GRID_SIZE })
+      const glyph = this.createGlyphDisplay(position.x, position.y)
+      glyph.container.setDepth(17)
+      this.setGlyphDisplay(glyph, cell.label, cellGlyphHeight(cell), 0x071526)
+      return glyph
     })
     this.cellSelectionImages = this.board.map((_cell, index) => {
       const position = cellCenter({ row: Math.floor(index / GRID_SIZE), col: index % GRID_SIZE })
@@ -694,7 +709,7 @@ export class LineFuggScene extends Phaser.Scene {
           lineLimit: MAX_LINE_CELLS,
           runtimeSeed: this.bridge.seed,
           rerollKeys: this.lines.map((line) => line.rerollKey).join(','),
-          artDirection: 'solar-origami',
+          artDirection: 'solar-origami-v3',
         },
       })
       this.scene.pause()
@@ -896,11 +911,14 @@ export class LineFuggScene extends Phaser.Scene {
     if (base) base.setScale(((CELL_SIZE - 2) / base.width) * widthFactor, (CELL_SIZE - 2) / base.height)
     const selection = this.cellSelectionImages[index]
     if (selection) selection.setScale(((CELL_SIZE + 5) / selection.width) * widthFactor, (CELL_SIZE + 5) / selection.height)
+    this.cellGlyphs[index]?.container.setScale(widthFactor, 1)
   }
 
   private refreshBoardCell(index: number) {
     const cell = this.board[index]
-    this.cellBaseImages[index]?.setTexture(ASSETS.cells[0], this.cellFrame(cell)).setDisplaySize(CELL_SIZE - 2, CELL_SIZE - 2)
+    this.cellBaseImages[index]?.setTexture(ASSETS.cells[0], 'cell-neutral').setDisplaySize(CELL_SIZE - 2, CELL_SIZE - 2)
+    const glyph = this.cellGlyphs[index]
+    if (glyph) this.setGlyphDisplay(glyph, cell.label, cellGlyphHeight(cell), 0x071526)
   }
 
   private refreshBoardCells() {
@@ -939,15 +957,20 @@ export class LineFuggScene extends Phaser.Scene {
       const col = index % GRID_SIZE
       const key = `${row}:${col}`
       const lineIndices = usedBy.get(key) ?? []
-      const dimensionSlot = this.cellDimensionSlots[index] ?? -1
       const marker = this.cellSelectionImages[index]
+      const base = this.cellBaseImages[index]
+      let colorIndex = -1
+      if (preview.has(key) && this.drag?.valid) colorIndex = this.lines.length
+      else if (lineIndices.length) colorIndex = lineIndices[lineIndices.length - 1]
+      // Free cells remain ivory. The next-line dimension is gameplay state, not a baked board wash.
+      base.setFrame(colorIndex >= 0 ? `cell-selected-${this.lineColorName(colorIndex)}` : 'cell-neutral').setAlpha(1)
+
+      const shared = lineIndices.length === 2
+      const invalidPreview = preview.has(key) && !this.drag?.valid
       let frame = ''
-      let alpha = 1
-      if (preview.has(key)) frame = this.drag?.valid ? `node-${this.lineColorName(this.lines.length)}` : 'node-hover'
-      else if (lineIndices.length === 2) frame = `node-shared-${this.lineColorName(lineIndices[0])}-${this.lineColorName(lineIndices[1])}`
-      else if (lineIndices.length === 1) frame = `node-${this.lineColorName(lineIndices[0])}`
-      else if (dimensionSlot >= 0 && dimensionSlot < MAX_LINES) { frame = `node-${this.lineColorName(dimensionSlot)}`; alpha = 0.18 }
-      marker.setVisible(Boolean(frame)).setAlpha(alpha)
+      if (shared) frame = `node-shared-${this.lineColorName(lineIndices[0])}-${this.lineColorName(lineIndices[1])}`
+      else if (invalidPreview) frame = 'node-hover'
+      marker.setVisible(Boolean(frame)).setAlpha(shared ? 0.72 : 0.88)
       if (frame && this.textures.get(ASSETS.nodes[0]).has(frame)) marker.setFrame(frame)
     })
   }
@@ -1002,11 +1025,15 @@ export class LineFuggScene extends Phaser.Scene {
       craft.setFrame(line ? `result-${index + 1}-active-${this.lineColorName(index)}` : `result-${index + 1}-inactive`)
         .setAlpha(line ? 1 : index === this.lines.length ? 0.92 : 0.58)
       this.resultValues[index].container.setVisible(Boolean(line))
-      if (line) this.setGlyphDisplay(this.resultValues[index], formatScore(line.score), 21, 0x071526)
+      if (line) {
+        const value = formatScore(line.score)
+        this.setGlyphDisplay(this.resultValues[index], value, fittedScoreHeight(value, 20, 15, 12), 0x071526)
+      }
     })
     const sunFrame = ['sun-neutral', 'sun-red', 'sun-red-violet', 'sun-final-tricolor'][this.lines.length]
     this.sun.setFrame(sunFrame)
-    this.setGlyphDisplay(this.totalValue, formatScore(this.totalScore()), 31, 0x071526)
+    const total = formatScore(this.totalScore())
+    this.setGlyphDisplay(this.totalValue, total, fittedScoreHeight(total, 29, 22, 18), 0x071526)
   }
 
   private renderControls() {
@@ -1018,8 +1045,8 @@ export class LineFuggScene extends Phaser.Scene {
     this.undoButton
       .setFrame(this.undoPressed ? 'button-undo-pressed' : 'button-undo-normal')
       .setDisplaySize(this.undoPressed ? CONTROL_BUTTON_WIDTH - 6 : CONTROL_BUTTON_WIDTH, this.undoPressed ? CONTROL_BUTTON_SIZE - 3 : CONTROL_BUTTON_SIZE)
-      .setTint(undoEnabled ? this.undoHovered ? 0xffefff : 0xffffff : 0x807589)
-      .setAlpha(undoEnabled ? 1 : 0.48)
+      .setTint(this.undoHovered && undoEnabled ? 0xffefff : 0xffffff)
+      .setAlpha(undoEnabled ? 1 : 0.82)
 
     this.validateButton
       .setFrame(validateEnabled ? 'button-validate-ready' : 'button-validate-disabled')

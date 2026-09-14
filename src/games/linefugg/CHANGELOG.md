@@ -1,5 +1,13 @@
 # LineFugg — Changelog
 
+## [0.8.0] — 2026-09-14 12:25 Europe/Paris
+
+- Le pack correctif **Solar Origami v3** remplace les éléments v2 refusés : astres conformes aux trois silhouettes de la DA, glyphes raster fins, commandes claires et flux modulaires.
+- Les cases et leur contenu sont désormais deux couches indépendantes. Les sélections utilisent les teintes exactes rouge `#FF5A36`, violet `#A54DFF` et jaune `#FFC72C`, tandis que chiffres et opérateurs restent lisibles au-dessus.
+- L'ordre visuel des résultats suit la DA — violet à gauche, rouge au centre, jaune à droite — sans modifier l'ordre mécanique des trois lignes. Les scores s'adaptent aux valeurs décimales sans déborder des astres ni du soleil.
+
+Vérifié : assets runtime WebP/atlas, typecheck/build, scénario complet et matrice navigateur téléphone, tablette, PC et mouvement réduit.
+
 ## [0.7.0] — 2026-09-14 00:10 Europe/Paris
 
 - La DA gameplay **Solar Origami** remplace Orbital Accounting sans modifier les règles : grille facettée compacte, astres de résultat ivoire puis rouge/violet/jaune, soleil de total progressif et décor spatial animé avec retenue.

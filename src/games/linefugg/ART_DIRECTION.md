@@ -1,6 +1,6 @@
 # LineFugg — Art Direction
 
-Status: runtime canonical **Solar Origami v2**, integrated 2026-09-14 after the user authorized the in-game replacement. Its fidelity was rejected in the live composition; the corrective production authority is now **Solar Origami v3**, prepared but not yet integrated. **Orbital Accounting** is retained below as superseded history.
+Status: runtime canonical **Solar Origami v3**, integrated 2026-09-14 after correction of the selected-cell colors and user authorization to test the new pack in game. **Solar Origami v2** and **Orbital Accounting** are retained below as superseded history.
 Cover status: current static collection, integrated 2026-09-07 after explicit user request. Preserve the four approved originals identified in ASSET_MANIFEST.md; animation is deferred, not a reason to retain the migration badge. Cover art follows DA_COVER.md, independently from the gameplay medium below.
 
 ## Replacement direction — Solar Origami, 2026-09-13

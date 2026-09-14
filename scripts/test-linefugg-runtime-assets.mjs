@@ -3,18 +3,18 @@ import fs from 'node:fs/promises'
 
 const assets = [
   'public/assets/generated/linefugg/solar-origami-v2/runtime/background/solar-origami-background-v2.webp',
-  'public/assets/generated/linefugg/solar-origami-v2/runtime/cells/cell-faces-atlas-v2.webp',
-  'public/assets/generated/linefugg/solar-origami-v2/runtime/results/result-crafts-atlas-v2.webp',
-  'public/assets/generated/linefugg/solar-origami-v2/runtime/results/sun-and-clusters-atlas-v2.webp',
-  'public/assets/generated/linefugg/solar-origami-v2/runtime/controls/control-buttons-atlas-v2.webp',
-  'public/assets/generated/linefugg/solar-origami-v2/runtime/glyphs/gameplay-glyphs-atlas-v2.webp',
-  'public/assets/generated/linefugg/solar-origami-v2/runtime/fx/selection-nodes-atlas-v2.webp',
-  'public/assets/generated/linefugg/solar-origami-v2/runtime/fx/selection-segments-atlas-v2.webp',
-  'public/assets/generated/linefugg/solar-origami-v2/runtime/fx/arrival-particles-atlas-v2.webp',
+  'public/assets/generated/linefugg/solar-origami-v3/runtime/cells/cell-states-atlas-v3.webp',
+  'public/assets/generated/linefugg/solar-origami-v3/runtime/results/result-crafts-atlas-v3.webp',
+  'public/assets/generated/linefugg/solar-origami-v3/runtime/results/sun-states-atlas-v3.webp',
+  'public/assets/generated/linefugg/solar-origami-v3/runtime/controls/control-buttons-atlas-v3.webp',
+  'public/assets/generated/linefugg/solar-origami-v3/runtime/glyphs/gameplay-glyphs-atlas-v3.webp',
+  'public/assets/generated/linefugg/solar-origami-v3/runtime/fx/selection-nodes-atlas-v3.webp',
+  'public/assets/generated/linefugg/solar-origami-v3/runtime/fx/selection-segments-atlas-v3.webp',
+  'public/assets/generated/linefugg/solar-origami-v3/runtime/fx/arrival-particles-atlas-v3.webp',
   'public/assets/generated/linefugg/solar-origami-v2/runtime/decor/debris-atlas-v2.webp',
-  'public/assets/generated/linefugg/solar-origami-v2/runtime/fx/transfer-red-atlas-v2.webp',
-  'public/assets/generated/linefugg/solar-origami-v2/runtime/fx/transfer-violet-atlas-v2.webp',
-  'public/assets/generated/linefugg/solar-origami-v2/runtime/fx/transfer-yellow-atlas-v2.webp',
+  'public/assets/generated/linefugg/solar-origami-v3/runtime/fx/transfer-red-atlas-v3.webp',
+  'public/assets/generated/linefugg/solar-origami-v3/runtime/fx/transfer-violet-atlas-v3.webp',
+  'public/assets/generated/linefugg/solar-origami-v3/runtime/fx/transfer-yellow-atlas-v3.webp',
 ]
 let total = 0
 for (const file of assets) {

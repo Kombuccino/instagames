@@ -1,10 +1,10 @@
 # LineFugg — Production asset manifest
 
-État canonique : 14 septembre 2026, version `0.7.0`, direction active **Solar Origami v2**. Appliquer `docs/GAME_ART_PRODUCTION_PIPELINE.md` et `docs/ASSET_PIPELINE.md`.
+État canonique : 14 septembre 2026, version `0.8.0`, direction active **Solar Origami v3**. Appliquer `docs/GAME_ART_PRODUCTION_PIPELINE.md` et `docs/ASSET_PIPELINE.md`.
 
 Les PNG approuvés et sources de travail sont conservés. **Le runtime gameplay charge uniquement les 13 dérivés WebP lossless Solar Origami nécessaires à la scène ; les grandes planches transparentes restent des sources de production.** Les quatre covers suivent le même principe, avec masters PNG distincts et dérivés WebP Core.
 
-## Pack correctif Solar Origami v3 — préparé, non intégré
+## Pack correctif Solar Origami v3 — actif
 
 Le retour utilisateur sur le runtime v2 impose une reconstruction fidèle à la DA validée. Le lot source est `public/assets/generated/linefugg/solar-origami-v3/` et sa référence unique est conservée sous `references/`. Le script `scripts/build-linefugg-solar-origami-v3-boards.py` convertit les sources sur chroma uniforme en véritables PNG RGBA, assemble cinq planches de production, génère leurs aperçus sur bleu nuit et découpe chaque composant.
 
@@ -16,7 +16,7 @@ Le retour utilisateur sur le runtime v2 impose une reconstruction fidèle à la 
 | Énergie | 7 modules par couleur rouge/violet/jaune : droit, diagonal, deux courbes, départ, arrivée et pulsation |
 | Commandes | `UNDO` normal/enfoncé et `VALIDATE` inactif/prêt, quatre supports de même gabarit |
 
-Les masters sont `masters/{celestial,cells,glyphs,energy,controls}-alpha-v3.png`; chaque élément isolé est sous `components/` et l'inventaire reproductible sous `solar-origami-v3-inventory.json`. La transparence est obtenue par chroma `#00FF00` uniforme puis démélange déterministe, jamais par damier peint. Les cinq masters ont de vrais pixels transparents, semi-transparents et opaques. Statut : **contrôle technique et visuel des planches effectué ; aucune URL runtime modifiée**.
+Les masters sont `masters/{celestial,cells,glyphs,energy,controls}-alpha-v3.png`; chaque élément isolé est sous `components/` et l'inventaire reproductible sous `solar-origami-v3-inventory.json`. La transparence est obtenue par chroma `#00FF00` uniforme puis démélange déterministe, jamais par damier peint. Les cinq masters ont de vrais pixels transparents, semi-transparents et opaques. Les atlas WebP/JSON actifs sont sous `runtime/`; seul le fond spatial et les petits débris restent hérités du v2. Statut : **intégré dans Phaser et vérifié sur la matrice multi-écrans ; revue artistique utilisateur en jeu ouverte**.
 
 La planche de revue `previews/review-catalog-v3.png` présente exactement les 52 composants découpés, regroupés par famille et identifiés par des codes stables `AST`, `CEL`, `GLY`, `ENG-R/V/Y` et `CTL`. Son damier sert uniquement à rendre l'alpha visible dans l'aperçu ; il n'appartient pas aux composants.
 

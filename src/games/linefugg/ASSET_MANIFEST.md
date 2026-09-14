@@ -4,6 +4,20 @@
 
 Les PNG approuvés et sources de travail sont conservés. **Le runtime gameplay charge uniquement les 13 dérivés WebP lossless Solar Origami nécessaires à la scène ; les grandes planches transparentes restent des sources de production.** Les quatre covers suivent le même principe, avec masters PNG distincts et dérivés WebP Core.
 
+## Pack correctif Solar Origami v3 — préparé, non intégré
+
+Le retour utilisateur sur le runtime v2 impose une reconstruction fidèle à la DA validée. Le lot source est `public/assets/generated/linefugg/solar-origami-v3/` et sa référence unique est conservée sous `references/`. Le script `scripts/build-linefugg-solar-origami-v3-boards.py` convertit les sources sur chroma uniforme en véritables PNG RGBA, assemble cinq planches de production, génère leurs aperçus sur bleu nuit et découpe chaque composant.
+
+| Planche v3 | Contenu |
+| --- | --- |
+| Céleste | 3 astres actifs conformes aux silhouettes violet/rouge/jaune, les 3 mêmes astres inactifs ivoire, 1 soleil neutre |
+| Cases | 4 diamants vides : ivoire, rouge, violet, jaune ; aucun glyphe incorporé |
+| Glyphes | `0…9`, `−`, `+`, `×`, `÷`, `.`, `=` en fonte raster fine et élégante, sans support de case |
+| Énergie | 7 modules par couleur rouge/violet/jaune : droit, diagonal, deux courbes, départ, arrivée et pulsation |
+| Commandes | `UNDO` normal/enfoncé et `VALIDATE` inactif/prêt, quatre supports de même gabarit |
+
+Les masters sont `masters/{celestial,cells,glyphs,energy,controls}-alpha-v3.png`; chaque élément isolé est sous `components/` et l'inventaire reproductible sous `solar-origami-v3-inventory.json`. La transparence est obtenue par chroma `#00FF00` uniforme puis démélange déterministe, jamais par damier peint. Les cinq masters ont de vrais pixels transparents, semi-transparents et opaques. Statut : **contrôle technique et visuel des planches effectué ; aucune URL runtime modifiée**.
+
 ## Pack Solar Origami v2 — actif
 
 Le premier pack `solar-origami/` est conservé uniquement comme trace d'une proposition refusée le 13 septembre : typographie trop éloignée de la maquette, boutons reconstruits, astres trop monochromes et flux insuffisamment détaillés. Il ne doit pas être intégré.

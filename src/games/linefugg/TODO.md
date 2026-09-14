@@ -8,7 +8,9 @@ Backlog durable du jeu. Voir `docs/TODO_NOTES.md`.
 
 ## Graphismes / DA / FX
 
-- Retenir comme piste de process pour les prochaines intégrations : après validation de la DA, demander une ou plusieurs grandes planches de production à fond réellement transparent, couvrant la liste exhaustive des composants, variantes d'état, glyphes et frames de FX ; contrôler alpha et textes, puis découper automatiquement chaque élément en PNG/WebP isolé et en atlas JSON avant tout branchement runtime. Le lot Solar Origami v2 est le premier essai concluant de cette méthode ; confirmer sa valeur après intégration et revue en jeu.
+- Process validé pour les prochaines intégrations : après validation de la DA, générer les éléments isolés sur un fond chroma `#00FF00` parfaitement uniforme, sans ombre portée ni halo sur le fond. Extraire ensuite ce chroma en alpha RGBA par script, contrôler les pixels transparents/semi-transparents/opaques, puis seulement découper les composants et construire les atlas. Ne plus demander de « damier transparent » ni faire confiance à une transparence annoncée sans inspection technique.
+- Conserver les supports et leur contenu séparés : cases vides d'un côté, tileset raster unique pour `0…9`, `+`, `−`, `×`, `÷`, `.`, `=` de l'autre. Ne jamais cuire un signe dans une case.
+- Avant intégration, faire valider les cinq planches Solar Origami v3, puis remplacer les dérivés runtime v2 sans modifier les règles de jeu.
 
 ## Audio
 

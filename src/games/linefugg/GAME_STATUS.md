@@ -18,12 +18,12 @@ Références : [ART_DIRECTION.md](ART_DIRECTION.md), [ASSET_MANIFEST.md](ASSET_M
 | --- | --- | --- |
 | Prototype / GD / équilibre | Validés utilisateur | Rien à rouvrir sans nouvelle demande |
 | Gameplay Phaser | Fonctionnel et vérifié | Profilage téléphone physique seulement |
-| DA gameplay | Solar Origami v2 intégrée ; pack v1 refusé et inactif | Revue artistique finale en jeu |
+| DA gameplay | Solar Origami v2 intégrée mais fidélité refusée ; planches correctives v3 prêtes | Revue des planches v3 puis intégration |
 | Inputs / responsive | Vérifiés en émulation | Contrôle appareil réel recommandé |
 | Animations / FX | Sélection, transfert vers les astres et flux vers le soleil intégrés ; mouvement réduit pris en charge | Revue artistique finale en jeu |
 | Audio | Musiques conservées | Écoute finale du mix/SFX restant à faire |
 | Covers | 4 statiques `390×844` intégrées, ancrées en haut | Revue visuelle utilisateur du lot remis aux normes |
-| Assets runtime | Pack Solar Origami v2 actif, WebP lossless et atlases JSON | PNG sources et masters transparents conservés hors chemin actif |
+| Assets runtime | Pack Solar Origami v2 encore actif ; pack source v3 hors runtime | Intégrer v3 seulement après validation visuelle |
 | Livraison | `0.7.0` | Déploiement applicatif distinct de la publication GitHub |
 
 ## Optimisation images runtime — 11 septembre 2026
@@ -59,6 +59,13 @@ Aucun blocage technique connu. Les règles et l'équilibrage restent inchangés.
 - Toutes les valeurs visibles proviennent du tileset raster. Multiplicateurs et diviseurs conservent des silhouettes distinctes. Les commandes transparentes de même taille sont traduites en `UNDO` et `VALIDATE`.
 - Le résultat temporaire est placé dans l'espace libre sous la grille pour ne plus masquer les chiffres pendant le tracé. La composition reste intégralement dans la zone PC CENTRE `y=91…753`.
 - Le procédé à retenir est consigné dans `TODO.md` : planches exhaustives à alpha réel, contrôle des textes et de la transparence, puis découpe automatique en composants et atlases avant intégration.
+
+## Reconstruction des planches — 14 septembre 2026
+
+- La capture du runtime v2 est refusée comme trop éloignée de la DA validée : astres et soleil grossiers, couleurs de sélection incorrectes, glyphes trop lourds, commandes ternes et flux illisibles.
+- Le pack correctif `solar-origami-v3/` repart de la DA validée conservée dans le dépôt. Les astres violet, rouge et jaune ont chacun une forme propre, déclinée en actif coloré et inactif ivoire. Les flux sont séparés des astres.
+- Les cases colorées sont des supports vides. Tous les chiffres et signes `+`, `−`, `×`, `÷`, `.`, `=` vivent exclusivement dans le tileset raster composable.
+- Après deux échecs de transparence directe, la méthode retenue génère sur chroma vert parfaitement uni, puis extrait ce fond de manière reproductible en alpha RGBA. Les cinq planches et leurs composants passent le contrôle alpha. Aucun asset v3 n'est encore branché dans Phaser et la version reste `0.7.0`.
 
 ## Reprise de la DA gameplay — 13 septembre 2026
 

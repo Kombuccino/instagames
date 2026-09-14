@@ -1,0 +1,443 @@
+{
+  "version": 3,
+  "reference": "references/linefugg-da-validated-2026-09-14.png",
+  "method": "ImageGen on measured pure-green chroma source, deterministic local alpha unmix, trim, then mechanical assembly",
+  "textAllowlist": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "−",
+    "+",
+    "×",
+    "÷",
+    ".",
+    "=",
+    "UNDO",
+    "VALIDATE"
+  ],
+  "components": [
+    {
+      "name": "celestial/astre-violet-active",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/celestial/astre-violet-active-v3.png",
+      "size": [
+        1083,
+        1174
+      ]
+    },
+    {
+      "name": "celestial/astre-red-active",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/celestial/astre-red-active-v3.png",
+      "size": [
+        833,
+        1333
+      ]
+    },
+    {
+      "name": "celestial/astre-yellow-active",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/celestial/astre-yellow-active-v3.png",
+      "size": [
+        918,
+        1051
+      ]
+    },
+    {
+      "name": "celestial/astre-violet-inactive",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/celestial/astre-violet-inactive-v3.png",
+      "size": [
+        1083,
+        1174
+      ]
+    },
+    {
+      "name": "celestial/astre-red-inactive",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/celestial/astre-red-inactive-v3.png",
+      "size": [
+        836,
+        1333
+      ]
+    },
+    {
+      "name": "celestial/astre-yellow-inactive",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/celestial/astre-yellow-inactive-v3.png",
+      "size": [
+        916,
+        1051
+      ]
+    },
+    {
+      "name": "celestial/sun-neutral",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/celestial/sun-neutral-v3.png",
+      "size": [
+        1053,
+        1035
+      ]
+    },
+    {
+      "name": "cell/neutral",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/cell/neutral-v3.png",
+      "size": [
+        445,
+        436
+      ]
+    },
+    {
+      "name": "cell/selected-red",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/cell/selected-red-v3.png",
+      "size": [
+        503,
+        489
+      ]
+    },
+    {
+      "name": "cell/selected-violet",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/cell/selected-violet-v3.png",
+      "size": [
+        506,
+        497
+      ]
+    },
+    {
+      "name": "cell/selected-yellow",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/cell/selected-yellow-v3.png",
+      "size": [
+        500,
+        485
+      ]
+    },
+    {
+      "name": "glyph/0",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/glyph/0-v3.png",
+      "size": [
+        150,
+        237
+      ]
+    },
+    {
+      "name": "glyph/1",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/glyph/1-v3.png",
+      "size": [
+        100,
+        238
+      ]
+    },
+    {
+      "name": "glyph/2",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/glyph/2-v3.png",
+      "size": [
+        154,
+        239
+      ]
+    },
+    {
+      "name": "glyph/3",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/glyph/3-v3.png",
+      "size": [
+        152,
+        241
+      ]
+    },
+    {
+      "name": "glyph/4",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/glyph/4-v3.png",
+      "size": [
+        172,
+        244
+      ]
+    },
+    {
+      "name": "glyph/5",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/glyph/5-v3.png",
+      "size": [
+        158,
+        246
+      ]
+    },
+    {
+      "name": "glyph/6",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/glyph/6-v3.png",
+      "size": [
+        160,
+        246
+      ]
+    },
+    {
+      "name": "glyph/7",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/glyph/7-v3.png",
+      "size": [
+        162,
+        245
+      ]
+    },
+    {
+      "name": "glyph/8",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/glyph/8-v3.png",
+      "size": [
+        162,
+        249
+      ]
+    },
+    {
+      "name": "glyph/9",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/glyph/9-v3.png",
+      "size": [
+        160,
+        246
+      ]
+    },
+    {
+      "name": "glyph/minus",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/glyph/minus-v3.png",
+      "size": [
+        192,
+        56
+      ]
+    },
+    {
+      "name": "glyph/plus",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/glyph/plus-v3.png",
+      "size": [
+        201,
+        197
+      ]
+    },
+    {
+      "name": "glyph/times",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/glyph/times-v3.png",
+      "size": [
+        174,
+        172
+      ]
+    },
+    {
+      "name": "glyph/divide",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/glyph/divide-v3.png",
+      "size": [
+        204,
+        190
+      ]
+    },
+    {
+      "name": "glyph/dot",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/glyph/dot-v3.png",
+      "size": [
+        76,
+        75
+      ]
+    },
+    {
+      "name": "glyph/equals",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/glyph/equals-v3.png",
+      "size": [
+        195,
+        111
+      ]
+    },
+    {
+      "name": "energy/red-straight",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/red-straight-v3.png",
+      "size": [
+        186,
+        274
+      ]
+    },
+    {
+      "name": "energy/red-diagonal",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/red-diagonal-v3.png",
+      "size": [
+        220,
+        279
+      ]
+    },
+    {
+      "name": "energy/red-curve-45",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/red-curve-45-v3.png",
+      "size": [
+        219,
+        276
+      ]
+    },
+    {
+      "name": "energy/red-curve-90",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/red-curve-90-v3.png",
+      "size": [
+        215,
+        270
+      ]
+    },
+    {
+      "name": "energy/red-start",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/red-start-v3.png",
+      "size": [
+        219,
+        273
+      ]
+    },
+    {
+      "name": "energy/red-arrival",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/red-arrival-v3.png",
+      "size": [
+        216,
+        282
+      ]
+    },
+    {
+      "name": "energy/red-pulse",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/red-pulse-v3.png",
+      "size": [
+        142,
+        144
+      ]
+    },
+    {
+      "name": "energy/violet-straight",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/violet-straight-v3.png",
+      "size": [
+        186,
+        340
+      ]
+    },
+    {
+      "name": "energy/violet-diagonal",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/violet-diagonal-v3.png",
+      "size": [
+        220,
+        342
+      ]
+    },
+    {
+      "name": "energy/violet-curve-45",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/violet-curve-45-v3.png",
+      "size": [
+        219,
+        342
+      ]
+    },
+    {
+      "name": "energy/violet-curve-90",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/violet-curve-90-v3.png",
+      "size": [
+        215,
+        270
+      ]
+    },
+    {
+      "name": "energy/violet-start",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/violet-start-v3.png",
+      "size": [
+        219,
+        338
+      ]
+    },
+    {
+      "name": "energy/violet-arrival",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/violet-arrival-v3.png",
+      "size": [
+        210,
+        338
+      ]
+    },
+    {
+      "name": "energy/violet-pulse",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/violet-pulse-v3.png",
+      "size": [
+        144,
+        144
+      ]
+    },
+    {
+      "name": "energy/yellow-straight",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/yellow-straight-v3.png",
+      "size": [
+        188,
+        255
+      ]
+    },
+    {
+      "name": "energy/yellow-diagonal",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/yellow-diagonal-v3.png",
+      "size": [
+        220,
+        256
+      ]
+    },
+    {
+      "name": "energy/yellow-curve-45",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/yellow-curve-45-v3.png",
+      "size": [
+        219,
+        255
+      ]
+    },
+    {
+      "name": "energy/yellow-curve-90",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/yellow-curve-90-v3.png",
+      "size": [
+        215,
+        256
+      ]
+    },
+    {
+      "name": "energy/yellow-start",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/yellow-start-v3.png",
+      "size": [
+        219,
+        252
+      ]
+    },
+    {
+      "name": "energy/yellow-arrival",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/yellow-arrival-v3.png",
+      "size": [
+        212,
+        259
+      ]
+    },
+    {
+      "name": "energy/yellow-pulse",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/energy/yellow-pulse-v3.png",
+      "size": [
+        149,
+        149
+      ]
+    },
+    {
+      "name": "control/undo-idle",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/control/undo-idle-v3.png",
+      "size": [
+        1021,
+        231
+      ]
+    },
+    {
+      "name": "control/undo-pressed",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/control/undo-pressed-v3.png",
+      "size": [
+        1026,
+        235
+      ]
+    },
+    {
+      "name": "control/validate-disabled",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/control/validate-disabled-v3.png",
+      "size": [
+        1036,
+        237
+      ]
+    },
+    {
+      "name": "control/validate-ready",
+      "path": "public/assets/generated/linefugg/solar-origami-v3/components/control/validate-ready-v3.png",
+      "size": [
+        1034,
+        236
+      ]
+    }
+  ]
+}

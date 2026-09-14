@@ -1,9 +1,17 @@
 # LineFugg — Art Direction
 
-Status: runtime canonical **Solar Origami v2**, integrated 2026-09-14 after the user authorized the in-game replacement. Final artistic review in the live composition remains open. **Orbital Accounting** is retained below as superseded history.
+Status: runtime canonical **Solar Origami v2**, integrated 2026-09-14 after the user authorized the in-game replacement. Its fidelity was rejected in the live composition; the corrective production authority is now **Solar Origami v3**, prepared but not yet integrated. **Orbital Accounting** is retained below as superseded history.
 Cover status: current static collection, integrated 2026-09-07 after explicit user request. Preserve the four approved originals identified in ASSET_MANIFEST.md; animation is deferred, not a reason to retain the migration badge. Cover art follows DA_COVER.md, independently from the gameplay medium below.
 
 ## Replacement direction — Solar Origami, 2026-09-13
+
+### Corrective production authority — v3, 2026-09-14
+
+The sole visual authority for the corrective boards is `public/assets/generated/linefugg/solar-origami-v3/references/linefugg-da-validated-2026-09-14.png`. Do not reinterpret its celestial silhouettes, selected-cell hues, numeral proportions or energy grammar. The violet result is the wide asymmetric winged crystal, the red result the tall folded sail, and the yellow result the perforated solar sail. Their inactive versions use the same silhouettes in ivory; color appears only after the corresponding line is committed.
+
+Cells and content are separate layers. The four empty cell states are neutral ivory, red, violet and yellow; no number or operator is baked into them. Every visible number and mathematical mark, including `+`, `−`, `×`, `÷`, `.`, and `=`, comes from the dedicated raster glyph sheet and is composed at runtime.
+
+Production transparency is deterministic: ask ImageGen for isolated assets on a perfectly uniform pure chroma-green `#00FF00` field, forbid shadows or glow on the field, then remove that sampled field into genuine RGBA alpha with the repository build script. Never request or accept a painted checkerboard as transparency. Validate transparent, partial and opaque pixel counts before splitting or integration. This rule replaces direct-alpha generation for complex boards after repeated fake-transparency failures.
 
 Production correction after user review: `solar-origami/` v1 is rejected and must not be integrated. The v2 authority is the three transparent master tilesets in `public/assets/generated/linefugg/solar-origami-v2/`. It restores the mockup's plain heavy raster numerals, uses four genuinely transparent equal-size button states, keeps result objects ivory before commit and makes their active forms genuinely multicolored. The sun has four progressive color states plus separate floating-rock clusters. Selection and energy are no longer placeholders: neutral/hover/three-color/shared nodes, straight/diagonal/elbow segments, 24 travel frames and arrival particles are individually available. No unrequested copy was introduced.
 

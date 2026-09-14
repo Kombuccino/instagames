@@ -39,25 +39,25 @@ const DIGITS_PATH = '/assets/imported/tetramindfck/gameplay/tiles/tetramindfck-t
 const OPERATORS_PATH = '/assets/imported/tetramindfck/gameplay/tiles/tetramindfck-tile-operators-sheet.webp'
 const BUTTON_ROOT = '/assets/imported/tetramindfck/gameplay/buttons'
 
-// Geometry measured from the canonical shell asset at 390x844.
-const MAIN_CRT = { x: 105.5, y: 122.5, w: 261, h: 503.5 }
-const LEVEL_CRT = { x: 24, y: 155.5, w: 64.5, h: 77 }
-const TARGET_CRT = { x: 24, y: 254, w: 64.5, h: 71.5 }
-const NEXT_CRT = { x: 24, y: 351.5, w: 64.5, h: 105.5 }
-const NEXT2_CRT = { x: 24, y: 484, w: 64.5, h: 105.5 }
-const BTN_LEFT = { x: 20, y: 654, w: 85.5, h: 58 }
-const BTN_RIGHT = { x: 116, y: 654, w: 86.5, h: 58 }
-const BTN_ROTATE_LEFT = { x: 213, y: 654, w: 74.5, h: 58 }
-const BTN_ROTATE_RIGHT = { x: 298, y: 654, w: 72, h: 58 }
-const BTN_DOWN = { x: 78, y: 731, w: 83, h: 37.5 }
+// 0.8.4 geometry gate: full-width console, compact rail, maximal readable board.
+const MAIN_CRT = { x: 93, y: 108, w: 289, h: 560 }
+const LEVEL_CRT = { x: 10, y: 142, w: 72, h: 82 }
+const TARGET_CRT = { x: 10, y: 238, w: 72, h: 82 }
+const NEXT_CRT = { x: 10, y: 334, w: 72, h: 112 }
+const NEXT2_CRT = { x: 10, y: 460, w: 72, h: 112 }
+const BTN_LEFT = { x: 10, y: 690, w: 87, h: 62 }
+const BTN_RIGHT = { x: 104, y: 690, w: 87, h: 62 }
+const BTN_ROTATE_LEFT = { x: 198, y: 690, w: 87, h: 62 }
+const BTN_ROTATE_RIGHT = { x: 292, y: 690, w: 87, h: 62 }
+const BTN_DOWN = { x: 58, y: 762, w: 86, h: 50 }
 
-const CELL_SIZE = 22.4
+const CELL_SIZE = 25.2
 const BOARD_WIDTH = CELL_SIZE * COLS
 const BOARD_HEIGHT = CELL_SIZE * ROWS
 const BOARD_X = MAIN_CRT.x + (MAIN_CRT.w - BOARD_WIDTH) / 2
-const BOARD_Y = 164
-const SCORE_Y = 132
-const PREVIEW_TILE_SIZE = 12.5
+const BOARD_Y = 146
+const SCORE_Y = 117
+const PREVIEW_TILE_SIZE = 14
 
 const CRT_BG = 0x09291f
 const CRT_GRID = 0x2b6852
@@ -79,7 +79,6 @@ type LineReport = { value: number; points: number; reversed: boolean; steps: Arr
 type ClearRowSnapshot = { rowIndex: number; tiles: Tile[]; report: LineReport }
 type PendingClear = { fullRows: number[]; reports: LineReport[]; gained: number; earnedBonus: BonusKind | null }
 type Aperture = { x: number; y: number; w: number; h: number }
-
 type ButtonTextures = { up: string; down: string }
 
 export type TetraMindFckSceneBridge = {
@@ -406,13 +405,13 @@ export class TetraMindFckScene extends Phaser.Scene {
     this.levelText = this.add.text(LEVEL_CRT.x + LEVEL_CRT.w / 2, LEVEL_CRT.y + 44, '1', {
       fontFamily: 'monospace', fontSize: '28px', color: CRT_TEXT, fontStyle: 'bold',
     }).setOrigin(0.5).setDepth(9)
-    this.targetText = this.add.text(TARGET_CRT.x + TARGET_CRT.w / 2, TARGET_CRT.y + 42, '50', {
+    this.targetText = this.add.text(TARGET_CRT.x + TARGET_CRT.w / 2, TARGET_CRT.y + 44, '50', {
       fontFamily: 'monospace', fontSize: '23px', color: '#d5a4a7', fontStyle: 'bold',
     }).setOrigin(0.5).setDepth(9)
 
     this.add.triangle(NEXT_CRT.x + 6, NEXT_CRT.y + 24, 0, 0, 0, 11, 8, 5.5, CRT_ACTIVE, 0.9).setOrigin(0.5).setDepth(10)
-    this.nextOne = this.add.container(NEXT_CRT.x + NEXT_CRT.w / 2, NEXT_CRT.y + 65).setDepth(10)
-    this.nextTwo = this.add.container(NEXT2_CRT.x + NEXT2_CRT.w / 2, NEXT2_CRT.y + 65).setDepth(10)
+    this.nextOne = this.add.container(NEXT_CRT.x + NEXT_CRT.w / 2, NEXT_CRT.y + 72).setDepth(10)
+    this.nextTwo = this.add.container(NEXT2_CRT.x + NEXT2_CRT.w / 2, NEXT2_CRT.y + 72).setDepth(10)
 
     this.add.text(MAIN_CRT.x + 11, SCORE_Y, 'SCORE', {
       fontFamily: 'monospace', fontSize: '11px', color: CRT_TEXT, fontStyle: 'bold', letterSpacing: 1,
@@ -434,7 +433,7 @@ export class TetraMindFckScene extends Phaser.Scene {
     const image = this.add.image(box.x + box.w / 2, box.y + box.h / 2, textures.up)
       .setDisplaySize(box.w, box.h)
       .setDepth(21)
-      .setInteractive(new Phaser.Geom.Rectangle(0, 0, box.w, box.h), Phaser.Geom.Rectangle.Contains)
+    image.setInteractive(new Phaser.Geom.Rectangle(-box.w / 2, -box.h / 2, box.w, box.h), Phaser.Geom.Rectangle.Contains)
 
     const setPressed = (pressed: boolean) => {
       image.setTexture(pressed ? textures.down : textures.up)
@@ -687,7 +686,7 @@ export class TetraMindFckScene extends Phaser.Scene {
   private renderLockMeter() {
     this.lockGraphics.clear()
     if (this.pendingClear || this.finished || !this.isGrounded()) return
-    const x = BOARD_X + BOARD_WIDTH + 4
+    const x = MAIN_CRT.x + MAIN_CRT.w - 5
     const baseY = BOARD_Y + BOARD_HEIGHT - 10
     for (let index = 0; index < LOCK_TICKS; index += 1) {
       this.lockGraphics.fillStyle(index < this.lockTicks ? CRT_BONUS : CRT_GRID, 0.85).fillRect(x, baseY - index * 12, 4, 9)
@@ -767,10 +766,10 @@ export class TetraMindFckScene extends Phaser.Scene {
     rowContainer.add(arrow)
     this.tweens.add({ targets: arrow, scaleX: 1, duration: 620, ease: 'Cubic.easeOut' })
 
-    const scoreX = snapshot.report.reversed ? BOARD_X - 3 : BOARD_X + BOARD_WIDTH + 3
+    const scoreX = snapshot.report.reversed ? MAIN_CRT.x + 4 : MAIN_CRT.x + MAIN_CRT.w - 4
     const score = this.add.text(scoreX, rowY, `${snapshot.report.reversed ? '←' : '→'}${formatCompact(snapshot.report.points)}`, {
       fontFamily: 'monospace', fontSize: '9px', color: CRT_TEXT, backgroundColor: '#0b2b22', fontStyle: 'bold', padding: { x: 2, y: 2 },
-    }).setOrigin(snapshot.report.reversed ? 1 : 0, 0.5).setAlpha(0)
+    }).setOrigin(snapshot.report.reversed ? 0 : 1, 0.5).setAlpha(0)
     rowContainer.add(score)
     this.time.delayedCall(430, () => this.tweens.add({ targets: score, alpha: 1, duration: 100, hold: 420, yoyo: true }))
 

@@ -22,10 +22,7 @@ SPECS = {
     "return-exit-pressed": (100, 100),
     "coin-counter-frame": (224, 92),
     "coin-insert-three-quarter": (96, 96),
-    "coin-front": (68, 68),
-    "coin-yaw-30": (68, 68),
-    "coin-yaw-65": (68, 68),
-    "coin-edge": (68, 68),
+    "coin-fuggy": (192, 192),
 }
 
 PLAY_ATLAS_STATES = (
@@ -44,6 +41,30 @@ def contain(image: Image.Image, bounds: tuple[int, int]) -> Image.Image:
     size = (max(1, round(image.width * ratio)), max(1, round(image.height * ratio)))
     return image.resize(size, Image.Resampling.LANCZOS)
 
+
+def alpha_crop(image: Image.Image) -> Image.Image:
+    bounds = image.getchannel("A").getbbox()
+    return image.crop(bounds) if bounds else image
+
+
+def build_canonical_coin_derivatives() -> None:
+    """Derive every displayed coin from the single user-approved transparent master."""
+    face = alpha_crop(Image.open(MASTERS / "coin-fuggy-reference.png").convert("RGBA"))
+
+    # The insertion sprite keeps the approved face but turns it to a readable 3/4 angle.
+    # A shallow darker rim gives it physical thickness without inventing another design.
+    insert_size = 1024
+    face_height = 900
+    face_width = round(face_height * face.width / face.height * 0.67)
+    angled_face = face.resize((face_width, face_height), Image.Resampling.LANCZOS)
+    dark_rim = ImageEnhance.Brightness(angled_face).enhance(0.48)
+    insert = Image.new("RGBA", (insert_size, insert_size), (0, 0, 0, 0))
+    y = (insert_size - face_height) // 2
+    x = (insert_size - face_width) // 2 + 14
+    for offset in range(-24, 1, 4):
+        insert.alpha_composite(dark_rim, (x + offset, y + 7))
+    insert.alpha_composite(angled_face, (x, y))
+    insert.save(MASTERS / "coin-insert-three-quarter.png", "PNG", optimize=True)
 
 def play_state_atlas() -> Image.Image:
     """Normalize independently generated states around one immutable bezel."""
@@ -82,11 +103,18 @@ def play_state_atlas() -> Image.Image:
     return atlas
 
 
+build_canonical_coin_derivatives()
+
 for name, bounds in SPECS.items():
-    source = Image.open(MASTERS / f"{name}.png").convert("RGBA")
+    source_name = "coin-fuggy-reference" if name == "coin-fuggy" else name
+    source = Image.open(MASTERS / f"{source_name}.png").convert("RGBA")
     runtime = contain(source, bounds)
-    if name == "coin-insert-three-quarter":
-        inner_bounds = (round(bounds[0] * 0.76), round(bounds[1] * 0.76))
+    if name == "coin-fuggy":
+        canvas = Image.new("RGBA", bounds, (0, 0, 0, 0))
+        canvas.alpha_composite(runtime, ((bounds[0] - runtime.width) // 2, (bounds[1] - runtime.height) // 2))
+        runtime = canvas
+    elif name == "coin-insert-three-quarter":
+        inner_bounds = (round(bounds[0] * 0.88), round(bounds[1] * 0.88))
         runtime = contain(source, inner_bounds)
         canvas = Image.new("RGBA", bounds, (0, 0, 0, 0))
         canvas.alpha_composite(runtime, ((bounds[0] - runtime.width) // 2, (bounds[1] - runtime.height) // 2))

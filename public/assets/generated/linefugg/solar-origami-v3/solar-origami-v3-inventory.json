@@ -29,7 +29,8 @@
       "size": [
         1083,
         1174
-      ]
+      ],
+      "reviewId": "AST-01"
     },
     {
       "name": "celestial/astre-red-active",
@@ -37,7 +38,8 @@
       "size": [
         833,
         1333
-      ]
+      ],
+      "reviewId": "AST-02"
     },
     {
       "name": "celestial/astre-yellow-active",
@@ -45,7 +47,8 @@
       "size": [
         918,
         1051
-      ]
+      ],
+      "reviewId": "AST-03"
     },
     {
       "name": "celestial/astre-violet-inactive",
@@ -53,7 +56,8 @@
       "size": [
         1083,
         1174
-      ]
+      ],
+      "reviewId": "AST-04"
     },
     {
       "name": "celestial/astre-red-inactive",
@@ -61,7 +65,8 @@
       "size": [
         836,
         1333
-      ]
+      ],
+      "reviewId": "AST-05"
     },
     {
       "name": "celestial/astre-yellow-inactive",
@@ -69,7 +74,8 @@
       "size": [
         916,
         1051
-      ]
+      ],
+      "reviewId": "AST-06"
     },
     {
       "name": "celestial/sun-neutral",
@@ -77,7 +83,8 @@
       "size": [
         1053,
         1035
-      ]
+      ],
+      "reviewId": "AST-07"
     },
     {
       "name": "cell/neutral",
@@ -85,7 +92,8 @@
       "size": [
         445,
         436
-      ]
+      ],
+      "reviewId": "CEL-01"
     },
     {
       "name": "cell/selected-red",
@@ -93,7 +101,8 @@
       "size": [
         503,
         489
-      ]
+      ],
+      "reviewId": "CEL-02"
     },
     {
       "name": "cell/selected-violet",
@@ -101,7 +110,8 @@
       "size": [
         506,
         497
-      ]
+      ],
+      "reviewId": "CEL-03"
     },
     {
       "name": "cell/selected-yellow",
@@ -109,7 +119,8 @@
       "size": [
         500,
         485
-      ]
+      ],
+      "reviewId": "CEL-04"
     },
     {
       "name": "glyph/0",
@@ -117,7 +128,8 @@
       "size": [
         150,
         237
-      ]
+      ],
+      "reviewId": "GLY-01"
     },
     {
       "name": "glyph/1",
@@ -125,7 +137,8 @@
       "size": [
         100,
         238
-      ]
+      ],
+      "reviewId": "GLY-02"
     },
     {
       "name": "glyph/2",
@@ -133,7 +146,8 @@
       "size": [
         154,
         239
-      ]
+      ],
+      "reviewId": "GLY-03"
     },
     {
       "name": "glyph/3",
@@ -141,7 +155,8 @@
       "size": [
         152,
         241
-      ]
+      ],
+      "reviewId": "GLY-04"
     },
     {
       "name": "glyph/4",
@@ -149,7 +164,8 @@
       "size": [
         172,
         244
-      ]
+      ],
+      "reviewId": "GLY-05"
     },
     {
       "name": "glyph/5",
@@ -157,7 +173,8 @@
       "size": [
         158,
         246
-      ]
+      ],
+      "reviewId": "GLY-06"
     },
     {
       "name": "glyph/6",
@@ -165,7 +182,8 @@
       "size": [
         160,
         246
-      ]
+      ],
+      "reviewId": "GLY-07"
     },
     {
       "name": "glyph/7",
@@ -173,7 +191,8 @@
       "size": [
         162,
         245
-      ]
+      ],
+      "reviewId": "GLY-08"
     },
     {
       "name": "glyph/8",
@@ -181,7 +200,8 @@
       "size": [
         162,
         249
-      ]
+      ],
+      "reviewId": "GLY-09"
     },
     {
       "name": "glyph/9",
@@ -189,7 +209,8 @@
       "size": [
         160,
         246
-      ]
+      ],
+      "reviewId": "GLY-10"
     },
     {
       "name": "glyph/minus",
@@ -197,7 +218,8 @@
       "size": [
         192,
         56
-      ]
+      ],
+      "reviewId": "GLY-11"
     },
     {
       "name": "glyph/plus",
@@ -205,7 +227,8 @@
       "size": [
         201,
         197
-      ]
+      ],
+      "reviewId": "GLY-12"
     },
     {
       "name": "glyph/times",
@@ -213,7 +236,8 @@
       "size": [
         174,
         172
-      ]
+      ],
+      "reviewId": "GLY-13"
     },
     {
       "name": "glyph/divide",
@@ -221,7 +245,8 @@
       "size": [
         204,
         190
-      ]
+      ],
+      "reviewId": "GLY-14"
     },
     {
       "name": "glyph/dot",
@@ -229,7 +254,8 @@
       "size": [
         76,
         75
-      ]
+      ],
+      "reviewId": "GLY-15"
     },
     {
       "name": "glyph/equals",
@@ -237,7 +263,8 @@
       "size": [
         195,
         111
-      ]
+      ],
+      "reviewId": "GLY-16"
     },
     {
       "name": "energy/red-straight",
@@ -245,7 +272,8 @@
       "size": [
         186,
         274
-      ]
+      ],
+      "reviewId": "ENG-R-01"
     },
     {
       "name": "energy/red-diagonal",
@@ -253,7 +281,8 @@
       "size": [
         220,
         279
-      ]
+      ],
+      "reviewId": "ENG-R-02"
     },
     {
       "name": "energy/red-curve-45",
@@ -261,7 +290,8 @@
       "size": [
         219,
         276
-      ]
+      ],
+      "reviewId": "ENG-R-03"
     },
     {
       "name": "energy/red-curve-90",
@@ -269,7 +299,8 @@
       "size": [
         215,
         270
-      ]
+      ],
+      "reviewId": "ENG-R-04"
     },
     {
       "name": "energy/red-start",
@@ -277,7 +308,8 @@
       "size": [
         219,
         273
-      ]
+      ],
+      "reviewId": "ENG-R-05"
     },
     {
       "name": "energy/red-arrival",
@@ -285,7 +317,8 @@
       "size": [
         216,
         282
-      ]
+      ],
+      "reviewId": "ENG-R-06"
     },
     {
       "name": "energy/red-pulse",
@@ -293,7 +326,8 @@
       "size": [
         142,
         144
-      ]
+      ],
+      "reviewId": "ENG-R-07"
     },
     {
       "name": "energy/violet-straight",
@@ -301,7 +335,8 @@
       "size": [
         186,
         340
-      ]
+      ],
+      "reviewId": "ENG-V-01"
     },
     {
       "name": "energy/violet-diagonal",
@@ -309,7 +344,8 @@
       "size": [
         220,
         342
-      ]
+      ],
+      "reviewId": "ENG-V-02"
     },
     {
       "name": "energy/violet-curve-45",
@@ -317,7 +353,8 @@
       "size": [
         219,
         342
-      ]
+      ],
+      "reviewId": "ENG-V-03"
     },
     {
       "name": "energy/violet-curve-90",
@@ -325,7 +362,8 @@
       "size": [
         215,
         270
-      ]
+      ],
+      "reviewId": "ENG-V-04"
     },
     {
       "name": "energy/violet-start",
@@ -333,7 +371,8 @@
       "size": [
         219,
         338
-      ]
+      ],
+      "reviewId": "ENG-V-05"
     },
     {
       "name": "energy/violet-arrival",
@@ -341,7 +380,8 @@
       "size": [
         210,
         338
-      ]
+      ],
+      "reviewId": "ENG-V-06"
     },
     {
       "name": "energy/violet-pulse",
@@ -349,7 +389,8 @@
       "size": [
         144,
         144
-      ]
+      ],
+      "reviewId": "ENG-V-07"
     },
     {
       "name": "energy/yellow-straight",
@@ -357,7 +398,8 @@
       "size": [
         188,
         255
-      ]
+      ],
+      "reviewId": "ENG-Y-01"
     },
     {
       "name": "energy/yellow-diagonal",
@@ -365,7 +407,8 @@
       "size": [
         220,
         256
-      ]
+      ],
+      "reviewId": "ENG-Y-02"
     },
     {
       "name": "energy/yellow-curve-45",
@@ -373,7 +416,8 @@
       "size": [
         219,
         255
-      ]
+      ],
+      "reviewId": "ENG-Y-03"
     },
     {
       "name": "energy/yellow-curve-90",
@@ -381,7 +425,8 @@
       "size": [
         215,
         256
-      ]
+      ],
+      "reviewId": "ENG-Y-04"
     },
     {
       "name": "energy/yellow-start",
@@ -389,7 +434,8 @@
       "size": [
         219,
         252
-      ]
+      ],
+      "reviewId": "ENG-Y-05"
     },
     {
       "name": "energy/yellow-arrival",
@@ -397,7 +443,8 @@
       "size": [
         212,
         259
-      ]
+      ],
+      "reviewId": "ENG-Y-06"
     },
     {
       "name": "energy/yellow-pulse",
@@ -405,7 +452,8 @@
       "size": [
         149,
         149
-      ]
+      ],
+      "reviewId": "ENG-Y-07"
     },
     {
       "name": "control/undo-idle",
@@ -413,7 +461,8 @@
       "size": [
         1021,
         231
-      ]
+      ],
+      "reviewId": "CTL-01"
     },
     {
       "name": "control/undo-pressed",
@@ -421,7 +470,8 @@
       "size": [
         1026,
         235
-      ]
+      ],
+      "reviewId": "CTL-02"
     },
     {
       "name": "control/validate-disabled",
@@ -429,7 +479,8 @@
       "size": [
         1036,
         237
-      ]
+      ],
+      "reviewId": "CTL-03"
     },
     {
       "name": "control/validate-ready",
@@ -437,7 +488,8 @@
       "size": [
         1034,
         236
-      ]
+      ],
+      "reviewId": "CTL-04"
     }
   ]
 }

@@ -18,6 +18,8 @@ Le retour utilisateur sur le runtime v2 impose une reconstruction fidèle à la 
 
 Les masters sont `masters/{celestial,cells,glyphs,energy,controls}-alpha-v3.png`; chaque élément isolé est sous `components/` et l'inventaire reproductible sous `solar-origami-v3-inventory.json`. La transparence est obtenue par chroma `#00FF00` uniforme puis démélange déterministe, jamais par damier peint. Les cinq masters ont de vrais pixels transparents, semi-transparents et opaques. Statut : **contrôle technique et visuel des planches effectué ; aucune URL runtime modifiée**.
 
+La planche de revue `previews/review-catalog-v3.png` présente exactement les 52 composants découpés, regroupés par famille et identifiés par des codes stables `AST`, `CEL`, `GLY`, `ENG-R/V/Y` et `CTL`. Son damier sert uniquement à rendre l'alpha visible dans l'aperçu ; il n'appartient pas aux composants.
+
 ## Pack Solar Origami v2 — actif
 
 Le premier pack `solar-origami/` est conservé uniquement comme trace d'une proposition refusée le 13 septembre : typographie trop éloignée de la maquette, boutons reconstruits, astres trop monochromes et flux insuffisamment détaillés. Il ne doit pas être intégré.

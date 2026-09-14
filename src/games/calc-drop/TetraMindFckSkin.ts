@@ -12,24 +12,18 @@ type RuntimeScene = Phaser.Scene & {
 }
 type Aperture = { x: number; y: number; w: number; h: number }
 
-// Old scene coordinates. The gameplay logic still owns these objects; this skin reflows them
-// onto the approved wider composition without changing any rule/state.
-const OLD_BOARD = { x: 124, y: 164, cell: 22.4 }
-
-// Canonical geometry for the next art pass. It intentionally uses almost the full 390 px width.
-const MAIN: Aperture = { x: 92, y: 92, w: 290, h: 580 }
-const LEVEL: Aperture = { x: 10, y: 120, w: 74, h: 80 }
-const TARGET: Aperture = { x: 10, y: 210, w: 74, h: 80 }
-const NEXT: Aperture = { x: 10, y: 300, w: 74, h: 140 }
-const NEXT2: Aperture = { x: 10, y: 450, w: 74, h: 140 }
-const BOARD = { x: 112, y: 145, cell: 25, w: 250, h: 500 }
+const MAIN: Aperture = { x: 93, y: 108, w: 289, h: 560 }
+const LEVEL: Aperture = { x: 10, y: 142, w: 72, h: 82 }
+const TARGET: Aperture = { x: 10, y: 238, w: 72, h: 82 }
+const NEXT: Aperture = { x: 10, y: 334, w: 72, h: 112 }
+const NEXT2: Aperture = { x: 10, y: 460, w: 72, h: 112 }
 
 const BUTTONS = [
-  { action: 'left' as const, up: 'tetra-btn-left-up', down: 'tetra-btn-left-down', x: 10, y: 696, w: 88, h: 62 },
-  { action: 'right' as const, up: 'tetra-btn-right-up', down: 'tetra-btn-right-down', x: 104, y: 696, w: 88, h: 62 },
-  { action: 'rotateLeft' as const, up: 'tetra-btn-rotate-left-up', down: 'tetra-btn-rotate-left-down', x: 198, y: 696, w: 88, h: 62 },
-  { action: 'rotateRight' as const, up: 'tetra-btn-rotate-right-up', down: 'tetra-btn-rotate-right-down', x: 292, y: 696, w: 88, h: 62 },
-  { action: 'down' as const, up: 'tetra-btn-down-up', down: 'tetra-btn-down-down', x: 57, y: 766, w: 88, h: 52 },
+  { action: 'left' as const, up: 'tetra-btn-left-up', down: 'tetra-btn-left-down', x: 10, y: 690, w: 87, h: 62 },
+  { action: 'right' as const, up: 'tetra-btn-right-up', down: 'tetra-btn-right-down', x: 104, y: 690, w: 87, h: 62 },
+  { action: 'rotateLeft' as const, up: 'tetra-btn-rotate-left-up', down: 'tetra-btn-rotate-left-down', x: 198, y: 690, w: 87, h: 62 },
+  { action: 'rotateRight' as const, up: 'tetra-btn-rotate-right-up', down: 'tetra-btn-rotate-right-down', x: 292, y: 690, w: 87, h: 62 },
+  { action: 'down' as const, up: 'tetra-btn-down-up', down: 'tetra-btn-down-down', x: 58, y: 762, w: 86, h: 50 },
 ] as const
 
 const CREAM = 0xe9dcc3
@@ -40,7 +34,7 @@ const CRT = 0x08281f
 const CRT_EDGE = 0x315d4b
 const PRINT = '#342f2a'
 
-function destroyBrokenStructuralAssets(scene: RuntimeScene) {
+function destroyCompetingStructuralAssets(scene: RuntimeScene) {
   for (const child of [...scene.children.list]) {
     if (!(child instanceof Phaser.GameObjects.Image)) continue
     const key = child.texture.key
@@ -58,21 +52,21 @@ function drawCrt(scene: RuntimeScene, aperture: Aperture, radius = 8) {
 function drawCanonicalConsole(scene: RuntimeScene) {
   const shell = scene.add.graphics().setDepth(2)
 
-  // Full-width physical body. Only a tiny background bleed remains at the extreme sides.
-  shell.fillStyle(0x2d2925, 0.35).fillRoundedRect(2, 58, 386, 770, 24)
-  shell.fillStyle(CREAM_DARK, 1).fillRoundedRect(3, 55, 384, 768, 23)
-  shell.fillStyle(CREAM, 1).fillRoundedRect(5, 53, 380, 766, 21)
-  shell.lineStyle(2, CREAM_LIGHT, 0.82).strokeRoundedRect(7, 55, 376, 762, 19)
+  // Border-to-border shell: no decorative side gutters. This is geometry only.
+  shell.fillStyle(0x2d2925, 0.34).fillRoundedRect(0, 54, 390, 790, 22)
+  shell.fillStyle(CREAM_DARK, 1).fillRoundedRect(0, 51, 390, 789, 22)
+  shell.fillStyle(CREAM, 1).fillRoundedRect(0, 49, 390, 791, 20)
+  shell.lineStyle(2, CREAM_LIGHT, 0.82).strokeRoundedRect(2, 51, 386, 787, 18)
 
-  // Compact instrument rail; the board gets the width instead of decorative gutters.
-  shell.fillStyle(RAIL, 1).fillRoundedRect(7, 109, 80, 493, 13)
-  shell.fillStyle(CREAM, 1).fillRoundedRect(5, 678, 380, 141, 12)
-  shell.lineStyle(1, CREAM_DARK, 0.9).lineBetween(7, 682, 383, 682)
+  // Compact left rail so the 10x20 board owns the width.
+  shell.fillStyle(RAIL, 1).fillRoundedRect(5, 132, 82, 451, 13)
+  shell.fillStyle(CREAM, 1).fillRoundedRect(0, 676, 390, 164, 8)
+  shell.lineStyle(1, CREAM_DARK, 0.88).lineBetween(0, 678, 390, 678)
 
-  scene.add.text(16, 68, 'TetraMindFck / Calc Drop', {
+  scene.add.text(12, 63, 'TetraMindFck / Calc Drop', {
     fontFamily: 'Georgia, serif', fontSize: '15px', color: PRINT, fontStyle: 'bold italic',
   }).setDepth(2.8)
-  scene.add.text(374, 71, 'MINIFUGG', {
+  scene.add.text(378, 66, 'MINIFUGG', {
     fontFamily: 'monospace', fontSize: '7px', color: PRINT, fontStyle: 'bold', letterSpacing: 1,
   }).setOrigin(1, 0).setDepth(2.8)
 
@@ -82,60 +76,11 @@ function drawCanonicalConsole(scene: RuntimeScene) {
   drawCrt(scene, NEXT)
   drawCrt(scene, NEXT2)
 
-  shell.lineStyle(1, CREAM_DARK, 0.6)
-    .lineBetween(88, 108, 88, 602)
-    .lineBetween(8, 205, 86, 205)
-    .lineBetween(8, 295, 86, 295)
-    .lineBetween(8, 445, 86, 445)
-}
-
-function reflowBoard(scene: RuntimeScene) {
-  const scale = BOARD.cell / OLD_BOARD.cell
-  const tx = BOARD.x - OLD_BOARD.x * scale
-  const ty = BOARD.y - OLD_BOARD.y * scale
-
-  for (const child of scene.children.list) {
-    const depth = child.depth
-
-    if (child instanceof Phaser.GameObjects.Graphics && depth === 3) {
-      child.setScale(scale).setPosition(tx, ty)
-      continue
-    }
-
-    if (child instanceof Phaser.GameObjects.Rectangle && depth === 7) {
-      child.setPosition(child.x * scale + tx, child.y * scale + ty).setDisplaySize(BOARD.cell - 2, BOARD.cell - 2)
-      continue
-    }
-
-    if (child instanceof Phaser.GameObjects.Image && depth === 8) {
-      child.setPosition(child.x * scale + tx, child.y * scale + ty).setDisplaySize(BOARD.cell - 1.2, BOARD.cell - 1.2)
-    }
-  }
-}
-
-function reflowHud(scene: RuntimeScene) {
-  for (const child of scene.children.list) {
-    if (child instanceof Phaser.GameObjects.Text && child.depth === 9) {
-      const text = child.text
-      if (text === 'LEVEL') child.setPosition(LEVEL.x + LEVEL.w / 2, LEVEL.y + 7).setOrigin(0.5, 0)
-      else if (text === 'TARGET') child.setPosition(TARGET.x + TARGET.w / 2, TARGET.y + 7).setOrigin(0.5, 0)
-      else if (text === 'NEXT') child.setPosition(NEXT.x + NEXT.w / 2, NEXT.y + 7).setOrigin(0.5, 0)
-      else if (text === 'NEXT+1') child.setPosition(NEXT2.x + NEXT2.w / 2, NEXT2.y + 7).setOrigin(0.5, 0)
-      else if (child.x < 90 && child.y < 250) child.setPosition(LEVEL.x + LEVEL.w / 2, LEVEL.y + 48).setOrigin(0.5)
-      else if (child.x < 90 && child.y < 350) child.setPosition(TARGET.x + TARGET.w / 2, TARGET.y + 48).setOrigin(0.5)
-      else if (child.x > 300) child.setPosition(MAIN.x + MAIN.w - 12, MAIN.y + 10).setOrigin(1, 0)
-      else if (child.x > 90 && child.y < 160) child.setPosition(MAIN.x + 12, MAIN.y + 10).setOrigin(0, 0)
-    }
-
-    if (child instanceof Phaser.GameObjects.Container && child.depth === 10) {
-      if (child.y < 500) child.setPosition(NEXT.x + NEXT.w / 2, NEXT.y + 82).setScale(1.28)
-      else child.setPosition(NEXT2.x + NEXT2.w / 2, NEXT2.y + 82).setScale(1.28)
-    }
-
-    if (child instanceof Phaser.GameObjects.Triangle && child.depth === 10) {
-      child.setPosition(NEXT.x + 6, NEXT.y + 28)
-    }
-  }
+  shell.lineStyle(1, CREAM_DARK, 0.55)
+    .lineBetween(88, 132, 88, 583)
+    .lineBetween(7, 231, 85, 231)
+    .lineBetween(7, 327, 85, 327)
+    .lineBetween(7, 453, 85, 453)
 }
 
 function addButton(scene: RuntimeScene, config: typeof BUTTONS[number]) {
@@ -144,7 +89,12 @@ function addButton(scene: RuntimeScene, config: typeof BUTTONS[number]) {
   const image = scene.add.image(cx, cy, config.up)
     .setDisplaySize(config.w, config.h)
     .setDepth(30)
-    .setInteractive({ useHandCursor: true })
+
+  // Hitbox is exactly the rendered button rectangle, not the source texture bounds.
+  image.setInteractive(
+    new Phaser.Geom.Rectangle(-config.w / 2, -config.h / 2, config.w, config.h),
+    Phaser.Geom.Rectangle.Contains,
+  )
 
   const restore = () => {
     image.setTexture(config.up).setPosition(cx, cy).setDisplaySize(config.w, config.h)
@@ -163,17 +113,12 @@ function addButton(scene: RuntimeScene, config: typeof BUTTONS[number]) {
 }
 
 function installCanonicalGeometry(scene: RuntimeScene) {
-  destroyBrokenStructuralAssets(scene)
-  reflowBoard(scene)
-  reflowHud(scene)
+  destroyCompetingStructuralAssets(scene)
   drawCanonicalConsole(scene)
   BUTTONS.forEach((button) => addButton(scene, button))
 }
 
-/**
- * Geometry-only structural skin. It maximises the board width first; the final approved
- * raster material will be painted onto these exact apertures after the composition is validated.
- */
+/** Geometry-only gate before final raster DA production. */
 export function installTetraMindFckSkin(scene: TetraMindFckScene) {
   const runtime = scene as unknown as RuntimeScene
   const originalCreate = runtime.create.bind(scene)

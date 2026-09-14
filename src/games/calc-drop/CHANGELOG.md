@@ -1,5 +1,15 @@
 # TetraMindFck — Changelog
 
+## 0.8.4 — 2026-09-14 08:55 Europe/Paris
+
+- La coque de composition utilise désormais toute la largeur logique `390 px` sans bandes latérales de décor.
+- Le grand CRT est élargi à `289 px`; le plateau passe réellement à des cellules de `25.2 px` et un cadrage `252 × 504`, au lieu d’être uniquement remaquetté par le skin.
+- Le rail gauche est resserré à `72 px` de largeur pour maximiser la zone de jeu.
+- Les quatre gros boutons utilisent des rectangles visibles identiques `87 × 62` sur une seule ligne; `DOWN` est centré sous le duo gauche/droite.
+- Les hitboxes des cinq boutons sont maintenant construites exactement sur leurs rectangles d’affichage, et ne dépendent plus des dimensions source des textures.
+- La géométrie de scène, les FX de clear, le lock meter et le skin utilisent désormais les mêmes coordonnées.
+- Gameplay, scoring, RNG, vitesse, bonus et lock restent inchangés.
+
 ## 0.8.3 — 2026-09-14 01:10 Europe/Paris
 
 - Reprise de la géométrie avant toute nouvelle passe artistique : le grand CRT passe à presque toute la largeur utile, le rail gauche est compacté et les marges décoratives sont réduites.

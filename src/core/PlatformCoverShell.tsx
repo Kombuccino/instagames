@@ -78,7 +78,7 @@ function Icon({ name, filled = false }: { name: IconName, filled?: boolean }) {
 }
 
 function PixelCoin({ small = false }: { small?: boolean }) {
-  return <img className={`mf-pixel-coin${small ? ' is-small' : ''}`} src="/assets/generated/platform/ui/coin-console-90s/coin-front.webp" alt="" aria-hidden="true" />
+  return <img className={`mf-pixel-coin${small ? ' is-small' : ''}`} src="/assets/generated/platform/ui/coin-console-90s/coin-fuggy.webp" alt="" aria-hidden="true" />
 }
 
 function coverVariants(game: InstagameDefinition) {

@@ -46,7 +46,7 @@
   transform: translate(-50%, -52%);
   color: #f6eed8;
   font-family: Arial, sans-serif;
-  font-size: clamp(17px, 5.13cqw, 22px);
+  font-size: 22px;
   font-weight: 800;
   text-align: center;
   font-variant-numeric: tabular-nums;

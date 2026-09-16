@@ -1,5 +1,13 @@
 # LineFugg — Changelog
 
+## [0.8.2] — 2026-09-16 15:44 Europe/Paris
+
+- Le gameplay publié revient volontairement au runtime **Orbital Accounting** classique pris comme référence fonctionnelle avant la reprise Rebirth ; les règles, l’équilibrage et les contrôles restent inchangés.
+- Solar Origami reste conservé dans Git et dans ses assets comme cas d’étude du précédent pipeline DA → intégration, mais n’est plus la direction active du LineFugg classique.
+- Le Production Lab repart du prototype réel : Covers existantes, Proto analysé sémantiquement, DA et Release laissées vides jusqu’à leur création effective.
+
+Vérifié : `npm run test:repository` et `npm run build` via Frontend Build GitHub sur le lot combiné de restauration et de refonte du Lab.
+
 ## [0.8.1] — 2026-09-14 16:38 Europe/Paris
 
 - La composition PC est affinée sans changer la DA : grille légèrement agrandie, astres de résultat mieux proportionnés et soleil recentré dans une hiérarchie plus lisible.

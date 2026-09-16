@@ -7,11 +7,24 @@ on:
       - main
       - 'core/**'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Apply Production Lab link UX patch
+        if: github.event_name == 'push' && github.ref_name == 'core/production-lab-link-snap-reset'
+        run: |
+          python scripts/patch-production-lab-link-snap.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm scripts/patch-production-lab-link-snap.py
+          git add src/core/ProductionLab.tsx src/core/ProductionLab.css docs/PRODUCTION_LAB_V1.md
+          git commit -m 'fix(lab): snap visible links and reset local review [skip ci]'
+          git push origin HEAD:${GITHUB_REF_NAME}
       - uses: actions/setup-node@v4
         with:
           node-version: 22

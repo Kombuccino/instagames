@@ -57,3 +57,14 @@ LineFugg Rebirth sert actuellement de démonstrateur : quatre captures statiques
 ## Non-objectifs
 
 Le Lab n’est pas un moteur de jeu, un IDE, un éditeur de données métier ni un chat embarqué. Il ne cherche pas à représenter exhaustivement la structure Phaser ou le code. Son rôle est de rendre la conception et les écarts visibles assez tôt pour éviter des intégrations coûteuses à reprendre.
+
+
+## Ajustements d’édition locale — 16 septembre 2026
+
+Les outils `Nœud`, `Point`, `Zone`, `Dessin` et `Lien` sont **à usage unique** : après création d’un objet, ou après le second clic d’un lien, le Lab revient automatiquement au mode normal sélection/déplacement.
+
+Les liens sont calculés depuis le centre logique des objets mais leur point visible est projeté sur la **bordure** du nœud, de la zone ou du dessin. Lorsqu’une poignée de lien passe à proximité d’un de ces objets, elle s’y aimante ; le seuil de décrochage est volontairement plus large que le seuil d’accrochage pour éviter les changements accidentels de cible.
+
+Le bouton compact `↺` de la barre supérieure **Réinitialise la revue locale** : il efface annotations, nœuds locaux, liens, déplacements, commentaires, remplacements d’image et calages locaux du jeu courant, puis revient exactement au Plan canonique. Un simple rechargement de page conserve au contraire la revue locale, par conception.
+
+La suppression d’un repère local supprime son bundle sémantique associé et les liens qui le référencent ; le Plan ne doit jamais conserver de destination orpheline après `Delete`, `Backspace`, Undo/Redo ou recréation d’un lien.

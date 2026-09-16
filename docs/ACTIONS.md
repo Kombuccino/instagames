@@ -8,6 +8,8 @@ Lire la version actuelle sur `main` de ce fichier et des [règles du projet](../
 
 Pour un jeu, retrouver son entrée dans [le registre](../src/core/gameRegistry.tsx), qui renvoie désormais à son `src/games/<dossier>/definition.ts`, puis `GAME_STATUS.md`, `TODO.md`, `ART_DIRECTION.md` et `ASSET_MANIFEST.md` dans ce même dossier lorsqu'ils existent. TetraMindFck garde le dossier `calc-drop`. Ouvrir les images pertinentes et consulter les discussions liées pour récupérer les corrections non transcrites. Une affirmation ancienne de l'agent n'est pas une validation utilisateur ni une preuve de livraison.
 
+Pour tout chantier jeu actif, lire aussi le contrat du [Production Lab](PRODUCTION_LAB_V1.md). Le Lab est la représentation sémantique visuelle du jeu et fait partie du suivi de production : si la demande change ce qu'il faut comprendre, voir, produire, animer, sonoriser ou intégrer, le Plan doit être synchronisé par l'agent dans le même travail.
+
 Annoncer en une ou deux phrases le travail choisi, la procédure utilisée et pourquoi. Si deux interprétations changent réellement le livrable ou si les procédures se contredisent sans décision permettant de trancher, expliquer le doute et poser une question courte. Choisir soi-même les détails techniques courants ; ne pas demander de recopier un brief.
 
 ## 2. Choisir la route
@@ -27,6 +29,8 @@ Annoncer en une ou deux phrases le travail choisi, la procédure utilisée et po
 | Où en est le jeu ? | Sa fiche `GAME_STATUS.md` et preuves actuelles | Fait, reste et prochaine action, sans modifier le jeu |
 
 Pour plusieurs besoins, enchaîner les routes nécessaires dans leur ordre de dépendance. Les documents référencés renvoient aux styles et contrats spécialisés ; ne pas charger tous les catalogues dans chaque tâche.
+
+**Règle transversale jeu :** après toute passe qui change la compréhension sémantique ou visuelle du jeu, appliquer aussi [Production Lab](PRODUCTION_LAB_V1.md). Cela vaut pour GD, DA, états, assets, animation, FX, son, intégration et décisions de revue. Un refactor invisible ou une correction sans conséquence de conception ne déclenche pas de bruit dans le Plan.
 
 ## 3. Choisir les outils disponibles
 
@@ -50,6 +54,8 @@ Après validation, conserver les originaux et noter la portée du choix. Ne pas 
 ## 5. Transmettre et apprendre
 
 Après une décision ou une passe significative, actualiser la fiche et le document concernés : choix daté, référence exacte et rôle, refus, réalisé / reste, preuves, prochaine action. Séparer proposition, validation artistique, fichier sauvegardé, intégration et test. GitHub partage ces traces, pas automatiquement toute la mémoire des conversations.
+
+Pour un jeu actif, **synchroniser aussi son Production Lab lorsqu'une décision change le sens ou la production du jeu**. La représentation du Plan fait partie du livrable de la passe, au même titre que le code ou la DA concernés. L'utilisateur n'a pas à maintenir cette carte : ChatGPT/Codex crée et met à jour les situations, nœuds, continuités Proto → DA → Release et références utiles. Après un export de revue humaine depuis le Lab, l'agent applique les décisions retenues au repo puis met le Plan canonique à jour.
 
 Les idées futures vont dans le `TODO.md` du jeu ou `docs/CORE_TODO.md`, selon [TODO_NOTES.md](TODO_NOTES.md). Ne pas confondre backlog, travail actif (`GAME_STATUS.md`) et historique livré (`CHANGELOG.md`). Une discussion Notes peut ajouter au backlog pendant qu'un chantier code ; un agent de code ne modifie pas la TODO pour un travail sans rapport.
 

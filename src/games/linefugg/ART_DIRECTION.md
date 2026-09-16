@@ -1,31 +1,7 @@
 # LineFugg — Art Direction
 
-Status: runtime canonical **Solar Origami v3**, integrated 2026-09-14 after correction of the selected-cell colors and user authorization to test the new pack in game. **Solar Origami v2** and **Orbital Accounting** are retained below as superseded history.
+Status: canonical gameplay art direction approved 2026-09-06.
 Cover status: current static collection, integrated 2026-09-07 after explicit user request. Preserve the four approved originals identified in ASSET_MANIFEST.md; animation is deferred, not a reason to retain the migration badge. Cover art follows DA_COVER.md, independently from the gameplay medium below.
-
-## Replacement direction — Solar Origami, 2026-09-13
-
-### Corrective production authority — v3, 2026-09-14
-
-The sole visual authority for the corrective boards is `public/assets/generated/linefugg/solar-origami-v3/references/linefugg-da-validated-2026-09-14.png`. Do not reinterpret its celestial silhouettes, selected-cell hues, numeral proportions or energy grammar. The violet result is the wide asymmetric winged crystal, the red result the tall folded sail, and the yellow result the perforated solar sail. Their inactive versions use the same silhouettes in ivory; color appears only after the corresponding line is committed.
-
-Cells and content are separate layers. The four empty cell states are neutral ivory, red, violet and yellow; no number or operator is baked into them. Every visible number and mathematical mark, including `+`, `−`, `×`, `÷`, `.`, and `=`, comes from the dedicated raster glyph sheet and is composed at runtime.
-
-Production transparency is deterministic: ask ImageGen for isolated assets on a perfectly uniform pure chroma-green `#00FF00` field, forbid shadows or glow on the field, then remove that sampled field into genuine RGBA alpha with the repository build script. Never request or accept a painted checkerboard as transparency. Validate transparent, partial and opaque pixel counts before splitting or integration. This rule replaces direct-alpha generation for complex boards after repeated fake-transparency failures.
-
-Production correction after user review: `solar-origami/` v1 is rejected and must not be integrated. The v2 authority is the three transparent master tilesets in `public/assets/generated/linefugg/solar-origami-v2/`. It restores the mockup's plain heavy raster numerals, uses four genuinely transparent equal-size button states, keeps result objects ivory before commit and makes their active forms genuinely multicolored. The sun has four progressive color states plus separate floating-rock clusters. Selection and energy are no longer placeholders: neutral/hover/three-color/shared nodes, straight/diagonal/elbow segments, 24 travel frames and arrival particles are individually available. No unrequested copy was introduced.
-
-The retained exploration keeps LineFugg spatial while replacing the brass astrolabe, planisphere, parchment ledger and repeated calculation rows with faceted ivory nodes, folded solar-sail result craft and a central score star. The canvas-safe reference is `linefugg-r4-d-solar-origami-canonical-colors-390x844.png` in the private graphic archive; the exact PC review crop is `390×662`, centered at `y=91…753`. These files are references, not runtime backgrounds.
-
-Canonical line identity stays shared with the majority of covers and the existing runtime: line 1 / result 8 vermilion-red `#ff5a36`, line 2 / result 19 blue-violet `#a54dff`, line 3 / result 24 solar yellow `#ffc72c`. An unused result craft is ivory/white and low-emission. It receives its line color only after that line is committed; Undo returns the corresponding craft to ivory immediately. Color is reinforced by line order, ribbon construction and craft silhouette/state, never used as the sole cue.
-
-The board has one neutral faceted family with clearly different operator silhouettes. Additive cells use the plain diamond. Multipliers use an outward/expanding faceted profile; dividers use a split or inward-notched profile. The `×` and `÷` marks remain large, but silhouette and material must make the cell kind recognizable before reading the glyph.
-
-No persistent free-form ribbon joins an arbitrary board selection to a result craft. Phaser keeps the selected line on the board, then on commit emits a short moving origami-energy transfer from the chosen line toward its fixed result slot. The transfer fades on arrival; only the three fixed result-to-51 energy links persist and move subtly. Reduced motion replaces travel with an immediate color/energy state change. All curves, particles, tint and timing are engine-owned; no selected path, score or charged state is baked into the environment.
-
-Raster production includes a consistent generated numeric/math atlas. Required cell-face frames are `1…9`, `−1…−4`, `×2`, `×3`, `÷2`, `÷3` (17 faces). A separate composable score atlas contains `0…9`, `−`, `+`, `×`, `÷`, decimal point and `=` so live and final values, including decimals, never depend on a system font. The final transparent control board contains the English actions `UNDO` / `VALIDATE` and their icons. Clean derivatives, explicit frame metadata and source sheets live under `public/assets/generated/linefugg/solar-origami-v2/`.
-
-Visible text allowlist remains closed: gameplay values and the functional actions `UNDO` / `VALIDATE` only. No slogan, lore label or decorative microcopy belongs in the gameplay raster. The v2 pack is now active in Phaser: neutral/charged states, operator silhouettes, raster glyphs, selection segments and energy frames are assembled dynamically inside the `390×844` stage and its exact PC CENTRE crop.
 
 ## Continuity contract — 2026-09-07
 
@@ -36,7 +12,7 @@ Follow [the unified creation notice](../../../docs/GAME_CREATION_PIPELINE.md) an
 - Preserve: celestial brass instrument, ink-blue depth, parchment calculations, clear numbers, three colored lines and restrained mechanical movement. Existing canonical music choices below remain acquired.
 - Rejected: generic sci-fi/neon HUD, interchangeable generated mobile-game finish, distorted ornamental strips, duplicated or misaligned controls and decoration that shrinks or obscures gameplay. The user's 2026-09-07 instruction against generic “ChatGPT style” reinforces these constraints; it does not ban the specifically approved violet line or node glow.
 - Agent autonomy: prepare asset decomposition, align geometry, select supported engine techniques and tune restrained feedback within this direction. Record significant compromises; ask only for unresolved GD or DA decisions. Do not reopen the whole visual exploration.
-- Revised 2026-09-12 after user feedback: 280-unit usable board, 40-unit square cells, one parchment ledger with three chip rows, shared dock anchors and a separate animated armillary. The lighter composition preserves the brass material and readable numbers while restoring breathing room around the board and controls.
+- Implemented 2026-09-07: 322-unit usable board, 46-unit square cells, one parchment ledger with three chip rows, shared dock anchors and a separate animated armillary. This enlarges the former 282-unit grid while keeping its brass frame and the complete controls visible on a small phone. Visual acceptance of this implementation remains distinct from the approved direction.
 
 ## Core concept
 
@@ -53,7 +29,7 @@ Do not place the LineFugg name, logo, slogans, lore copy or decorative prose ins
 - The same authored composition is uniformly scaled on all devices.
 - No PC/mobile reflow, no critical vw/vh, no media-query layout variants.
 - Preserve Core close-box clearance at the upper-left; do not put essential game information underneath it.
-- Grid remains visually dominant without filling the whole stage: 280 logical units of playable cells at (55, 180), with exactly 40 × 40 unit cells.
+- Grid remains visually dominant: 322 logical units of playable cells at (34, 155), approximately 370 including its brass frame. Cells remain exactly 46 × 46 units.
 
 Target vertical composition:
 
@@ -221,7 +197,7 @@ See `ASSET_MANIFEST.md` for the concrete production inventory.
 
 User supplied GFX/crea-chatgpt/game/LineFugg-DA2.png as the latest approved lower-console reference. Keep the existing environment and board. Replace the earlier score/ledger/control styling with thin brass borders, one three-row parchment, a restrained total plaque, and two circular controls flanking the centered indicators. Three indicators retain red/violet/gold colors and five cell-count pips each. Undo hover must be visible only when enabled and must never trigger an undo.
 
-Canonical lower geometry after the 2026-09-12 spacing pass: ledger center `(195,551)`, `320×126` with three 42-high rows; total center `(195,638)`, `320×40`, fixed sigma and independent numeric value. Controls centers `(59,695)` and `(331,695)`, diameter `48`. Indicator backing `180×58`, centered `(195,695)` ; orb centers x139/195/251 at y686, pips y709. Every essential control remains inside the PC CENTRE window while all elements scale uniformly with the `390×844` stage.
+Canonical lower geometry: ledger center (195,593.5), 342×153; total center (195,698), 342×49, fixed sigma and independent numeric value. Controls centers (63,776) and (327,776), diameter72. Indicator backing 194×72, centered (195,776); orb centers x137/195/253 at y764, pips y791. All uniformly scaled with the 390×844 stage.
 
 ## Fidélité illustrée — correction du 7 septembre 2026
 
@@ -231,8 +207,6 @@ Retour utilisateur prioritaire : les cadres sobres de la passe DA2 ne justifient
 
 La validation utilisateur de 12:50:57 UTC porte sur les quatre images exactes : savant rouge qui trace, cartographe de dos avec compas, affiche des trois routes, jeune astronome en édition japonaise. La demande de 13:31:32 UTC autorise leur remplacement du placeholder et le retrait de A METTRE A JOUR. Elles sont maintenant déclarées en statique dans welcome.ts ; les identifiants, fichiers et empreintes sont conservés dans ASSET_MANIFEST.md et le reçu d'import.
 
-La demande du 12 septembre 2026 autorise une remise aux normes fidèle de ces quatre images, sur le modèle du pilote TetraMindFck : aucune nouvelle DA, aucun changement de sujet ou de hiérarchie. Chaque original reste la référence approuvée ; la restauration prolonge seulement son monde vers le bas pour atteindre le ratio Cover `390 × 844`. La zone ajoutée continue respectivement la table astronomique, le manteau et les livres, les trois routes sérigraphiées ou l'armillaire et l'architecture. Elle ne devient jamais une bande noire, floue, miroir ou étirée.
+Ne pas régénérer ces images pour les rapprocher du gameplay ou d'une étiquette de style. Préserver titre et composition entière : le mode statique contain protège les titres imprimés sur téléphone long ; seul le fond diffus extérieur est cover-crop dans la colonne Core. Ce choix de présentation ne change ni les pixels des masters, ni la règle du fond décoratif gameplay, ni le stage 390×844.
 
-Le runtime statique utilise désormais les dérivés lossless plein cadre avec `fit: cover` et ancrage haut. Le titre reste dans la partie d'origine ; le bouton Core JOUER ne recouvre que le prolongement décoratif bas. Aucun `SWIPE TO PLAY`, CTA, score, signature MiniFugg, faux cadre ou nouveau texte n'est ajouté. L'édition D conserve son traitement de titre japonais déjà approuvé.
-
-Les covers restent entièrement statiques. Ne créer ni décomposition en couches, ni animation, ni parallax. Le médium, l'intention et le cadrage de chaque édition restent distincts.
+Aucune animation cover n'est demandée pour cette livraison. Une future décomposition devra conserver les masters et produire des couches séparées dans le runtime partagé. Le médium, l'intention et le cadrage de chaque édition restent distincts ; très peu de texte hors titre, anglais par défaut et japonais pour l'édition localisée.

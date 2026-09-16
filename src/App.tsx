@@ -8,6 +8,7 @@ import { LayoutLab, type LayoutTemplate } from './core/LayoutLab'
 import { MusicLab } from './core/MusicLab'
 import { PlatformEntryScene } from './core/PlatformEntryScene'
 import { ProductionLab } from './core/ProductionLab'
+import { ProductionLabKeyboardNavigation } from './core/ProductionLabKeyboardNavigation'
 import { gameRegistry } from './core/gameRegistry'
 
 function opensDirectlyOnAGame() {
@@ -85,7 +86,12 @@ export default function App() {
   const [homeBisArm, setHomeBisArm] = useState<string | null>(null)
 
   if (opensGameplayCalibrationRuntime()) return <GameplayCalibrationRuntime />
-  if (opensProductionLab()) return <ProductionLab />
+  if (opensProductionLab()) return (
+    <>
+      <ProductionLab />
+      <ProductionLabKeyboardNavigation />
+    </>
+  )
   if (opensHomeBisLab()) return (
     <>
       <HomeBisLab handoffArm={homeBisArm} />

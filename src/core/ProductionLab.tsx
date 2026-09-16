@@ -472,7 +472,7 @@ export function ProductionLab() {
     return true
   }
 
-  function pointInElement(event: ReactPointerEvent<HTMLElement>) {
+  function pointInElement(event: { currentTarget: HTMLElement; clientX: number; clientY: number }) {
     const rect = event.currentTarget.getBoundingClientRect()
     return { x: clamp((event.clientX - rect.left) / rect.width * MASTER_WIDTH, 0, MASTER_WIDTH), y: clamp((event.clientY - rect.top) / rect.height * MASTER_HEIGHT, 0, MASTER_HEIGHT) }
   }

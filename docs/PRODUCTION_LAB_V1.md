@@ -27,6 +27,26 @@ Un **lien transversal** permet de suivre un élément dans le temps, par exemple
 - **Vue simplifiée** : affiche les États et leurs écrans, sans nœuds périphériques.
 - **Vue éclatée** : affiche les mêmes écrans au même endroit avec leurs nœuds, liens et continuités. Chaque écran peut être simplifié/éclaté individuellement.
 
+## Synchronisation obligatoire avec le travail réel
+
+Le Lab fait partie du **Definition of Done** d’un chantier jeu. Une modification importante du jeu n’est pas considérée comme réellement terminée si elle change la compréhension du produit mais laisse son Plan canonique obsolète.
+
+Après chaque passe significative, ChatGPT/Codex décide si le Plan est impacté et le met à jour dans le même lot lorsque c’est nécessaire. Cela concerne notamment :
+
+- règles, boucle, contrôles, scoring, progression ou situation exceptionnelle ;
+- composition, DA, cover ou hiérarchie visuelle importante ;
+- entité/composant, états, variantes, transitions ou relations entre éléments ;
+- animation, FX, son ou feedback lié à une action ;
+- découpe de production, tileset, famille de sprites, canvas canonique ou contrainte d’intégration ;
+- résultat d’intégration qui diverge de la DA ou oblige à revoir GD/DA ;
+- décision humaine qui valide, rejette ou redirige un élément.
+
+Les refactors invisibles, corrections de typo, tooling de build et détails d’implémentation sans conséquence de conception/production **ne créent pas de bruit dans le Lab**.
+
+Quand un nouveau jeu devient réellement jouable, son Plan est créé/enrichi dès que le Proto contient assez de comportement pour être cartographié. Un jeu actif ne doit pas rester sur le plan générique minimal : son travail de production comprend l’entretien de sa représentation sémantique.
+
+Le propriétaire de cette synchronisation est l’agent, pas l’utilisateur. L’utilisateur donne les impulsions, valide et annote ; il n’a pas à retranscrire lui-même ses demandes dans le Lab.
+
 ## Revue humaine non destructive
 
 L’utilisateur peut travailler localement dans le Lab sans casser le projet :
@@ -40,7 +60,7 @@ L’utilisateur peut travailler localement dans le Lab sans casser le projet :
 
 Ces modifications sont enregistrées localement dans le navigateur et restent un **calque de revue**. Elles ne modifient ni GitHub, ni le jeu, ni `ART_DIRECTION.md`, ni les manifests.
 
-`Copier pour ChatGPT` exporte un handoff structuré contenant projet, élément, coordonnées, annotations, nœuds brouillons, commentaires et écrans simplifiés. ChatGPT/Codex interprète ensuite ce handoff et applique les changements réels dans le repo.
+`Copier pour ChatGPT` exporte un handoff structuré contenant projet, élément, coordonnées, annotations, nœuds brouillons, commentaires et écrans simplifiés. ChatGPT/Codex interprète ensuite ce handoff, applique les changements réels dans le repo, puis **rafraîchit le Plan canonique** pour refléter les décisions réellement retenues.
 
 ## Vérification du contrat de mise en page
 
@@ -55,7 +75,7 @@ Ces viewports sont projetés dans le MASTER 390 et suivent l’ancrage `top | ce
 
 ## Alpha actuelle
 
-- Sélecteur alimenté par `gameRegistry` ; LineFugg Rebirth sert de démonstrateur riche, les autres jeux reçoivent un plan générique minimal.
+- Sélecteur alimenté par `gameRegistry` ; LineFugg Rebirth sert de démonstrateur riche, les autres jeux reçoivent un plan générique minimal tant qu’ils ne redeviennent pas des chantiers actifs.
 - Covers séparées, Proto, DA et Release sur le même Plan.
 - Écrans en vraie proportion 390×844.
 - Nœuds texte/image/tileset/animation/audio.

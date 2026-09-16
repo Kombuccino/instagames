@@ -5,7 +5,7 @@ import { DEFAULT_LOGICAL_VIEWPORTS } from '../../core/runtime/gameRuntimePolicy'
 import { createLineFuggMusicPlayer } from '../../audio/gameMusic'
 import { LINEFUGG_SCENE_KEY, LineFuggScene } from './LineFuggScene'
 
-const LINEFUGG_BACKGROUND = '/assets/generated/linefugg/solar-origami-v2/runtime/background/solar-origami-background-v2.webp'
+const LINEFUGG_BACKGROUND = '/assets/imported/linefugg/backgrounds/orbital-environment.webp'
 
 export function LineFugg({ active, seed, restartToken, session }: GameComponentProps) {
   const renderPixelRatio = useRef(Math.min(2, Math.max(1, window.devicePixelRatio || 1))).current

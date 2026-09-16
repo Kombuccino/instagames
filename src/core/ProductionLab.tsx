@@ -1004,7 +1004,7 @@ export function ProductionLab() {
     return null
   }
 
-  function nearestMagnet(world: Point, thresholdPx: number, exclude?: LinkEndpoint) {
+  function nearestMagnet(world: Point, thresholdPx: number, exclude?: LinkEndpoint): { endpoint: LinkEndpoint; point: Point; distance: number } | null {
     const threshold = thresholdPx / camera.zoom
     let best: { endpoint: LinkEndpoint; point: Point; distance: number } | null = null
     const same = (a: LinkEndpoint, b: LinkEndpoint) => a.kind === b.kind && (
@@ -1025,7 +1025,7 @@ export function ProductionLab() {
       if (!rect) continue
       consider({ kind: 'annotation', annotationId: annotation.id }, annotation.type === 'point' ? rectCenter(rect) : closestPointOnRect(world, rect))
     }
-    return best
+    return best as { endpoint: LinkEndpoint; point: Point; distance: number } | null
   }
 
   function resolveEndpointAt(clientX: number, clientY: number, exclude?: LinkEndpoint): LinkEndpoint | null {

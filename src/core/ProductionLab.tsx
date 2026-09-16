@@ -3,6 +3,7 @@ import './ProductionLab.css'
 
 type StageStatus = 'ready' | 'active' | 'blocked' | 'later'
 type ItemStatus = 'validated' | 'review' | 'todo' | 'blocked'
+type PreviewMode = 'context' | 'solo' | 'exploded'
 
 type ProductionItem = {
   id: string
@@ -41,7 +42,11 @@ export function ProductionLab() {
   const [selectedStage, setSelectedStage] = useState('requirements')
   const [selectedId, setSelectedId] = useState(initialItems[0].id)
   const [items, setItems] = useState(initialItems)
+  const [previewMode, setPreviewMode] = useState<PreviewMode>('context')
   const selected = useMemo(() => items.find((item) => item.id === selectedId) ?? items[0], [items, selectedId])
+  const validatedCount = items.filter((item) => item.status === 'validated').length
+  const reviewCount = items.filter((item) => item.status === 'review').length
+  const stateCount = items.reduce((sum, item) => sum + item.states.length, 0)
 
   function setItemStatus(status: ItemStatus) {
     setItems((current) => current.map((item) => item.id === selected.id ? { ...item, status } : item))
@@ -74,6 +79,14 @@ export function ProductionLab() {
         <button onClick={copyHandoff}>Copier pour ChatGPT</button>
       </header>
 
+      <section className="production-lab__summary" aria-label="Production summary">
+        <div><b>{items.length}</b><span>objets à résoudre</span></div>
+        <div><b>{stateCount}</b><span>états déjà recensés</span></div>
+        <div><b>{reviewCount}</b><span>à analyser</span></div>
+        <div><b>{validatedCount}</b><span>validés</span></div>
+        <div className="is-live"><b>LIVE</b><span>proto visible dans le Workbench</span></div>
+      </section>
+
       <section className="production-lab__graph" aria-label="Production graph">
         {stages.map((stage, index) => (
           <div className="production-lab__graph-node-wrap" key={stage.id}>
@@ -100,8 +113,20 @@ export function ProductionLab() {
         <section className="production-lab__detail">
           <div className="production-lab__detail-head"><div><span>{selected.kind}</span><h2>{selected.title}</h2><code>{selected.id}</code></div><strong className={`is-${selected.status}`}>{statusLabel[selected.status]}</strong></div>
           <div className="production-lab__preview">
-            <div className="production-lab__mock-stage"><div className="production-lab__mock-object">{selected.title}<small>Workbench runtime à brancher</small></div></div>
-            <div className="production-lab__preview-tools"><button>SOLO</button><button>EXPLODED</button><button>IN CONTEXT</button><button>BOUNDS</button><button>PIVOT</button></div>
+            <div className="production-lab__preview-tools">
+              <button className={previewMode === 'context' ? 'is-selected' : ''} onClick={() => setPreviewMode('context')}>IN CONTEXT</button>
+              <button className={previewMode === 'solo' ? 'is-selected' : ''} onClick={() => setPreviewMode('solo')}>SOLO</button>
+              <button className={previewMode === 'exploded' ? 'is-selected' : ''} onClick={() => setPreviewMode('exploded')}>EXPLODED</button>
+              <button disabled>BOUNDS</button><button disabled>PIVOT</button>
+            </div>
+            {previewMode === 'context' ? (
+              <div className="production-lab__runtime-shell">
+                <div className="production-lab__runtime-label"><b>PROTO LIVE</b><span>runtime réel actuel · interactions possibles</span></div>
+                <iframe className="production-lab__runtime-frame" src="/?game=linefugg" title="LineFugg live runtime" />
+              </div>
+            ) : (
+              <div className="production-lab__mock-stage"><div className="production-lab__mock-object">{selected.title}<small>{previewMode === 'solo' ? 'Isolation du composant à brancher' : 'Vue éclatée à brancher'}</small></div></div>
+            )}
           </div>
           <div className="production-lab__states"><h3>États attendus</h3>{selected.states.map((state) => <span key={state}>{state}</span>)}</div>
           <dl><div><dt>Owner</dt><dd>{selected.owner}</dd></div><div><dt>Note de production</dt><dd>{selected.note}</dd></div></dl>

@@ -7,24 +7,11 @@ on:
       - main
       - 'core/**'
 
-permissions:
-  contents: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Apply Production Lab canonical link parity patch
-        if: github.event_name == 'push' && github.ref_name == 'core/production-lab-canonical-link-parity'
-        run: |
-          python scripts/patch-production-lab-canonical-links-reset.py
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git rm scripts/patch-production-lab-canonical-links-reset.py
-          git add src/core/ProductionLab.tsx docs/PRODUCTION_LAB_V1.md
-          git commit -m 'fix(lab): unify canonical links and full reset [skip ci]'
-          git push origin HEAD:${GITHUB_REF_NAME}
       - uses: actions/setup-node@v4
         with:
           node-version: 22

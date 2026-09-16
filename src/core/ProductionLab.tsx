@@ -95,6 +95,7 @@ type ReviewState = {
   comments: Record<string, string>
   referenceAdjustments: Record<string, ReferenceAdjustment>
   linkOverrides: Record<string, SemanticLink[]>
+  canonicalLinkSourceOverrides: Record<string, LinkEndpoint>
   nodePositionOverrides: Record<string, Point>
   deletionRequests: Record<string, DeletionRequest>
   screenImages: Record<string, LocalImageOverride>
@@ -314,7 +315,7 @@ function recommendedObjectPosition(bias: number) {
 function emptyReview(): ReviewState {
   return {
     annotations: [], reviewNodes: [], reviewLinks: [], comments: {}, referenceAdjustments: {}, linkOverrides: {},
-    nodePositionOverrides: {}, deletionRequests: {}, screenImages: {},
+    canonicalLinkSourceOverrides: {}, nodePositionOverrides: {}, deletionRequests: {}, screenImages: {},
   }
 }
 
@@ -389,6 +390,7 @@ function loadReview(gameId: string, project: PlanProject): ReviewState {
       comments: raw.comments ?? {},
       referenceAdjustments: raw.referenceAdjustments ?? {},
       linkOverrides: raw.linkOverrides ?? {},
+      canonicalLinkSourceOverrides: raw.canonicalLinkSourceOverrides ?? {},
       nodePositionOverrides: raw.nodePositionOverrides ?? {},
       deletionRequests: raw.deletionRequests ?? {},
       screenImages: raw.screenImages ?? {},
@@ -423,6 +425,7 @@ export function ProductionLab() {
   const [linkDraft, setLinkDraft] = useState<LinkDraft>(null)
   const [linkGhost, setLinkGhost] = useState<Point | null>(null)
   const [exported, setExported] = useState(false)
+  const [resetDone, setResetDone] = useState(false)
 
   const reviewRef = useRef(review)
   const undoRef = useRef<ReviewState[]>([])
@@ -668,6 +671,20 @@ export function ProductionLab() {
       const rect = annotationBounds(endpoint.annotationId)
       if (!rect) return null
       return annotation?.type === 'point' ? rectCenter(rect) : borderPoint(rect, toward)
+    }
+    return endpointCenter(endpoint)
+  }
+
+  function magneticPoint(endpoint: LinkEndpoint, toward: Point): Point | null {
+    if (endpoint.kind === 'node') {
+      const rect = nodeBounds(endpoint.nodeId)
+      return rect ? closestPointOnRect(toward, rect) : null
+    }
+    if (endpoint.kind === 'annotation') {
+      const annotation = annotationsById.get(endpoint.annotationId)
+      const rect = annotationBounds(endpoint.annotationId)
+      if (!rect) return null
+      return annotation?.type === 'point' ? rectCenter(rect) : closestPointOnRect(toward, rect)
     }
     return endpointCenter(endpoint)
   }
@@ -1044,7 +1061,11 @@ export function ProductionLab() {
     if (endpointDragRef.current) return
     let original: LinkEndpoint | null = null
     if (drag.kind === 'canonical' && drag.sourceNodeId) {
-      original = effectiveCanonicalLinks(drag.sourceNodeId).find((link) => link.id === drag.linkId)?.target ?? null
+      const key = `${drag.sourceNodeId}:${drag.linkId}`
+      const link = effectiveCanonicalLinks(drag.sourceNodeId).find((item) => item.id === drag.linkId)
+      original = drag.side === 'source'
+        ? reviewRef.current.canonicalLinkSourceOverrides[key] ?? { kind: 'node', nodeId: drag.sourceNodeId }
+        : link?.target ?? null
     } else {
       const link = reviewRef.current.reviewLinks.find((item) => item.id === drag.linkId)
       original = link ? link[drag.side] : null
@@ -1062,9 +1083,9 @@ export function ProductionLab() {
     if (!world) return
 
     if (drag.snapped) {
-      const center = endpointCenter(drag.snapped)
-      if (center && distance(world, center) <= SNAP_OUT_PX / camera.zoom) {
-        setLinkGhost(visualEndpoint(drag.snapped, world) ?? center)
+      const snapPoint = magneticPoint(drag.snapped, world)
+      if (snapPoint && distance(world, snapPoint) <= SNAP_OUT_PX / camera.zoom) {
+        setLinkGhost(snapPoint)
         return
       }
       drag.snapped = null
@@ -1093,10 +1114,15 @@ export function ProductionLab() {
     const endpoint = drag.snapped ?? resolveEndpointAt(event.clientX, event.clientY, drag.original)
     if (!endpoint) return
     if (drag.kind === 'canonical' && drag.sourceNodeId) {
-      commitReview((current) => {
-        const base = current.linkOverrides[drag.sourceNodeId!] ?? canonicalNodesById.get(drag.sourceNodeId!)?.links ?? []
-        return { ...current, linkOverrides: { ...current.linkOverrides, [drag.sourceNodeId!]: base.map((link) => link.id === drag.linkId ? { ...link, target: endpoint } : link) } }
-      })
+      if (drag.side === 'source') {
+        const key = `${drag.sourceNodeId}:${drag.linkId}`
+        commitReview((current) => ({ ...current, canonicalLinkSourceOverrides: { ...current.canonicalLinkSourceOverrides, [key]: endpoint } }))
+      } else {
+        commitReview((current) => {
+          const base = current.linkOverrides[drag.sourceNodeId!] ?? canonicalNodesById.get(drag.sourceNodeId!)?.links ?? []
+          return { ...current, linkOverrides: { ...current.linkOverrides, [drag.sourceNodeId!]: base.map((link) => link.id === drag.linkId ? { ...link, target: endpoint } : link) } }
+        })
+      }
     } else {
       commitReview((current) => ({ ...current, reviewLinks: current.reviewLinks.map((link) => link.id === drag.linkId ? { ...link, [drag.side]: endpoint } : link) }))
     }
@@ -1240,16 +1266,31 @@ export function ProductionLab() {
   }
 
   function resetLocalReview() {
-    if (!window.confirm('Revenir au Plan canonique et supprimer toutes les modifications locales de ce jeu ?')) return
-    try { localStorage.removeItem(`mf-production-review:${game.id}`) } catch { /* no-op */ }
+    if (!window.confirm('Revenir exactement au Plan canonique initial et supprimer toutes les modifications locales de ce jeu ?')) return
     const next = emptyReview()
+    try { localStorage.setItem(`mf-production-review:${game.id}`, JSON.stringify(next)) } catch { /* no-op */ }
     assignReview(next)
     undoRef.current = []
     redoRef.current = []
+    panRef.current = null
+    pinchRef.current = null
+    nodeDragRef.current = null
+    annotationDragRef.current = null
+    endpointDragRef.current = null
+    touchesRef.current.clear()
     setSelection(null)
     setTool(null)
     setLinkDraft(null)
+    setLinkGhost(null)
+    setGesture(null)
     setReferenceEditing(false)
+    setReference('minimum')
+    setViewMode('exploded')
+    setCollapsedScreens(new Set())
+    setCamera({ x: 22, y: 36, zoom: 0.34 })
+    setExported(false)
+    setResetDone(true)
+    window.setTimeout(() => setResetDone(false), 1400)
   }
 
   async function copyForChatGPT() {
@@ -1259,6 +1300,7 @@ export function ProductionLab() {
       comments: Object.fromEntries(Object.entries(review.comments).filter(([, value]) => value.trim())),
       annotations: review.annotations, draftNodes: review.reviewNodes, reviewLinks: review.reviewLinks,
       referenceAdjustments: review.referenceAdjustments, linkOverrides: review.linkOverrides,
+      canonicalLinkSourceOverrides: review.canonicalLinkSourceOverrides,
       nodePositionOverrides: review.nodePositionOverrides, deletionRequests: Object.values(review.deletionRequests),
       screenImages, simplifiedScreens: [...collapsedScreens],
     }
@@ -1305,7 +1347,7 @@ export function ProductionLab() {
       <div className="mfpl-segmented"><button className={viewMode === 'simple' ? 'is-active' : ''} onClick={() => setViewMode('simple')}>Simplifiée</button><button className={viewMode === 'exploded' ? 'is-active' : ''} onClick={() => setViewMode('exploded')}>Éclatée</button></div>
       <label>Repère<select value={reference} onChange={(event) => setReference(event.target.value as ReferenceMode)}>{REFERENCE_OPTIONS.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label>
       <button className={`mfpl-reference-edit ${referenceEditing ? 'is-active' : ''}`} title={referenceEditing ? 'Terminer le calage' : 'Éditer le calage'} disabled={!selectedScreen || reference === 'off'} onClick={() => setReferenceEditing((current) => !current)}>{referenceEditing ? '✓' : '✎'}</button>
-      <button className="mfpl-reset-review" title="Revenir au Plan canonique" onClick={resetLocalReview}>↺</button>
+      <button className="mfpl-reset-review" title="Réinitialiser complètement la revue locale" onClick={resetLocalReview}>{resetDone ? '✓' : '↺'}</button>
       <button className="mfpl-action" onClick={copyForChatGPT}>{exported ? 'Copié' : 'Copier pour ChatGPT'}</button>
     </header>
 
@@ -1346,14 +1388,17 @@ export function ProductionLab() {
 
           {viewMode === 'exploded' && <svg className="mfpl-links" width={WORLD_WIDTH} height={WORLD_HEIGHT}>
             {renderedCanonicalNodes.flatMap((node) => {
-              const sourceEndpoint: LinkEndpoint = { kind: 'node', nodeId: node.id }
               return effectiveCanonicalLinks(node.id).map((link) => {
                 const drag = endpointDragRef.current
+                const sourceEndpoint: LinkEndpoint = review.canonicalLinkSourceOverrides[`${node.id}:${link.id}`] ?? { kind: 'node', nodeId: node.id }
                 const geometry = linkGeometry(sourceEndpoint, link.target)
                 if (!geometry) return null
-                const source = geometry.source
+                let source = geometry.source
                 let target = geometry.target
-                if (drag?.kind === 'canonical' && drag.sourceNodeId === node.id && drag.linkId === link.id && linkGhost) target = linkGhost
+                if (drag?.kind === 'canonical' && drag.sourceNodeId === node.id && drag.linkId === link.id && linkGhost) {
+                  if (drag.side === 'source') source = linkGhost
+                  else target = linkGhost
+                }
                 const selected = selection?.kind === 'node' && selection.id === node.id
                   || selection?.kind === 'canonical-link' && selection.sourceNodeId === node.id && selection.linkId === link.id
                 const deleteRequested = Boolean(review.deletionRequests[`link:${node.id}:${link.id}`])
@@ -1361,8 +1406,12 @@ export function ProductionLab() {
                   <line className="mfpl-link" x1={source.x} y1={source.y} x2={target.x} y2={target.y} />
                   <line className="mfpl-link-hit" x1={source.x} y1={source.y} x2={target.x} y2={target.y} onClick={(event) => { event.stopPropagation(); setSelection({ kind: 'canonical-link', sourceNodeId: node.id, linkId: link.id }) }} />
                   {selected && <circle className="mfpl-link-target-halo" cx={target.x} cy={target.y} r="18" />}
+                  <circle className="mfpl-link-target" cx={source.x} cy={source.y} r={selected ? 6 : 4} />
                   <circle className="mfpl-link-target" cx={target.x} cy={target.y} r={selected ? 6 : 4} />
-                  {selected && <circle className="mfpl-link-handle" cx={target.x} cy={target.y} r="9" onPointerDown={(event) => startEndpointDrag(event, { kind: 'canonical', linkId: link.id, sourceNodeId: node.id, side: 'target' })} onPointerMove={moveEndpointDrag} onPointerUp={endEndpointDrag} onPointerCancel={endEndpointDrag} />}
+                  {selected && <>
+                    <circle className="mfpl-link-handle" cx={source.x} cy={source.y} r="9" onPointerDown={(event) => startEndpointDrag(event, { kind: 'canonical', linkId: link.id, sourceNodeId: node.id, side: 'source' })} onPointerMove={moveEndpointDrag} onPointerUp={endEndpointDrag} onPointerCancel={endEndpointDrag} />
+                    <circle className="mfpl-link-handle" cx={target.x} cy={target.y} r="9" onPointerDown={(event) => startEndpointDrag(event, { kind: 'canonical', linkId: link.id, sourceNodeId: node.id, side: 'target' })} onPointerMove={moveEndpointDrag} onPointerUp={endEndpointDrag} onPointerCancel={endEndpointDrag} />
+                  </>}
                 </g>
               })
             })}
@@ -1381,6 +1430,8 @@ export function ProductionLab() {
               return <g key={link.id} className={`${selected ? 'is-selected' : ''} ${link.kind === 'attachment' ? 'is-attachment' : ''}`}>
                 <line className="mfpl-link" x1={source.x} y1={source.y} x2={target.x} y2={target.y} />
                 <line className="mfpl-link-hit" x1={source.x} y1={source.y} x2={target.x} y2={target.y} onClick={(event) => { event.stopPropagation(); setSelection({ kind: 'review-link', id: link.id }) }} />
+                <circle className="mfpl-link-target" cx={source.x} cy={source.y} r={selected ? 6 : 4} />
+                <circle className="mfpl-link-target" cx={target.x} cy={target.y} r={selected ? 6 : 4} />
                 {selected && <>
                   <circle className="mfpl-link-handle" cx={source.x} cy={source.y} r="9" onPointerDown={(event) => startEndpointDrag(event, { kind: 'review', linkId: link.id, side: 'source' })} onPointerMove={moveEndpointDrag} onPointerUp={endEndpointDrag} onPointerCancel={endEndpointDrag} />
                   <circle className="mfpl-link-handle" cx={target.x} cy={target.y} r="9" onPointerDown={(event) => startEndpointDrag(event, { kind: 'review', linkId: link.id, side: 'target' })} onPointerMove={moveEndpointDrag} onPointerUp={endEndpointDrag} onPointerCancel={endEndpointDrag} />
@@ -1494,7 +1545,7 @@ export function ProductionLab() {
         {selectedCanonicalNode && <>
           <div className="mfpl-inspector-title"><small>NŒUD · {selectedCanonicalNode.kind.toUpperCase()}</small><h2>{selectedCanonicalNode.title}</h2></div>
           <p>{selectedCanonicalNode.body}</p>{selectedCanonicalNode.facts.length > 0 && <div className="mfpl-semantic-block"><b>Détails</b><ul>{selectedCanonicalNode.facts.map((fact) => <li key={fact}>{fact}</li>)}</ul></div>}
-          <div className="mfpl-link-summary"><b>{effectiveCanonicalLinks(selectedCanonicalNode.id).length} lien(s)</b><span>Glisse directement une poignée orange pour changer sa destination. Utilise l’outil Lien pour ajouter une relation locale.</span></div>
+          <div className="mfpl-link-summary"><b>{effectiveCanonicalLinks(selectedCanonicalNode.id).length} lien(s)</b><span>Tous les liens canoniques utilisent les mêmes poignées : clique le nœud puis glisse l’extrémité de départ ou d’arrivée directement sur une autre cible.</span></div>
           {review.deletionRequests[`node:${selectedCanonicalNode.id}`] && <div className="mfpl-delete-request">Suppression demandée. Le nœud reste visible pour que ChatGPT puisse comprendre et traiter la demande.</div>}
           <label className="mfpl-field">Commentaire<textarea value={review.comments[selectedKey] ?? ''} onChange={(event) => transientReview((current) => ({ ...current, comments: { ...current.comments, [selectedKey]: event.target.value } }))} /></label>
           <div className="mfpl-key-help">Glisser = déplacer le nœud · Delete/Backspace = demander sa suppression</div>

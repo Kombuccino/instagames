@@ -54,6 +54,12 @@ Le Lab fait partie du Definition of Done d’un chantier jeu. Toute passe qui ch
 
 LineFugg Rebirth sert actuellement de démonstrateur : quatre captures statiques du vrai Proto montrent le départ, un tracé en cours, l’état après une ligne et les trois lignes avant validation. DA et Release restent vides tant qu’elles n’existent pas réellement.
 
+## Édition uniforme des liens et reset
+
+Les liens canoniques et locaux ont le même comportement visuel de revue : leurs points d’accroche se placent sur la bordure des nœuds, zones et dessins ; sélectionner un nœud révèle les poignées de tous ses liens. Les deux extrémités peuvent être déplacées localement. Le magnétisme utilise deux seuils distincts : accroche à proximité, puis décrochage seulement après un déplacement plus franc.
+
+Le reset de revue restaure l’état initial complet du Lab pour le jeu courant : aucun nœud/repère/lien local, aucun déplacement ou remplacement d’image, aucun override de lien/calage, vue éclatée, repère minimum, écrans non repliés et caméra initiale. Il réécrit explicitement l’état local vide afin qu’un rechargement conserve bien ce retour au canon.
+
 ## Non-objectifs
 
 Le Lab n’est pas un moteur de jeu, un IDE, un éditeur de données métier ni un chat embarqué. Il ne cherche pas à représenter exhaustivement la structure Phaser ou le code. Son rôle est de rendre la conception et les écarts visibles assez tôt pour éviter des intégrations coûteuses à reprendre.

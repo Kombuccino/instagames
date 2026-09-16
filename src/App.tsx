@@ -7,6 +7,7 @@ import { HomeBisLab } from './core/HomeBisLab'
 import { LayoutLab, type LayoutTemplate } from './core/LayoutLab'
 import { MusicLab } from './core/MusicLab'
 import { PlatformEntryScene } from './core/PlatformEntryScene'
+import { ProductionLab } from './core/ProductionLab'
 import { gameRegistry } from './core/gameRegistry'
 
 function opensDirectlyOnAGame() {
@@ -24,6 +25,12 @@ function opensMusicLab() {
   if (typeof window === 'undefined') return false
   const query = new URL(window.location.href).searchParams
   return query.get('usr') === 'moigod' && query.get('lab') === 'music'
+}
+
+function opensProductionLab() {
+  if (typeof window === 'undefined') return false
+  const query = new URL(window.location.href).searchParams
+  return query.get('usr') === 'moigod' && query.get('lab') === 'production'
 }
 
 function opensLayoutLab() {
@@ -78,6 +85,7 @@ export default function App() {
   const [homeBisArm, setHomeBisArm] = useState<string | null>(null)
 
   if (opensGameplayCalibrationRuntime()) return <GameplayCalibrationRuntime />
+  if (opensProductionLab()) return <ProductionLab />
   if (opensHomeBisLab()) return (
     <>
       <HomeBisLab handoffArm={homeBisArm} />

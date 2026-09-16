@@ -155,6 +155,8 @@ type EndpointDrag = {
   sourceNodeId?: string
   side: 'source' | 'target'
   before: ReviewState
+  original: LinkEndpoint
+  snapped: LinkEndpoint | null
 }
 
 const MASTER_WIDTH = 390
@@ -162,7 +164,9 @@ const MASTER_HEIGHT = 844
 const WORLD_WIDTH = 6900
 const WORLD_HEIGHT = 5600
 const NODE_WIDTH = 310
-const NODE_CENTER_Y = 85
+const NODE_HEIGHT = 148
+const SNAP_IN_PX = 24
+const SNAP_OUT_PX = 46
 const STATE_LABEL: Record<StateId, string> = { covers: 'COVERS', proto: 'PROTO', da: 'DA', release: 'RELEASE' }
 const ZONES: Array<{ id: StateId; x: number; width: number; subtitle: string }> = [
   { id: 'covers', x: 0, width: 1150, subtitle: 'ensemble éditorial séparé' },
@@ -596,31 +600,85 @@ export function ProductionLab() {
     return local ? reviewNodePosition(local) : null
   }
 
-  function nodeCenter(nodeId: string): Point | null {
+  function nodeBounds(nodeId: string): { x: number; y: number; w: number; h: number } | null {
     const position = nodePosition(nodeId)
-    return position ? { x: position.x + NODE_WIDTH / 2, y: position.y + NODE_CENTER_Y } : null
+    return position ? { x: position.x, y: position.y, w: NODE_WIDTH, h: NODE_HEIGHT } : null
   }
 
-  function annotationCenter(annotation: Annotation): Point | null {
-    const screen = screensById.get(annotation.screenId)
-    if (!screen) return null
-    if (annotation.type === 'rect') return { x: screen.x + annotation.x + (annotation.w ?? 0) / 2, y: screen.y + annotation.y + (annotation.h ?? 0) / 2 }
+  function annotationBounds(annotationId: string): { x: number; y: number; w: number; h: number } | null {
+    const annotation = annotationsById.get(annotationId)
+    const screen = annotation ? screensById.get(annotation.screenId) : undefined
+    if (!annotation || !screen) return null
+    if (annotation.type === 'rect') return { x: screen.x + annotation.x, y: screen.y + annotation.y, w: Math.max(1, annotation.w ?? 1), h: Math.max(1, annotation.h ?? 1) }
     if (annotation.type === 'draw' && annotation.points?.length) {
       const xs = annotation.points.map((point) => point.x)
       const ys = annotation.points.map((point) => point.y)
-      return { x: screen.x + (Math.min(...xs) + Math.max(...xs)) / 2, y: screen.y + (Math.min(...ys) + Math.max(...ys)) / 2 }
+      const x = Math.min(...xs), y = Math.min(...ys)
+      return { x: screen.x + x, y: screen.y + y, w: Math.max(12, Math.max(...xs) - x), h: Math.max(12, Math.max(...ys) - y) }
     }
-    return { x: screen.x + annotation.x, y: screen.y + annotation.y }
+    return { x: screen.x + annotation.x - 5, y: screen.y + annotation.y - 5, w: 10, h: 10 }
   }
 
-  function endpointPosition(endpoint: LinkEndpoint): Point | null {
-    if (endpoint.kind === 'node') return nodeCenter(endpoint.nodeId)
+  function rectCenter(rect: { x: number; y: number; w: number; h: number }) {
+    return { x: rect.x + rect.w / 2, y: rect.y + rect.h / 2 }
+  }
+
+  function borderPoint(rect: { x: number; y: number; w: number; h: number }, toward: Point): Point {
+    const center = rectCenter(rect)
+    const dx = toward.x - center.x, dy = toward.y - center.y
+    if (Math.abs(dx) < .0001 && Math.abs(dy) < .0001) return center
+    const sx = Math.abs(dx) < .0001 ? Infinity : rect.w / 2 / Math.abs(dx)
+    const sy = Math.abs(dy) < .0001 ? Infinity : rect.h / 2 / Math.abs(dy)
+    const scale = Math.min(sx, sy)
+    return { x: center.x + dx * scale, y: center.y + dy * scale }
+  }
+
+  function closestPointOnRect(point: Point, rect: { x: number; y: number; w: number; h: number }): Point {
+    const inside = point.x >= rect.x && point.x <= rect.x + rect.w && point.y >= rect.y && point.y <= rect.y + rect.h
+    if (!inside) return { x: clamp(point.x, rect.x, rect.x + rect.w), y: clamp(point.y, rect.y, rect.y + rect.h) }
+    const candidates = [
+      { d: Math.abs(point.x - rect.x), p: { x: rect.x, y: point.y } },
+      { d: Math.abs(point.x - rect.x - rect.w), p: { x: rect.x + rect.w, y: point.y } },
+      { d: Math.abs(point.y - rect.y), p: { x: point.x, y: rect.y } },
+      { d: Math.abs(point.y - rect.y - rect.h), p: { x: point.x, y: rect.y + rect.h } },
+    ].sort((a, b) => a.d - b.d)
+    return candidates[0].p
+  }
+
+  function endpointCenter(endpoint: LinkEndpoint): Point | null {
+    if (endpoint.kind === 'node') {
+      const rect = nodeBounds(endpoint.nodeId)
+      return rect ? rectCenter(rect) : null
+    }
     if (endpoint.kind === 'annotation') {
-      const annotation = annotationsById.get(endpoint.annotationId)
-      return annotation ? annotationCenter(annotation) : null
+      const rect = annotationBounds(endpoint.annotationId)
+      return rect ? rectCenter(rect) : null
     }
     const screen = screensById.get(endpoint.screenId)
     return screen ? { x: screen.x + endpoint.point.x, y: screen.y + endpoint.point.y } : null
+  }
+
+  function visualEndpoint(endpoint: LinkEndpoint, toward: Point): Point | null {
+    if (endpoint.kind === 'node') {
+      const rect = nodeBounds(endpoint.nodeId)
+      return rect ? borderPoint(rect, toward) : null
+    }
+    if (endpoint.kind === 'annotation') {
+      const annotation = annotationsById.get(endpoint.annotationId)
+      const rect = annotationBounds(endpoint.annotationId)
+      if (!rect) return null
+      return annotation?.type === 'point' ? rectCenter(rect) : borderPoint(rect, toward)
+    }
+    return endpointCenter(endpoint)
+  }
+
+  function linkGeometry(sourceEndpoint: LinkEndpoint, targetEndpoint: LinkEndpoint) {
+    const sourceCenter = endpointCenter(sourceEndpoint)
+    const targetCenter = endpointCenter(targetEndpoint)
+    if (!sourceCenter || !targetCenter) return null
+    const source = visualEndpoint(sourceEndpoint, targetCenter)
+    const target = visualEndpoint(targetEndpoint, sourceCenter)
+    return source && target ? { source, target } : null
   }
 
   function visibleNode(ownerScreenId?: string) {
@@ -737,6 +795,7 @@ export function ProductionLab() {
     commitReview((current) => ({ ...current, reviewNodes: [...current.reviewNodes, { id, title: 'Observation', text: '', reference: '', x: world.x - NODE_WIDTH / 2, y: world.y - 40 }] }))
     setSelection({ kind: 'review-node', id })
     setViewMode('exploded')
+    setTool(null)
   }
 
   function addNodeLinkedToScreen(screen: PlanScreen, point: Point) {
@@ -752,6 +811,7 @@ export function ProductionLab() {
     })
     setSelection({ kind: 'review-node', id })
     setViewMode('exploded')
+    setTool(null)
   }
 
   function addPointObservation(screen: PlanScreen, point: Point, title = 'Observation') {
@@ -763,6 +823,7 @@ export function ProductionLab() {
     })
     if (nodeId) setSelection({ kind: 'review-node', id: nodeId })
     setViewMode('exploded')
+    setTool(null)
   }
 
   function startOrFinishLink(endpoint: LinkEndpoint, nextState?: ReviewState) {
@@ -780,6 +841,7 @@ export function ProductionLab() {
     redoRef.current = []
     assignReview(finalState)
     setLinkDraft(null)
+    setTool(null)
     setSelection({ kind: 'review-link', id })
   }
 
@@ -824,6 +886,7 @@ export function ProductionLab() {
       })
     }
     setGesture(null)
+    setTool(null)
     if (nodeId) setSelection({ kind: 'review-node', id: nodeId })
     setViewMode('exploded')
   }
@@ -916,42 +979,110 @@ export function ProductionLab() {
     try { event.currentTarget.releasePointerCapture(event.pointerId) } catch { /* no-op */ }
   }
 
-  function resolveEndpointAt(clientX: number, clientY: number): LinkEndpoint | null {
+  function directEndpointAt(clientX: number, clientY: number): LinkEndpoint | null {
     const elements = document.elementsFromPoint(clientX, clientY)
     for (const element of elements) {
       const nodeElement = element.closest<HTMLElement>('[data-node-id]')
       if (nodeElement?.dataset.nodeId) return { kind: 'node', nodeId: nodeElement.dataset.nodeId }
       const annotationElement = element.closest<HTMLElement>('[data-annotation-id]')
       if (annotationElement?.dataset.annotationId) return { kind: 'annotation', annotationId: annotationElement.dataset.annotationId }
+    }
+    return null
+  }
+
+  function screenEndpointAt(clientX: number, clientY: number): LinkEndpoint | null {
+    const elements = document.elementsFromPoint(clientX, clientY)
+    for (const element of elements) {
       const screenElement = element.closest<HTMLElement>('[data-screen-id]')
-      if (screenElement?.dataset.screenId) {
-        const rect = screenElement.getBoundingClientRect()
-        return {
-          kind: 'screen', screenId: screenElement.dataset.screenId,
-          point: {
-            x: clamp((clientX - rect.left) / rect.width * MASTER_WIDTH, 0, MASTER_WIDTH),
-            y: clamp((clientY - rect.top) / rect.height * MASTER_HEIGHT, 0, MASTER_HEIGHT),
-          },
-        }
+      if (!screenElement?.dataset.screenId) continue
+      const rect = screenElement.getBoundingClientRect()
+      return {
+        kind: 'screen', screenId: screenElement.dataset.screenId,
+        point: { x: clamp((clientX - rect.left) / rect.width * MASTER_WIDTH, 0, MASTER_WIDTH), y: clamp((clientY - rect.top) / rect.height * MASTER_HEIGHT, 0, MASTER_HEIGHT) },
       }
     }
     return null
   }
 
-  function startEndpointDrag(event: ReactPointerEvent<SVGCircleElement>, drag: Omit<EndpointDrag, 'pointerId' | 'before'>) {
+  function nearestMagnet(world: Point, thresholdPx: number, exclude?: LinkEndpoint): { endpoint: LinkEndpoint; point: Point; distance: number } | null {
+    const threshold = thresholdPx / camera.zoom
+    let best: { endpoint: LinkEndpoint; point: Point; distance: number } | null = null
+    const same = (a: LinkEndpoint, b: LinkEndpoint) => a.kind === b.kind && (
+      a.kind === 'node' && b.kind === 'node' ? a.nodeId === b.nodeId
+        : a.kind === 'annotation' && b.kind === 'annotation' ? a.annotationId === b.annotationId
+          : false)
+    const consider = (endpoint: LinkEndpoint, point: Point) => {
+      if (exclude && same(endpoint, exclude)) return
+      const d = distance(world, point)
+      if (d <= threshold && (!best || d < best.distance)) best = { endpoint, point, distance: d }
+    }
+    for (const node of [...project.nodes, ...reviewRef.current.reviewNodes]) {
+      const rect = nodeBounds(node.id)
+      if (rect) consider({ kind: 'node', nodeId: node.id }, closestPointOnRect(world, rect))
+    }
+    for (const annotation of reviewRef.current.annotations) {
+      const rect = annotationBounds(annotation.id)
+      if (!rect) continue
+      consider({ kind: 'annotation', annotationId: annotation.id }, annotation.type === 'point' ? rectCenter(rect) : closestPointOnRect(world, rect))
+    }
+    return best as { endpoint: LinkEndpoint; point: Point; distance: number } | null
+  }
+
+  function resolveEndpointAt(clientX: number, clientY: number, exclude?: LinkEndpoint): LinkEndpoint | null {
+    const direct = directEndpointAt(clientX, clientY)
+    if (direct) return direct
+    const world = clientToWorld(clientX, clientY)
+    if (world) {
+      const magnet = nearestMagnet(world, SNAP_IN_PX, exclude)
+      if (magnet) return magnet.endpoint
+    }
+    return screenEndpointAt(clientX, clientY)
+  }
+
+  function startEndpointDrag(event: ReactPointerEvent<SVGCircleElement>, drag: Omit<EndpointDrag, 'pointerId' | 'before' | 'original' | 'snapped'>) {
     event.stopPropagation()
-    const current = endpointDragRef.current
-    if (current) return
-    endpointDragRef.current = { ...drag, pointerId: event.pointerId, before: reviewRef.current }
-    const world = clientToWorld(event.clientX, event.clientY)
-    setLinkGhost(world)
+    if (endpointDragRef.current) return
+    let original: LinkEndpoint | null = null
+    if (drag.kind === 'canonical' && drag.sourceNodeId) {
+      original = effectiveCanonicalLinks(drag.sourceNodeId).find((link) => link.id === drag.linkId)?.target ?? null
+    } else {
+      const link = reviewRef.current.reviewLinks.find((item) => item.id === drag.linkId)
+      original = link ? link[drag.side] : null
+    }
+    if (!original) return
+    endpointDragRef.current = { ...drag, pointerId: event.pointerId, before: reviewRef.current, original, snapped: original }
+    setLinkGhost(clientToWorld(event.clientX, event.clientY))
     event.currentTarget.setPointerCapture(event.pointerId)
   }
 
   function moveEndpointDrag(event: ReactPointerEvent<SVGCircleElement>) {
     const drag = endpointDragRef.current
     if (!drag || drag.pointerId !== event.pointerId) return
-    setLinkGhost(clientToWorld(event.clientX, event.clientY))
+    const world = clientToWorld(event.clientX, event.clientY)
+    if (!world) return
+
+    if (drag.snapped) {
+      const center = endpointCenter(drag.snapped)
+      if (center && distance(world, center) <= SNAP_OUT_PX / camera.zoom) {
+        setLinkGhost(visualEndpoint(drag.snapped, world) ?? center)
+        return
+      }
+      drag.snapped = null
+    }
+
+    const direct = directEndpointAt(event.clientX, event.clientY)
+    if (direct) {
+      drag.snapped = direct
+      setLinkGhost(visualEndpoint(direct, world) ?? endpointCenter(direct))
+      return
+    }
+    const magnet = nearestMagnet(world, SNAP_IN_PX, drag.original)
+    if (magnet) {
+      drag.snapped = magnet.endpoint
+      setLinkGhost(magnet.point)
+      return
+    }
+    setLinkGhost(world)
   }
 
   function endEndpointDrag(event: ReactPointerEvent<SVGCircleElement>) {
@@ -959,24 +1090,15 @@ export function ProductionLab() {
     if (!drag || drag.pointerId !== event.pointerId) return
     endpointDragRef.current = null
     setLinkGhost(null)
-    const endpoint = resolveEndpointAt(event.clientX, event.clientY)
+    const endpoint = drag.snapped ?? resolveEndpointAt(event.clientX, event.clientY, drag.original)
     if (!endpoint) return
     if (drag.kind === 'canonical' && drag.sourceNodeId) {
       commitReview((current) => {
         const base = current.linkOverrides[drag.sourceNodeId!] ?? canonicalNodesById.get(drag.sourceNodeId!)?.links ?? []
-        return {
-          ...current,
-          linkOverrides: {
-            ...current.linkOverrides,
-            [drag.sourceNodeId!]: base.map((link) => link.id === drag.linkId ? { ...link, target: endpoint } : link),
-          },
-        }
+        return { ...current, linkOverrides: { ...current.linkOverrides, [drag.sourceNodeId!]: base.map((link) => link.id === drag.linkId ? { ...link, target: endpoint } : link) } }
       })
     } else {
-      commitReview((current) => ({
-        ...current,
-        reviewLinks: current.reviewLinks.map((link) => link.id === drag.linkId ? { ...link, [drag.side]: endpoint } : link),
-      }))
+      commitReview((current) => ({ ...current, reviewLinks: current.reviewLinks.map((link) => link.id === drag.linkId ? { ...link, [drag.side]: endpoint } : link) }))
     }
     try { event.currentTarget.releasePointerCapture(event.pointerId) } catch { /* no-op */ }
   }
@@ -1117,6 +1239,19 @@ export function ProductionLab() {
     reader.readAsDataURL(file)
   }
 
+  function resetLocalReview() {
+    if (!window.confirm('Revenir au Plan canonique et supprimer toutes les modifications locales de ce jeu ?')) return
+    try { localStorage.removeItem(`mf-production-review:${game.id}`) } catch { /* no-op */ }
+    const next = emptyReview()
+    assignReview(next)
+    undoRef.current = []
+    redoRef.current = []
+    setSelection(null)
+    setTool(null)
+    setLinkDraft(null)
+    setReferenceEditing(false)
+  }
+
   async function copyForChatGPT() {
     const screenImages = Object.fromEntries(Object.entries(review.screenImages).map(([id, image]) => [id, { name: image.name, type: image.type, size: image.size }]))
     const payload = {
@@ -1170,6 +1305,7 @@ export function ProductionLab() {
       <div className="mfpl-segmented"><button className={viewMode === 'simple' ? 'is-active' : ''} onClick={() => setViewMode('simple')}>Simplifiée</button><button className={viewMode === 'exploded' ? 'is-active' : ''} onClick={() => setViewMode('exploded')}>Éclatée</button></div>
       <label>Repère<select value={reference} onChange={(event) => setReference(event.target.value as ReferenceMode)}>{REFERENCE_OPTIONS.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label>
       <button className={`mfpl-reference-edit ${referenceEditing ? 'is-active' : ''}`} title={referenceEditing ? 'Terminer le calage' : 'Éditer le calage'} disabled={!selectedScreen || reference === 'off'} onClick={() => setReferenceEditing((current) => !current)}>{referenceEditing ? '✓' : '✎'}</button>
+      <button className="mfpl-reset-review" title="Revenir au Plan canonique" onClick={resetLocalReview}>↺</button>
       <button className="mfpl-action" onClick={copyForChatGPT}>{exported ? 'Copié' : 'Copier pour ChatGPT'}</button>
     </header>
 
@@ -1178,7 +1314,7 @@ export function ProductionLab() {
         {([['node','N','Nœud'],['point','•','Point'],['rect','□','Zone'],['draw','✎','Dessin'],['link','↗','Lien']] as Array<[Exclude<ToolMode, null>, string, string]>).map(([id, icon, label]) => <button key={id} className={tool === id ? 'is-active' : ''} onClick={() => {
           if (linkDraft) { assignReview(linkDraft.before); setLinkDraft(null) }
           setTool((current) => current === id ? null : id)
-        }} title={label}><b>{icon}</b><span>{label}</span></button>)}
+        }} title={`${label} · usage unique`}><b>{icon}</b><span>{label}</span></button>)}
         <div className="mfpl-tool-spacer" />
         <button onClick={fitPlan} title="Vue globale"><b>⌗</b><span>Plan</span></button>
       </aside>
@@ -1210,13 +1346,14 @@ export function ProductionLab() {
 
           {viewMode === 'exploded' && <svg className="mfpl-links" width={WORLD_WIDTH} height={WORLD_HEIGHT}>
             {renderedCanonicalNodes.flatMap((node) => {
-              const source = nodeCenter(node.id)
-              if (!source) return []
+              const sourceEndpoint: LinkEndpoint = { kind: 'node', nodeId: node.id }
               return effectiveCanonicalLinks(node.id).map((link) => {
                 const drag = endpointDragRef.current
-                let target = endpointPosition(link.target)
+                const geometry = linkGeometry(sourceEndpoint, link.target)
+                if (!geometry) return null
+                const source = geometry.source
+                let target = geometry.target
                 if (drag?.kind === 'canonical' && drag.sourceNodeId === node.id && drag.linkId === link.id && linkGhost) target = linkGhost
-                if (!target) return null
                 const selected = selection?.kind === 'node' && selection.id === node.id
                   || selection?.kind === 'canonical-link' && selection.sourceNodeId === node.id && selection.linkId === link.id
                 const deleteRequested = Boolean(review.deletionRequests[`link:${node.id}:${link.id}`])
@@ -1232,13 +1369,14 @@ export function ProductionLab() {
 
             {review.reviewLinks.map((link) => {
               const drag = endpointDragRef.current
-              let source = endpointPosition(link.source)
-              let target = endpointPosition(link.target)
+              const geometry = linkGeometry(link.source, link.target)
+              if (!geometry) return null
+              let source = geometry.source
+              let target = geometry.target
               if (drag?.kind === 'review' && drag.linkId === link.id && linkGhost) {
                 if (drag.side === 'source') source = linkGhost
                 else target = linkGhost
               }
-              if (!source || !target) return null
               const selected = reviewLinkHighlighted(link)
               return <g key={link.id} className={`${selected ? 'is-selected' : ''} ${link.kind === 'attachment' ? 'is-attachment' : ''}`}>
                 <line className="mfpl-link" x1={source.x} y1={source.y} x2={target.x} y2={target.y} />
@@ -1300,7 +1438,7 @@ export function ProductionLab() {
               key={node.id}
               data-node-id={node.id}
               className={`mfpl-node is-${node.kind} ${selected ? 'is-selected' : ''} ${deleteRequested ? 'is-delete-requested' : ''}`}
-              style={{ left: position.x, top: position.y, width: NODE_WIDTH }}
+              style={{ left: position.x, top: position.y, width: NODE_WIDTH, height: NODE_HEIGHT }}
               onPointerDown={(event) => nodePointerDown(event, node.id, false)} onPointerMove={nodePointerMove} onPointerUp={(event) => nodePointerUp(event, node.id, false)} onPointerCancel={(event) => nodePointerUp(event, node.id, false)}
               onClick={(event) => {
                 event.stopPropagation()
@@ -1320,7 +1458,7 @@ export function ProductionLab() {
               key={node.id}
               data-node-id={node.id}
               className={`mfpl-node is-review ${selected ? 'is-selected' : ''}`}
-              style={{ left: node.x, top: node.y, width: NODE_WIDTH }}
+              style={{ left: node.x, top: node.y, width: NODE_WIDTH, height: NODE_HEIGHT }}
               onPointerDown={(event) => nodePointerDown(event, node.id, true)} onPointerMove={nodePointerMove} onPointerUp={(event) => nodePointerUp(event, node.id, true)} onPointerCancel={(event) => nodePointerUp(event, node.id, true)}
               onClick={(event) => {
                 event.stopPropagation()

@@ -5,21 +5,30 @@ import './ProductionLab.css'
 
 type StateId = 'covers' | 'proto' | 'da' | 'release'
 type ViewMode = 'simple' | 'exploded'
-type ToolMode = 'rect' | 'draw' | 'note' | null
+type ToolMode = 'node' | 'point' | 'rect' | 'draw' | 'link' | null
 type ReferenceMode = 'off' | 'minimum' | 'a54' | 'iphone' | 'brave'
 type AnchorMode = 'top' | 'center' | 'bottom'
 type NodeKind = 'text' | 'image' | 'animation' | 'audio'
 type Point = { x: number; y: number }
 type Camera = { x: number; y: number; zoom: number }
+type AnnotationType = 'point' | 'rect' | 'draw'
 
-type LinkTarget =
+type LinkEndpoint =
   | { kind: 'screen'; screenId: string; point: Point }
+  | { kind: 'annotation'; annotationId: string }
   | { kind: 'node'; nodeId: string }
 
 type SemanticLink = {
   id: string
-  target: LinkTarget
+  target: LinkEndpoint
   label?: string
+}
+
+type ReviewLink = {
+  id: string
+  source: LinkEndpoint
+  target: LinkEndpoint
+  kind: 'attachment' | 'relation'
 }
 
 type PlanScreen = {
@@ -52,12 +61,56 @@ type PlanNode = {
 }
 
 type PlanProject = { title: string; summary: string; screens: PlanScreen[]; nodes: PlanNode[] }
-type Annotation = { id: string; screenId: string; type: 'point' | 'rect' | 'draw' | 'note'; x: number; y: number; w?: number; h?: number; points?: Point[]; text: string }
-type ReviewNode = { id: string; ownerScreenId?: string; title: string; text: string; x: number; y: number; links: SemanticLink[] }
+
+type Annotation = {
+  id: string
+  screenId: string
+  nodeId: string
+  type: AnnotationType
+  x: number
+  y: number
+  w?: number
+  h?: number
+  points?: Point[]
+}
+
+type ReviewNode = {
+  id: string
+  ownerScreenId?: string
+  title: string
+  text: string
+  reference: string
+  x: number
+  y: number
+}
+
 type ReferenceAdjustment = { bias: number }
-type Selection = { kind: 'screen' | 'node' | 'annotation' | 'review-node'; id: string } | null
+type LocalImageOverride = { name: string; type: string; size: number; src: string }
+type DeletionRequest = { kind: 'node' | 'canonical-link'; targetId: string; sourceNodeId?: string }
+
+type ReviewState = {
+  annotations: Annotation[]
+  reviewNodes: ReviewNode[]
+  reviewLinks: ReviewLink[]
+  comments: Record<string, string>
+  referenceAdjustments: Record<string, ReferenceAdjustment>
+  linkOverrides: Record<string, SemanticLink[]>
+  nodePositionOverrides: Record<string, Point>
+  deletionRequests: Record<string, DeletionRequest>
+  screenImages: Record<string, LocalImageOverride>
+}
+
+type Selection =
+  | { kind: 'screen'; id: string }
+  | { kind: 'node'; id: string }
+  | { kind: 'review-node'; id: string }
+  | { kind: 'annotation'; id: string }
+  | { kind: 'review-link'; id: string }
+  | { kind: 'canonical-link'; sourceNodeId: string; linkId: string }
+  | null
+
 type Gesture = { screenId: string; type: 'rect' | 'draw'; start: Point; current: Point; points: Point[] } | null
-type LinkEdit = { sourceNodeId: string; linkId?: string } | null
+type LinkDraft = { endpoint: LinkEndpoint; before: ReviewState } | null
 
 type PanState = {
   pointerId: number
@@ -74,10 +127,42 @@ type PinchState = {
   camera: Camera
 }
 
+type NodeDrag = {
+  pointerId: number
+  nodeId: string
+  review: boolean
+  startX: number
+  startY: number
+  origin: Point
+  before: ReviewState
+  moved: boolean
+}
+
+type AnnotationDrag = {
+  pointerId: number
+  annotationId: string
+  startX: number
+  startY: number
+  origin: Point
+  before: ReviewState
+  moved: boolean
+}
+
+type EndpointDrag = {
+  pointerId: number
+  kind: 'canonical' | 'review'
+  linkId: string
+  sourceNodeId?: string
+  side: 'source' | 'target'
+  before: ReviewState
+}
+
 const MASTER_WIDTH = 390
 const MASTER_HEIGHT = 844
 const WORLD_WIDTH = 6900
 const WORLD_HEIGHT = 5600
+const NODE_WIDTH = 310
+const NODE_CENTER_Y = 85
 const STATE_LABEL: Record<StateId, string> = { covers: 'COVERS', proto: 'PROTO', da: 'DA', release: 'RELEASE' }
 const ZONES: Array<{ id: StateId; x: number; width: number; subtitle: string }> = [
   { id: 'covers', x: 0, width: 1150, subtitle: 'ensemble éditorial séparé' },
@@ -93,13 +178,16 @@ const REFERENCE_OPTIONS: Array<{ id: ReferenceMode; label: string; cssHeight?: n
   { id: 'iphone', label: 'iPhone 13 Pro ≈360×657', cssHeight: 657 },
   { id: 'brave', label: 'A54 Brave 360×611', cssHeight: 611 },
 ]
-
 const LINEFUGG_PROOF_ROOT = '/assets/generated/linefugg/production-lab'
 
 function clamp(value: number, min: number, max: number) { return Math.min(max, Math.max(min, value)) }
 function projectTitle(game: InstagameDefinition) { return game.id === 'linefugg' ? 'LineFugg — Rebirth' : game.title }
 function anchorBias(anchor: AnchorMode = 'center') { return anchor === 'top' ? 0 : anchor === 'bottom' ? 1 : 0.5 }
-function uid(prefix: string) { return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}` }
+function uid(prefix: string) { return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}` }
+function isEditable(target: EventTarget | null) { return target instanceof HTMLElement && Boolean(target.closest('input, textarea, select, [contenteditable="true"]')) }
+function distance(a: Point, b: Point) { return Math.hypot(a.x - b.x, a.y - b.y) }
+function midpoint(a: Point, b: Point) { return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 } }
+function deletionKey(request: DeletionRequest) { return request.kind === 'node' ? `node:${request.targetId}` : `link:${request.sourceNodeId}:${request.targetId}` }
 
 function objectPositionBias(position?: string) {
   if (!position) return 0.5
@@ -114,7 +202,6 @@ function objectPositionBias(position?: string) {
 function screenLink(id: string, screenId: string, x: number, y: number, label?: string): SemanticLink {
   return { id, target: { kind: 'screen', screenId, point: { x, y } }, label }
 }
-
 function nodeLink(id: string, nodeId: string, label?: string): SemanticLink {
   return { id, target: { kind: 'node', nodeId }, label }
 }
@@ -127,7 +214,10 @@ function buildGenericPlan(game: InstagameDefinition): PlanProject {
     x: SCREEN_X.covers, y: 420 + index * 980, image: variant.image, preview: 'cover',
     anchor: 'center', referenceBias: objectPositionBias(variant.objectPosition),
   }))
-  if (!covers.length) covers.push({ id: 'C1', state: 'covers', title: 'Cover', context: 'Aucune cover enregistrée.', facts: ['À produire plus tard'], source: '—', status: 'Absente', x: SCREEN_X.covers, y: 420, preview: 'cover', anchor: 'center', referenceBias: 0.5 })
+  if (!covers.length) covers.push({
+    id: 'C1', state: 'covers', title: 'Cover', context: 'Aucune cover enregistrée.', facts: ['À produire plus tard'],
+    source: '—', status: 'Absente', x: SCREEN_X.covers, y: 420, preview: 'cover', anchor: 'center', referenceBias: 0.5,
+  })
   const proto: PlanScreen = {
     id: 'P1', state: 'proto', title: 'Situation principale', context: 'Capture statique de la situation fonctionnelle de référence.',
     facts: [game.instructions?.goal ?? game.description, ...(game.instructions?.rules ?? []).slice(0, 4)],
@@ -183,15 +273,12 @@ function buildLineFuggPlan(game: InstagameDefinition): PlanProject {
     { id: 'P-goal', ownerScreenId: 'P1', title: 'Question du joueur', kind: 'text', body: 'Comment utiliser trois traits pour fabriquer le total le plus élevé possible ?', facts: ['Calcul local + anticipation des lignes suivantes', 'Score final = somme des trois calculs'], source: 'definition.ts + règles validées', x: 1190, y: 500, links: [] },
     { id: 'P-board', ownerScreenId: 'P1', title: 'Plateau quotidien', kind: 'text', body: 'La grille initiale est déterministe pour le jour courant.', facts: ['49 cases', 'Seed dérivé de LineFugg + date UTC'], source: 'currentUtcDayId() / createBoard()', x: 1190, y: 760, links: [screenLink('P-board-grid', 'P1', 195, 335, 'grille')] },
     { id: 'P-values', ownerScreenId: 'P1', title: 'Économie des cases', kind: 'text', body: 'Les cases ajoutent, soustraient, multiplient ou divisent avec une distribution asymétrique.', facts: ['68 % : +1…+9', '16 % : −1…−4', '12 % : ×2 ou ×3', '4 % : ÷2 ou ÷3'], source: 'createCell()', x: 2140, y: 520, links: [screenLink('P-values-grid', 'P1', 260, 350, 'valeurs')] },
-
     { id: 'P-gesture', ownerScreenId: 'P2', title: 'Geste', kind: 'animation', body: 'Départ sur une case puis glissé vers une autre, aimanté sur une ligne droite de 2 à 5 cases.', facts: ['Horizontal / vertical / diagonal', 'Direction significative'], source: 'handlePointer*() / snapEnd()', x: 2140, y: 1730, links: [screenLink('P-gesture-line', 'P2', 195, 430, 'tracé'), nodeLink('P-gesture-order', 'P-order', 'détermine')] },
     { id: 'P-order', ownerScreenId: 'P2', title: 'Ordre du calcul', kind: 'text', body: 'Le score est évalué dans l’ordre traversé ; × et ÷ agissent sur le cumul déjà construit.', facts: ['Ordre du tracé important', 'Résultat arrondi à 2 décimales'], source: 'scoreCells()', x: 1190, y: 1740, links: [screenLink('P-order-preview', 'P2', 195, 500, 'résultat courant')] },
     { id: 'P-cross', ownerScreenId: 'P2', title: 'Croisement', kind: 'text', body: 'Une nouvelle ligne peut partager une case avec une ligne précédente, mais jamais deux.', facts: ['1 intersection maximum par paire'], source: 'overlapsMoreThanOnce()', x: 2140, y: 2050, links: [screenLink('P-cross-grid', 'P2', 195, 390)] },
-
     { id: 'P-reroll', ownerScreenId: 'P3', title: 'Retirage déterministe', kind: 'animation', body: 'Les cases jouées restent stables ; les autres sont recalculées à partir de la ligne jouée.', facts: ['Le problème suivant dépend du choix précédent', 'Cases engagées protégées'], source: 'rerollKeyForLine() / rerollUnplayedCells()', x: 1180, y: 2970, links: [screenLink('P-reroll-board', 'P3', 195, 365, 'nouveau plateau')] },
     { id: 'P-ripple', ownerScreenId: 'P3', title: 'Flip en cascade', kind: 'animation', body: 'Le renouvellement apparaît comme une onde courte depuis la fin de ligne.', facts: ['Fold → changement caché → unfold'], source: 'rerollUnplayedCells()', x: 2140, y: 3000, links: [screenLink('P-ripple-board', 'P3', 250, 430)] },
     { id: 'P-next', ownerScreenId: 'P3', title: 'Préparer la ligne suivante', kind: 'text', body: 'Les cases libres signalent aussi l’étape suivante.', facts: ['Dimension 1 puis 2 puis 3', 'La future DA devra traduire ce signal'], source: 'cellDimensionSlots', x: 1190, y: 3290, links: [screenLink('P-next-cells', 'P3', 120, 420)] },
-
     { id: 'P-undo', ownerScreenId: 'P4', title: 'Undo = restauration', kind: 'text', body: 'Annuler retire la dernière ligne et restaure le plateau antérieur.', facts: ['boardBefore restauré', 'dimensionSlotsBefore restauré'], source: 'PlayedLine / undo()', x: 2140, y: 4200, links: [screenLink('P-undo-control', 'P4', 65, 775, 'Undo')] },
     { id: 'P-validate', ownerScreenId: 'P4', title: 'Trois lignes puis choix', kind: 'text', body: 'La troisième ligne ne termine pas la partie. Le joueur choisit quand valider.', facts: ['Pas de résolution automatique', 'Validate actif à 3 lignes'], source: 'validateEnabled() / validateRun()', x: 1190, y: 4200, links: [screenLink('P-validate-control', 'P4', 325, 775, 'Validate'), nodeLink('P-validate-total', 'P-total', 'valide')] },
     { id: 'P-total', ownerScreenId: 'P4', title: 'Total final', kind: 'text', body: 'Le score final est la somme des trois scores de lignes.', facts: ['3 résultats intermédiaires', 'Somme finale'], source: 'totalScore() / session.finish()', x: 2140, y: 4510, links: [screenLink('P-total-value', 'P4', 195, 650, 'total')] },
@@ -207,10 +294,6 @@ function buildLineFuggPlan(game: InstagameDefinition): PlanProject {
 }
 
 function buildPlan(game: InstagameDefinition) { return game.id === 'linefugg' ? buildLineFuggPlan(game) : buildGenericPlan(game) }
-function isEditable(target: EventTarget | null) { return target instanceof HTMLElement && Boolean(target.closest('input, textarea, select, [contenteditable="true"]')) }
-function distance(a: Point, b: Point) { return Math.hypot(a.x - b.x, a.y - b.y) }
-function midpoint(a: Point, b: Point) { return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 } }
-function itemCenter(item: { x: number; y: number }) { return { x: item.x + 155, y: item.y + 85 } }
 
 function referenceGeometry(reference: ReferenceMode) {
   const option = REFERENCE_OPTIONS.find((item) => item.id === reference)
@@ -218,30 +301,102 @@ function referenceGeometry(reference: ReferenceMode) {
   const height = Math.min(MASTER_HEIGHT, MASTER_WIDTH * option.cssHeight / 360)
   return { height, maxTop: Math.max(0, MASTER_HEIGHT - height), label: option.label }
 }
-
 function recommendedObjectPosition(bias: number) {
   if (bias <= 0.001) return 'top center'
   if (bias >= 0.999) return 'bottom center'
   return `center ${Math.round(bias * 1000) / 10}%`
 }
 
-function loadReview(gameId: string) {
-  const empty = {
-    annotations: [] as Annotation[], reviewNodes: [] as ReviewNode[], comments: {} as Record<string, string>,
-    referenceAdjustments: {} as Record<string, ReferenceAdjustment>, linkOverrides: {} as Record<string, SemanticLink[]>,
+function emptyReview(): ReviewState {
+  return {
+    annotations: [], reviewNodes: [], reviewLinks: [], comments: {}, referenceAdjustments: {}, linkOverrides: {},
+    nodePositionOverrides: {}, deletionRequests: {}, screenImages: {},
   }
-  if (typeof window === 'undefined') return empty
-  try {
-    const parsed = JSON.parse(localStorage.getItem(`mf-production-review:${gameId}`) || '{}')
-    return {
-      annotations: parsed.annotations ?? [], reviewNodes: (parsed.reviewNodes ?? []).map((node: ReviewNode) => ({ ...node, links: node.links ?? [] })),
-      comments: parsed.comments ?? {}, referenceAdjustments: parsed.referenceAdjustments ?? {}, linkOverrides: parsed.linkOverrides ?? {},
-    }
-  } catch { return empty }
 }
 
-function ScreenArtwork({ screen }: { screen: PlanScreen }) {
-  if (screen.image) return <img className="mfpl-screen-image" src={screen.image} alt="" draggable={false} />
+function endpointReferencesNode(endpoint: LinkEndpoint, nodeId: string, annotations: Annotation[]) {
+  if (endpoint.kind === 'node') return endpoint.nodeId === nodeId
+  if (endpoint.kind === 'annotation') return annotations.find((item) => item.id === endpoint.annotationId)?.nodeId === nodeId
+  return false
+}
+
+function endpointReferencesAnnotation(endpoint: LinkEndpoint, annotationId: string) {
+  return endpoint.kind === 'annotation' && endpoint.annotationId === annotationId
+}
+
+function loadReview(gameId: string, project: PlanProject): ReviewState {
+  const base = emptyReview()
+  if (typeof window === 'undefined') return base
+  try {
+    const raw = JSON.parse(localStorage.getItem(`mf-production-review:${gameId}`) || '{}') as any
+    const nodes: ReviewNode[] = Array.isArray(raw.reviewNodes) ? raw.reviewNodes.map((node: any) => ({
+      id: String(node.id), ownerScreenId: node.ownerScreenId ?? node.screenId,
+      title: typeof node.title === 'string' ? node.title : 'Observation',
+      text: typeof node.text === 'string' ? node.text : '', reference: typeof node.reference === 'string' ? node.reference : '',
+      x: Number(node.x) || 0, y: Number(node.y) || 0,
+    })) : []
+    const nodeIds = new Set(nodes.map((node) => node.id))
+    const annotations: Annotation[] = []
+    if (Array.isArray(raw.annotations)) {
+      raw.annotations.forEach((annotation: any, index: number) => {
+        const screen = project.screens.find((item) => item.id === annotation.screenId)
+        if (!screen) return
+        const nodeId = annotation.nodeId ? String(annotation.nodeId) : `N-migrated-${String(annotation.id)}`
+        if (!nodeIds.has(nodeId)) {
+          nodes.push({
+            id: nodeId, ownerScreenId: screen.id, title: annotation.type === 'note' ? 'Observation' : 'Annotation', text: annotation.text ?? '', reference: '',
+            x: screen.x + MASTER_WIDTH + 70, y: screen.y + 80 + index * 32,
+          })
+          nodeIds.add(nodeId)
+        }
+        annotations.push({
+          id: String(annotation.id), screenId: screen.id, nodeId,
+          type: annotation.type === 'draw' ? 'draw' : annotation.type === 'rect' ? 'rect' : 'point',
+          x: Number(annotation.x) || 0, y: Number(annotation.y) || 0,
+          w: annotation.w == null ? undefined : Number(annotation.w), h: annotation.h == null ? undefined : Number(annotation.h),
+          points: Array.isArray(annotation.points) ? annotation.points : undefined,
+        })
+      })
+    }
+
+    const reviewLinks: ReviewLink[] = Array.isArray(raw.reviewLinks) ? raw.reviewLinks : []
+    annotations.forEach((annotation) => {
+      const exists = reviewLinks.some((link) =>
+        (link.source.kind === 'node' && link.source.nodeId === annotation.nodeId && endpointReferencesAnnotation(link.target, annotation.id))
+        || (link.target.kind === 'node' && link.target.nodeId === annotation.nodeId && endpointReferencesAnnotation(link.source, annotation.id)))
+      if (!exists) reviewLinks.push({ id: uid('L'), source: { kind: 'node', nodeId: annotation.nodeId }, target: { kind: 'annotation', annotationId: annotation.id }, kind: 'attachment' })
+    })
+
+    // Migration from the previous per-node local link storage.
+    if (Array.isArray(raw.reviewNodes)) {
+      raw.reviewNodes.forEach((oldNode: any) => {
+        if (!Array.isArray(oldNode.links)) return
+        oldNode.links.forEach((link: any) => {
+          if (!link?.target) return
+          reviewLinks.push({ id: link.id ?? uid('L'), source: { kind: 'node', nodeId: String(oldNode.id) }, target: link.target, kind: 'relation' })
+        })
+      })
+    }
+
+    return {
+      annotations,
+      reviewNodes: nodes,
+      reviewLinks,
+      comments: raw.comments ?? {},
+      referenceAdjustments: raw.referenceAdjustments ?? {},
+      linkOverrides: raw.linkOverrides ?? {},
+      nodePositionOverrides: raw.nodePositionOverrides ?? {},
+      deletionRequests: raw.deletionRequests ?? {},
+      screenImages: raw.screenImages ?? {},
+    }
+  } catch {
+    return base
+  }
+}
+
+function ScreenArtwork({ screen, override }: { screen: PlanScreen; override?: LocalImageOverride }) {
+  const src = override?.src ?? screen.image
+  if (src) return <img className="mfpl-screen-image" src={src} alt="" draggable={false} />
   return <div className="mfpl-screen-missing"><b>CAPTURE STATIQUE À PRODUIRE</b><span>{screen.title}</span></div>
 }
 
@@ -259,50 +414,121 @@ export function ProductionLab() {
   const [camera, setCamera] = useState<Camera>({ x: 22, y: 36, zoom: 0.34 })
   const [selection, setSelection] = useState<Selection>(null)
   const [collapsedScreens, setCollapsedScreens] = useState<Set<string>>(new Set())
-  const [annotations, setAnnotations] = useState<Annotation[]>(() => loadReview(gameId).annotations)
-  const [reviewNodes, setReviewNodes] = useState<ReviewNode[]>(() => loadReview(gameId).reviewNodes)
-  const [comments, setComments] = useState<Record<string, string>>(() => loadReview(gameId).comments)
-  const [referenceAdjustments, setReferenceAdjustments] = useState<Record<string, ReferenceAdjustment>>(() => loadReview(gameId).referenceAdjustments)
-  const [linkOverrides, setLinkOverrides] = useState<Record<string, SemanticLink[]>>(() => loadReview(gameId).linkOverrides)
+  const [review, setReviewState] = useState<ReviewState>(() => loadReview(game.id, project))
   const [gesture, setGesture] = useState<Gesture>(null)
-  const [linkEdit, setLinkEdit] = useState<LinkEdit>(null)
+  const [linkDraft, setLinkDraft] = useState<LinkDraft>(null)
+  const [linkGhost, setLinkGhost] = useState<Point | null>(null)
   const [exported, setExported] = useState(false)
 
+  const reviewRef = useRef(review)
+  const undoRef = useRef<ReviewState[]>([])
+  const redoRef = useRef<ReviewState[]>([])
   const viewportRef = useRef<HTMLDivElement>(null)
   const panRef = useRef<PanState | null>(null)
   const touchesRef = useRef(new Map<number, Point>())
   const pinchRef = useRef<PinchState | null>(null)
   const suppressClickRef = useRef(false)
-  const referenceDragRef = useRef<{ pointerId: number; startY: number; bias: number; key: string; maxTop: number; screenHeight: number } | null>(null)
+  const referenceDragRef = useRef<{ pointerId: number; startY: number; bias: number; key: string; maxTop: number; screenHeight: number; before: ReviewState } | null>(null)
+  const nodeDragRef = useRef<NodeDrag | null>(null)
+  const annotationDragRef = useRef<AnnotationDrag | null>(null)
+  const endpointDragRef = useRef<EndpointDrag | null>(null)
 
-  const reviewNodesById = useMemo(() => new Map(reviewNodes.map((node) => [node.id, node])), [reviewNodes])
+  const reviewNodesById = useMemo(() => new Map(review.reviewNodes.map((node) => [node.id, node])), [review.reviewNodes])
+  const annotationsById = useMemo(() => new Map(review.annotations.map((annotation) => [annotation.id, annotation])), [review.annotations])
+
+  function assignReview(next: ReviewState) {
+    reviewRef.current = next
+    setReviewState(next)
+  }
+
+  function commitReview(mutator: (current: ReviewState) => ReviewState) {
+    const before = reviewRef.current
+    const next = mutator(before)
+    if (next === before) return
+    undoRef.current.push(before)
+    if (undoRef.current.length > 120) undoRef.current.shift()
+    redoRef.current = []
+    assignReview(next)
+  }
+
+  function transientReview(mutator: (current: ReviewState) => ReviewState) {
+    const current = reviewRef.current
+    const next = mutator(current)
+    if (next !== current) assignReview(next)
+  }
+
+  function recordTransient(before: ReviewState) {
+    if (before === reviewRef.current) return
+    undoRef.current.push(before)
+    if (undoRef.current.length > 120) undoRef.current.shift()
+    redoRef.current = []
+  }
+
+  function undo() {
+    const previous = undoRef.current.pop()
+    if (!previous) return
+    redoRef.current.push(reviewRef.current)
+    assignReview(previous)
+    setSelection(null)
+    setLinkDraft(null)
+  }
+
+  function redo() {
+    const next = redoRef.current.pop()
+    if (!next) return
+    undoRef.current.push(reviewRef.current)
+    assignReview(next)
+    setSelection(null)
+    setLinkDraft(null)
+  }
 
   useEffect(() => {
-    const review = loadReview(gameId)
-    setAnnotations(review.annotations)
-    setReviewNodes(review.reviewNodes)
-    setComments(review.comments)
-    setReferenceAdjustments(review.referenceAdjustments)
-    setLinkOverrides(review.linkOverrides)
+    const next = loadReview(game.id, project)
+    reviewRef.current = next
+    setReviewState(next)
+    undoRef.current = []
+    redoRef.current = []
     setSelection(null)
     setCollapsedScreens(new Set())
     setReferenceEditing(false)
     setTool(null)
-    setLinkEdit(null)
+    setLinkDraft(null)
     setCamera({ x: 22, y: 36, zoom: 0.34 })
-  }, [gameId])
+  }, [game.id, project])
 
   useEffect(() => {
-    localStorage.setItem(`mf-production-review:${gameId}`, JSON.stringify({ annotations, reviewNodes, comments, referenceAdjustments, linkOverrides }))
-  }, [gameId, annotations, reviewNodes, comments, referenceAdjustments, linkOverrides])
+    try { localStorage.setItem(`mf-production-review:${game.id}`, JSON.stringify(review)) } catch { /* local review can exceed storage with large temporary images */ }
+  }, [game.id, review])
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if (isEditable(event.target)) return
+      const command = event.ctrlKey || event.metaKey
+      if (command && event.key.toLowerCase() === 'z') {
+        event.preventDefault()
+        event.shiftKey ? redo() : undo()
+        return
+      }
+      if (command && event.key.toLowerCase() === 'y') {
+        event.preventDefault()
+        redo()
+        return
+      }
       if (event.key === 'Escape') {
-        if (linkEdit) { setLinkEdit(null); return }
+        if (linkDraft) {
+          assignReview(linkDraft.before)
+          setLinkDraft(null)
+          return
+        }
         if (tool) { setTool(null); return }
       }
-      if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key) || event.metaKey || event.ctrlKey || event.altKey || isEditable(event.target)) return
+      if (event.key === 'Delete' || event.key === 'Backspace') {
+        if (!selection) return
+        event.preventDefault()
+        deleteSelection(selection)
+        return
+      }
+      if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key) || event.metaKey || event.ctrlKey || event.altKey) return
       const step = event.shiftKey ? 240 : 72
       event.preventDefault()
       setCamera((current) => ({
@@ -313,7 +539,7 @@ export function ProductionLab() {
     }
     window.addEventListener('keydown', onKey, { passive: false })
     return () => window.removeEventListener('keydown', onKey)
-  }, [tool, linkEdit])
+  })
 
   useEffect(() => {
     const viewport = viewportRef.current
@@ -344,71 +570,420 @@ export function ProductionLab() {
   const selectedScreen = selection?.kind === 'screen' ? screensById.get(selection.id) : undefined
   const selectedCanonicalNode = selection?.kind === 'node' ? canonicalNodesById.get(selection.id) : undefined
   const selectedReviewNode = selection?.kind === 'review-node' ? reviewNodesById.get(selection.id) : undefined
-  const selectedAnnotation = selection?.kind === 'annotation' ? annotations.find((item) => item.id === selection.id) : undefined
-  const selectedKey = selection ? `${selection.kind}:${selection.id}` : ''
-  const selectedAnyNodeId = selectedCanonicalNode?.id ?? selectedReviewNode?.id
+  const selectedAnnotation = selection?.kind === 'annotation' ? annotationsById.get(selection.id) : undefined
+  const selectedReviewLink = selection?.kind === 'review-link' ? review.reviewLinks.find((link) => link.id === selection.id) : undefined
+  const selectedCanonicalLink = selection?.kind === 'canonical-link'
+    ? effectiveCanonicalLinks(selection.sourceNodeId).find((link) => link.id === selection.linkId)
+    : undefined
+  const selectedKey = selection?.kind === 'canonical-link'
+    ? `canonical-link:${selection.sourceNodeId}:${selection.linkId}`
+    : selection ? `${selection.kind}:${selection.id}` : ''
 
-  function effectiveLinks(nodeId: string) {
-    const review = reviewNodesById.get(nodeId)
-    if (review) return review.links
-    return linkOverrides[nodeId] ?? canonicalNodesById.get(nodeId)?.links ?? []
+  function effectiveCanonicalLinks(nodeId: string) {
+    return reviewRef.current.linkOverrides[nodeId] ?? canonicalNodesById.get(nodeId)?.links ?? []
   }
 
-  function mutateLinks(nodeId: string, updater: (links: SemanticLink[]) => SemanticLink[]) {
-    if (reviewNodesById.has(nodeId)) {
-      setReviewNodes((current) => current.map((node) => node.id === nodeId ? { ...node, links: updater(node.links) } : node))
-      return
-    }
-    setLinkOverrides((current) => {
-      const base = current[nodeId] ?? canonicalNodesById.get(nodeId)?.links ?? []
-      return { ...current, [nodeId]: updater(base) }
-    })
+  function canonicalNodePosition(node: PlanNode) {
+    return review.nodePositionOverrides[node.id] ?? { x: node.x, y: node.y }
   }
 
-  function setLinkTarget(sourceNodeId: string, linkId: string | undefined, target: LinkTarget) {
-    mutateLinks(sourceNodeId, (links) => {
-      if (!linkId) return [...links, { id: uid('L'), target }]
-      return links.map((link) => link.id === linkId ? { ...link, target } : link)
-    })
-    setLinkEdit(null)
-  }
+  function reviewNodePosition(node: ReviewNode) { return { x: node.x, y: node.y } }
 
-  function findNodePosition(nodeId: string) {
+  function nodePosition(nodeId: string): Point | null {
     const canonical = canonicalNodesById.get(nodeId)
-    if (canonical) return itemCenter(canonical)
-    const review = reviewNodesById.get(nodeId)
-    return review ? itemCenter(review) : null
+    if (canonical) return canonicalNodePosition(canonical)
+    const local = reviewNodesById.get(nodeId)
+    return local ? reviewNodePosition(local) : null
+  }
+
+  function nodeCenter(nodeId: string): Point | null {
+    const position = nodePosition(nodeId)
+    return position ? { x: position.x + NODE_WIDTH / 2, y: position.y + NODE_CENTER_Y } : null
+  }
+
+  function annotationCenter(annotation: Annotation): Point | null {
+    const screen = screensById.get(annotation.screenId)
+    if (!screen) return null
+    if (annotation.type === 'rect') return { x: screen.x + annotation.x + (annotation.w ?? 0) / 2, y: screen.y + annotation.y + (annotation.h ?? 0) / 2 }
+    if (annotation.type === 'draw' && annotation.points?.length) {
+      const xs = annotation.points.map((point) => point.x)
+      const ys = annotation.points.map((point) => point.y)
+      return { x: screen.x + (Math.min(...xs) + Math.max(...xs)) / 2, y: screen.y + (Math.min(...ys) + Math.max(...ys)) / 2 }
+    }
+    return { x: screen.x + annotation.x, y: screen.y + annotation.y }
+  }
+
+  function endpointPosition(endpoint: LinkEndpoint): Point | null {
+    if (endpoint.kind === 'node') return nodeCenter(endpoint.nodeId)
+    if (endpoint.kind === 'annotation') {
+      const annotation = annotationsById.get(endpoint.annotationId)
+      return annotation ? annotationCenter(annotation) : null
+    }
+    const screen = screensById.get(endpoint.screenId)
+    return screen ? { x: screen.x + endpoint.point.x, y: screen.y + endpoint.point.y } : null
   }
 
   function visibleNode(ownerScreenId?: string) {
     return viewMode === 'exploded' && (!ownerScreenId || !collapsedScreens.has(ownerScreenId))
   }
 
-  const renderedNodes = [
-    ...project.nodes.filter((node) => visibleNode(node.ownerScreenId)).map((node) => ({ ...node, review: false as const })),
-    ...reviewNodes.filter((node) => visibleNode(node.ownerScreenId)).map((node) => ({ ...node, kind: 'text' as NodeKind, body: node.text, facts: [] as string[], source: 'revue locale', review: true as const })),
-  ]
+  const renderedCanonicalNodes = project.nodes.filter((node) => visibleNode(node.ownerScreenId))
+  const renderedReviewNodes = review.reviewNodes.filter((node) => visibleNode(node.ownerScreenId))
 
-  const renderedNodeIds = new Set(renderedNodes.map((node) => node.id))
-  const selectedTargetNodeIds = new Set<string>()
-  if (selectedAnyNodeId) {
-    for (const link of effectiveLinks(selectedAnyNodeId)) if (link.target.kind === 'node') selectedTargetNodeIds.add(link.target.nodeId)
+  function referenceKey(screen: PlanScreen) { return screen.state === 'covers' ? `screen:${screen.id}` : `state:${screen.state}` }
+  function defaultReferenceBias(screen: PlanScreen) {
+    if (screen.state === 'covers') return screen.referenceBias ?? anchorBias(screen.anchor)
+    const first = project.screens.find((candidate) => candidate.state === screen.state)
+    return first?.referenceBias ?? anchorBias(first?.anchor)
+  }
+  function screenReferenceBias(screen: PlanScreen) { return clamp(review.referenceAdjustments[referenceKey(screen)]?.bias ?? defaultReferenceBias(screen), 0, 1) }
+  function referenceWindow(screen: PlanScreen) {
+    const geometry = referenceGeometry(reference)
+    if (!geometry) return null
+    const bias = screenReferenceBias(screen)
+    return { ...geometry, bias, top: geometry.maxTop * bias }
   }
 
-  function toggleScreen(id: string) {
-    setCollapsedScreens((current) => {
-      const next = new Set(current)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
+  function setReferenceBias(screen: PlanScreen, bias: number) {
+    const key = referenceKey(screen)
+    commitReview((current) => ({ ...current, referenceAdjustments: { ...current.referenceAdjustments, [key]: { bias: clamp(bias, 0, 1) } } }))
+  }
+
+  function resetReference(screen: PlanScreen) {
+    const key = referenceKey(screen)
+    commitReview((current) => {
+      if (!(key in current.referenceAdjustments)) return current
+      const next = { ...current.referenceAdjustments }
+      delete next[key]
+      return { ...current, referenceAdjustments: next }
     })
   }
 
-  function fitPlan() { setCamera({ x: 22, y: 36, zoom: 0.25 }) }
+  function startReferenceDrag(event: ReactPointerEvent<HTMLDivElement>, screen: PlanScreen, maxTop: number) {
+    if (!referenceEditing || !selectedScreen || selectedScreen.id !== screen.id || maxTop <= 0) return
+    event.stopPropagation()
+    const rect = event.currentTarget.parentElement?.getBoundingClientRect()
+    referenceDragRef.current = {
+      pointerId: event.pointerId, startY: event.clientY, bias: screenReferenceBias(screen), key: referenceKey(screen), maxTop,
+      screenHeight: rect?.height ?? MASTER_HEIGHT, before: reviewRef.current,
+    }
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  function moveReferenceDrag(event: ReactPointerEvent<HTMLDivElement>) {
+    const drag = referenceDragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+    const logicalDelta = (event.clientY - drag.startY) / Math.max(1, drag.screenHeight) * MASTER_HEIGHT
+    transientReview((current) => ({ ...current, referenceAdjustments: { ...current.referenceAdjustments, [drag.key]: { bias: clamp(drag.bias + logicalDelta / Math.max(1, drag.maxTop), 0, 1) } } }))
+  }
+
+  function endReferenceDrag(event: ReactPointerEvent<HTMLDivElement>) {
+    const drag = referenceDragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+    referenceDragRef.current = null
+    recordTransient(drag.before)
+    try { event.currentTarget.releasePointerCapture(event.pointerId) } catch { /* no-op */ }
+  }
+
+  function clientToWorld(clientX: number, clientY: number): Point | null {
+    const rect = viewportRef.current?.getBoundingClientRect()
+    if (!rect) return null
+    return { x: (clientX - rect.left - camera.x) / camera.zoom, y: (clientY - rect.top - camera.y) / camera.zoom }
+  }
+
+  function pointInElement(event: { currentTarget: HTMLElement; clientX: number; clientY: number }) {
+    const rect = event.currentTarget.getBoundingClientRect()
+    return { x: clamp((event.clientX - rect.left) / rect.width * MASTER_WIDTH, 0, MASTER_WIDTH), y: clamp((event.clientY - rect.top) / rect.height * MASTER_HEIGHT, 0, MASTER_HEIGHT) }
+  }
+
+  function nodePlacementForScreen(screen: PlanScreen, point: Point, state: ReviewState) {
+    const count = state.reviewNodes.filter((node) => node.ownerScreenId === screen.id).length
+    const onLeft = point.x < MASTER_WIDTH / 2
+    return {
+      x: onLeft ? screen.x - NODE_WIDTH - 75 : screen.x + MASTER_WIDTH + 75,
+      y: screen.y + clamp(point.y - 70 + (count % 5) * 22, 36, MASTER_HEIGHT - 190),
+    }
+  }
+
+  function addAnnotationBundle(state: ReviewState, screen: PlanScreen, type: AnnotationType, geometry: Partial<Annotation>, title = 'Observation') {
+    const nodeId = uid('N')
+    const annotationId = uid('A')
+    const linkId = uid('L')
+    const point = type === 'rect'
+      ? { x: Number(geometry.x) + Number(geometry.w) / 2, y: Number(geometry.y) + Number(geometry.h) / 2 }
+      : type === 'draw' && geometry.points?.length
+        ? geometry.points[Math.floor(geometry.points.length / 2)]
+        : { x: Number(geometry.x), y: Number(geometry.y) }
+    const placement = nodePlacementForScreen(screen, point, state)
+    const annotation: Annotation = {
+      id: annotationId, screenId: screen.id, nodeId, type,
+      x: Number(geometry.x) || 0, y: Number(geometry.y) || 0,
+      w: geometry.w, h: geometry.h, points: geometry.points,
+    }
+    const node: ReviewNode = {
+      id: nodeId, ownerScreenId: screen.id, title, text: '', reference: '', x: placement.x, y: placement.y,
+    }
+    const link: ReviewLink = {
+      id: linkId, source: { kind: 'node', nodeId }, target: { kind: 'annotation', annotationId }, kind: 'attachment',
+    }
+    return {
+      state: { ...state, annotations: [...state.annotations, annotation], reviewNodes: [...state.reviewNodes, node], reviewLinks: [...state.reviewLinks, link] },
+      annotation, node, endpoint: { kind: 'annotation', annotationId } as LinkEndpoint,
+    }
+  }
+
+  function addNodeAtWorld(world: Point) {
+    const id = uid('N')
+    commitReview((current) => ({ ...current, reviewNodes: [...current.reviewNodes, { id, title: 'Observation', text: '', reference: '', x: world.x - NODE_WIDTH / 2, y: world.y - 40 }] }))
+    setSelection({ kind: 'review-node', id })
+    setViewMode('exploded')
+  }
+
+  function addNodeLinkedToScreen(screen: PlanScreen, point: Point) {
+    const id = uid('N')
+    const linkId = uid('L')
+    commitReview((current) => {
+      const placement = nodePlacementForScreen(screen, point, current)
+      return {
+        ...current,
+        reviewNodes: [...current.reviewNodes, { id, ownerScreenId: screen.id, title: 'Observation', text: '', reference: '', x: placement.x, y: placement.y }],
+        reviewLinks: [...current.reviewLinks, { id: linkId, source: { kind: 'node', nodeId: id }, target: { kind: 'screen', screenId: screen.id, point }, kind: 'attachment' }],
+      }
+    })
+    setSelection({ kind: 'review-node', id })
+    setViewMode('exploded')
+  }
+
+  function addPointObservation(screen: PlanScreen, point: Point, title = 'Observation') {
+    let nodeId = ''
+    commitReview((current) => {
+      const result = addAnnotationBundle(current, screen, 'point', point, title)
+      nodeId = result.node.id
+      return result.state
+    })
+    if (nodeId) setSelection({ kind: 'review-node', id: nodeId })
+    setViewMode('exploded')
+  }
+
+  function startOrFinishLink(endpoint: LinkEndpoint, nextState?: ReviewState) {
+    if (!linkDraft) {
+      const before = reviewRef.current
+      if (nextState) assignReview(nextState)
+      setLinkDraft({ endpoint, before })
+      return
+    }
+    const current = nextState ?? reviewRef.current
+    const id = uid('L')
+    const finalState: ReviewState = { ...current, reviewLinks: [...current.reviewLinks, { id, source: linkDraft.endpoint, target: endpoint, kind: 'relation' }] }
+    undoRef.current.push(linkDraft.before)
+    if (undoRef.current.length > 120) undoRef.current.shift()
+    redoRef.current = []
+    assignReview(finalState)
+    setLinkDraft(null)
+    setSelection({ kind: 'review-link', id })
+  }
+
+  function linkScreenPoint(screen: PlanScreen, point: Point) {
+    const result = addAnnotationBundle(reviewRef.current, screen, 'point', point, 'Point de lien')
+    startOrFinishLink(result.endpoint, result.state)
+  }
+
+  function linkEndpoint(endpoint: LinkEndpoint) { startOrFinishLink(endpoint) }
+
+  function screenPointerDown(event: ReactPointerEvent<HTMLDivElement>, screen: PlanScreen) {
+    if (tool !== 'rect' && tool !== 'draw') return
+    event.stopPropagation()
+    const point = pointInElement(event)
+    event.currentTarget.setPointerCapture(event.pointerId)
+    setGesture({ screenId: screen.id, type: tool, start: point, current: point, points: [point] })
+  }
+
+  function screenPointerMove(event: ReactPointerEvent<HTMLDivElement>, screen: PlanScreen) {
+    if (!gesture || gesture.screenId !== screen.id) return
+    const point = pointInElement(event)
+    setGesture((current) => current ? { ...current, current: point, points: current.type === 'draw' ? [...current.points, point] : current.points } : current)
+  }
+
+  function screenPointerUp(event: ReactPointerEvent<HTMLDivElement>, screen: PlanScreen) {
+    if (!gesture || gesture.screenId !== screen.id) return
+    const point = pointInElement(event)
+    let nodeId = ''
+    if (gesture.type === 'rect') {
+      const x = Math.min(gesture.start.x, point.x), y = Math.min(gesture.start.y, point.y)
+      const w = Math.abs(point.x - gesture.start.x), h = Math.abs(point.y - gesture.start.y)
+      if (w > 4 && h > 4) commitReview((current) => {
+        const result = addAnnotationBundle(current, screen, 'rect', { x, y, w, h }, 'Observation de zone')
+        nodeId = result.node.id
+        return result.state
+      })
+    } else if (gesture.points.length > 1) {
+      commitReview((current) => {
+        const result = addAnnotationBundle(current, screen, 'draw', { x: 0, y: 0, points: [...gesture.points, point] }, 'Observation dessinée')
+        nodeId = result.node.id
+        return result.state
+      })
+    }
+    setGesture(null)
+    if (nodeId) setSelection({ kind: 'review-node', id: nodeId })
+    setViewMode('exploded')
+  }
+
+  function screenClick(event: React.MouseEvent<HTMLDivElement>, screen: PlanScreen) {
+    event.stopPropagation()
+    if (ignoreClickAfterPan()) return
+    const point = pointInElement(event)
+    if (tool === 'link') return void linkScreenPoint(screen, point)
+    if (tool === 'point') return void addPointObservation(screen, point)
+    if (tool === 'node') return void addNodeLinkedToScreen(screen, point)
+    if (tool === 'rect' || tool === 'draw') return
+    setSelection({ kind: 'screen', id: screen.id })
+  }
+
+  function annotationClick(event: React.MouseEvent, annotation: Annotation) {
+    event.stopPropagation()
+    if (ignoreClickAfterPan()) return
+    if (tool === 'link') return void linkEndpoint({ kind: 'annotation', annotationId: annotation.id })
+    setSelection({ kind: 'annotation', id: annotation.id })
+  }
+
+  function nodePointerDown(event: ReactPointerEvent<HTMLElement>, nodeId: string, isReview: boolean) {
+    if (tool === 'link') return
+    if (event.button !== 0 || tool) return
+    event.stopPropagation()
+    const position = nodePosition(nodeId)
+    if (!position) return
+    nodeDragRef.current = {
+      pointerId: event.pointerId, nodeId, review: isReview, startX: event.clientX, startY: event.clientY,
+      origin: position, before: reviewRef.current, moved: false,
+    }
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  function nodePointerMove(event: ReactPointerEvent<HTMLElement>) {
+    const drag = nodeDragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+    const dx = (event.clientX - drag.startX) / camera.zoom
+    const dy = (event.clientY - drag.startY) / camera.zoom
+    if (!drag.moved && Math.hypot(dx, dy) > 3 / camera.zoom) drag.moved = true
+    if (!drag.moved) return
+    transientReview((current) => {
+      if (drag.review) return { ...current, reviewNodes: current.reviewNodes.map((node) => node.id === drag.nodeId ? { ...node, x: drag.origin.x + dx, y: drag.origin.y + dy } : node) }
+      return { ...current, nodePositionOverrides: { ...current.nodePositionOverrides, [drag.nodeId]: { x: drag.origin.x + dx, y: drag.origin.y + dy } } }
+    })
+  }
+
+  function nodePointerUp(event: ReactPointerEvent<HTMLElement>, nodeId: string, isReview: boolean) {
+    const drag = nodeDragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+    nodeDragRef.current = null
+    if (drag.moved) {
+      recordTransient(drag.before)
+      suppressClickRef.current = true
+      window.setTimeout(() => { suppressClickRef.current = false }, 0)
+    } else setSelection({ kind: isReview ? 'review-node' : 'node', id: nodeId })
+    try { event.currentTarget.releasePointerCapture(event.pointerId) } catch { /* no-op */ }
+  }
+
+  function annotationPointerDown(event: ReactPointerEvent<HTMLElement>, annotation: Annotation) {
+    if (tool || annotation.type !== 'point' || event.button !== 0) return
+    event.stopPropagation()
+    annotationDragRef.current = {
+      pointerId: event.pointerId, annotationId: annotation.id, startX: event.clientX, startY: event.clientY,
+      origin: { x: annotation.x, y: annotation.y }, before: reviewRef.current, moved: false,
+    }
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  function annotationPointerMove(event: ReactPointerEvent<HTMLElement>) {
+    const drag = annotationDragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+    const dx = (event.clientX - drag.startX) / camera.zoom
+    const dy = (event.clientY - drag.startY) / camera.zoom
+    if (!drag.moved && Math.hypot(dx, dy) > 3 / camera.zoom) drag.moved = true
+    if (!drag.moved) return
+    transientReview((current) => ({ ...current, annotations: current.annotations.map((annotation) => annotation.id === drag.annotationId ? { ...annotation, x: clamp(drag.origin.x + dx, 0, MASTER_WIDTH), y: clamp(drag.origin.y + dy, 0, MASTER_HEIGHT) } : annotation) }))
+  }
+
+  function annotationPointerUp(event: ReactPointerEvent<HTMLElement>, annotation: Annotation) {
+    const drag = annotationDragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+    annotationDragRef.current = null
+    if (drag.moved) {
+      recordTransient(drag.before)
+      suppressClickRef.current = true
+      window.setTimeout(() => { suppressClickRef.current = false }, 0)
+    } else setSelection({ kind: 'annotation', id: annotation.id })
+    try { event.currentTarget.releasePointerCapture(event.pointerId) } catch { /* no-op */ }
+  }
+
+  function resolveEndpointAt(clientX: number, clientY: number): LinkEndpoint | null {
+    const elements = document.elementsFromPoint(clientX, clientY)
+    for (const element of elements) {
+      const nodeElement = element.closest<HTMLElement>('[data-node-id]')
+      if (nodeElement?.dataset.nodeId) return { kind: 'node', nodeId: nodeElement.dataset.nodeId }
+      const annotationElement = element.closest<HTMLElement>('[data-annotation-id]')
+      if (annotationElement?.dataset.annotationId) return { kind: 'annotation', annotationId: annotationElement.dataset.annotationId }
+      const screenElement = element.closest<HTMLElement>('[data-screen-id]')
+      if (screenElement?.dataset.screenId) {
+        const rect = screenElement.getBoundingClientRect()
+        return {
+          kind: 'screen', screenId: screenElement.dataset.screenId,
+          point: {
+            x: clamp((clientX - rect.left) / rect.width * MASTER_WIDTH, 0, MASTER_WIDTH),
+            y: clamp((clientY - rect.top) / rect.height * MASTER_HEIGHT, 0, MASTER_HEIGHT),
+          },
+        }
+      }
+    }
+    return null
+  }
+
+  function startEndpointDrag(event: ReactPointerEvent<SVGCircleElement>, drag: Omit<EndpointDrag, 'pointerId' | 'before'>) {
+    event.stopPropagation()
+    const current = endpointDragRef.current
+    if (current) return
+    endpointDragRef.current = { ...drag, pointerId: event.pointerId, before: reviewRef.current }
+    const world = clientToWorld(event.clientX, event.clientY)
+    setLinkGhost(world)
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  function moveEndpointDrag(event: ReactPointerEvent<SVGCircleElement>) {
+    const drag = endpointDragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+    setLinkGhost(clientToWorld(event.clientX, event.clientY))
+  }
+
+  function endEndpointDrag(event: ReactPointerEvent<SVGCircleElement>) {
+    const drag = endpointDragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+    endpointDragRef.current = null
+    setLinkGhost(null)
+    const endpoint = resolveEndpointAt(event.clientX, event.clientY)
+    if (!endpoint) return
+    if (drag.kind === 'canonical' && drag.sourceNodeId) {
+      commitReview((current) => {
+        const base = current.linkOverrides[drag.sourceNodeId!] ?? canonicalNodesById.get(drag.sourceNodeId!)?.links ?? []
+        return {
+          ...current,
+          linkOverrides: {
+            ...current.linkOverrides,
+            [drag.sourceNodeId!]: base.map((link) => link.id === drag.linkId ? { ...link, target: endpoint } : link),
+          },
+        }
+      })
+    } else {
+      commitReview((current) => ({
+        ...current,
+        reviewLinks: current.reviewLinks.map((link) => link.id === drag.linkId ? { ...link, [drag.side]: endpoint } : link),
+      }))
+    }
+    try { event.currentTarget.releasePointerCapture(event.pointerId) } catch { /* no-op */ }
+  }
 
   function pointerDownCapture(event: ReactPointerEvent<HTMLDivElement>) {
-    if (tool || (event.target instanceof Element && event.target.closest('[data-reference-drag="true"]'))) return
+    if (tool || (event.target instanceof Element && event.target.closest('.mfpl-node,.mfpl-annotation-hit,.mfpl-link-handle,[data-reference-drag="true"]'))) return
     if (event.pointerType !== 'touch' && event.button !== 0 && event.button !== 1) return
-
     if (event.pointerType === 'touch') {
       touchesRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY })
       if (touchesRef.current.size === 2) {
@@ -423,7 +998,6 @@ export function ProductionLab() {
         return
       }
     }
-
     panRef.current = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, camera, moved: false }
   }
 
@@ -472,121 +1046,120 @@ export function ProductionLab() {
     return true
   }
 
-  function pointInElement(event: { currentTarget: HTMLElement; clientX: number; clientY: number }) {
-    const rect = event.currentTarget.getBoundingClientRect()
-    return { x: clamp((event.clientX - rect.left) / rect.width * MASTER_WIDTH, 0, MASTER_WIDTH), y: clamp((event.clientY - rect.top) / rect.height * MASTER_HEIGHT, 0, MASTER_HEIGHT) }
+  function removeLocalNode(state: ReviewState, nodeId: string) {
+    const annotationIds = new Set(state.annotations.filter((annotation) => annotation.nodeId === nodeId).map((annotation) => annotation.id))
+    return {
+      ...state,
+      reviewNodes: state.reviewNodes.filter((node) => node.id !== nodeId),
+      annotations: state.annotations.filter((annotation) => annotation.nodeId !== nodeId),
+      reviewLinks: state.reviewLinks.filter((link) =>
+        !endpointReferencesNode(link.source, nodeId, state.annotations)
+        && !endpointReferencesNode(link.target, nodeId, state.annotations)
+        && !(link.source.kind === 'annotation' && annotationIds.has(link.source.annotationId))
+        && !(link.target.kind === 'annotation' && annotationIds.has(link.target.annotationId))),
+    }
   }
 
-  function screenPointerDown(event: ReactPointerEvent<HTMLDivElement>, screen: PlanScreen) {
-    if (!tool) return
-    event.stopPropagation()
-    const point = pointInElement(event)
-    if (tool === 'note') {
-      const id = uid('A')
-      setAnnotations((current) => [...current, { id, screenId: screen.id, type: 'note', x: point.x, y: point.y, text: 'Nouvelle note' }])
-      setSelection({ kind: 'annotation', id })
+  function requestCanonicalDeletion(request: DeletionRequest) {
+    commitReview((current) => {
+      const key = deletionKey(request)
+      const next = { ...current.deletionRequests }
+      if (next[key]) delete next[key]
+      else next[key] = request
+      return { ...current, deletionRequests: next }
+    })
+  }
+
+  function deleteSelection(target: NonNullable<Selection>) {
+    if (target.kind === 'review-node') {
+      commitReview((current) => removeLocalNode(current, target.id))
+      setSelection(null)
       return
     }
-    event.currentTarget.setPointerCapture(event.pointerId)
-    setGesture({ screenId: screen.id, type: tool, start: point, current: point, points: [point] })
-  }
-
-  function screenPointerMove(event: ReactPointerEvent<HTMLDivElement>, screen: PlanScreen) {
-    if (!gesture || gesture.screenId !== screen.id) return
-    const point = pointInElement(event)
-    setGesture((current) => current ? { ...current, current: point, points: current.type === 'draw' ? [...current.points, point] : current.points } : current)
-  }
-
-  function screenPointerUp(event: ReactPointerEvent<HTMLDivElement>, screen: PlanScreen) {
-    if (!gesture || gesture.screenId !== screen.id) return
-    const point = pointInElement(event)
-    const id = uid('A')
-    if (gesture.type === 'rect') {
-      const x = Math.min(gesture.start.x, point.x), y = Math.min(gesture.start.y, point.y)
-      const w = Math.abs(point.x - gesture.start.x), h = Math.abs(point.y - gesture.start.y)
-      if (w > 4 && h > 4) {
-        setAnnotations((current) => [...current, { id, screenId: screen.id, type: 'rect', x, y, w, h, text: '' }])
-        setSelection({ kind: 'annotation', id })
-      }
-    } else if (gesture.points.length > 1) {
-      setAnnotations((current) => [...current, { id, screenId: screen.id, type: 'draw', x: 0, y: 0, points: [...gesture.points, point], text: '' }])
-      setSelection({ kind: 'annotation', id })
+    if (target.kind === 'annotation') {
+      const annotation = reviewRef.current.annotations.find((item) => item.id === target.id)
+      if (!annotation) return
+      commitReview((current) => removeLocalNode(current, annotation.nodeId))
+      setSelection(null)
+      return
     }
-    setGesture(null)
-  }
-
-  function addReviewNode(screen: PlanScreen) {
-    const count = reviewNodes.filter((node) => node.ownerScreenId === screen.id).length
-    const id = uid('N')
-    const node: ReviewNode = {
-      id, ownerScreenId: screen.id, title: 'Nouveau nœud', text: 'Décris ici ce que ce nœud doit représenter.',
-      x: screen.x + 500, y: screen.y + 110 + count * 210,
-      links: [screenLink(uid('L'), screen.id, MASTER_WIDTH / 2, MASTER_HEIGHT / 2)],
+    if (target.kind === 'review-link') {
+      commitReview((current) => ({ ...current, reviewLinks: current.reviewLinks.filter((link) => link.id !== target.id) }))
+      setSelection(null)
+      return
     }
-    setReviewNodes((current) => [...current, node])
-    setSelection({ kind: 'review-node', id })
-    setViewMode('exploded')
+    if (target.kind === 'node') {
+      requestCanonicalDeletion({ kind: 'node', targetId: target.id })
+      return
+    }
+    if (target.kind === 'canonical-link') {
+      requestCanonicalDeletion({ kind: 'canonical-link', targetId: target.linkId, sourceNodeId: target.sourceNodeId })
+      return
+    }
+    if (target.kind === 'screen' && reviewRef.current.screenImages[target.id]) {
+      commitReview((current) => {
+        const images = { ...current.screenImages }
+        delete images[target.id]
+        return { ...current, screenImages: images }
+      })
+    }
   }
 
-  function referenceKey(screen: PlanScreen) { return screen.state === 'covers' ? `screen:${screen.id}` : `state:${screen.state}` }
-  function defaultReferenceBias(screen: PlanScreen) {
-    if (screen.state === 'covers') return screen.referenceBias ?? anchorBias(screen.anchor)
-    const first = project.screens.find((candidate) => candidate.state === screen.state)
-    return first?.referenceBias ?? anchorBias(first?.anchor)
-  }
-  function screenReferenceBias(screen: PlanScreen) { return clamp(referenceAdjustments[referenceKey(screen)]?.bias ?? defaultReferenceBias(screen), 0, 1) }
-  function referenceWindow(screen: PlanScreen) {
-    const geometry = referenceGeometry(reference)
-    if (!geometry) return null
-    const bias = screenReferenceBias(screen)
-    return { ...geometry, bias, top: geometry.maxTop * bias }
-  }
-  function setReferenceBias(screen: PlanScreen, bias: number) {
-    const key = referenceKey(screen)
-    setReferenceAdjustments((current) => ({ ...current, [key]: { bias: clamp(bias, 0, 1) } }))
-  }
-  function resetReference(screen: PlanScreen) {
-    const key = referenceKey(screen)
-    setReferenceAdjustments((current) => { const next = { ...current }; delete next[key]; return next })
-  }
-  function startReferenceDrag(event: ReactPointerEvent<HTMLDivElement>, screen: PlanScreen, maxTop: number) {
-    if (!referenceEditing || !selectedScreen || selectedScreen.id !== screen.id || maxTop <= 0) return
-    event.stopPropagation()
-    const rect = event.currentTarget.parentElement?.getBoundingClientRect()
-    referenceDragRef.current = { pointerId: event.pointerId, startY: event.clientY, bias: screenReferenceBias(screen), key: referenceKey(screen), maxTop, screenHeight: rect?.height ?? MASTER_HEIGHT }
-    event.currentTarget.setPointerCapture(event.pointerId)
-  }
-  function moveReferenceDrag(event: ReactPointerEvent<HTMLDivElement>) {
-    const drag = referenceDragRef.current
-    if (!drag || drag.pointerId !== event.pointerId) return
-    const logicalDelta = (event.clientY - drag.startY) / Math.max(1, drag.screenHeight) * MASTER_HEIGHT
-    setReferenceAdjustments((current) => ({ ...current, [drag.key]: { bias: clamp(drag.bias + logicalDelta / Math.max(1, drag.maxTop), 0, 1) } }))
-  }
-  function endReferenceDrag(event: ReactPointerEvent<HTMLDivElement>) {
-    if (referenceDragRef.current?.pointerId !== event.pointerId) return
-    referenceDragRef.current = null
-    try { event.currentTarget.releasePointerCapture(event.pointerId) } catch { /* no-op */ }
+  function setScreenImageFile(screenId: string, file?: File) {
+    if (!file || !file.type.startsWith('image/')) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      const src = typeof reader.result === 'string' ? reader.result : ''
+      if (!src) return
+      commitReview((current) => ({ ...current, screenImages: { ...current.screenImages, [screenId]: { name: file.name, type: file.type, size: file.size, src } } }))
+      setSelection({ kind: 'screen', id: screenId })
+    }
+    reader.readAsDataURL(file)
   }
 
   async function copyForChatGPT() {
+    const screenImages = Object.fromEntries(Object.entries(review.screenImages).map(([id, image]) => [id, { name: image.name, type: image.type, size: image.size }]))
     const payload = {
       kind: 'MINIFUGG_PRODUCTION_REVIEW_ALPHA', project: project.title, gameId: game.id, viewMode, reference,
-      comments: Object.fromEntries(Object.entries(comments).filter(([, value]) => value.trim())),
-      annotations, draftNodes: reviewNodes, referenceAdjustments, linkOverrides, simplifiedScreens: [...collapsedScreens],
+      comments: Object.fromEntries(Object.entries(review.comments).filter(([, value]) => value.trim())),
+      annotations: review.annotations, draftNodes: review.reviewNodes, reviewLinks: review.reviewLinks,
+      referenceAdjustments: review.referenceAdjustments, linkOverrides: review.linkOverrides,
+      nodePositionOverrides: review.nodePositionOverrides, deletionRequests: Object.values(review.deletionRequests),
+      screenImages, simplifiedScreens: [...collapsedScreens],
     }
     await navigator.clipboard.writeText(JSON.stringify(payload, null, 2))
     setExported(true)
     window.setTimeout(() => setExported(false), 1400)
   }
 
-  const labelScale = clamp(1 / Math.max(camera.zoom, 0.12), 1, 7)
-  const linkedScreenNodes = selectedScreen ? project.nodes.filter((node) => node.ownerScreenId === selectedScreen.id) : []
-  const selectedNodeLinks = selectedAnyNodeId ? effectiveLinks(selectedAnyNodeId) : []
-
-  function targetLabel(target: LinkTarget) {
-    if (target.kind === 'screen') return `${target.screenId} · ${Math.round(target.point.x)}, ${Math.round(target.point.y)}`
-    return canonicalNodesById.get(target.nodeId)?.title ?? reviewNodesById.get(target.nodeId)?.title ?? target.nodeId
+  function toggleScreen(id: string) {
+    setCollapsedScreens((current) => {
+      const next = new Set(current)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
   }
+
+  function fitPlan() { setCamera({ x: 22, y: 36, zoom: 0.25 }) }
+
+  function endpointSelected(endpoint: LinkEndpoint) {
+    if (selection?.kind === 'annotation' && endpoint.kind === 'annotation') return endpoint.annotationId === selection.id
+    if (selection?.kind === 'review-node' || selection?.kind === 'node') return endpointReferencesNode(endpoint, selection.id, review.annotations)
+    return false
+  }
+
+  function reviewLinkHighlighted(link: ReviewLink) {
+    if (selection?.kind === 'review-link') return selection.id === link.id
+    if (selection?.kind === 'review-node' || selection?.kind === 'node') {
+      return endpointReferencesNode(link.source, selection.id, review.annotations) || endpointReferencesNode(link.target, selection.id, review.annotations)
+    }
+    if (selection?.kind === 'annotation') return endpointSelected(link.source) || endpointSelected(link.target)
+    return false
+  }
+
+  const labelScale = clamp(1 / Math.max(camera.zoom, 0.22), 1, 4.5)
+  const selectedNodeId = selection?.kind === 'node' || selection?.kind === 'review-node' ? selection.id : null
+  const selectedScreenNodes = selectedScreen ? project.nodes.filter((node) => node.ownerScreenId === selectedScreen.id) : []
 
   return <main className="mfpl">
     <header className="mfpl-topbar">
@@ -601,15 +1174,18 @@ export function ProductionLab() {
     </header>
 
     <div className={`mfpl-layout ${selection ? 'has-inspector' : ''}`}>
-      <aside className="mfpl-tools" aria-label="Annotations">
-        {([['rect','□','Zone'],['draw','✎','Dessin'],['note','N','Note']] as Array<[Exclude<ToolMode, null>, string, string]>).map(([id, icon, label]) => <button key={id} className={tool === id ? 'is-active' : ''} onClick={() => setTool((current) => current === id ? null : id)} title={label}><b>{icon}</b><span>{label}</span></button>)}
+      <aside className="mfpl-tools" aria-label="Outils de revue">
+        {([['node','N','Nœud'],['point','•','Point'],['rect','□','Zone'],['draw','✎','Dessin'],['link','↗','Lien']] as Array<[Exclude<ToolMode, null>, string, string]>).map(([id, icon, label]) => <button key={id} className={tool === id ? 'is-active' : ''} onClick={() => {
+          if (linkDraft) { assignReview(linkDraft.before); setLinkDraft(null) }
+          setTool((current) => current === id ? null : id)
+        }} title={label}><b>{icon}</b><span>{label}</span></button>)}
         <div className="mfpl-tool-spacer" />
         <button onClick={fitPlan} title="Vue globale"><b>⌗</b><span>Plan</span></button>
       </aside>
 
       <section
         ref={viewportRef}
-        className={`mfpl-viewport ${linkEdit ? 'is-linking' : ''}`}
+        className={`mfpl-viewport ${tool === 'link' ? 'is-linking' : ''}`}
         onPointerDownCapture={pointerDownCapture}
         onPointerMoveCapture={pointerMoveCapture}
         onPointerUpCapture={pointerEndCapture}
@@ -617,57 +1193,98 @@ export function ProductionLab() {
         onClick={(event) => {
           if (ignoreClickAfterPan()) return
           if (!(event.target instanceof Element)) return
-          if (event.target.closest('.mfpl-screen,.mfpl-node,.mfpl-annotation,.mfpl-reference-window')) return
-          if (!linkEdit) setSelection(null)
+          if (event.target.closest('.mfpl-screen,.mfpl-node,.mfpl-annotation-hit,.mfpl-link-hit,.mfpl-link-handle,.mfpl-reference-window')) return
+          if (tool === 'node') {
+            const world = clientToWorld(event.clientX, event.clientY)
+            if (world) addNodeAtWorld(world)
+            return
+          }
+          if (!tool) setSelection(null)
         }}
         onDragStart={(event) => event.preventDefault()}
       >
-        <div className="mfpl-camera-readout">{Math.round(camera.zoom * 100)}% · molette = déplacer · Maj+molette / pincement = zoom</div>
-        {linkEdit && <div className="mfpl-link-hint">Choisis une cible : clique dans un écran pour viser un endroit précis, ou clique sur un autre nœud. <button onClick={() => setLinkEdit(null)}>Annuler</button></div>}
+        <div className="mfpl-camera-readout">{Math.round(camera.zoom * 100)}% · molette = déplacer · Maj+molette / pincement = zoom · Ctrl+Z = annuler</div>
+        {tool === 'link' && <div className="mfpl-link-hint">{linkDraft ? '2/2 · choisis la seconde extrémité' : '1/2 · clique un nœud, une zone, un dessin ou un endroit dans un écran'}<span>Échap annule</span></div>}
         <div className="mfpl-world" style={{ width: WORLD_WIDTH, height: WORLD_HEIGHT, transform: `translate(${camera.x}px, ${camera.y}px) scale(${camera.zoom})` }}>
           {ZONES.map((zone) => <div key={zone.id} className={`mfpl-zone is-${zone.id}`} style={{ left: zone.x, width: zone.width, height: WORLD_HEIGHT }}><div className="mfpl-state-title"><b>{STATE_LABEL[zone.id]}</b><span>{zone.subtitle}</span>{!project.screens.some((screen) => screen.state === zone.id) && <em>vide pour le moment</em>}</div></div>)}
 
-          {viewMode === 'exploded' && <svg className="mfpl-links" width={WORLD_WIDTH} height={WORLD_HEIGHT} aria-hidden="true">
-            {renderedNodes.flatMap((node) => {
-              const source = itemCenter(node)
-              return effectiveLinks(node.id).map((link) => {
-                let target: Point | null = null
-                if (link.target.kind === 'screen') {
-                  const screen = screensById.get(link.target.screenId)
-                  if (screen) target = { x: screen.x + link.target.point.x, y: screen.y + link.target.point.y }
-                } else if (renderedNodeIds.has(link.target.nodeId)) target = findNodePosition(link.target.nodeId)
+          {viewMode === 'exploded' && <svg className="mfpl-links" width={WORLD_WIDTH} height={WORLD_HEIGHT}>
+            {renderedCanonicalNodes.flatMap((node) => {
+              const source = nodeCenter(node.id)
+              if (!source) return []
+              return effectiveCanonicalLinks(node.id).map((link) => {
+                const drag = endpointDragRef.current
+                let target = endpointPosition(link.target)
+                if (drag?.kind === 'canonical' && drag.sourceNodeId === node.id && drag.linkId === link.id && linkGhost) target = linkGhost
                 if (!target) return null
-                const selected = selectedAnyNodeId === node.id
-                return <g key={`${node.id}:${link.id}`} className={selected ? 'is-selected' : ''}>
+                const selected = selection?.kind === 'node' && selection.id === node.id
+                  || selection?.kind === 'canonical-link' && selection.sourceNodeId === node.id && selection.linkId === link.id
+                const deleteRequested = Boolean(review.deletionRequests[`link:${node.id}:${link.id}`])
+                return <g key={`${node.id}:${link.id}`} className={`${selected ? 'is-selected' : ''} ${deleteRequested ? 'is-delete-requested' : ''}`}>
                   <line className="mfpl-link" x1={source.x} y1={source.y} x2={target.x} y2={target.y} />
-                  {selected && link.target.kind === 'screen' && <circle className="mfpl-link-target-halo" cx={target.x} cy={target.y} r="18" />}
-                  {link.target.kind === 'screen' && <circle className="mfpl-link-target" cx={target.x} cy={target.y} r={selected ? 6 : 4} />}
+                  <line className="mfpl-link-hit" x1={source.x} y1={source.y} x2={target.x} y2={target.y} onClick={(event) => { event.stopPropagation(); setSelection({ kind: 'canonical-link', sourceNodeId: node.id, linkId: link.id }) }} />
+                  {selected && <circle className="mfpl-link-target-halo" cx={target.x} cy={target.y} r="18" />}
+                  <circle className="mfpl-link-target" cx={target.x} cy={target.y} r={selected ? 6 : 4} />
+                  {selected && <circle className="mfpl-link-handle" cx={target.x} cy={target.y} r="9" onPointerDown={(event) => startEndpointDrag(event, { kind: 'canonical', linkId: link.id, sourceNodeId: node.id, side: 'target' })} onPointerMove={moveEndpointDrag} onPointerUp={endEndpointDrag} onPointerCancel={endEndpointDrag} />}
                 </g>
               })
+            })}
+
+            {review.reviewLinks.map((link) => {
+              const drag = endpointDragRef.current
+              let source = endpointPosition(link.source)
+              let target = endpointPosition(link.target)
+              if (drag?.kind === 'review' && drag.linkId === link.id && linkGhost) {
+                if (drag.side === 'source') source = linkGhost
+                else target = linkGhost
+              }
+              if (!source || !target) return null
+              const selected = reviewLinkHighlighted(link)
+              return <g key={link.id} className={`${selected ? 'is-selected' : ''} ${link.kind === 'attachment' ? 'is-attachment' : ''}`}>
+                <line className="mfpl-link" x1={source.x} y1={source.y} x2={target.x} y2={target.y} />
+                <line className="mfpl-link-hit" x1={source.x} y1={source.y} x2={target.x} y2={target.y} onClick={(event) => { event.stopPropagation(); setSelection({ kind: 'review-link', id: link.id }) }} />
+                {selected && <>
+                  <circle className="mfpl-link-handle" cx={source.x} cy={source.y} r="9" onPointerDown={(event) => startEndpointDrag(event, { kind: 'review', linkId: link.id, side: 'source' })} onPointerMove={moveEndpointDrag} onPointerUp={endEndpointDrag} onPointerCancel={endEndpointDrag} />
+                  <circle className="mfpl-link-handle" cx={target.x} cy={target.y} r="9" onPointerDown={(event) => startEndpointDrag(event, { kind: 'review', linkId: link.id, side: 'target' })} onPointerMove={moveEndpointDrag} onPointerUp={endEndpointDrag} onPointerCancel={endEndpointDrag} />
+                </>}
+              </g>
             })}
           </svg>}
 
           {project.screens.map((screen) => {
             const referenceWindowData = referenceWindow(screen)
             const collapsed = collapsedScreens.has(screen.id)
-            const screenAnnotations = annotations.filter((annotation) => annotation.screenId === screen.id)
+            const screenAnnotations = review.annotations.filter((annotation) => annotation.screenId === screen.id)
             const activeGesture = gesture?.screenId === screen.id ? gesture : null
             const selected = selection?.kind === 'screen' && selection.id === screen.id
-            return <article key={screen.id} className={`mfpl-screen ${selected ? 'is-selected' : ''}`} style={{ left: screen.x, top: screen.y }}>
+            const imageOverride = review.screenImages[screen.id]
+            return <article key={screen.id} className={`mfpl-screen ${selected ? 'is-selected' : ''} ${imageOverride ? 'has-local-image' : ''}`} style={{ left: screen.x, top: screen.y }}>
               <div className="mfpl-screen-heading"><button onClick={(event) => { event.stopPropagation(); if (!ignoreClickAfterPan()) setSelection({ kind: 'screen', id: screen.id }) }}><span className="mfpl-readable-title" style={{ transform: `scale(${labelScale})` }}><b>{screen.id}</b> {screen.title}</span></button>{viewMode === 'exploded' && <button className="mfpl-collapse" onClick={(event) => { event.stopPropagation(); toggleScreen(screen.id) }}>{collapsed ? '+' : '−'}</button>}</div>
               <div
                 className="mfpl-screen-art"
-                onClick={(event) => {
-                  event.stopPropagation()
-                  if (ignoreClickAfterPan()) return
-                  if (linkEdit) return void setLinkTarget(linkEdit.sourceNodeId, linkEdit.linkId, { kind: 'screen', screenId: screen.id, point: pointInElement(event) })
-                  setSelection({ kind: 'screen', id: screen.id })
-                }}
+                data-screen-id={screen.id}
+                onClick={(event) => screenClick(event, screen)}
                 onPointerDown={(event) => screenPointerDown(event, screen)} onPointerMove={(event) => screenPointerMove(event, screen)} onPointerUp={(event) => screenPointerUp(event, screen)}
+                onDragOver={(event) => { if ([...event.dataTransfer.items].some((item) => item.kind === 'file' && item.type.startsWith('image/'))) event.preventDefault() }}
+                onDrop={(event) => { event.preventDefault(); event.stopPropagation(); setScreenImageFile(screen.id, event.dataTransfer.files[0]) }}
               >
-                <ScreenArtwork screen={screen} />
+                <ScreenArtwork screen={screen} override={imageOverride} />
+                {imageOverride && <span className="mfpl-local-image-badge">IMAGE LOCALE</span>}
                 {referenceWindowData && <div className={`mfpl-reference-window ${referenceEditing && selected ? 'is-editing' : ''}`} data-reference-drag={referenceEditing && selected ? 'true' : 'false'} style={{ top: referenceWindowData.top, height: referenceWindowData.height }} onPointerDown={(event) => startReferenceDrag(event, screen, referenceWindowData.maxTop)} onPointerMove={moveReferenceDrag} onPointerUp={endReferenceDrag} onPointerCancel={endReferenceDrag}>{referenceEditing && selected ? <span>{referenceWindowData.label}</span> : null}</div>}
-                {screenAnnotations.map((annotation) => <button key={annotation.id} className={`mfpl-annotation is-${annotation.type}`} style={{ left: annotation.x, top: annotation.y, width: annotation.w, height: annotation.h }} onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); if (!ignoreClickAfterPan()) setSelection({ kind: 'annotation', id: annotation.id }) }}>{annotation.type === 'point' && <span />}{annotation.type === 'note' && <b>N</b>}{annotation.type === 'draw' && annotation.points && <svg viewBox={`0 0 ${MASTER_WIDTH} ${MASTER_HEIGHT}`}><polyline points={annotation.points.map((point) => `${point.x},${point.y}`).join(' ')} /></svg>}</button>)}
+
+                {screenAnnotations.map((annotation) => {
+                  const annotationSelected = selection?.kind === 'annotation' && selection.id === annotation.id
+                  if (annotation.type === 'draw' && annotation.points?.length) return <svg key={annotation.id} className={`mfpl-annotation-draw ${annotationSelected ? 'is-selected' : ''}`} viewBox={`0 0 ${MASTER_WIDTH} ${MASTER_HEIGHT}`}><polyline data-annotation-id={annotation.id} className="mfpl-annotation-hit" points={annotation.points.map((point) => `${point.x},${point.y}`).join(' ')} onClick={(event) => annotationClick(event, annotation)} /></svg>
+                  return <button
+                    key={annotation.id}
+                    data-annotation-id={annotation.id}
+                    className={`mfpl-annotation-hit mfpl-annotation is-${annotation.type} ${annotationSelected ? 'is-selected' : ''}`}
+                    style={{ left: annotation.x, top: annotation.y, width: annotation.w, height: annotation.h }}
+                    onPointerDown={(event) => annotationPointerDown(event, annotation)} onPointerMove={annotationPointerMove} onPointerUp={(event) => annotationPointerUp(event, annotation)} onPointerCancel={(event) => annotationPointerUp(event, annotation)}
+                    onClick={(event) => annotationClick(event, annotation)}
+                  >{annotation.type === 'point' && <span />}</button>
+                })}
+
                 {activeGesture?.type === 'rect' && <div className="mfpl-gesture-rect" style={{ left: Math.min(activeGesture.start.x, activeGesture.current.x), top: Math.min(activeGesture.start.y, activeGesture.current.y), width: Math.abs(activeGesture.current.x - activeGesture.start.x), height: Math.abs(activeGesture.current.y - activeGesture.start.y) }} />}
                 {activeGesture?.type === 'draw' && <svg className="mfpl-gesture-draw" viewBox={`0 0 ${MASTER_WIDTH} ${MASTER_HEIGHT}`}><polyline points={activeGesture.points.map((point) => `${point.x},${point.y}`).join(' ')} /></svg>}
               </div>
@@ -675,17 +1292,45 @@ export function ProductionLab() {
             </article>
           })}
 
-          {viewMode === 'exploded' && renderedNodes.map((node) => {
-            const selected = selectedAnyNodeId === node.id
-            const isTarget = selectedTargetNodeIds.has(node.id)
-            return <article key={node.id} className={`mfpl-node is-${node.kind} ${node.review ? 'is-review' : ''} ${selected ? 'is-selected' : ''} ${isTarget ? 'is-link-target' : ''}`} style={{ left: node.x, top: node.y, width: 310 }} onClick={(event) => {
-              event.stopPropagation()
-              if (ignoreClickAfterPan()) return
-              if (linkEdit && linkEdit.sourceNodeId !== node.id) return void setLinkTarget(linkEdit.sourceNodeId, linkEdit.linkId, { kind: 'node', nodeId: node.id })
-              setSelection({ kind: node.review ? 'review-node' : 'node', id: node.id })
-            }}>
-              <header><b className="mfpl-readable-title" style={{ transform: `scale(${labelScale})` }}>{node.title}</b><small>{node.review ? 'revue' : node.kind}</small></header>
+          {viewMode === 'exploded' && renderedCanonicalNodes.map((node) => {
+            const position = canonicalNodePosition(node)
+            const selected = selection?.kind === 'node' && selection.id === node.id
+            const deleteRequested = Boolean(review.deletionRequests[`node:${node.id}`])
+            return <article
+              key={node.id}
+              data-node-id={node.id}
+              className={`mfpl-node is-${node.kind} ${selected ? 'is-selected' : ''} ${deleteRequested ? 'is-delete-requested' : ''}`}
+              style={{ left: position.x, top: position.y, width: NODE_WIDTH }}
+              onPointerDown={(event) => nodePointerDown(event, node.id, false)} onPointerMove={nodePointerMove} onPointerUp={(event) => nodePointerUp(event, node.id, false)} onPointerCancel={(event) => nodePointerUp(event, node.id, false)}
+              onClick={(event) => {
+                event.stopPropagation()
+                if (ignoreClickAfterPan()) return
+                if (tool === 'link') return void linkEndpoint({ kind: 'node', nodeId: node.id })
+                setSelection({ kind: 'node', id: node.id })
+              }}
+            >
+              <header><b className="mfpl-readable-title" style={{ transform: `scale(${labelScale})` }}>{node.title}</b><small>{deleteRequested ? 'SUPPRIMER ?' : node.kind}</small></header>
               <p>{node.body}</p>{node.facts.length > 0 && <ul>{node.facts.map((fact) => <li key={fact}>{fact}</li>)}</ul>}
+            </article>
+          })}
+
+          {viewMode === 'exploded' && renderedReviewNodes.map((node) => {
+            const selected = selection?.kind === 'review-node' && selection.id === node.id
+            return <article
+              key={node.id}
+              data-node-id={node.id}
+              className={`mfpl-node is-review ${selected ? 'is-selected' : ''}`}
+              style={{ left: node.x, top: node.y, width: NODE_WIDTH }}
+              onPointerDown={(event) => nodePointerDown(event, node.id, true)} onPointerMove={nodePointerMove} onPointerUp={(event) => nodePointerUp(event, node.id, true)} onPointerCancel={(event) => nodePointerUp(event, node.id, true)}
+              onClick={(event) => {
+                event.stopPropagation()
+                if (ignoreClickAfterPan()) return
+                if (tool === 'link') return void linkEndpoint({ kind: 'node', nodeId: node.id })
+                setSelection({ kind: 'review-node', id: node.id })
+              }}
+            >
+              <header><b className="mfpl-readable-title" style={{ transform: `scale(${labelScale})` }}>{node.title}</b><small>revue</small></header>
+              <p>{node.text || 'Écris ton observation dans le panneau.'}</p>{node.reference && <em>{node.reference}</em>}
             </article>
           })}
         </div>
@@ -697,25 +1342,56 @@ export function ProductionLab() {
           <p>{selectedScreen.context}</p>
           <div className="mfpl-semantic-block"><b>Ce qu’il faut comprendre</b><ul>{selectedScreen.facts.map((fact) => <li key={fact}>{fact}</li>)}</ul></div>
           <dl><div><dt>Source</dt><dd>{selectedScreen.source}</dd></div><div><dt>Statut</dt><dd>{selectedScreen.status}</dd></div></dl>
+
+          <label className="mfpl-file-field">Image affichée<input type="file" accept="image/*" onChange={(event) => { setScreenImageFile(selectedScreen.id, event.target.files?.[0]); event.currentTarget.value = '' }} /></label>
+          <small className="mfpl-help">Tu peux aussi déposer une image directement sur l’écran. {review.screenImages[selectedScreen.id] ? `Image locale : ${review.screenImages[selectedScreen.id].name}. Delete/Backspace revient à l’image canonique.` : 'Le remplacement reste local jusqu’à l’export.'}</small>
+
           {referenceEditing && reference !== 'off' && <div className="mfpl-calibration"><b>{selectedScreen.state === 'covers' ? 'Calage de cette cover' : `Calage commun ${STATE_LABEL[selectedScreen.state]}`}</b><small>{selectedScreen.state === 'covers' ? 'Ce réglage ne touche que cette jaquette.' : `Ce réglage s’applique à tous les écrans ${STATE_LABEL[selectedScreen.state]}.`}</small><div className="mfpl-calibration-buttons"><button onClick={() => setReferenceBias(selectedScreen, 0)}>Haut</button><button onClick={() => setReferenceBias(selectedScreen, 0.5)}>Centre</button><button onClick={() => setReferenceBias(selectedScreen, 1)}>Bas</button></div><label>Position verticale <input type="range" min="0" max="100" value={Math.round(screenReferenceBias(selectedScreen) * 100)} onChange={(event) => setReferenceBias(selectedScreen, Number(event.target.value) / 100)} /></label><small>{Math.round(screenReferenceBias(selectedScreen) * 1000) / 10}%{selectedScreen.state === 'covers' ? ` · ${recommendedObjectPosition(screenReferenceBias(selectedScreen))}` : ''}</small><button className="mfpl-calibration-reset" onClick={() => resetReference(selectedScreen)}>Réglage canonique</button></div>}
-          <div className="mfpl-linked-list"><b>Nœuds de cette situation ({linkedScreenNodes.length})</b>{linkedScreenNodes.map((node) => <button key={node.id} onClick={() => setSelection({ kind: 'node', id: node.id })}>{node.title}<span>{node.kind}</span></button>)}</div>
-          <div className="mfpl-inspector-actions"><button onClick={() => addReviewNode(selectedScreen)}>+ Nouveau nœud</button><button onClick={() => toggleScreen(selectedScreen.id)}>{collapsedScreens.has(selectedScreen.id) ? 'Éclater cet écran' : 'Simplifier cet écran'}</button></div>
-          <label className="mfpl-field">Commentaire<textarea value={comments[selectedKey] ?? ''} onChange={(event) => setComments((current) => ({ ...current, [selectedKey]: event.target.value }))} /></label>
+
+          <div className="mfpl-linked-list"><b>Nœuds canoniques de cette situation ({selectedScreenNodes.length})</b>{selectedScreenNodes.map((node) => <button key={node.id} onClick={() => setSelection({ kind: 'node', id: node.id })}>{node.title}<span>{node.kind}</span></button>)}</div>
+          <div className="mfpl-inspector-actions"><button onClick={() => toggleScreen(selectedScreen.id)}>{collapsedScreens.has(selectedScreen.id) ? 'Éclater cet écran' : 'Simplifier cet écran'}</button></div>
+          <label className="mfpl-field">Commentaire<textarea value={review.comments[selectedKey] ?? ''} onChange={(event) => transientReview((current) => ({ ...current, comments: { ...current.comments, [selectedKey]: event.target.value } }))} /></label>
         </>}
 
-        {(selectedCanonicalNode || selectedReviewNode) && <>
-          <div className="mfpl-inspector-title"><small>NŒUD {selectedReviewNode ? '· REVUE LOCALE' : `· ${selectedCanonicalNode?.kind.toUpperCase()}`}</small><h2>{selectedReviewNode?.title ?? selectedCanonicalNode?.title}</h2></div>
-          {selectedReviewNode ? <><label className="mfpl-field">Titre<input value={selectedReviewNode.title} onChange={(event) => setReviewNodes((current) => current.map((node) => node.id === selectedReviewNode.id ? { ...node, title: event.target.value } : node))} /></label><label className="mfpl-field">Contenu<textarea value={selectedReviewNode.text} onChange={(event) => setReviewNodes((current) => current.map((node) => node.id === selectedReviewNode.id ? { ...node, text: event.target.value } : node))} /></label></> : <><p>{selectedCanonicalNode?.body}</p>{selectedCanonicalNode?.facts.length ? <div className="mfpl-semantic-block"><b>Détails</b><ul>{selectedCanonicalNode.facts.map((fact) => <li key={fact}>{fact}</li>)}</ul></div> : null}</>}
-
-          <div className="mfpl-link-editor"><div className="mfpl-link-editor-head"><b>Liens ({selectedNodeLinks.length})</b><button onClick={() => selectedAnyNodeId && setLinkEdit({ sourceNodeId: selectedAnyNodeId })}>+ Lien</button></div>{selectedNodeLinks.length === 0 && <p>Ce nœud n’a aucun lien. C’est autorisé.</p>}{selectedNodeLinks.map((link) => <div className={`mfpl-link-row ${linkEdit?.linkId === link.id ? 'is-editing' : ''}`} key={link.id}><span>{link.target.kind === 'screen' ? 'ÉCRAN' : 'NŒUD'} · {targetLabel(link.target)}</span><div><button onClick={() => selectedAnyNodeId && setLinkEdit({ sourceNodeId: selectedAnyNodeId, linkId: link.id })}>Changer</button><button onClick={() => selectedAnyNodeId && mutateLinks(selectedAnyNodeId, (links) => links.filter((item) => item.id !== link.id))}>×</button></div></div>)}{linkEdit?.sourceNodeId === selectedAnyNodeId && <div className="mfpl-link-pick">Clique maintenant dans un écran pour choisir un point exact, ou sur un autre nœud. <button onClick={() => setLinkEdit(null)}>Annuler</button></div>}</div>
-
-          {!selectedReviewNode && <label className="mfpl-field">Commentaire<textarea value={comments[selectedKey] ?? ''} onChange={(event) => setComments((current) => ({ ...current, [selectedKey]: event.target.value }))} /></label>}
-          {selectedReviewNode && <button className="mfpl-danger" onClick={() => { setReviewNodes((current) => current.filter((node) => node.id !== selectedReviewNode.id)); setSelection(null); setLinkEdit(null) }}>Supprimer le nœud</button>}
+        {selectedCanonicalNode && <>
+          <div className="mfpl-inspector-title"><small>NŒUD · {selectedCanonicalNode.kind.toUpperCase()}</small><h2>{selectedCanonicalNode.title}</h2></div>
+          <p>{selectedCanonicalNode.body}</p>{selectedCanonicalNode.facts.length > 0 && <div className="mfpl-semantic-block"><b>Détails</b><ul>{selectedCanonicalNode.facts.map((fact) => <li key={fact}>{fact}</li>)}</ul></div>}
+          <div className="mfpl-link-summary"><b>{effectiveCanonicalLinks(selectedCanonicalNode.id).length} lien(s)</b><span>Glisse directement une poignée orange pour changer sa destination. Utilise l’outil Lien pour ajouter une relation locale.</span></div>
+          {review.deletionRequests[`node:${selectedCanonicalNode.id}`] && <div className="mfpl-delete-request">Suppression demandée. Le nœud reste visible pour que ChatGPT puisse comprendre et traiter la demande.</div>}
+          <label className="mfpl-field">Commentaire<textarea value={review.comments[selectedKey] ?? ''} onChange={(event) => transientReview((current) => ({ ...current, comments: { ...current.comments, [selectedKey]: event.target.value } }))} /></label>
+          <div className="mfpl-key-help">Glisser = déplacer le nœud · Delete/Backspace = demander sa suppression</div>
         </>}
 
-        {selectedAnnotation && <><div className="mfpl-inspector-title"><small>ANNOTATION</small><h2>{selectedAnnotation.type === 'point' ? 'Ancienne annotation point' : selectedAnnotation.type}</h2></div><label className="mfpl-field">Note<textarea value={selectedAnnotation.text} onChange={(event) => setAnnotations((current) => current.map((annotation) => annotation.id === selectedAnnotation.id ? { ...annotation, text: event.target.value } : annotation))} /></label><button className="mfpl-danger" onClick={() => { setAnnotations((current) => current.filter((annotation) => annotation.id !== selectedAnnotation.id)); setSelection(null) }}>Supprimer</button></>}
+        {selectedReviewNode && <>
+          <div className="mfpl-inspector-title"><small>NŒUD · REVUE LOCALE</small><h2>{selectedReviewNode.title}</h2></div>
+          <label className="mfpl-field">Titre<input value={selectedReviewNode.title} onChange={(event) => transientReview((current) => ({ ...current, reviewNodes: current.reviewNodes.map((node) => node.id === selectedReviewNode.id ? { ...node, title: event.target.value } : node) }))} /></label>
+          <label className="mfpl-field">Observation<textarea autoFocus value={selectedReviewNode.text} onChange={(event) => transientReview((current) => ({ ...current, reviewNodes: current.reviewNodes.map((node) => node.id === selectedReviewNode.id ? { ...node, text: event.target.value } : node) }))} /></label>
+          <label className="mfpl-field">Référence image / son / URL<input placeholder="URL, fichier, nom de référence…" value={selectedReviewNode.reference} onChange={(event) => transientReview((current) => ({ ...current, reviewNodes: current.reviewNodes.map((node) => node.id === selectedReviewNode.id ? { ...node, reference: event.target.value } : node) }))} /></label>
+          <div className="mfpl-link-summary"><b>{review.reviewLinks.filter((link) => endpointReferencesNode(link.source, selectedReviewNode.id, review.annotations) || endpointReferencesNode(link.target, selectedReviewNode.id, review.annotations)).length} lien(s)</b><span>Outil Lien = deux clics. Une fois le lien visible, glisse simplement ses poignées pour le recaler.</span></div>
+          <div className="mfpl-key-help">Glisser = déplacer · Delete/Backspace = supprimer · Ctrl+Z = annuler</div>
+        </>}
 
-        <div className="mfpl-readonly"><b>REVUE LOCALE</b><span>Les nœuds, liens, annotations et calages que tu modifies ici restent locaux jusqu’à l’export vers ChatGPT/Codex.</span></div>
+        {selectedAnnotation && <>
+          <div className="mfpl-inspector-title"><small>REPÈRE · {selectedAnnotation.type.toUpperCase()}</small><h2>{selectedAnnotation.type === 'point' ? 'Point' : selectedAnnotation.type === 'rect' ? 'Zone' : 'Dessin'}</h2></div>
+          <p>Ce repère est toujours associé à un nœud d’observation. Il ne vit jamais seul dans le Plan.</p>
+          <button className="mfpl-jump" onClick={() => setSelection({ kind: 'review-node', id: selectedAnnotation.nodeId })}>Voir le nœud associé</button>
+          <div className="mfpl-key-help">{selectedAnnotation.type === 'point' ? 'Glisse le point pour le déplacer · ' : ''}Delete/Backspace supprime le repère et son nœud · Ctrl+Z annule</div>
+        </>}
+
+        {selectedReviewLink && <>
+          <div className="mfpl-inspector-title"><small>LIEN · REVUE LOCALE</small><h2>{selectedReviewLink.kind === 'attachment' ? 'Lien d’observation' : 'Relation sémantique'}</h2></div>
+          <p>Pas de bouton « changer » : glisse directement l’une des deux poignées orange vers un nœud, une zone, un dessin ou un autre endroit d’écran.</p>
+          <div className="mfpl-key-help">Delete/Backspace supprime le lien · Ctrl+Z annule</div>
+        </>}
+
+        {selectedCanonicalLink && selection?.kind === 'canonical-link' && <>
+          <div className="mfpl-inspector-title"><small>LIEN · CANONIQUE</small><h2>{selectedCanonicalLink.label || selectedCanonicalLink.id}</h2></div>
+          <p>Glisse la poignée orange pour proposer une autre destination. La modification reste locale jusqu’à l’export.</p>
+          {review.deletionRequests[`link:${selection.sourceNodeId}:${selection.linkId}`] && <div className="mfpl-delete-request">Suppression de ce lien demandée à ChatGPT.</div>}
+          <div className="mfpl-key-help">Delete/Backspace = demander sa suppression · Ctrl+Z = annuler</div>
+        </>}
+
+        <div className="mfpl-readonly"><b>REVUE LOCALE</b><span>Tout ce que tu ajoutes, déplaces, relies, remplaces ou demandes de supprimer ici reste local jusqu’à « Copier pour ChatGPT ».</span></div>
       </aside>}
     </div>
   </main>

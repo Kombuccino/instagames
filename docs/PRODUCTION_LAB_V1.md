@@ -12,9 +12,9 @@ Les **Covers** forment un ensemble séparé, placé avant la chaîne principale.
 - **DA** : conception visuelle enrichie ; elle peut modifier/affiner le GD avant intégration.
 - **Release** : DA réellement intégrée dans le runtime, encore révisable ; ce mot ne signifie pas automatiquement version finale 1.0.
 
-Un **écran** représente une situation utile du jeu, pas nécessairement un écran logiciel distinct. L’écran principal donne toujours le contexte général ; des situations supplémentaires descendent sous lui uniquement lorsqu’elles sont nécessaires pour montrer un moment qui n’est pas visible dans la situation générale.
+Un **écran** représente une situation utile du jeu, pas nécessairement un écran logiciel distinct. L’écran principal donne le contexte général ; des situations supplémentaires descendent sous lui lorsqu’elles sont nécessaires pour **montrer réellement** un moment que l’écran général ne prouve pas : drag, transition, changement de niveau, résultat, état terminal, etc. Les nœuds doivent autant que possible pointer vers une situation où leur sujet est visible, au lieu d’expliquer hors-sol une action absente de l’image.
 
-Un **nœud** est une unité sémantique de conception, pas une représentation stricte du code. Il peut contenir texte, image, tileset, animation ou son. Un nœud peut être relié à un écran, à un autre nœud ou à son équivalent dans un État ultérieur. Lorsqu’il décrit un élément réellement visible, son lien vise une ancre interne précise dans l’écran ; les ancres périphériques restent réservées aux concepts non localisables visuellement.
+Un **nœud** est une unité sémantique de conception, pas une représentation stricte du code. Il peut contenir texte, image, tileset, animation ou son. Un nœud peut être relié à un écran, à un autre nœud ou à son équivalent dans un État ultérieur. Lorsqu’il décrit un élément réellement visible, son lien vise une ancre interne précise dans l’écran ; les ancres périphériques restent réservées aux concepts non localisables visuellement. Quand un nœud est sélectionné, son lien et sa zone d’ancrage sont mis en évidence ensemble.
 
 Un **lien transversal** permet de suivre un élément dans le temps, par exemple `grille Proto → grille DA → grille Release`. Tous les éléments ne commencent pas au Proto : un FX peut naître en DA et n’avoir qu’un descendant en Release.
 
@@ -25,8 +25,10 @@ Le déplacement et la sélection ne sont pas des outils séparés. Ce sont les c
 - clic simple sur un écran ou un nœud = sélection ;
 - clic-glissé / glissé à un doigt = déplacement du Plan ;
 - flèches clavier = déplacement ; `Shift + flèche` = déplacement large ;
-- molette / trackpad = déplacement ;
-- `Ctrl/Cmd + molette` ou pincement à deux doigts = zoom centré sous le pointeur/doigts.
+- molette / trackpad = déplacement du Plan ;
+- `Shift + molette` = zoom centré sous le pointeur ;
+- pincement à deux doigts = zoom ;
+- `Ctrl/Cmd + molette` est neutralisé au-dessus du Plan pour ne pas déclencher le zoom du navigateur.
 
 Les outils explicites de la barre latérale ne servent qu’à la revue : point, zone, dessin et note. Le navigateur ne doit jamais initier de drag natif d’image ou d’iframe dans le Plan.
 
@@ -68,8 +70,8 @@ Pour le gameplay, la position canonique vient de l’ancrage `top | center | bot
 
 - Sélecteur alimenté par `gameRegistry` ; LineFugg Rebirth sert de démonstrateur riche, les autres jeux reçoivent un plan générique minimal tant qu’ils ne redeviennent pas des chantiers actifs.
 - Covers séparées, Proto, DA et Release sur le même Plan ; DA/Release restent vides tant qu’elles n’existent pas réellement.
-- Le Proto principal utilise le **vrai runtime** du jeu lorsqu’il est disponible, pas une imitation graphique du Lab.
-- Écrans en vraie proportion `390 × 844`, nœuds sémantiques, ancres internes et liens visibles jusque dans l’interface.
+- Le Proto utilise le **vrai runtime** et peut produire plusieurs situations de preuve. LineFugg montre actuellement le départ, un drag réel, l’état après une ligne/retirage et les trois lignes avant validation.
+- Écrans en vraie proportion `390 × 844`, nœuds sémantiques, ancres internes et liens visibles jusque dans l’interface ; le lien sélectionné et sa cible sont accentués ensemble.
 - Navigation implicite, vue globale, simple/éclatée, simplification par écran, outils de revue locale, export ChatGPT et calibration locale des repères.
 
 ## Non-objectifs

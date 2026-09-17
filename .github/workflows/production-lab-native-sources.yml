@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node scripts/patch-production-lab-native-sources.mjs
+      - run: node scripts/patch-production-lab-native-sources-v2.mjs
       - run: npm install --no-audit --no-fund
       - run: npm run test:repository
       - run: npm run build
@@ -31,6 +31,6 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/core/ProductionLab.tsx src/core/ProductionLab.css docs/PRODUCTION_LAB_V1.md src/games/linefugg/ASSET_MANIFEST.md src/games/linefugg/GAME_STATUS.md
+          git add src/core/ProductionLab.tsx src/core/ProductionLab.css
           git commit -m "feat(lab): show native production sources [native-source-nodes]"
           git push origin HEAD:core/production-lab-native-sources

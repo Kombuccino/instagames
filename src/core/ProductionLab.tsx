@@ -161,7 +161,7 @@ type EndpointDrag = {
 }
 
 const MASTER_WIDTH = 390
-const MASTER_HEIGHT = 844
+const MASTER_HEIGHT = 850
 const WORLD_WIDTH = 6900
 const WORLD_HEIGHT = 5600
 const NODE_WIDTH = 310
@@ -176,12 +176,12 @@ const ZONES: Array<{ id: StateId; x: number; width: number; subtitle: string }> 
   { id: 'release', x: 4900, width: 2000, subtitle: 'après intégration réelle' },
 ]
 const SCREEN_X: Record<StateId, number> = { covers: 220, proto: 1650, da: 3450, release: 5350 }
-const REFERENCE_OPTIONS: Array<{ id: ReferenceMode; label: string; cssHeight?: number }> = [
+const REFERENCE_OPTIONS: Array<{ id: ReferenceMode; label: string; logicalHeight?: number }> = [
   { id: 'off', label: 'Sans repère' },
-  { id: 'minimum', label: 'Minimum jouable 360×650', cssHeight: 650 },
-  { id: 'a54', label: 'A54 Chrome 360×656', cssHeight: 656 },
-  { id: 'iphone', label: 'iPhone 13 Pro ≈360×657', cssHeight: 657 },
-  { id: 'brave', label: 'A54 Brave 360×611', cssHeight: 611 },
+  { id: 'minimum', label: 'Zone garantie 390×710', logicalHeight: 710 },
+  { id: 'a54', label: 'A54 Chrome 360×656', logicalHeight: MASTER_WIDTH * 656 / 360 },
+  { id: 'iphone', label: 'iPhone 13 Pro 390×712', logicalHeight: 712 },
+  { id: 'brave', label: 'A54 Brave 360×611', logicalHeight: MASTER_WIDTH * 611 / 360 },
 ]
 const LINEFUGG_PROOF_ROOT = '/assets/generated/linefugg/production-lab'
 
@@ -287,7 +287,7 @@ function buildLineFuggPlan(game: InstagameDefinition): PlanProject {
     { id: 'P-undo', ownerScreenId: 'P4', title: 'Undo = restauration', kind: 'text', body: 'Annuler retire la dernière ligne et restaure le plateau antérieur.', facts: ['boardBefore restauré', 'dimensionSlotsBefore restauré'], source: 'PlayedLine / undo()', x: 2140, y: 4200, links: [screenLink('P-undo-control', 'P4', 65, 775, 'Undo')] },
     { id: 'P-validate', ownerScreenId: 'P4', title: 'Trois lignes puis choix', kind: 'text', body: 'La troisième ligne ne termine pas la partie. Le joueur choisit quand valider.', facts: ['Pas de résolution automatique', 'Validate actif à 3 lignes'], source: 'validateEnabled() / validateRun()', x: 1190, y: 4200, links: [screenLink('P-validate-control', 'P4', 325, 775, 'Validate'), nodeLink('P-validate-total', 'P-total', 'valide')] },
     { id: 'P-total', ownerScreenId: 'P4', title: 'Total final', kind: 'text', body: 'Le score final est la somme des trois scores de lignes.', facts: ['3 résultats intermédiaires', 'Somme finale'], source: 'totalScore() / session.finish()', x: 2140, y: 4510, links: [screenLink('P-total-value', 'P4', 195, 650, 'total')] },
-    { id: 'P-viewport', ownerScreenId: 'P1', title: 'Contrat d’écran', kind: 'text', body: 'Toute future DA conserve le stage 390×844 et la fenêtre minimale MiniFugg.', facts: ['Fenêtre officielle 360×650 = 390×704,17', 'Pas de reflow PC/mobile'], source: 'MINIFUGG_ZONES.md', x: 1190, y: 1070, links: [] },
+    { id: 'P-viewport', ownerScreenId: 'P1', title: 'Contrat d’écran', kind: 'text', body: 'Toute nouvelle DA vise le MASTER 390×850 et garde le gameplay indispensable dans la zone garantie 390×710.', facts: ['390×710 garanti', 'Références 390×844 historiques compatibles', 'Pas de reflow PC/mobile'], source: 'MINIFUGG_ZONES.md', x: 1190, y: 1070, links: [] },
   ]
 
   return {
@@ -302,8 +302,8 @@ function buildPlan(game: InstagameDefinition) { return game.id === 'linefugg' ? 
 
 function referenceGeometry(reference: ReferenceMode) {
   const option = REFERENCE_OPTIONS.find((item) => item.id === reference)
-  if (!option?.cssHeight) return null
-  const height = Math.min(MASTER_HEIGHT, MASTER_WIDTH * option.cssHeight / 360)
+  if (!option?.logicalHeight) return null
+  const height = Math.min(MASTER_HEIGHT, option.logicalHeight)
   return { height, maxTop: Math.max(0, MASTER_HEIGHT - height), label: option.label }
 }
 function recommendedObjectPosition(bias: number) {
@@ -1477,7 +1477,7 @@ export function ProductionLab() {
                 {activeGesture?.type === 'rect' && <div className="mfpl-gesture-rect" style={{ left: Math.min(activeGesture.start.x, activeGesture.current.x), top: Math.min(activeGesture.start.y, activeGesture.current.y), width: Math.abs(activeGesture.current.x - activeGesture.start.x), height: Math.abs(activeGesture.current.y - activeGesture.start.y) }} />}
                 {activeGesture?.type === 'draw' && <svg className="mfpl-gesture-draw" viewBox={`0 0 ${MASTER_WIDTH} ${MASTER_HEIGHT}`}><polyline points={activeGesture.points.map((point) => `${point.x},${point.y}`).join(' ')} /></svg>}
               </div>
-              <small>390 × 844 · {screen.status}</small>
+              <small>390 × 850 cible · {screen.status}</small>
             </article>
           })}
 

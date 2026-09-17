@@ -44,7 +44,7 @@ Les titres des écrans et des nœuds compensent partiellement le dézoom pour re
 
 ## Vérification du contrat de mise en page
 
-Chaque écran conserve la géométrie authored MiniFugg `390 × 844`. Le Lab peut superposer les viewports de contrôle : minimum officiel `360 × 650`, A54 Chrome `360 × 656`, iPhone 13 Pro normalisé ≈ `360 × 657`, A54 Brave `360 × 611`.
+Chaque nouvel écran de référence vise la géométrie MiniFugg `390 × 850` et la zone garantie `390 × 710`. Le Lab peut superposer les cas de contrôle A54 Chrome `360 × 656`, iPhone 13 Pro Safari `390 × 712` et A54 Brave `360 × 611`. Les captures et assets historiques `390 × 844` restent affichables tels quels et sont signalés comme sources legacy plutôt que redimensionnés silencieusement.
 
 Le calage a deux portées : chaque **Cover** possède son réglage spécifique initialisé depuis son `objectPosition`; **Proto / DA / Release** possèdent chacun un seul réglage commun, défini depuis la situation générale et appliqué à toutes les captures de l’État. Le petit bouton crayon active l’édition ; hors édition, seul le cadre blanc reste visible.
 

@@ -23,16 +23,16 @@ A MiniFugg game is authored in a fixed logical coordinate system. Physical pixel
 
 Default logical stages:
 
-- portrait: **390 × 844 logical units**;
+- portrait: **390 × 850 logical units** for new production; existing approved portrait games may remain explicitly **390 × 844** until migrated;
 - landscape: **844 × 390 logical units**.
 
 A game may declare another fixed logical size when the mechanic genuinely requires it, but it must still have one explicit authored coordinate system per supported orientation.
 
 The runtime scales the stage uniformly. Mobile uses the full useful width; desktop/big screen scales from CENTRE's full useful height. Conceptually:
 
-`scale = mobile ? availableWidth / 390 : availableHeight / (390 × 650 / 360)`
+`scale = mobile ? availableWidth / 390 : min(availableHeight / 710, availableWidth / 390)`
 
-The MASTER is `390 × 844`. The official exploitable viewport is `360 × 650`, equivalent to a `390 × 704.17` logical window in the MASTER. On mobile, only HAUT/BAS may be cropped; on a proportionally taller viewport, EXTRA HAUT/BAS may exist outside MASTER. On desktop the exploitable window fills the height and HAUT/BAS are cropped; remaining space is lateral Core space.
+The new-production MASTER is `390 × 850`. The guaranteed gameplay window is `390 × 710`; centered, it leaves exactly 70 logical units of HAUT and BAS. On mobile, only HAUT/BAS may be cropped; on a proportionally taller viewport, EXTRA HAUT/BAS may exist outside MASTER. On desktop the guaranteed window fills the height and HAUT/BAS are cropped; remaining space is lateral Core space. Existing approved `390 × 844` scenes remain supported without rescaling until migrated.
 
 Positions, distances, hit boxes, cameras and authored layer relationships stay in logical units.
 

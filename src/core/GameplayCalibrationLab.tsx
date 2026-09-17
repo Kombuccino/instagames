@@ -2,13 +2,14 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { gameRegistry } from './gameRegistry'
 import { GAMEPLAY_DA_LAB_ASSETS } from './gameplayDaLabCatalog'
 import {
+  MINIFUGG_MASTER_VIEWPORT,
   MINIFUGG_PORTRAIT_CENTRE_HEIGHT,
   MINIFUGG_REFERENCE_VIEWPORT,
   type MiniFuggVerticalAnchor,
 } from './runtime/gameRuntimePolicy'
 import './gameplayCalibrationLab.css'
 
-const MASTER = { width: 390, height: 844 }
+const MASTER = MINIFUGG_MASTER_VIEWPORT
 const STORAGE_KEY = 'minifugg-gameplay-calibration/v2'
 const LEGACY_STORAGE_KEY = 'minifugg-gameplay-calibration/v1'
 const DB_NAME = 'minifugg-gameplay-da-lab'
@@ -27,7 +28,7 @@ const SCREENS: ScreenPreset[] = [
   { id: 'a54-chrome', label: 'A54 · Chrome', width: 360, height: 656, axis: 'width' },
   { id: 'iphone13-safari', label: 'iPhone 13 Pro · Safari', width: 390, height: 712, axis: 'width' },
   { id: 'a54-brave', label: 'A54 · Brave dégradé', width: 360, height: 611, axis: 'width' },
-  { id: 'mobile-app', label: 'Téléphone · app', width: 390, height: 844, axis: 'width' },
+  { id: 'mobile-app', label: 'Téléphone · app', ...MINIFUGG_MASTER_VIEWPORT, axis: 'width' },
   { id: 'mobile-tall', label: 'Téléphone très haut', width: 430, height: 932, axis: 'width' },
   { id: 'desktop', label: 'PC · 16:9', width: 1280, height: 720, axis: 'height' },
 ]
@@ -322,7 +323,7 @@ export function GameplayCalibrationLab() {
               return <div key={item.id}><b>{item.label}</b><i><span style={{ top: `${range.start / MASTER.height * 100}%`, height: `${(range.end - range.start) / MASTER.height * 100}%` }} /></i><small>{range.extra ? `MASTER + ${Math.round(range.extra)} EXTRA` : `y ${Math.round(range.start)} → ${Math.round(range.end)}`}</small></div>
             })}
           </div>
-          {ratioMismatch && <p className="mf-gameplay-calibration-warning">⚠ Cette DA n’a pas le ratio MASTER 390 × 844. Elle est montrée entière, sans déformation : les bandes visibles signalent ce qui doit être recomposé.</p>}
+          {ratioMismatch && <p className="mf-gameplay-calibration-warning">⚠ Cette DA n’a pas le ratio cible MASTER 390 × 850. Elle est montrée entière, sans déformation : les bandes visibles signalent ce qui doit être recomposé.</p>}
         </section>
 
         <aside className="mf-gameplay-calibration-controls">
@@ -340,7 +341,7 @@ export function GameplayCalibrationLab() {
             <div className="mf-gameplay-calibration-da-controls">
               <Range label="ÉCHELLE DE LA DA" value={calibration.artworkScale} min={70} max={140} suffix="%" onChange={(artworkScale) => patchCalibration({ artworkScale })} />
               <Range label="DÉCALAGE HORIZONTAL" value={calibration.artworkOffsetX} min={-100} max={100} suffix=" u" onChange={(artworkOffsetX) => patchCalibration({ artworkOffsetX })} />
-              <Range label="DÉCALAGE VERTICAL" value={calibration.artworkOffsetY} min={-182} max={182} suffix=" u" onChange={(artworkOffsetY) => patchCalibration({ artworkOffsetY })} />
+              <Range label="DÉCALAGE VERTICAL" value={calibration.artworkOffsetY} min={-140} max={140} suffix=" u" onChange={(artworkOffsetY) => patchCalibration({ artworkOffsetY })} />
               <button type="button" onClick={() => patchCalibration({ artworkScale: 100, artworkOffsetX: 0, artworkOffsetY: 0 })}>RÉINITIALISER LA DA</button>
             </div>
           )}

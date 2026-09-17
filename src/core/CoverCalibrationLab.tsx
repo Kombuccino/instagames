@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { gameRegistry } from './gameRegistry'
 import { CoinConsole90s } from './CoinConsole90s'
-import { MINIFUGG_PORTRAIT_CENTRE_HEIGHT, MINIFUGG_REFERENCE_VIEWPORT } from './runtime/gameRuntimePolicy'
+import { MINIFUGG_MASTER_VIEWPORT, MINIFUGG_PORTRAIT_CENTRE_HEIGHT, MINIFUGG_REFERENCE_VIEWPORT } from './runtime/gameRuntimePolicy'
 import type { GameWelcomeVariant } from './types'
 import './layoutLab.css'
 import './coinConsole90s.css'
 import './coverCalibrationLab.css'
 
-const MASTER = { width: 390, height: 844 } as const
+const MASTER = MINIFUGG_MASTER_VIEWPORT
 const MAX_WINDOW_TOP = MASTER.height - MINIFUGG_PORTRAIT_CENTRE_HEIGHT
 const CENTER_WINDOW_TOP = MAX_WINDOW_TOP / 2
 const CONSOLE_HEIGHT = MASTER.width * 534 / 2099
@@ -311,7 +311,7 @@ export function CoverCalibrationLab() {
         <div>
           <small>MINIFUGG · OUTIL DE CALAGE</small>
           <h1>Calage des covers.</h1>
-          <p>Déplace le cadre vert verticalement sur chaque master. Il représente exactement la fenêtre exploitable officielle 360 × 650 ; le pupitre JOUER affiché dedans est celui du Core actuel.</p>
+          <p>Déplace le cadre vert verticalement sur chaque master. Il représente exactement la zone de jeu garantie 390 × 710 ; le pupitre JOUER affiché dedans est celui du Core actuel.</p>
         </div>
         <a href="?usr=moigod&lab=layout">RETOUR AUX GABARITS ↗</a>
       </header>
@@ -403,7 +403,7 @@ export function CoverCalibrationLab() {
                 />
               </div>
             </div>
-            <span className="mf-cover-calibration-master-label">MASTER · 390 × 844</span>
+            <span className="mf-cover-calibration-master-label">CIBLE · 390 × 850</span>
           </div>
 
           <dl className="mf-cover-calibration-readout">

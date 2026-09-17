@@ -1,6 +1,6 @@
 # DA GAME — Recherche et refonte artistique du gameplay
 
-Toute étude ou intégration suit le modèle Game de [Zones MiniFugg](MINIFUGG_ZONES.md) : MASTER 390 × 844, boucle indispensable dans CENTRE, HAUT/BAS recadrables, éventuel prolongement uniquement dans EXTRA HAUT/BAS, masque RETOUR réservé au Core.
+Toute étude ou intégration suit le modèle Game de [Zones MiniFugg](MINIFUGG_ZONES.md) : nouvelle production en MASTER 390 × 850, gameplay indispensable dans la zone garantie 390 × 710, HAUT/BAS recadrables, éventuel prolongement uniquement dans EXTRA HAUT/BAS, masque RETOUR réservé au Core. Une référence historique 390 × 844 reste exploitable telle quelle tant qu’elle n’est pas migrée.
 
 ## Mission et limites
 
@@ -60,7 +60,7 @@ Chaque vignette garde palette, formes, densité, contours, matière et type de m
 
 ## Concevoir pour le stage réel
 
-Utiliser la largeur logique 390 et le MASTER `390 × 844`. Adapter par mise à l'échelle uniforme pilotée par la largeur sur mobile et par la hauteur de CENTRE sur PC, sans composition différente. Les dimensions des textures peuvent être supérieures ; elles ne changent pas les coordonnées du jeu.
+Utiliser la largeur logique 390, le nouveau MASTER `390 × 850` et la zone garantie `390 × 710`. Adapter par mise à l'échelle uniforme pilotée par la largeur sur mobile et par la hauteur de la zone garantie sur PC, sans composition différente. Une référence existante `390 × 844` conserve son système de coordonnées jusqu’à sa migration. Les dimensions des textures peuvent être supérieures ; elles ne changent pas les coordonnées du jeu.
 
 Vérifier tôt la place des textes, hitboxes, objets, HUD local, contrôles et du petit retour Core. Tester les états simples et chargés, les grandes valeurs et les gestes en cours. Les décors ne doivent pas gagner la bataille du contraste contre l'action.
 

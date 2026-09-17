@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { miniFuggAudio } from '../audio'
 import { gameRegistry } from './gameRegistry'
+import { MINIFUGG_LEGACY_PORTRAIT_VIEWPORT } from './runtime/gameRuntimePolicy'
 import type { GameFinishPayload } from './types'
 
 type LineFuggLabScenario = 'initial' | 'drag' | 'after-line' | 'three-lines'
@@ -23,8 +24,8 @@ function requestedLineFuggScenario(): LineFuggLabScenario | null {
 function stageToClient(canvas: HTMLCanvasElement, point: StagePoint) {
   const rect = canvas.getBoundingClientRect()
   return {
-    x: rect.left + point.x / 390 * rect.width,
-    y: rect.top + point.y / 844 * rect.height,
+    x: rect.left + point.x / MINIFUGG_LEGACY_PORTRAIT_VIEWPORT.width * rect.width,
+    y: rect.top + point.y / MINIFUGG_LEGACY_PORTRAIT_VIEWPORT.height * rect.height,
   }
 }
 
@@ -79,7 +80,7 @@ export function GameplayCalibrationRuntime() {
         return
       }
 
-      // Real runtime interactions, expressed in the canonical 390 × 844 stage.
+      // LineFugg remains on its approved legacy 390 × 844 coordinates until its dedicated geometry migration.
       // L1: long diagonal. L2: vertical. L3: horizontal crossing L1 and L2 once each.
       const line1 = { from: { x: 103, y: 408 }, to: { x: 287, y: 224 } }
       const line2 = { from: { x: 103, y: 178 }, to: { x: 103, y: 362 } }

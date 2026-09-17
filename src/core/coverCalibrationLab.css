@@ -135,7 +135,7 @@ body:has(.mf-cover-calibration-lab) { overflow: auto; }
 .mf-cover-calibration-stage {
   position: relative;
   width: 100%;
-  aspect-ratio: 390 / 844;
+  aspect-ratio: 390 / 850;
   overflow: hidden;
   border: 2px solid var(--layout-paper);
   background: #050708;

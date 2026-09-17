@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { MINIFUGG_PORTRAIT_CENTRE_HEIGHT, MINIFUGG_REFERENCE_VIEWPORT } from './runtime/gameRuntimePolicy'
+import { MINIFUGG_MASTER_VIEWPORT, MINIFUGG_PORTRAIT_CENTRE_HEIGHT, MINIFUGG_REFERENCE_VIEWPORT } from './runtime/gameRuntimePolicy'
 import './layoutLab.css'
 
 export type LayoutTemplate = 'home' | 'cover' | 'cover-beta' | 'cover-caca' | 'game' | 'game-over' | 'ladder'
@@ -22,7 +22,7 @@ type ScreenPreset = {
   height: number
 }
 
-const STAGE = { width: 390, height: 844, label: 'PORTRAIT + COVER' } as const
+const STAGE = { ...MINIFUGG_MASTER_VIEWPORT, label: 'PORTRAIT + COVER' } as const
 const MINIMUM_TOP = (STAGE.height - MINIFUGG_PORTRAIT_CENTRE_HEIGHT) / 2
 
 const SCREENS: ScreenPreset[] = [
@@ -30,15 +30,15 @@ const SCREENS: ScreenPreset[] = [
   { id: 'a54-chrome', label: 'A54 · Chrome web', width: 360, height: 656 },
   { id: 'iphone13-safari', label: 'iPhone 13 Pro · Safari', width: 390, height: 712 },
   { id: 'a54-brave', label: 'A54 · Brave dégradé', width: 360, height: 611 },
-  { id: 'phone-reference', label: 'MASTER entier', width: 390, height: 844 },
+  { id: 'phone-reference', label: 'MASTER entier', ...MINIFUGG_MASTER_VIEWPORT },
   { id: 'phone-extra', label: 'Mobile très haut', width: 360, height: 820 },
   { id: 'tablet', label: 'Tablette', width: 768, height: 1024 },
   { id: 'desktop', label: 'PC 16:9', width: 1920, height: 1080 },
 ]
 
 const ASSET_ROWS = [
-  ['Fond complet portrait', '390 × 844', '780 × 1688', 'WebP lossless ; PNG de repli/source'],
-  ['Cover statique', '390 × 844', '780 × 1688', 'AVIF ou WebP validé ; aucun contrôle Core'],
+  ['Fond complet portrait', '390 × 850', '780 × 1700', 'WebP lossless ; PNG de repli/source'],
+  ['Cover statique', '390 × 850', '780 × 1700', 'AVIF ou WebP validé ; masters 390 × 844 historiques compatibles'],
   ['Objet / personnage', 'zone réelle', 'zone × 2', 'WebP lossless avec alpha, recadré'],
   ['Bouton ou panneau', 'taille affichée', 'taille × 2', 'États séparés ; WebP/PNG avec alpha'],
   ['Atlas / masque / map', 'cellules mesurées', '≤ 2048 par feuille', 'PNG/WebP lossless ; scinder si besoin'],
@@ -75,7 +75,7 @@ function downloadStageGuide(mode: 'game' | 'cover') {
   context.fillStyle = '#92ff65'
   context.font = 'bold 11px monospace'
   context.textAlign = 'center'
-  context.fillText('ZONE EXPLOITABLE - 360 x 650', safe.x + safe.width / 2, safe.y + safe.height / 2)
+  context.fillText('ZONE JEU GARANTIE - 390 x 710', safe.x + safe.width / 2, safe.y + safe.height / 2)
 
   context.fillStyle = '#eef2e7'
   context.font = 'bold 9px monospace'
@@ -174,11 +174,11 @@ function StageArtwork({ mode = 'combined', fullSurface = false }: { mode?: Guide
       </div>
       <div className="mf-layout-guide__artwork">
         <div className="mf-layout-guide__grid" aria-hidden="true" />
-        <span className="mf-layout-guide__master">MASTER · 390 × 844</span>
+        <span className="mf-layout-guide__master">MASTER · 390 × 850</span>
         <Zone className="mf-layout-guide__band is-top" name="HAUT" detail="recadrable" />
         <div className="mf-layout-guide__critical">
           <b>CENTRE</b>
-          <small>360 × 650 · zone exploitable officielle.</small>
+          <small>390 × 710 · zone de jeu garantie.</small>
         </div>
         <Zone className="mf-layout-guide__band is-bottom" name="BAS" detail="recadrable" />
         <span className="mf-layout-guide__axis is-x">{stage.width} unités logiques</span>
@@ -320,9 +320,9 @@ function PortingStrategy() {
 
 function Vocabulary() {
   const words = [
-    ['MASTER', 'Le cadre artistique complet 390 × 844.'],
+    ['MASTER', 'Le cadre artistique complet 390 × 850.'],
     ['HAUT', 'Partie supérieure du MASTER, recadrable.'],
-    ['CENTRE', 'Zone exploitable officielle 360 × 650.'],
+    ['CENTRE', 'Zone de jeu garantie 390 × 710.'],
     ['BAS', 'Partie inférieure du MASTER, recadrable.'],
     ['EXTRA HAUT', 'Espace réel au-dessus du MASTER si le viewport est plus haut.'],
     ['EXTRA BAS', 'Espace réel sous le MASTER si le viewport est plus haut.'],
@@ -363,9 +363,9 @@ function AssetCalculator() {
       <div className="mf-layout-panel__head"><div><small>CALCULATEUR</small><h2>Taille maximale d’un asset</h2></div></div>
       <p className="mf-layout-intro">Entre la taille réellement occupée dans la scène. La livraison runtime maximale est calculée à ×2, puisque MiniFugg plafonne aujourd’hui la densité de rendu à 2.</p>
       <div className="mf-layout-calculator">
-        <label>Largeur logique<input type="number" min="1" max="844" value={width} onChange={(event) => setWidth(Math.max(1, Number(event.target.value) || 1))} /></label>
+        <label>Largeur logique<input type="number" min="1" max="850" value={width} onChange={(event) => setWidth(Math.max(1, Number(event.target.value) || 1))} /></label>
         <span>×</span>
-        <label>Hauteur logique<input type="number" min="1" max="844" value={height} onChange={(event) => setHeight(Math.max(1, Number(event.target.value) || 1))} /></label>
+        <label>Hauteur logique<input type="number" min="1" max="850" value={height} onChange={(event) => setHeight(Math.max(1, Number(event.target.value) || 1))} /></label>
         <output><small>PNG / WebP runtime max</small><b>{runtimeWidth} × {runtimeHeight}</b><em>≈ {memoryMb < .1 ? memoryMb.toFixed(2) : memoryMb.toFixed(1)} Mo en mémoire GPU</em></output>
       </div>
       <p className="mf-layout-note">Pour un master de travail, ×4 reste possible. Il est archivé séparément ; il ne doit pas être chargé tel quel dans le jeu. En pixel art, produire sur une grille cohérente puis agrandir en nearest-neighbour.</p>
@@ -421,7 +421,7 @@ export function LayoutLab({ focus }: { focus?: LayoutTemplate }) {
         <div className="mf-layout-panel__head"><div><small>RESTE À NORMALISER</small><h2>Les écarts encore présents</h2></div></div>
         <ol>
           <li><b>Covers :</b> la cible est désormais statique. Les covers Phaser animées actuelles restent legacy jusqu’à leur remplacement, puis leur runtime sera supprimé.</li>
-          <li><b>Anciens masters 9:16 :</b> ils sont plus larges que 390 × 844 et perdent environ 18 % de leur largeur en plein cadre. Il faut les recadrer avec une vraie zone sûre, sans altérer les originaux validés.</li>
+          <li><b>Masters historiques 390 × 844 :</b> ils restent valides et ne sont jamais étirés vers 850. Les calibrateurs affichent leur taille source réelle ; une migration artistique n’est faite que lors d’une passe dédiée.</li>
           <li><b>Atlases existants :</b> plusieurs feuilles et personnages dépassent largement leur taille affichée. Chaque migration doit mesurer la zone logique et produire un dérivé runtime à ×2 maximum.</li>
           <li><b>Anciens overscans PC :</b> ils doivent être retirés au fil des migrations. HAUT et BAS restent dans le MASTER ; EXTRA HAUT/BAS sont les seuls prolongements possibles. Les côtés appartiennent au Core.</li>
           <li><b>Refonte plateforme :</b> Home, Cover, mobile et PC seront d’abord testés avec ces templates en blockout. Les scènes et jeux ne migrent qu’après validation de ce modèle.</li>

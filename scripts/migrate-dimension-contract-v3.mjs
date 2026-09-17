@@ -121,7 +121,7 @@ replaceExact(
   "import { MINIFUGG_MASTER_VIEWPORT, MINIFUGG_PORTRAIT_CENTRE_HEIGHT, MINIFUGG_REFERENCE_VIEWPORT } from './runtime/gameRuntimePolicy'"
 )
 replaceExact('src/core/CoverCalibrationLab.tsx', 'const MASTER = { width: 390, height: 844 } as const', 'const MASTER = MINIFUGG_MASTER_VIEWPORT')
-replaceExact('src/core/CoverCalibrationLab.tsx', 'il représente exactement la fenêtre exploitable officielle 360 × 650', 'il représente exactement la zone de jeu garantie 390 × 710')
+replaceExact('src/core/CoverCalibrationLab.tsx', 'Il représente exactement la fenêtre exploitable officielle 360 × 650', 'Il représente exactement la zone de jeu garantie 390 × 710')
 replaceExact('src/core/CoverCalibrationLab.tsx', '<span className="mf-cover-calibration-master-label">MASTER · 390 × 844</span>', '<span className="mf-cover-calibration-master-label">CIBLE · 390 × 850</span>')
 replaceExact('src/core/coverCalibrationLab.css', 'aspect-ratio: 390 / 844', 'aspect-ratio: 390 / 850')
 
@@ -156,8 +156,8 @@ replaceExact(
   "  if (!option?.logicalHeight) return null\n  const height = Math.min(MASTER_HEIGHT, option.logicalHeight)"
 )
 replaceExact('src/core/ProductionLab.tsx', '<small>390 × 844 · {screen.status}</small>', '<small>390 × 850 cible · {screen.status}</small>')
-replaceExact('src/core/ProductionLab.css', 'width:390px;height:844px', 'width:390px;height:850px', 1)
-replaceExact('src/core/ProductionLab.css', 'width:390px;height:844px;z-index:17', 'width:390px;height:850px;z-index:17', 1)
+replaceExact('src/core/ProductionLab.css', '.mfpl-screen-art{position:relative;width:390px;height:844px', '.mfpl-screen-art{position:relative;width:390px;height:850px')
+replaceExact('src/core/ProductionLab.css', '.mfpl-annotation-draw{position:absolute;inset:0;width:390px;height:844px;z-index:17', '.mfpl-annotation-draw{position:absolute;inset:0;width:390px;height:850px;z-index:17')
 
 replaceExact('src/core/coinConsole90s.css', 'width: min(100vw, calc(100dvh * 360 / 650));', 'width: min(100vw, calc(100dvh * 390 / 710));')
 

@@ -39,10 +39,10 @@ Every game declares a fixed logical viewport in the registry.
 
 Defaults:
 
-- portrait: `390 × 844`;
+- portrait: `390 × 850` for new production; existing approved portrait games may remain explicitly `390 × 844` until migrated;
 - landscape: `844 × 390`.
 
-The full game world/UI composition is authored against this coordinate system. MASTER is `390 × 844`; CENTRE is `390 × 662`, while HAUT/BAS are crop-sensitive parts of MASTER. A physical screen only changes the uniform display scale and visible vertical slice.
+The new-production portrait world/UI composition is authored against `390 × 850`. The guaranteed gameplay window is `390 × 710`; in the centered case HAUT and BAS are exactly 70 units each. A physical screen only changes the uniform display scale and visible vertical slice. Existing `390 × 844` games keep their coordinates until a dedicated migration.
 
 A mobile viewport uses its full useful width; browser bars, PWA and native shells may change the useful height and crop HAUT/BAS. Desktop/big screen scales from CENTRE's height: CENTRE fills the useful height and HAUT/BAS are cropped. All preserve the same internal positions/proportions.
 

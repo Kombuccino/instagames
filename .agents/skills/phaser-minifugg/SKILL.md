@@ -70,11 +70,12 @@ Do not let generic Phaser examples override these:
 
 ### Portrait zones and scaling
 
-- canonical authored width: `390`; art envelope: `390 × 844`; official exploitable viewport: `360 × 650`, equivalent to `390 × 704.17` in the MASTER
+- canonical authored width: `390`; new-production art envelope: `390 × 850`; guaranteed gameplay window: `390 × 710`
+- existing approved `390 × 844` games/assets remain valid without stretching until a dedicated migration
 - each game declares the vertical crop priority that matches its mechanic: `top`, `center` or `bottom`; `center` is the default, Vlad is bottom-anchored
 - mobile: width controls uniform scale and the useful height only changes vertical crop/reveal; it must not silently shrink the 390-wide game
-- PC/big screen: the official `360:650` reference ratio controls uniform scale, capped by available width
-- the world always remains one `390 × 844` coordinate system; vertical anchoring is a viewport decision, never a second mobile/desktop layout
+- PC/big screen: the `390 × 710` guaranteed window controls uniform scale, capped by available width
+- the world always remains one fixed coordinate system for that game; vertical anchoring is a viewport decision, never a second mobile/desktop layout
 - EXTRA HAUT/BAS exist only outside MASTER on unusually tall mobile viewports
 - do not add game-owned decorative width outside the 390-wide composition
 - keep Core currency and CTA inside the 390-wide frame; keep the cover rail at the left over the portrait composition

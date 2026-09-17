@@ -86,7 +86,7 @@ Le système envisagé pour un Fugg comporte quatre éditions complémentaires : 
 
 Les Bêta/Caca n'utilisent pas automatiquement cette collection premium. Employer leur template commun, un titre/logo de jeu et éventuellement un petit élément spécifique. L'explication du statut et le CTA restent des textes traduisibles, hors image.
 
-Pour une cover finale : illustration autonome portrait, plein cadre, master PNG lossless exactement `390 × 844` (pas un 9:16 approximatif). Un sujet dominant, titre lisible, détails sélectifs, espace négatif volontaire. Varier les fonds, couleurs et cadrages entre jeux et éditions. Ni sunset universel, ni cartouche physique obligatoire, ni même composition répétée.
+Pour toute nouvelle cover finale : illustration autonome portrait, plein cadre, master PNG lossless exactement `390 × 850` (pas un 9:16 approximatif). Les masters approuvés `390 × 844` restent valides et ne sont pas régénérés uniquement pour ajouter 6 pixels. Un sujet dominant, titre lisible, détails sélectifs, espace négatif volontaire. Varier les fonds, couleurs et cadrages entre jeux et éditions. Ni sunset universel, ni cartouche physique obligatoire, ni même composition répétée.
 
 Une planche comparative ou une boîte/cartouche en volume est un livrable de recherche distinct, seulement lorsqu'il est demandé. Ce n'est pas le master de production.
 
@@ -98,7 +98,7 @@ Ne pas dessiner dans le raster les coins du joueur, boutons sociaux, compteurs, 
 
 ## Fabrication statique
 
-La cover finale est une composition raster statique. Produire un master lossless `390 × 844`, garder titre et sujet dans les zones sûres du modèle Cover, puis fabriquer les dérivés runtime prévus par `ASSET_SIZE_REFERENCE.md`.
+La cover finale est une composition raster statique. Pour une nouvelle production, produire un master lossless `390 × 850`, garder titre et sujet dans les zones sûres du modèle Cover, puis fabriquer les dérivés runtime prévus par `ASSET_SIZE_REFERENCE.md`. Une cover historique `390 × 844` reste une source valide et doit être calibrée sans étirement.
 
 Exprimer le mouvement dans l'image par le cadrage, les lignes de force, la posture, la lumière et les matières. La cover ne dépend plus d'un découpage en couches animées.
 
@@ -108,7 +108,7 @@ Ne pas créer de nouvelle cover animée. Les covers Phaser/CSS existantes sont l
 
 Remplir le modèle unique de [DA_CORE.md](DA_CORE.md#structure-obligatoire-du-micro-brief), notamment la liste fermée des textes. Exemple de spécialisation :
 
-> Produire [une cover finale / une étude précise] pour [titre exact]. Le jeu consiste à [mécanique réelle] ; l'image doit exprimer [idée unique]. Référence principale : [image disponible, rôle]. Famille [A/B/C/D], réalisée visuellement en [médium], avec [palette, cadrage, matière, zones calmes]. Préserver [identités et invariants]. Texte illustré autorisé : [texte exact]. Aucun contrôle Core ni SWIPE TO PLAY dans l'image. Sortie statique : master PNG lossless `390 × 844`, puis dérivé WebP lossless ou AVIF validé. Ne pas produire de mockup, couche animée, autre jeu ou écran supplémentaire non demandé.
+> Produire [une cover finale / une étude précise] pour [titre exact]. Le jeu consiste à [mécanique réelle] ; l'image doit exprimer [idée unique]. Référence principale : [image disponible, rôle]. Famille [A/B/C/D], réalisée visuellement en [médium], avec [palette, cadrage, matière, zones calmes]. Préserver [identités et invariants]. Texte illustré autorisé : [texte exact]. Aucun contrôle Core ni SWIPE TO PLAY dans l'image. Sortie statique : nouveau master PNG lossless `390 × 850` (ou master historique approuvé `390 × 844` conservé tel quel), puis dérivé WebP lossless ou AVIF validé. Ne pas produire de mockup, couche animée, autre jeu ou écran supplémentaire non demandé.
 
 ## Acceptation et sources
 

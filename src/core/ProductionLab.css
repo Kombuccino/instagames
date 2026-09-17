@@ -8,3 +8,6 @@
 
 /* Cross-zone semantic links: lighter dashed underlay below screens and nodes. */
 .mfpl-links-underlay{z-index:1;pointer-events:none}.mfpl-links-underlay .mfpl-link-cross-zone{stroke:#8c949c;stroke-width:1;stroke-dasharray:8 8;opacity:.42}.mfpl-links-foreground{z-index:15}.mfpl-links-foreground g.is-cross-zone>.mfpl-link,.mfpl-links-foreground g.is-cross-zone>.mfpl-link-target{stroke:transparent;fill:transparent}.mfpl-links-foreground g.is-cross-zone.is-selected>.mfpl-link-target{stroke:#e25834;fill:#fff}
+
+/* Native production source nodes. */
+.mfpl-node{height:auto!important;overflow:visible}.mfpl-node p,.mfpl-node ul{max-height:none;overflow:visible}.mfpl-node.has-native-source{width:max-content;min-width:0;max-width:none;padding:10px}.mfpl-node.has-native-source header,.mfpl-node.has-native-source p,.mfpl-node.has-native-source ul,.mfpl-node.has-native-source .mfpl-node-tags{max-width:390px}.mfpl-node.has-native-source .mfpl-node-thumb{display:block;float:none;width:auto;height:auto;max-width:none;margin:8px 0 6px;object-fit:contain;border:1px solid rgba(23,25,29,.18);background:transparent}

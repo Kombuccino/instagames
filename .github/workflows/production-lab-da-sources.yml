@@ -1,0 +1,40 @@
+name: Production Lab DA Sources
+
+on:
+  push:
+    branches:
+      - fix/production-lab-da-sources
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pillow
+      - run: python scripts/patch-production-lab-da-sources.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npm run test:repository
+      - run: npm run build
+      - run: git diff --check
+      - name: Commit DA production sources
+        run: |
+          if git diff --quiet; then
+            echo "No DA source changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/core/ProductionLab.tsx src/core/ProductionLab.css docs/PRODUCTION_LAB_V1.md src/games/linefugg/ASSET_MANIFEST.md src/games/linefugg/GAME_STATUS.md public/assets/generated/linefugg/rebirth/sources
+          git commit -m "feat(lab): expose native DA production sources [da-sources]"
+          git push origin HEAD:fix/production-lab-da-sources

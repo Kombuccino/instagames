@@ -1,5 +1,13 @@
 # TetraMindFck — Changelog
 
+## 0.8.5 — 2026-09-17 13:05 Europe/Paris
+
+- Les quatre covers actives appliquent le cadrage validé dans Cover Calibration pour la cible `390 × 850` et la fenêtre garantie `390 × 710` : `top / 4.3 % / 3.1 % / 2.5 %`.
+- Les sources historiques `390 × 844` et leurs dérivés restent inchangés. Cette passe ne régénère aucune cover.
+- Les quatre éditions restent marquées pour une adaptation de source : le logo est encore coupé sur chaque cover ; l’édition japonaise devra probablement aussi réduire légèrement son logo.
+
+Vérifié : export Cover Calibration du 17 septembre 2026 puis `test:repository` et build Frontend Build sur le lot de livraison.
+
 ## 0.8.4 — 2026-09-14 08:55 Europe/Paris
 
 - La coque de composition utilise désormais toute la largeur logique `390 px` sans bandes latérales de décor.

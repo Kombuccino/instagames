@@ -1,5 +1,12 @@
 # LineFugg — Changelog
 
+## [0.8.3] — 2026-09-17 13:05 Europe/Paris
+
+- Les quatre covers actives appliquent désormais le cadrage validé dans Cover Calibration pour la cible `390 × 850` et la fenêtre garantie `390 × 710` : `2.9 % / 1.4 % / 2.9 % / 2.9 %`.
+- Les sources historiques `390 × 844` et leurs dérivés lossless restent strictement inchangés ; seul le cadrage Core est ajusté.
+
+Vérifié : export Cover Calibration du 17 septembre 2026 puis `test:repository` et build Frontend Build sur le lot de livraison.
+
 ## [0.8.2] — 2026-09-16 15:44 Europe/Paris
 
 - Le gameplay publié revient volontairement au runtime **Orbital Accounting** classique pris comme référence fonctionnelle avant la reprise Rebirth ; les règles, l’équilibrage et les contrôles restent inchangés.

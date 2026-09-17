@@ -1,5 +1,12 @@
 # Les Brochettes de Vlad — Changelog
 
+## [0.4.2] — 2026-09-17 13:05 Europe/Paris
+
+- Les cinq covers actives appliquent désormais les cadrages validés dans Cover Calibration pour la cible `390 × 850` et la fenêtre garantie `390 × 710` : `2.9 % / 2.1 % / 2.9 % / 2.1 % / 2.9 %`.
+- Les sources historiques `390 × 844`, les masters et les WebP lossless restent inchangés ; seul le cadrage Core est ajusté.
+
+Vérifié : export Cover Calibration du 17 septembre 2026 puis `test:repository` et build Frontend Build sur le lot de livraison.
+
 ## [0.4.1] — 2026-09-12 23:24 Europe/Paris
 
 - Les quinze clients sont recalés dans leurs loges : taille uniforme, léger retrait dans l'architecture et ligne de base commune à chaque tablette. Le client actif n'est plus agrandi au point de déborder de sa case.

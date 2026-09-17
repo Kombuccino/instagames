@@ -11,7 +11,7 @@ export const CRAZY_PAPERS_WELCOME: GameWelcomeConfig = {
       unlockScore: 0,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'center 13.2%',
+      objectPosition: 'center 3.1%',
       preserveTitleHeight: 155,
     },
     {
@@ -21,7 +21,7 @@ export const CRAZY_PAPERS_WELCOME: GameWelcomeConfig = {
       unlockScore: 5_000,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'center 26.4%',
+      objectPosition: 'center 2.8%',
       preserveTitleHeight: 140,
     },
     {
@@ -31,7 +31,7 @@ export const CRAZY_PAPERS_WELCOME: GameWelcomeConfig = {
       unlockScore: 15_000,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'center 36%',
+      objectPosition: 'center 3.9%',
       preserveTitleHeight: 145,
     },
     {
@@ -51,7 +51,7 @@ export const CRAZY_PAPERS_WELCOME: GameWelcomeConfig = {
       unlockScore: 50_000,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'bottom center',
+      objectPosition: 'center 99.9%',
     },
     {
       id: 'showa-paper-wave',
@@ -60,7 +60,7 @@ export const CRAZY_PAPERS_WELCOME: GameWelcomeConfig = {
       unlockScore: 75_000,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'center 55.4%',
+      objectPosition: 'center 33.9%',
       preserveTitleHeight: 215,
     },
   ],

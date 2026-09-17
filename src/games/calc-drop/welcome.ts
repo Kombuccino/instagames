@@ -11,7 +11,7 @@ export const TETRAMINDFCK_WELCOME: GameWelcomeConfig = {
       unlockScore: 0,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'center 20.7%',
+      objectPosition: 'top center',
       preserveTitleHeight: 150,
     },
     {
@@ -21,7 +21,7 @@ export const TETRAMINDFCK_WELCOME: GameWelcomeConfig = {
       unlockScore: 5_000,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'center 26.8%',
+      objectPosition: 'center 4.3%',
       preserveTitleHeight: 155,
     },
     {
@@ -31,7 +31,7 @@ export const TETRAMINDFCK_WELCOME: GameWelcomeConfig = {
       unlockScore: 15_000,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'center 28.1%',
+      objectPosition: 'center 3.1%',
       preserveTitleHeight: 148,
     },
     {
@@ -41,7 +41,7 @@ export const TETRAMINDFCK_WELCOME: GameWelcomeConfig = {
       unlockScore: 30_000,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'center 49.7%',
+      objectPosition: 'center 2.5%',
       preserveTitleHeight: 180,
     },
   ],

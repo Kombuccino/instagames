@@ -1,5 +1,13 @@
 # CrazyPapers — Changelog
 
+## 0.5.3 — 17 septembre 2026
+
+- Les six covers actives appliquent le cadrage validé dans Cover Calibration pour la cible `390 × 850` et la fenêtre garantie `390 × 710` : `3.1 % / 2.8 % / 3.9 % / bas / 99.9 % / 33.9 %`.
+- `Constructivist Clerk` est validée sans adaptation de source. Les cinq autres éditions gardent leur source historique intacte mais restent à retoucher car le logo est encore coupé dans le cadrage validé.
+- Aucune source, master PNG ni WebP lossless n’est régénéré dans cette passe ; seules les positions Core et le suivi de production changent.
+
+Vérifié : export Cover Calibration du 17 septembre 2026 puis `test:repository` et build Frontend Build sur le lot de livraison.
+
 ## 0.5.2 — 13 septembre 2026
 
 - Application des six cadrages validés dans l’outil de calage, dont deux ancrages BAS complets.

@@ -6,6 +6,8 @@ const ROOT = '/assets/generated/vlads-skewers/welcome/variants/runtime'
  * Five covers explicitly validated by the user on 2026-09-10 remain the visual authorities.
  * Runtime uses the 2026-09-12 full-height, lossless WebP restorations without blurred bands.
  * Core owns presentation/selection; all editions are immediately available.
+ * The authored 390 × 844 sources stay intact; framing follows the 2026-09-17
+ * Cover Calibration review inside the canonical 390 × 850 target / 390 × 710 window.
  */
 export const VLADS_SKEWERS_WELCOME: GameWelcomeConfig = {
   variants: [
@@ -16,7 +18,7 @@ export const VLADS_SKEWERS_WELCOME: GameWelcomeConfig = {
       unlockScore: 0,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'top center',
+      objectPosition: 'center 2.9%',
     },
     {
       id: 'still-life',
@@ -25,7 +27,7 @@ export const VLADS_SKEWERS_WELCOME: GameWelcomeConfig = {
       unlockScore: 0,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'top center',
+      objectPosition: 'center 2.1%',
     },
     {
       id: 'japanese-portrait',
@@ -34,7 +36,7 @@ export const VLADS_SKEWERS_WELCOME: GameWelcomeConfig = {
       unlockScore: 0,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'top center',
+      objectPosition: 'center 2.9%',
     },
     {
       id: 'castle-sign',
@@ -43,7 +45,7 @@ export const VLADS_SKEWERS_WELCOME: GameWelcomeConfig = {
       unlockScore: 0,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'top center',
+      objectPosition: 'center 2.1%',
     },
     {
       id: 'japanese-stall',
@@ -52,7 +54,7 @@ export const VLADS_SKEWERS_WELCOME: GameWelcomeConfig = {
       unlockScore: 0,
       runtime: 'static',
       fit: 'cover',
-      objectPosition: 'top center',
+      objectPosition: 'center 2.9%',
     },
   ],
   selection: 'seeded',

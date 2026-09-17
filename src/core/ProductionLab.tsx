@@ -733,6 +733,19 @@ export function ProductionLab() {
   const renderedCanonicalNodes = project.nodes.filter((node) => visibleNode(node.ownerScreenId))
   const renderedReviewNodes = review.reviewNodes.filter((node) => visibleNode(node.ownerScreenId))
 
+  function nodeState(nodeId: string): StateId | null {
+    const node = project.nodes.find((candidate) => candidate.id === nodeId) ?? review.reviewNodes.find((candidate) => candidate.id === nodeId)
+    if (!node?.ownerScreenId) return null
+    return project.screens.find((screen) => screen.id === node.ownerScreenId)?.state ?? null
+  }
+
+  function isCrossZoneNodeLink(source: LinkEndpoint, target: LinkEndpoint) {
+    if (source.kind !== 'node' || target.kind !== 'node') return false
+    const sourceState = nodeState(source.nodeId)
+    const targetState = nodeState(target.nodeId)
+    return Boolean(sourceState && targetState && sourceState !== targetState)
+  }
+
   function referenceKey(screen: PlanScreen) { return screen.state === 'covers' ? `screen:${screen.id}` : `state:${screen.state}` }
   function defaultReferenceBias(screen: PlanScreen) {
     if (screen.state === 'covers') return screen.referenceBias ?? anchorBias(screen.anchor)
@@ -1414,7 +1427,21 @@ export function ProductionLab() {
         <div className="mfpl-world" style={{ width: WORLD_WIDTH, height: WORLD_HEIGHT, transform: `translate(${camera.x}px, ${camera.y}px) scale(${camera.zoom})` }}>
           {ZONES.map((zone) => <div key={zone.id} className={`mfpl-zone is-${zone.id}`} style={{ left: zone.x, width: zone.width, height: WORLD_HEIGHT }}><div className="mfpl-state-title"><b>{STATE_LABEL[zone.id]}</b><span>{zone.subtitle}</span>{!project.screens.some((screen) => screen.state === zone.id) && <em>vide pour le moment</em>}</div></div>)}
 
-          {viewMode === 'exploded' && <svg className="mfpl-links" width={WORLD_WIDTH} height={WORLD_HEIGHT}>
+          {viewMode === 'exploded' && <svg className="mfpl-links mfpl-links-underlay" width={WORLD_WIDTH} height={WORLD_HEIGHT}>
+            {renderedCanonicalNodes.flatMap((node) => effectiveCanonicalLinks(node.id).map((link) => {
+              const sourceEndpoint: LinkEndpoint = review.canonicalLinkSourceOverrides[`${node.id}:${link.id}`] ?? { kind: 'node', nodeId: node.id }
+              if (!isCrossZoneNodeLink(sourceEndpoint, link.target)) return null
+              const geometry = linkGeometry(sourceEndpoint, link.target)
+              return geometry ? <line key={`under:${node.id}:${link.id}`} className="mfpl-link mfpl-link-cross-zone" x1={geometry.source.x} y1={geometry.source.y} x2={geometry.target.x} y2={geometry.target.y} /> : null
+            }))}
+            {review.reviewLinks.map((link) => {
+              if (!isCrossZoneNodeLink(link.source, link.target)) return null
+              const geometry = linkGeometry(link.source, link.target)
+              return geometry ? <line key={`under:${link.id}`} className="mfpl-link mfpl-link-cross-zone" x1={geometry.source.x} y1={geometry.source.y} x2={geometry.target.x} y2={geometry.target.y} /> : null
+            })}
+          </svg>}
+
+          {viewMode === 'exploded' && <svg className="mfpl-links mfpl-links-foreground" width={WORLD_WIDTH} height={WORLD_HEIGHT}>
             {renderedCanonicalNodes.flatMap((node) => {
               return effectiveCanonicalLinks(node.id).map((link) => {
                 const drag = endpointDragRef.current
@@ -1430,7 +1457,8 @@ export function ProductionLab() {
                 const selected = selection?.kind === 'node' && selection.id === node.id
                   || selection?.kind === 'canonical-link' && selection.sourceNodeId === node.id && selection.linkId === link.id
                 const deleteRequested = Boolean(review.deletionRequests[`link:${node.id}:${link.id}`])
-                return <g key={`${node.id}:${link.id}`} className={`${selected ? 'is-selected' : ''} ${deleteRequested ? 'is-delete-requested' : ''}`}>
+                const crossZone = isCrossZoneNodeLink(sourceEndpoint, link.target)
+                return <g key={`${node.id}:${link.id}`} className={`${selected ? 'is-selected' : ''} ${deleteRequested ? 'is-delete-requested' : ''} ${crossZone ? 'is-cross-zone' : ''}`}>
                   <line className="mfpl-link" x1={source.x} y1={source.y} x2={target.x} y2={target.y} />
                   <line className="mfpl-link-hit" x1={source.x} y1={source.y} x2={target.x} y2={target.y} onClick={(event) => { event.stopPropagation(); setSelection({ kind: 'canonical-link', sourceNodeId: node.id, linkId: link.id }) }} />
                   {selected && <circle className="mfpl-link-target-halo" cx={target.x} cy={target.y} r="18" />}
@@ -1455,7 +1483,8 @@ export function ProductionLab() {
                 else target = linkGhost
               }
               const selected = reviewLinkHighlighted(link)
-              return <g key={link.id} className={`${selected ? 'is-selected' : ''} ${link.kind === 'attachment' ? 'is-attachment' : ''}`}>
+              const crossZone = isCrossZoneNodeLink(link.source, link.target)
+              return <g key={link.id} className={`${selected ? 'is-selected' : ''} ${link.kind === 'attachment' ? 'is-attachment' : ''} ${crossZone ? 'is-cross-zone' : ''}`}>
                 <line className="mfpl-link" x1={source.x} y1={source.y} x2={target.x} y2={target.y} />
                 <line className="mfpl-link-hit" x1={source.x} y1={source.y} x2={target.x} y2={target.y} onClick={(event) => { event.stopPropagation(); setSelection({ kind: 'review-link', id: link.id }) }} />
                 <circle className="mfpl-link-target" cx={source.x} cy={source.y} r={selected ? 6 : 4} />

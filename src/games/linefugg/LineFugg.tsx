@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react'
 import type { GameComponentProps } from '../../core/types'
 import { PhaserGameHost } from '../../core/runtime/PhaserGameHost'
-import { DEFAULT_LOGICAL_VIEWPORTS } from '../../core/runtime/gameRuntimePolicy'
+import { MINIFUGG_LEGACY_PORTRAIT_VIEWPORT } from '../../core/runtime/gameRuntimePolicy'
 import { createLineFuggMusicPlayer } from '../../audio/gameMusic'
 import { LINEFUGG_SCENE_KEY, LineFuggScene } from './LineFuggScene'
 
@@ -51,7 +51,7 @@ export function LineFugg({ active, seed, restartToken, session }: GameComponentP
       <PhaserGameHost
         active={active}
         restartToken={restartToken}
-        logicalViewport={DEFAULT_LOGICAL_VIEWPORTS.portrait}
+        logicalViewport={MINIFUGG_LEGACY_PORTRAIT_VIEWPORT}
         sceneKey={LINEFUGG_SCENE_KEY}
         createScene={createScene}
         renderPixelRatio={renderPixelRatio}

@@ -1,16 +1,20 @@
 import type { GameLogicalViewport } from '../types'
 
+/** Canonical authored portrait contract for all new MiniFugg production. */
+export const MINIFUGG_MASTER_VIEWPORT = { width: 390, height: 850 } as const satisfies GameLogicalViewport
+/** Existing approved games/assets authored before the 17 September 2026 contract stay valid without rescaling. */
+export const MINIFUGG_LEGACY_PORTRAIT_VIEWPORT = { width: 390, height: 844 } as const satisfies GameLogicalViewport
+
 export const DEFAULT_LOGICAL_VIEWPORTS = {
-  portrait: { width: 390, height: 844 },
+  portrait: MINIFUGG_MASTER_VIEWPORT,
   landscape: { width: 844, height: 390 },
 } as const satisfies Record<string, GameLogicalViewport>
 
 export const DEFAULT_RENDER_PIXEL_RATIO_CAP = 2
-/** Product reference measured on Chrome/Safari, expressed in CSS viewport pixels. */
-export const MINIFUGG_REFERENCE_VIEWPORT = { width: 360, height: 650 } as const
-/** Same reference ratio projected into the fixed 390-wide authored MASTER. */
-export const MINIFUGG_PORTRAIT_CENTRE_HEIGHT = DEFAULT_LOGICAL_VIEWPORTS.portrait.width
-  * MINIFUGG_REFERENCE_VIEWPORT.height / MINIFUGG_REFERENCE_VIEWPORT.width
+/** Canonical guaranteed gameplay window, expressed directly in logical MiniFugg units. */
+export const MINIFUGG_REFERENCE_VIEWPORT = { width: 390, height: 710 } as const
+/** Kept under the historical export name while callers migrate to the simpler 390 × 710 contract. */
+export const MINIFUGG_PORTRAIT_CENTRE_HEIGHT = MINIFUGG_REFERENCE_VIEWPORT.height
 export const MINIFUGG_DESKTOP_BREAKPOINT = 760
 export const MINIFUGG_DESKTOP_MEDIA_QUERY = `(min-width: ${MINIFUGG_DESKTOP_BREAKPOINT}px) and (min-device-width: ${MINIFUGG_DESKTOP_BREAKPOINT}px)`
 
@@ -35,6 +39,12 @@ export function clampRenderPixelRatio(value = 1) {
   return Math.max(1, Math.min(DEFAULT_RENDER_PIXEL_RATIO_CAP, value))
 }
 
+function usesMiniFuggPortraitContract(logical: GameLogicalViewport) {
+  return logical.width === MINIFUGG_MASTER_VIEWPORT.width
+    && (logical.height === MINIFUGG_MASTER_VIEWPORT.height
+      || logical.height === MINIFUGG_LEGACY_PORTRAIT_VIEWPORT.height)
+}
+
 /** Classic full-frame fit kept for non-canonical/legacy viewports and tooling. */
 export function fitLogicalViewport(logical: GameLogicalViewport, available: GameLogicalViewport) {
   const scale = Math.min(available.width / logical.width, available.height / logical.height)
@@ -48,13 +58,16 @@ export function fitLogicalViewport(logical: GameLogicalViewport, available: Game
 }
 
 /**
- * MiniFugg gameplay framing for the canonical portrait master.
+ * MiniFugg gameplay framing.
  *
- * Mobile is width-driven: 390 logical units always consume the useful width.
- * Desktop is CENTRE-height driven, still capped by available width. The game may
- * choose which vertical edge absorbs the crop: top, center or bottom. This lets
- * a bottom-anchored game such as Vlad keep its hand/grill fixed while allowing
- * extra or cropped scenery above, without changing horizontal gameplay geometry.
+ * New portrait production is authored on 390 × 850 with a guaranteed 390 × 710
+ * gameplay window: exactly 70 logical units of crop reserve above and below in
+ * the centered case. Existing 390 × 844 games remain valid and keep their own
+ * coordinates while using the same 710-unit guaranteed window.
+ *
+ * Mobile is width-driven. Desktop is guaranteed-window-height driven, still
+ * capped by available width. Vertical anchoring changes only which edge absorbs
+ * crop; it never changes game geometry.
  */
 export function fitMiniFuggGameplayViewport(
   logical: GameLogicalViewport,
@@ -63,14 +76,13 @@ export function fitMiniFuggGameplayViewport(
 ) {
   const availableWidth = Math.max(1, available.width)
   const availableHeight = Math.max(1, available.height)
-  const canonicalPortrait = logical.width === DEFAULT_LOGICAL_VIEWPORTS.portrait.width
-    && logical.height === DEFAULT_LOGICAL_VIEWPORTS.portrait.height
-  const protectedHeight = canonicalPortrait ? MINIFUGG_PORTRAIT_CENTRE_HEIGHT : logical.height
+  const miniFuggPortrait = usesMiniFuggPortraitContract(logical)
+  const protectedHeight = miniFuggPortrait ? MINIFUGG_PORTRAIT_CENTRE_HEIGHT : logical.height
   const widthScale = availableWidth / logical.width
   const protectedHeightScale = availableHeight / protectedHeight
   const scaleAxis = options.scaleAxis ?? 'auto'
 
-  const scale = !canonicalPortrait || scaleAxis === 'auto'
+  const scale = !miniFuggPortrait || scaleAxis === 'auto'
     ? Math.min(widthScale, protectedHeightScale)
     : scaleAxis === 'width'
       ? widthScale

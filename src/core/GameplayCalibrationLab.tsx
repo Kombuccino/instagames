@@ -2,365 +2,84 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { gameRegistry } from './gameRegistry'
 import { GAMEPLAY_DA_LAB_ASSETS } from './gameplayDaLabCatalog'
 import {
+  MINIFUGG_LEGACY_PORTRAIT_VIEWPORT,
+  MINIFUGG_MASTER_VIEWPORT,
   MINIFUGG_PORTRAIT_CENTRE_HEIGHT,
   MINIFUGG_REFERENCE_VIEWPORT,
   type MiniFuggVerticalAnchor,
 } from './runtime/gameRuntimePolicy'
 import './gameplayCalibrationLab.css'
 
-const MASTER = { width: 390, height: 844 }
-const STORAGE_KEY = 'minifugg-gameplay-calibration/v2'
+const STORAGE_KEY = 'minifugg-gameplay-calibration/v3'
+const PREVIOUS_STORAGE_KEY = 'minifugg-gameplay-calibration/v2'
 const LEGACY_STORAGE_KEY = 'minifugg-gameplay-calibration/v1'
 const DB_NAME = 'minifugg-gameplay-da-lab'
-const SCHEMA = 'minifugg-gameplay-calibration/v2'
-
-type ScreenPreset = {
-  id: string
-  label: string
-  width: number
-  height: number
-  axis: 'width' | 'height'
-}
-
+const SCHEMA = 'minifugg-gameplay-calibration/v3'
+type LogicalMaster = { width: number, height: number }
+type ScreenPreset = { id: string, label: string, width: number, height: number, axis: 'width' | 'height' }
 const SCREENS: ScreenPreset[] = [
-  { id: 'official-minimum', label: 'OFFICIEL · Chrome/Safari', ...MINIFUGG_REFERENCE_VIEWPORT, axis: 'width' },
-  { id: 'a54-chrome', label: 'A54 · Chrome', width: 360, height: 656, axis: 'width' },
-  { id: 'iphone13-safari', label: 'iPhone 13 Pro · Safari', width: 390, height: 712, axis: 'width' },
-  { id: 'a54-brave', label: 'A54 · Brave dégradé', width: 360, height: 611, axis: 'width' },
-  { id: 'mobile-app', label: 'Téléphone · app', width: 390, height: 844, axis: 'width' },
+  { id: 'guaranteed', label: 'GARANTI · logique', ...MINIFUGG_REFERENCE_VIEWPORT, axis: 'width' },
+  { id: 'a54-chrome', label: 'DIAG · A54 Chrome', width: 360, height: 656, axis: 'width' },
+  { id: 'iphone13-safari', label: 'DIAG · iPhone 13 Pro', width: 390, height: 712, axis: 'width' },
+  { id: 'a54-brave', label: 'DIAG · A54 Brave', width: 360, height: 611, axis: 'width' },
+  { id: 'master', label: 'MASTER · nouveau', ...MINIFUGG_MASTER_VIEWPORT, axis: 'width' },
+  { id: 'legacy-master', label: 'MASTER · legacy', ...MINIFUGG_LEGACY_PORTRAIT_VIEWPORT, axis: 'width' },
   { id: 'mobile-tall', label: 'Téléphone très haut', width: 430, height: 932, axis: 'width' },
   { id: 'desktop', label: 'PC · 16:9', width: 1280, height: 720, axis: 'height' },
 ]
-
-type Calibration = {
-  anchor: MiniFuggVerticalAnchor
-  artworkScale: number
-  artworkOffsetX: number
-  artworkOffsetY: number
-  reviewed: boolean
-  needsAdaptation: boolean
-  comment: string
+type Calibration = { anchor: MiniFuggVerticalAnchor, artworkScale: number, artworkOffsetX: number, artworkOffsetY: number, reviewed: boolean, needsAdaptation: boolean, comment: string }
+type UploadedDa = { id: string, name: string, width: number, height: number, url: string }
+type Source = { key: string, kind: 'game' | 'da', label: string, detail: string, image?: string, gameId?: string, width?: number, height?: number }
+const DEFAULT_CALIBRATION: Calibration = { anchor: 'center', artworkScale: 100, artworkOffsetX: 0, artworkOffsetY: 0, reviewed: false, needsAdaptation: false, comment: '' }
+const AUTHORED_GAME_ANCHORS: Partial<Record<string, MiniFuggVerticalAnchor>> = { 'vlads-skewers': 'bottom' }
+function defaultCalibration(source?: Source): Calibration { return { ...DEFAULT_CALIBRATION, anchor: source?.kind === 'game' && source.gameId ? AUTHORED_GAME_ANCHORS[source.gameId] ?? 'center' : 'center' } }
+function readStoredCalibrations(): Record<string, Calibration> { try { const raw = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(PREVIOUS_STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY) ?? '{}'; const value = JSON.parse(raw) as Record<string, Partial<Calibration>>; return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, { ...DEFAULT_CALIBRATION, ...item }])) } catch { return {} } }
+function openDatabase() { return new Promise<IDBDatabase>((resolve, reject) => { const request = indexedDB.open(DB_NAME, 1); request.onupgradeneeded = () => request.result.createObjectStore('images', { keyPath: 'id' }); request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error) }) }
+async function storeImage(record: { id: string, name: string, width: number, height: number, blob: Blob }) { const database = await openDatabase(); await new Promise<void>((resolve, reject) => { const transaction = database.transaction('images', 'readwrite'); transaction.objectStore('images').put(record); transaction.oncomplete = () => resolve(); transaction.onerror = () => reject(transaction.error) }); database.close() }
+async function loadImages(): Promise<UploadedDa[]> { const database = await openDatabase(); const rows = await new Promise<Array<{ id: string, name: string, width: number, height: number, blob: Blob }>>((resolve, reject) => { const request = database.transaction('images').objectStore('images').getAll(); request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error) }); database.close(); return rows.map((row) => ({ ...row, url: URL.createObjectURL(row.blob) })) }
+function measureImage(file: File) { return new Promise<{ width: number, height: number }>((resolve, reject) => { const image = new Image(); const url = URL.createObjectURL(file); image.onload = () => { resolve({ width: image.naturalWidth, height: image.naturalHeight }); URL.revokeObjectURL(url) }; image.onerror = () => { reject(new Error(`Impossible de lire ${file.name}`)); URL.revokeObjectURL(url) }; image.src = url }) }
+function nearRatio(width: number, height: number, target: LogicalMaster) { return Math.abs(width / height - target.width / target.height) <= .01 }
+function masterFor(source?: Source): LogicalMaster {
+  if (source?.kind === 'game' && source.width === 390 && source.height === 844) return MINIFUGG_LEGACY_PORTRAIT_VIEWPORT
+  if (source?.kind === 'game' && source.width && source.height) return { width: source.width, height: source.height }
+  if (source?.width && source?.height && nearRatio(source.width, source.height, MINIFUGG_LEGACY_PORTRAIT_VIEWPORT)) return MINIFUGG_LEGACY_PORTRAIT_VIEWPORT
+  return MINIFUGG_MASTER_VIEWPORT
 }
-
-type UploadedDa = {
-  id: string
-  name: string
-  width: number
-  height: number
-  url: string
-}
-
-type Source = {
-  key: string
-  kind: 'game' | 'da'
-  label: string
-  detail: string
-  image?: string
-  gameId?: string
-  width?: number
-  height?: number
-}
-
-const DEFAULT_CALIBRATION: Calibration = {
-  anchor: 'center', artworkScale: 100, artworkOffsetX: 0, artworkOffsetY: 0,
-  reviewed: false, needsAdaptation: false, comment: '',
-}
-
-const AUTHORED_GAME_ANCHORS: Partial<Record<string, MiniFuggVerticalAnchor>> = {
-  'vlads-skewers': 'bottom',
-}
-
-function defaultCalibration(source?: Source): Calibration {
-  return {
-    ...DEFAULT_CALIBRATION,
-    anchor: source?.kind === 'game' && source.gameId ? AUTHORED_GAME_ANCHORS[source.gameId] ?? 'center' : 'center',
-  }
-}
-
-function readStoredCalibrations(): Record<string, Calibration> {
-  try {
-    const value = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY) ?? '{}') as Record<string, Partial<Calibration>>
-    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, { ...DEFAULT_CALIBRATION, ...item }]))
-  } catch {
-    return {}
-  }
-}
-
-function openDatabase() {
-  return new Promise<IDBDatabase>((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 1)
-    request.onupgradeneeded = () => request.result.createObjectStore('images', { keyPath: 'id' })
-    request.onsuccess = () => resolve(request.result)
-    request.onerror = () => reject(request.error)
-  })
-}
-
-async function storeImage(record: { id: string, name: string, width: number, height: number, blob: Blob }) {
-  const database = await openDatabase()
-  await new Promise<void>((resolve, reject) => {
-    const transaction = database.transaction('images', 'readwrite')
-    transaction.objectStore('images').put(record)
-    transaction.oncomplete = () => resolve()
-    transaction.onerror = () => reject(transaction.error)
-  })
-  database.close()
-}
-
-async function loadImages(): Promise<UploadedDa[]> {
-  const database = await openDatabase()
-  const rows = await new Promise<Array<{ id: string, name: string, width: number, height: number, blob: Blob }>>((resolve, reject) => {
-    const request = database.transaction('images').objectStore('images').getAll()
-    request.onsuccess = () => resolve(request.result)
-    request.onerror = () => reject(request.error)
-  })
-  database.close()
-  return rows.map((row) => ({ ...row, url: URL.createObjectURL(row.blob) }))
-}
-
-function measureImage(file: File) {
-  return new Promise<{ width: number, height: number }>((resolve, reject) => {
-    const image = new Image()
-    const url = URL.createObjectURL(file)
-    image.onload = () => { resolve({ width: image.naturalWidth, height: image.naturalHeight }); URL.revokeObjectURL(url) }
-    image.onerror = () => { reject(new Error(`Impossible de lire ${file.name}`)); URL.revokeObjectURL(url) }
-    image.src = url
-  })
-}
-
-function geometryFor(screen: ScreenPreset, anchor: MiniFuggVerticalAnchor) {
-  const scale = screen.axis === 'width'
-    ? screen.width / MASTER.width
-    : Math.min(screen.height / MINIFUGG_PORTRAIT_CENTRE_HEIGHT, screen.width / MASTER.width)
-  const width = MASTER.width * scale
-  const height = MASTER.height * scale
-  const remainder = screen.height - height
-  const top = anchor === 'top' ? 0 : anchor === 'bottom' ? remainder : remainder / 2
-  return { scale, width, height, left: (screen.width - width) / 2, top }
-}
-
-function logicalVisibleRange(screen: ScreenPreset, anchor: MiniFuggVerticalAnchor) {
-  const geometry = geometryFor(screen, anchor)
-  const start = Math.max(0, -geometry.top / geometry.scale)
-  const end = Math.min(MASTER.height, (screen.height - geometry.top) / geometry.scale)
-  return { start, end, extra: Math.max(0, screen.height / geometry.scale - MASTER.height) }
-}
-
-function downloadJson(sources: Source[], calibrations: Record<string, Calibration>) {
-  const payload = {
-    schema: SCHEMA,
-    exportedAt: new Date().toISOString(),
-    master: MASTER,
-    minimumViewport: MINIFUGG_REFERENCE_VIEWPORT,
-    minimumViewportInMaster: { width: MASTER.width, height: MINIFUGG_PORTRAIT_CENTRE_HEIGHT },
-    items: sources.map((source) => ({
-      key: source.key,
-      type: source.kind,
-      gameId: source.gameId ?? null,
-      label: source.label,
-      file: source.image ?? null,
-      sourceDimensions: source.width && source.height ? { width: source.width, height: source.height } : null,
-      ...calibrations[source.key],
-    })),
-  }
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
-  const link = document.createElement('a')
-  link.href = URL.createObjectURL(blob)
-  link.download = `minifugg-calage-gameplay-${new Date().toISOString().slice(0, 10)}.json`
-  link.click()
-  URL.revokeObjectURL(link.href)
-}
-
-function DaArtwork({ source, calibration, geometry }: { source: Source, calibration: Calibration, geometry: ReturnType<typeof geometryFor> }) {
-  return (
-    <div className="mf-gameplay-calibration-art-stage" style={{ left: geometry.left, top: geometry.top, width: geometry.width, height: geometry.height }}>
-      <img
-        src={source.image}
-        alt=""
-        style={{
-          left: calibration.artworkOffsetX * geometry.scale,
-          top: calibration.artworkOffsetY * geometry.scale,
-          transform: `scale(${calibration.artworkScale / 100})`,
-        }}
-      />
-    </div>
-  )
-}
+function geometryFor(screen: ScreenPreset, anchor: MiniFuggVerticalAnchor, master: LogicalMaster) { const protectedHeight = master.width === 390 && (master.height === 844 || master.height === 850) ? MINIFUGG_PORTRAIT_CENTRE_HEIGHT : master.height; const scale = screen.axis === 'width' ? screen.width / master.width : Math.min(screen.height / protectedHeight, screen.width / master.width); const width = master.width * scale; const height = master.height * scale; const remainder = screen.height - height; const top = anchor === 'top' ? 0 : anchor === 'bottom' ? remainder : remainder / 2; return { scale, width, height, left: (screen.width - width) / 2, top } }
+function logicalVisibleRange(screen: ScreenPreset, anchor: MiniFuggVerticalAnchor, master: LogicalMaster) { const geometry = geometryFor(screen, anchor, master); const start = Math.max(0, -geometry.top / geometry.scale); const end = Math.min(master.height, (screen.height - geometry.top) / geometry.scale); return { start, end, extra: Math.max(0, screen.height / geometry.scale - master.height) } }
+function downloadJson(sources: Source[], calibrations: Record<string, Calibration>) { const payload = { schema: SCHEMA, exportedAt: new Date().toISOString(), canonicalMaster: MINIFUGG_MASTER_VIEWPORT, guaranteedViewport: MINIFUGG_REFERENCE_VIEWPORT, items: sources.map((source) => ({ key: source.key, type: source.kind, gameId: source.gameId ?? null, label: source.label, file: source.image ?? null, sourceDimensions: source.width && source.height ? { width: source.width, height: source.height } : null, logicalMaster: masterFor(source), ...calibrations[source.key] })) }; const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `minifugg-calage-gameplay-${new Date().toISOString().slice(0, 10)}.json`; link.click(); URL.revokeObjectURL(link.href) }
+function DaArtwork({ source, calibration, geometry }: { source: Source, calibration: Calibration, geometry: ReturnType<typeof geometryFor> }) { return <div className="mf-gameplay-calibration-art-stage" style={{ left: geometry.left, top: geometry.top, width: geometry.width, height: geometry.height }}><img src={source.image} alt="" style={{ left: calibration.artworkOffsetX * geometry.scale, top: calibration.artworkOffsetY * geometry.scale, transform: `scale(${calibration.artworkScale / 100})` }} /></div> }
 
 export function GameplayCalibrationLab() {
   const [uploads, setUploads] = useState<UploadedDa[]>([])
   const [selectedKey, setSelectedKey] = useState('game:vlads-skewers')
-  const [screenId, setScreenId] = useState('official-minimum')
+  const [screenId, setScreenId] = useState('guaranteed')
   const [calibrations, setCalibrations] = useState<Record<string, Calibration>>(readStoredCalibrations)
   const [message, setMessage] = useState('Choisis un jeu ou ajoute une DA.')
   const fileInputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    void loadImages().then(setUploads).catch(() => setMessage('Les DA locales précédentes ne peuvent pas être relues par ce navigateur.'))
-    return () => uploads.forEach((upload) => URL.revokeObjectURL(upload.url))
-    // Object URLs are only revoked when the lab is left.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
+  useEffect(() => { void loadImages().then(setUploads).catch(() => setMessage('Les DA locales précédentes ne peuvent pas être relues par ce navigateur.')); return () => uploads.forEach((upload) => URL.revokeObjectURL(upload.url)) /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [])
   const sources = useMemo<Source[]>(() => [
-    ...gameRegistry.map((game) => ({
-      key: `game:${game.id}`, kind: 'game' as const, label: game.title,
-      detail: `${game.runtime} · ${game.logicalViewport.width} × ${game.logicalViewport.height}`,
-      gameId: game.id, width: game.logicalViewport.width, height: game.logicalViewport.height,
-    })),
-    ...GAMEPLAY_DA_LAB_ASSETS.map((asset) => ({
-      key: `da:${asset.id}`, kind: 'da' as const, label: asset.label,
-      detail: asset.note ?? asset.image, image: asset.image, gameId: asset.gameId,
-    })),
-    ...uploads.map((upload) => ({
-      key: `da:${upload.id}`, kind: 'da' as const, label: upload.name,
-      detail: `${upload.width} × ${upload.height} · fichier local`, image: upload.url,
-      width: upload.width, height: upload.height,
-    })),
+    ...gameRegistry.map((game) => ({ key: `game:${game.id}`, kind: 'game' as const, label: game.title, detail: `${game.runtime} · ${game.logicalViewport.width} × ${game.logicalViewport.height}`, gameId: game.id, width: game.logicalViewport.width, height: game.logicalViewport.height })),
+    ...GAMEPLAY_DA_LAB_ASSETS.map((asset) => ({ key: `da:${asset.id}`, kind: 'da' as const, label: asset.label, detail: asset.note ?? asset.image, image: asset.image, gameId: asset.gameId })),
+    ...uploads.map((upload) => ({ key: `da:${upload.id}`, kind: 'da' as const, label: upload.name, detail: `${upload.width} × ${upload.height} · fichier local`, image: upload.url, width: upload.width, height: upload.height })),
   ], [uploads])
-
-  useEffect(() => {
-    setCalibrations((current) => {
-      const next = { ...current }
-      for (const source of sources) if (!next[source.key]) next[source.key] = defaultCalibration(source)
-      return next
-    })
-  }, [sources])
-
+  useEffect(() => { setCalibrations((current) => { const next = { ...current }; for (const source of sources) if (!next[source.key]) next[source.key] = defaultCalibration(source); return next }) }, [sources])
   useEffect(() => localStorage.setItem(STORAGE_KEY, JSON.stringify(calibrations)), [calibrations])
-
   const source = sources.find((item) => item.key === selectedKey) ?? sources[0]
   const calibration = calibrations[source?.key] ?? defaultCalibration(source)
   const screen = SCREENS.find((item) => item.id === screenId) ?? SCREENS[0]
-  const geometry = geometryFor(screen, calibration.anchor)
-  const visible = logicalVisibleRange(screen, calibration.anchor)
+  const master = masterFor(source)
+  const geometry = geometryFor(screen, calibration.anchor, master)
+  const visible = logicalVisibleRange(screen, calibration.anchor, master)
   const previewScale = Math.min(620 / screen.width, 680 / screen.height, 1)
   const reviewed = Object.values(calibrations).filter((item) => item.reviewed).length
   const adaptations = Object.values(calibrations).filter((item) => item.needsAdaptation).length
+  const patchCalibration = (patch: Partial<Calibration>) => { if (!source) return; setCalibrations((current) => ({ ...current, [source.key]: { ...(current[source.key] ?? defaultCalibration(source)), ...patch } })) }
+  const addFiles = async (files: FileList | null) => { if (!files?.length) return; const added: UploadedDa[] = []; for (const file of Array.from(files)) { if (!file.type.startsWith('image/')) continue; const dimensions = await measureImage(file); const id = `${file.name}:${file.size}:${file.lastModified}`; await storeImage({ id, name: file.name, ...dimensions, blob: file }); added.push({ id, name: file.name, ...dimensions, url: URL.createObjectURL(file) }) } if (!added.length) return; setUploads((current) => [...current.filter((item) => !added.some((next) => next.id === item.id)), ...added]); setSelectedKey(`da:${added[0].id}`); setMessage(`${added.length} DA ajoutée${added.length > 1 ? 's' : ''}.`) }
+  const runtimeUrl = source?.gameId ? `/?usr=moigod&lab=gameplay-runtime&game=${encodeURIComponent(source.gameId)}&anchor=${calibration.anchor}` : ''
+  const ratioMismatch = source?.kind === 'da' && source.width && source.height ? !nearRatio(source.width, source.height, MINIFUGG_MASTER_VIEWPORT) && !nearRatio(source.width, source.height, MINIFUGG_LEGACY_PORTRAIT_VIEWPORT) : false
 
-  const patchCalibration = (patch: Partial<Calibration>) => {
-    if (!source) return
-    setCalibrations((current) => ({ ...current, [source.key]: { ...(current[source.key] ?? defaultCalibration(source)), ...patch } }))
-  }
-
-  const addFiles = async (files: FileList | null) => {
-    if (!files?.length) return
-    const added: UploadedDa[] = []
-    for (const file of Array.from(files)) {
-      if (!file.type.startsWith('image/')) continue
-      const dimensions = await measureImage(file)
-      const id = `${file.name}:${file.size}:${file.lastModified}`
-      await storeImage({ id, name: file.name, ...dimensions, blob: file })
-      added.push({ id, name: file.name, ...dimensions, url: URL.createObjectURL(file) })
-    }
-    if (!added.length) return
-    setUploads((current) => [...current.filter((item) => !added.some((next) => next.id === item.id)), ...added])
-    setSelectedKey(`da:${added[0].id}`)
-    setMessage(`${added.length} DA ajoutée${added.length > 1 ? 's' : ''} et conservée${added.length > 1 ? 's' : ''} dans ce navigateur.`)
-  }
-
-  const runtimeUrl = source?.gameId
-    ? `/?usr=moigod&lab=gameplay-runtime&game=${encodeURIComponent(source.gameId)}&anchor=${calibration.anchor}`
-    : ''
-  const ratioMismatch = source?.kind === 'da' && source.width && source.height
-    ? Math.abs(source.width / source.height - MASTER.width / MASTER.height) > .01
-    : false
-
-  return (
-    <main className="mf-layout-lab mf-gameplay-calibration-lab">
-      <header className="mf-layout-hero mf-gameplay-calibration-hero">
-        <small>MINIFUGG · LAB GAMEPLAY</small>
-        <h1>Caler une DA.<br />Vérifier un jeu.</h1>
-        <p>Le lab montre le vrai cadrage MiniFugg sur chaque hauteur utile. Le vert est visible ; les zones sombres sont réellement coupées. Un jeu disponible tourne dans un viewport exact, une DA reste intacte dans son MASTER.</p>
-        <nav><a href="?usr=moigod&lab=layout">GUIDE DES ZONES ↗</a><a href="?usr=moigod&lab=layout&view=cover-calibration">CALAGE COVERS ↗</a></nav>
-      </header>
-
-      <section className="mf-gameplay-calibration-summary">
-        <span><b>{sources.length}</b> éléments</span><span><b>{reviewed}</b> vérifiés</span><span><b>{adaptations}</b> à adapter</span>
-      </section>
-
-      <section className="mf-gameplay-calibration-workbench">
-        <aside className="mf-gameplay-calibration-catalogue">
-          <div className="mf-gameplay-calibration-add">
-            <button type="button" onClick={() => fileInputRef.current?.click()}>+ AJOUTER UNE DA</button>
-            <input ref={fileInputRef} type="file" accept="image/png,image/webp,image/avif" multiple hidden data-testid="gameplay-da-input" onChange={(event) => void addFiles(event.target.files)} />
-            <small>PNG, WebP ou AVIF · le fichier reste local à ce navigateur.</small>
-          </div>
-          <div className="mf-gameplay-calibration-list" data-testid="gameplay-source-list">
-            <b>JEUX DISPONIBLES</b>
-            {sources.filter((item) => item.kind === 'game').map((item) => <SourceButton key={item.key} source={item} active={item.key === source?.key} calibration={calibrations[item.key]} onClick={() => setSelectedKey(item.key)} />)}
-            <b>DA / RÉFÉRENCES</b>
-            {sources.filter((item) => item.kind === 'da').map((item) => <SourceButton key={item.key} source={item} active={item.key === source?.key} calibration={calibrations[item.key]} onClick={() => setSelectedKey(item.key)} />)}
-          </div>
-        </aside>
-
-        <section className="mf-gameplay-calibration-preview">
-          <div className="mf-gameplay-calibration-preview-head">
-            <span><small>{source?.kind === 'game' ? 'JEU RÉEL' : 'DA IMPORTÉE'}</small><b>{source?.label}</b></span>
-            <span><small>VISIBLE DANS LE MASTER</small><b>y {Math.round(visible.start)} → {Math.round(visible.end)}</b></span>
-          </div>
-          <div className="mf-gameplay-calibration-screen-tabs">
-            {SCREENS.map((item) => <button key={item.id} type="button" data-active={item.id === screen.id} onClick={() => setScreenId(item.id)}>{item.label}<small>{item.width} × {item.height}</small></button>)}
-          </div>
-          <div className="mf-gameplay-calibration-device-wrap" style={{ width: screen.width * previewScale, height: screen.height * previewScale }}>
-            <div className="mf-gameplay-calibration-device" data-testid="gameplay-calibration-device" style={{ width: screen.width, height: screen.height, transform: `scale(${previewScale})` }}>
-              {source?.kind === 'game' ? (
-                <iframe key={runtimeUrl} title={`Aperçu de ${source.label}`} src={runtimeUrl} data-testid="gameplay-runtime-frame" />
-              ) : source ? <DaArtwork source={source} calibration={calibration} geometry={geometry} /> : null}
-              <div className="mf-gameplay-calibration-visible-frame"><span>ZONE VISIBLE · {screen.label}</span></div>
-              {visible.extra > 0 && <div className="mf-gameplay-calibration-extra"><span>EXTRA · {Math.round(visible.extra)} unités</span></div>}
-            </div>
-          </div>
-          <dl className="mf-gameplay-calibration-readout">
-            <div><dt>Viewport utile</dt><dd>{screen.width} × {screen.height}</dd></div>
-            <div><dt>Échelle du jeu</dt><dd>× {geometry.scale.toFixed(3)}</dd></div>
-            <div><dt>Ancrage testé</dt><dd>{calibration.anchor.toUpperCase()}</dd></div>
-            <div><dt>Coupe logique</dt><dd>{visible.extra ? `EXTRA +${Math.round(visible.extra)}` : `${Math.round(visible.start)} → ${Math.round(MASTER.height - visible.end)}`}</dd></div>
-          </dl>
-          <div className="mf-gameplay-calibration-matrix" aria-label="Comparaison des zones visibles">
-            {SCREENS.map((item) => {
-              const range = logicalVisibleRange(item, calibration.anchor)
-              return <div key={item.id}><b>{item.label}</b><i><span style={{ top: `${range.start / MASTER.height * 100}%`, height: `${(range.end - range.start) / MASTER.height * 100}%` }} /></i><small>{range.extra ? `MASTER + ${Math.round(range.extra)} EXTRA` : `y ${Math.round(range.start)} → ${Math.round(range.end)}`}</small></div>
-            })}
-          </div>
-          {ratioMismatch && <p className="mf-gameplay-calibration-warning">⚠ Cette DA n’a pas le ratio MASTER 390 × 844. Elle est montrée entière, sans déformation : les bandes visibles signalent ce qui doit être recomposé.</p>}
-        </section>
-
-        <aside className="mf-gameplay-calibration-controls">
-          <small>RÉGLAGE ACTIF</small>
-          <h2>{source?.label}</h2>
-          <p>{source?.detail}</p>
-
-          <label className="mf-gameplay-calibration-label">ANCRAGE DU JEU</label>
-          <div className="mf-gameplay-calibration-anchor" data-testid="gameplay-anchor-controls">
-            {(['top', 'center', 'bottom'] as const).map((anchor) => <button key={anchor} type="button" data-active={calibration.anchor === anchor} onClick={() => patchCalibration({ anchor })}>{anchor === 'top' ? 'HAUT' : anchor === 'center' ? 'CENTRE' : 'BAS'}</button>)}
-          </div>
-          <p className="mf-gameplay-calibration-help">Teste quelle partie doit rester stable. Si aucune position ne garde à la fois le HUD et l’action, le jeu doit être adapté.</p>
-
-          {source?.kind === 'da' && (
-            <div className="mf-gameplay-calibration-da-controls">
-              <Range label="ÉCHELLE DE LA DA" value={calibration.artworkScale} min={70} max={140} suffix="%" onChange={(artworkScale) => patchCalibration({ artworkScale })} />
-              <Range label="DÉCALAGE HORIZONTAL" value={calibration.artworkOffsetX} min={-100} max={100} suffix=" u" onChange={(artworkOffsetX) => patchCalibration({ artworkOffsetX })} />
-              <Range label="DÉCALAGE VERTICAL" value={calibration.artworkOffsetY} min={-182} max={182} suffix=" u" onChange={(artworkOffsetY) => patchCalibration({ artworkOffsetY })} />
-              <button type="button" onClick={() => patchCalibration({ artworkScale: 100, artworkOffsetX: 0, artworkOffsetY: 0 })}>RÉINITIALISER LA DA</button>
-            </div>
-          )}
-
-          <label className="mf-gameplay-calibration-check"><input type="checkbox" checked={calibration.reviewed} onChange={(event) => patchCalibration({ reviewed: event.target.checked })} /><span><b>Cadrage vérifié</b><small>Les écrans utiles ont été parcourus.</small></span></label>
-          <label className="mf-gameplay-calibration-check is-adaptation"><input type="checkbox" checked={calibration.needsAdaptation} data-testid="gameplay-needs-adaptation" onChange={(event) => patchCalibration({ needsAdaptation: event.target.checked })} /><span><b>Adapter le jeu / la DA</b><small>Le cadrage seul ne suffit pas.</small></span></label>
-          <label className="mf-gameplay-calibration-comment"><span>COMMENTAIRE PRÉCIS</span><textarea rows={6} value={calibration.comment} data-testid="gameplay-comment" placeholder="Ex. le score disparaît sur A54 Brave ; conserver tout le HUD dans la fenêtre prioritaire sans réduire la largeur." onChange={(event) => patchCalibration({ comment: event.target.value })} /></label>
-          <div className="mf-gameplay-calibration-export"><button type="button" onClick={() => downloadJson(sources, calibrations)} data-testid="gameplay-export-json">EXPORTER LE JSON ↓</button><button type="button" onClick={() => { patchCalibration({ reviewed: true }); setMessage('Décision enregistrée dans ce navigateur.') }}>ENREGISTRER</button></div>
-          <p className="mf-gameplay-calibration-message" role="status">{message}</p>
-        </aside>
-      </section>
-    </main>
-  )
+  return <main className="mf-layout-lab mf-gameplay-calibration-lab"><header className="mf-layout-hero mf-gameplay-calibration-hero"><small>MINIFUGG · LAB GAMEPLAY</small><h1>Caler une DA.<br />Vérifier un jeu.</h1><p>Le contrat canonique est 390 × 850 avec une fenêtre garantie 390 × 710. Les jeux et références 390 × 844 restent testés dans leur géométrie legacy, sans étirement.</p><nav><a href="?usr=moigod&lab=layout">GUIDE DES ZONES ↗</a><a href="?usr=moigod&lab=layout&view=cover-calibration">CALAGE COVERS ↗</a></nav></header><section className="mf-gameplay-calibration-summary"><span><b>{sources.length}</b> éléments</span><span><b>{reviewed}</b> vérifiés</span><span><b>{adaptations}</b> à adapter</span></section><section className="mf-gameplay-calibration-workbench"><aside className="mf-gameplay-calibration-catalogue"><div className="mf-gameplay-calibration-add"><button type="button" onClick={() => fileInputRef.current?.click()}>+ AJOUTER UNE DA</button><input ref={fileInputRef} type="file" accept="image/png,image/webp,image/avif" multiple hidden data-testid="gameplay-da-input" onChange={(event) => void addFiles(event.target.files)} /><small>PNG, WebP ou AVIF · le fichier reste local.</small></div><div className="mf-gameplay-calibration-list" data-testid="gameplay-source-list"><b>JEUX DISPONIBLES</b>{sources.filter((item) => item.kind === 'game').map((item) => <SourceButton key={item.key} source={item} active={item.key === source?.key} calibration={calibrations[item.key]} onClick={() => setSelectedKey(item.key)} />)}<b>DA / RÉFÉRENCES</b>{sources.filter((item) => item.kind === 'da').map((item) => <SourceButton key={item.key} source={item} active={item.key === source?.key} calibration={calibrations[item.key]} onClick={() => setSelectedKey(item.key)} />)}</div></aside><section className="mf-gameplay-calibration-preview"><div className="mf-gameplay-calibration-preview-head"><span><small>{source?.kind === 'game' ? 'JEU RÉEL' : 'DA IMPORTÉE'}</small><b>{source?.label}</b></span><span><small>MASTER TESTÉ</small><b>{master.width} × {master.height}</b></span><span><small>VISIBLE</small><b>y {Math.round(visible.start)} → {Math.round(visible.end)}</b></span></div><div className="mf-gameplay-calibration-screen-tabs">{SCREENS.map((item) => <button key={item.id} type="button" data-active={item.id === screen.id} onClick={() => setScreenId(item.id)}>{item.label}<small>{item.width} × {item.height}</small></button>)}</div><div className="mf-gameplay-calibration-device-wrap" style={{ width: screen.width * previewScale, height: screen.height * previewScale }}><div className="mf-gameplay-calibration-device" data-testid="gameplay-calibration-device" style={{ width: screen.width, height: screen.height, transform: `scale(${previewScale})` }}>{source?.kind === 'game' ? <iframe key={runtimeUrl} title={`Aperçu de ${source.label}`} src={runtimeUrl} data-testid="gameplay-runtime-frame" /> : source ? <DaArtwork source={source} calibration={calibration} geometry={geometry} /> : null}<div className="mf-gameplay-calibration-visible-frame"><span>{screen.label}</span></div>{visible.extra > 0 && <div className="mf-gameplay-calibration-extra"><span>EXTRA · {Math.round(visible.extra)} u</span></div>}</div></div><dl className="mf-gameplay-calibration-readout"><div><dt>Viewport test</dt><dd>{screen.width} × {screen.height}</dd></div><div><dt>Échelle du jeu</dt><dd>× {geometry.scale.toFixed(3)}</dd></div><div><dt>Ancrage</dt><dd>{calibration.anchor.toUpperCase()}</dd></div><div><dt>Coupe logique</dt><dd>{visible.extra ? `EXTRA +${Math.round(visible.extra)}` : `${Math.round(visible.start)} → ${Math.round(master.height - visible.end)}`}</dd></div></dl><div className="mf-gameplay-calibration-matrix" aria-label="Comparaison des zones visibles">{SCREENS.map((item) => { const range = logicalVisibleRange(item, calibration.anchor, master); return <div key={item.id}><b>{item.label}</b><i><span style={{ top: `${range.start / master.height * 100}%`, height: `${(range.end - range.start) / master.height * 100}%` }} /></i><small>{range.extra ? `MASTER + ${Math.round(range.extra)} EXTRA` : `y ${Math.round(range.start)} → ${Math.round(range.end)}`}</small></div> })}</div>{ratioMismatch && <p className="mf-gameplay-calibration-warning">⚠ Cette DA n’a ni le ratio canonique 390 × 850 ni le ratio legacy 390 × 844. Elle est montrée sans déformation : il faut décider d’une recomposition.</p>}</section><aside className="mf-gameplay-calibration-controls"><small>RÉGLAGE ACTIF</small><h2>{source?.label}</h2><p>{source?.detail}</p><label className="mf-gameplay-calibration-label">ANCRAGE DU JEU</label><div className="mf-gameplay-calibration-anchor" data-testid="gameplay-anchor-controls">{(['top','center','bottom'] as const).map((anchor) => <button key={anchor} type="button" data-active={calibration.anchor === anchor} onClick={() => patchCalibration({ anchor })}>{anchor === 'top' ? 'HAUT' : anchor === 'center' ? 'CENTRE' : 'BAS'}</button>)}</div><p className="mf-gameplay-calibration-help">La fenêtre garantie fait toujours 710 unités de haut ; l’ancrage choisit où le crop est absorbé.</p>{source?.kind === 'da' && <div className="mf-gameplay-calibration-da-controls"><Range label="ÉCHELLE DE LA DA" value={calibration.artworkScale} min={70} max={140} suffix="%" onChange={(artworkScale) => patchCalibration({ artworkScale })} /><Range label="DÉCALAGE HORIZONTAL" value={calibration.artworkOffsetX} min={-100} max={100} suffix=" u" onChange={(artworkOffsetX) => patchCalibration({ artworkOffsetX })} /><Range label="DÉCALAGE VERTICAL" value={calibration.artworkOffsetY} min={-140} max={140} suffix=" u" onChange={(artworkOffsetY) => patchCalibration({ artworkOffsetY })} /><button type="button" onClick={() => patchCalibration({ artworkScale:100, artworkOffsetX:0, artworkOffsetY:0 })}>RÉINITIALISER LA DA</button></div>}<label className="mf-gameplay-calibration-check"><input type="checkbox" checked={calibration.reviewed} onChange={(event) => patchCalibration({ reviewed:event.target.checked })} /><span><b>Cadrage vérifié</b><small>Les écrans utiles ont été parcourus.</small></span></label><label className="mf-gameplay-calibration-check is-adaptation"><input type="checkbox" checked={calibration.needsAdaptation} data-testid="gameplay-needs-adaptation" onChange={(event) => patchCalibration({ needsAdaptation:event.target.checked })} /><span><b>Adapter le jeu / la DA</b><small>Le cadrage seul ne suffit pas.</small></span></label><label className="mf-gameplay-calibration-comment"><span>COMMENTAIRE PRÉCIS</span><textarea rows={6} value={calibration.comment} data-testid="gameplay-comment" placeholder="Ex. conserver tout le HUD dans la fenêtre garantie sans réduire la largeur." onChange={(event) => patchCalibration({ comment:event.target.value })} /></label><div className="mf-gameplay-calibration-export"><button type="button" onClick={() => downloadJson(sources, calibrations)} data-testid="gameplay-export-json">EXPORTER LE JSON ↓</button><button type="button" onClick={() => { patchCalibration({ reviewed:true }); setMessage('Décision enregistrée dans ce navigateur.') }}>ENREGISTRER</button></div><p className="mf-gameplay-calibration-message" role="status">{message}</p></aside></section></main>
 }
-
-function SourceButton({ source, active, calibration, onClick }: { source: Source, active: boolean, calibration?: Calibration, onClick: () => void }) {
-  const state = calibration?.needsAdaptation ? 'ADAPTER' : calibration?.reviewed ? 'OK' : 'À VOIR'
-  return <button type="button" data-active={active} onClick={onClick}><span><b>{source.label}</b><small>{source.detail}</small></span><i data-state={state}>{state}</i></button>
-}
-
-function Range({ label, value, min, max, suffix, onChange }: { label: string, value: number, min: number, max: number, suffix: string, onChange: (value: number) => void }) {
-  return <label><span>{label} · {value}{suffix}</span><input type="range" min={min} max={max} step={1} value={value} onChange={(event) => onChange(Number(event.target.value))} /></label>
-}
+function SourceButton({ source, active, calibration, onClick }: { source: Source, active: boolean, calibration?: Calibration, onClick: () => void }) { const state = calibration?.needsAdaptation ? 'ADAPTER' : calibration?.reviewed ? 'OK' : 'À VOIR'; return <button type="button" data-active={active} onClick={onClick}><span><b>{source.label}</b><small>{source.detail}</small></span><i data-state={state}>{state}</i></button> }
+function Range({ label, value, min, max, suffix, onChange }: { label: string, value: number, min: number, max: number, suffix: string, onChange: (value: number) => void }) { return <label><span>{label} · {value}{suffix}</span><input type="range" min={min} max={max} step={1} value={value} onChange={(event) => onChange(Number(event.target.value))} /></label> }

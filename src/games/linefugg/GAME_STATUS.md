@@ -1,16 +1,16 @@
 # LineFugg — Suivi de création
 
-Mis à jour : 16 septembre 2026 à 15:44 Europe/Paris. Version : `0.8.2`. Changelog : `CHANGELOG.md`.
+Mis à jour : 17 septembre 2026 à 12:41 Europe/Paris. Version publique : `0.8.2`. Changelog : `CHANGELOG.md`.
 
 ## État actuel
 
-Le LineFugg publié revient volontairement au runtime **classique Orbital Accounting** qui servait de référence fonctionnelle avant Solar Origami. Les règles, l’équilibrage et les contrôles ne changent pas. Solar Origami est conservé dans Git et dans ses assets comme cas d’étude d’un pipeline DA/intégration raté ; ce n’est plus la direction active du jeu classique.
+Le LineFugg publié reste volontairement le runtime **classique Orbital Accounting** qui servait de référence fonctionnelle avant Solar Origami. Les règles, l’équilibrage et les contrôles ne changent pas. Solar Origami est conservé dans Git et dans ses assets comme cas d’étude d’un pipeline DA/intégration raté ; ce n’est plus la direction active du jeu classique.
 
-En parallèle, **LineFugg — Rebirth** est traité comme un nouveau chantier de production à partir de ce jeu classique pris comme prototype évolué. Le 17 septembre 2026, l’utilisateur a validé la première DA Rebirth : **registre éditorial imprimé / papier tactile**, sur l’état fonctionnel P4. Le Production Lab contient désormais cette DA et son découpage sémantique. **Release reste vide** tant qu’aucune mini-tranche de traduction n’est réellement intégrée.
+En parallèle, **LineFugg — Rebirth** est traité comme un chantier de production à partir de ce jeu classique pris comme prototype évolué. Le 17 septembre 2026, l’utilisateur a validé la première DA Rebirth : **registre éditorial imprimé / papier tactile**, sur l’état fonctionnel P4. Le Production Lab contient cette DA et son découpage sémantique. Une première **mini-tranche live réservée au Lab** traduit maintenant cette direction avec les vraies valeurs, lignes, résultats et contrôles du moteur ; elle ne remplace pas encore le jeu public.
 
 ## Prototype de référence
 
-- stage logique Phaser : `390 × 844` ;
+- stage logique Phaser public : `390 × 844` ;
 - grille `7 × 7`, déterministe par jour ;
 - exactement trois lignes, de 2 à 5 cases, horizontales / verticales / diagonales ;
 - calcul appliqué dans le sens du tracé ;
@@ -28,8 +28,9 @@ Sources de référence : branche `linefugg-classic-reference`, `LineFuggScene.ts
 Le plan canonique doit être synchronisé à chaque décision sémantique ou visuelle significative. À ce stade :
 
 - **Covers** : existantes, ensemble séparé ;
-- **Proto** : en cours d’analyse détaillée dans le Lab ;
-- **DA** : première direction validée — registre éditorial imprimé, référence Lab `public/assets/generated/linefugg/rebirth/da/linefugg-rebirth-editorial-paper-lab-390x850.webp` ;
-- **Release** : vide tant qu’aucune intégration Rebirth n’existe.
+- **Proto** : quatre situations réelles P1 → P4 ;
+- **DA** : direction validée — registre éditorial imprimé, référence Lab `public/assets/generated/linefugg/rebirth/da/linefugg-rebirth-editorial-paper-lab-390x850.webp`, découpée en grille/matière, tracés, registre des résultats, total et contrôles ;
+- **Mini-tranche** : disponible uniquement via le runtime de Lab avec `skin=rebirth-editorial` ; le stage Rebirth utilise `390 × 850` tandis que le jeu public reste explicitement legacy `390 × 844` ;
+- **Release** : vide tant que cette mini-tranche n’a pas été revue et acceptée pour bascule.
 
-Prochaine action : utiliser le découpage DA du Lab comme planche de traduction, corriger les valeurs/formules sur un état réel puis intégrer une mini-tranche représentative avant toute production complète.
+Prochaine action : revoir la mini-tranche dans le Lab, noter les corrections visuelles/fonctionnelles, puis seulement décider de l’étendre au runtime Rebirth complet.

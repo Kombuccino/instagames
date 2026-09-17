@@ -91,8 +91,8 @@ replaceExact(
 )
 replaceExact(
   'docs/PLATFORM_REDESIGN.md',
-  'Le raccord se termine lorsque la fenêtre au ratio officiel `360 × 650` remplit la hauteur PC : l’écran MASTER reste plus haut que le viewport et sa coque sort en haut et en bas.',
-  'Le raccord se termine lorsque la zone garantie canonique `390 × 710` remplit la hauteur PC : l’écran MASTER reste plus haut que le viewport et sa coque sort en haut et en bas. Le pilote actuel peut encore utiliser son rig legacy `390 × 844` jusqu’à sa reprise dédiée.'
+  "Le raccord se termine lorsque la fenêtre au ratio officiel `360 × 650` remplit la hauteur PC : l'écran MASTER reste plus haut que le viewport et sa coque sort en haut et en bas.",
+  "Le raccord se termine lorsque la zone garantie canonique `390 × 710` remplit la hauteur PC : l'écran MASTER reste plus haut que le viewport et sa coque sort en haut et en bas. Le pilote actuel peut encore utiliser son rig legacy `390 × 844` jusqu’à sa reprise dédiée."
 )
 
 replaceExact(

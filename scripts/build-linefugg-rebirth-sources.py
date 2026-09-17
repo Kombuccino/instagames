@@ -1,14 +1,20 @@
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter, ImageOps
 
 ROOT = Path('public/assets/generated/linefugg/rebirth')
 SOURCE = ROOT / 'da' / 'linefugg-rebirth-editorial-paper-lab-390x850-r2.webp'
 OUT = ROOT / 'sources'
 OUT.mkdir(parents=True, exist_ok=True)
 
-img = Image.open(SOURCE).convert('RGBA')
-if img.size != (390, 850):
-    raise SystemExit(f'Unexpected DA source size: {img.size}')
+raw = Image.open(SOURCE).convert('RGBA')
+if raw.size == (390, 850):
+    img = raw
+elif raw.size == (260, 567):
+    # The first Lab derivative was accidentally stored at 260×567 despite its filename.
+    # Restore the approved 390×850 stage geometry without changing composition.
+    img = ImageOps.fit(raw, (390, 850), method=Image.Resampling.LANCZOS, centering=(0.5, 0.5))
+else:
+    raise SystemExit(f'Unexpected DA source size: {raw.size}')
 
 # Lossless approved production reference. REFERENCE ONLY: dynamic values remain baked here.
 img.save(OUT / 'da-master-approved-390x850.png', optimize=True)
@@ -39,7 +45,7 @@ def circle_source(cx, cy, size, name):
     crop.putalpha(mask.filter(ImageFilter.GaussianBlur(0.8)))
     crop.save(OUT / name, optimize=True)
 
-# Isolated control sources at native scale. Further state variants remain explicit TODOs.
+# Isolated control sources at native stage scale. Further state variants remain explicit TODOs.
 circle_source(107, 760, 118, 'control-undo-source-118.png')
 circle_source(286, 760, 118, 'control-validate-source-118.png')
 

@@ -10,6 +10,12 @@ TetraMindFck keeps its existing source folder `calc-drop` and public id `tetrami
 
 Before editing and again before delivery, follow `docs/REPOSITORY_WORKFLOW.md`. Agents perform scope review and remote synchronization themselves. A multi-file commit is fine; accidentally committing another session's unfinished work is not. No permanent branch per game is required.
 
+## Logical viewport compatibility
+
+New portrait production uses the platform default `390 × 850` MASTER with a guaranteed `390 × 710` gameplay window. Existing approved games may still declare `390 × 844`; that value is an explicit legacy contract, not an error to fix with stretching. Preserve those coordinates until the game receives a deliberate geometry/DA migration.
+
+A component for a legacy `390 × 844` game must use the matching legacy viewport constant rather than the new default. This prevents a global platform change from silently moving hitboxes, cameras or authored assets.
+
 ## Migration lock remains independent
 
 Games are in the engine migration program defined by:

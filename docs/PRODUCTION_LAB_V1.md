@@ -44,7 +44,9 @@ Les titres des écrans et des nœuds compensent partiellement le dézoom pour re
 
 ## Vérification du contrat de mise en page
 
-Chaque écran conserve la géométrie authored MiniFugg `390 × 844`. Le Lab peut superposer les viewports de contrôle : minimum officiel `360 × 650`, A54 Chrome `360 × 656`, iPhone 13 Pro normalisé ≈ `360 × 657`, A54 Brave `360 × 611`.
+Un nouvel écran canonique utilise `390 × 850` avec une fenêtre garantie `390 × 710`. Le Lab peut superposer cette fenêtre logique ainsi que des presets d’appareils réels (`360 × 650`, A54 Chrome `360 × 656`, iPhone 13 Pro `390 × 712`, A54 Brave `360 × 611`) ; ces derniers sont des diagnostics, pas la source de vérité.
+
+Les captures et références existantes en `390 × 844` restent affichables comme **legacy** sans étirement obligatoire. Le Lab doit rendre visible cette différence plutôt que réétiqueter une ancienne capture en `850`.
 
 Le calage a deux portées : chaque **Cover** possède son réglage spécifique initialisé depuis son `objectPosition`; **Proto / DA / Release** possèdent chacun un seul réglage commun, défini depuis la situation générale et appliqué à toutes les captures de l’État. Le petit bouton crayon active l’édition ; hors édition, seul le cadre blanc reste visible.
 
@@ -52,7 +54,7 @@ Le calage a deux portées : chaque **Cover** possède son réglage spécifique i
 
 Le Lab fait partie du Definition of Done d’un chantier jeu. Toute passe qui change ce qu’il faut comprendre, montrer, produire, animer, sonoriser ou intégrer doit synchroniser le Plan. Les refactors invisibles ou détails techniques sans conséquence de conception n’y créent pas de bruit.
 
-LineFugg Rebirth sert actuellement de démonstrateur : quatre captures statiques du vrai Proto montrent le départ, un tracé en cours, l’état après une ligne et les trois lignes avant validation. DA et Release restent vides tant qu’elles n’existent pas réellement.
+LineFugg Rebirth sert actuellement de démonstrateur : quatre captures statiques du vrai Proto montrent le départ, un tracé en cours, l’état après une ligne et les trois lignes avant validation. Ces captures ont été produites sur son monde legacy `390 × 844` et restent des preuves valides tant que LineFugg n’est pas migré en géométrie `850`. DA et Release restent vides tant qu’elles n’existent pas réellement.
 
 ## Édition uniforme des liens et reset
 
@@ -63,7 +65,6 @@ Le reset de revue restaure l’état initial complet du Lab pour le jeu courant 
 ## Non-objectifs
 
 Le Lab n’est pas un moteur de jeu, un IDE, un éditeur de données métier ni un chat embarqué. Il ne cherche pas à représenter exhaustivement la structure Phaser ou le code. Son rôle est de rendre la conception et les écarts visibles assez tôt pour éviter des intégrations coûteuses à reprendre.
-
 
 ## Ajustements d’édition locale — 16 septembre 2026
 

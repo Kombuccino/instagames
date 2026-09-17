@@ -24,8 +24,8 @@ replaceExact(
 
 replaceExact(
   'docs/DA_UI.md',
-  'Sur l’expérience **écran étendu** décrite dans `PLATFORM_REDESIGN.md`, le sidecar devient une mise en scène éditoriale persistante : une une de magazine `MiniFugg Retro Gaming` fermée pendant environ 4–5 secondes, puis un magazine ouvert presque à plat à gauche du téléphone. Le téléphone reste au premier plan à 95 % de la hauteur utile. Son verre fictif reprend directement le MASTER `390 × 844`.',
-  'Sur l’expérience **écran étendu** décrite dans `PLATFORM_REDESIGN.md`, le sidecar devient une mise en scène éditoriale persistante : une une de magazine `MiniFugg Retro Gaming` fermée pendant environ 4–5 secondes, puis un magazine ouvert presque à plat à gauche du téléphone. Le téléphone reste au premier plan à 95 % de la hauteur utile. Pour toute nouvelle production son verre vise le MASTER `390 × 850` et la zone garantie `390 × 710`; les rigs expérimentaux déjà authored en `390 × 844` restent legacy compatibles jusqu’à leur reprise.'
+  "Sur l'expérience **écran étendu** décrite dans `PLATFORM_REDESIGN.md`, le sidecar devient une mise en scène éditoriale persistante : une une de magazine `MiniFugg Retro Gaming` fermée pendant environ 4–5 secondes, puis un magazine ouvert presque à plat à gauche du téléphone. Le téléphone reste au premier plan à 95 % de la hauteur utile. Son verre fictif reprend directement le MASTER `390 × 844`.",
+  "Sur l'expérience **écran étendu** décrite dans `PLATFORM_REDESIGN.md`, le sidecar devient une mise en scène éditoriale persistante : une une de magazine `MiniFugg Retro Gaming` fermée pendant environ 4–5 secondes, puis un magazine ouvert presque à plat à gauche du téléphone. Le téléphone reste au premier plan à 95 % de la hauteur utile. Pour toute nouvelle production son verre vise le MASTER `390 × 850` et la zone garantie `390 × 710`; les rigs expérimentaux déjà authored en `390 × 844` restent legacy compatibles jusqu’à leur reprise."
 )
 
 replaceExact(

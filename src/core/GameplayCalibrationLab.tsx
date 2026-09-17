@@ -128,22 +128,31 @@ function measureImage(file: File) {
   })
 }
 
-function geometryFor(screen: ScreenPreset, anchor: MiniFuggVerticalAnchor) {
-  const scale = screen.axis === 'width'
-    ? screen.width / MASTER.width
-    : Math.min(screen.height / MINIFUGG_PORTRAIT_CENTRE_HEIGHT, screen.width / MASTER.width)
-  const width = MASTER.width * scale
-  const height = MASTER.height * scale
-  const remainder = screen.height - height
-  const top = anchor === 'top' ? 0 : anchor === 'bottom' ? remainder : remainder / 2
-  return { scale, width, height, left: (screen.width - width) / 2, top }
+function sourceViewport(source?: Source) {
+  return {
+    width: source?.width ?? MASTER.width,
+    height: source?.height ?? MASTER.height,
+  }
 }
 
-function logicalVisibleRange(screen: ScreenPreset, anchor: MiniFuggVerticalAnchor) {
-  const geometry = geometryFor(screen, anchor)
+function geometryFor(screen: ScreenPreset, anchor: MiniFuggVerticalAnchor, source?: Source) {
+  const authored = sourceViewport(source)
+  const scale = screen.axis === 'width'
+    ? screen.width / authored.width
+    : Math.min(screen.height / MINIFUGG_PORTRAIT_CENTRE_HEIGHT, screen.width / authored.width)
+  const width = authored.width * scale
+  const height = authored.height * scale
+  const remainder = screen.height - height
+  const top = anchor === 'top' ? 0 : anchor === 'bottom' ? remainder : remainder / 2
+  return { scale, width, height, left: (screen.width - width) / 2, top, sourceWidth: authored.width, sourceHeight: authored.height }
+}
+
+function logicalVisibleRange(screen: ScreenPreset, anchor: MiniFuggVerticalAnchor, source?: Source) {
+  const authored = sourceViewport(source)
+  const geometry = geometryFor(screen, anchor, source)
   const start = Math.max(0, -geometry.top / geometry.scale)
-  const end = Math.min(MASTER.height, (screen.height - geometry.top) / geometry.scale)
-  return { start, end, extra: Math.max(0, screen.height / geometry.scale - MASTER.height) }
+  const end = Math.min(authored.height, (screen.height - geometry.top) / geometry.scale)
+  return { start, end, extra: Math.max(0, screen.height / geometry.scale - authored.height), sourceHeight: authored.height }
 }
 
 function downloadJson(sources: Source[], calibrations: Record<string, Calibration>) {
@@ -160,6 +169,7 @@ function downloadJson(sources: Source[], calibrations: Record<string, Calibratio
       label: source.label,
       file: source.image ?? null,
       sourceDimensions: source.width && source.height ? { width: source.width, height: source.height } : null,
+      targetMaster: MASTER,
       ...calibrations[source.key],
     })),
   }
@@ -232,8 +242,8 @@ export function GameplayCalibrationLab() {
   const source = sources.find((item) => item.key === selectedKey) ?? sources[0]
   const calibration = calibrations[source?.key] ?? defaultCalibration(source)
   const screen = SCREENS.find((item) => item.id === screenId) ?? SCREENS[0]
-  const geometry = geometryFor(screen, calibration.anchor)
-  const visible = logicalVisibleRange(screen, calibration.anchor)
+  const geometry = geometryFor(screen, calibration.anchor, source)
+  const visible = logicalVisibleRange(screen, calibration.anchor, source)
   const previewScale = Math.min(620 / screen.width, 680 / screen.height, 1)
   const reviewed = Object.values(calibrations).filter((item) => item.reviewed).length
   const adaptations = Object.values(calibrations).filter((item) => item.needsAdaptation).length
@@ -265,13 +275,14 @@ export function GameplayCalibrationLab() {
   const ratioMismatch = source?.kind === 'da' && source.width && source.height
     ? Math.abs(source.width / source.height - MASTER.width / MASTER.height) > .01
     : false
+  const sourceDimensionsLabel = source?.width && source.height ? `${source.width} × ${source.height}` : `inconnues · fallback ${MASTER.width} × ${MASTER.height}`
 
   return (
     <main className="mf-layout-lab mf-gameplay-calibration-lab">
       <header className="mf-layout-hero mf-gameplay-calibration-hero">
         <small>MINIFUGG · LAB GAMEPLAY</small>
         <h1>Caler une DA.<br />Vérifier un jeu.</h1>
-        <p>Le lab montre le vrai cadrage MiniFugg sur chaque hauteur utile. Le vert est visible ; les zones sombres sont réellement coupées. Un jeu disponible tourne dans un viewport exact, une DA reste intacte dans son MASTER.</p>
+        <p>Le lab sépare maintenant la géométrie source de la cible MiniFugg 390 × 850. Le vert est visible ; les zones sombres sont réellement coupées. Un jeu disponible tourne dans son viewport réel, une DA conserve son ratio source.</p>
         <nav><a href="?usr=moigod&lab=layout">GUIDE DES ZONES ↗</a><a href="?usr=moigod&lab=layout&view=cover-calibration">CALAGE COVERS ↗</a></nav>
       </header>
 
@@ -297,7 +308,7 @@ export function GameplayCalibrationLab() {
         <section className="mf-gameplay-calibration-preview">
           <div className="mf-gameplay-calibration-preview-head">
             <span><small>{source?.kind === 'game' ? 'JEU RÉEL' : 'DA IMPORTÉE'}</small><b>{source?.label}</b></span>
-            <span><small>VISIBLE DANS LE MASTER</small><b>y {Math.round(visible.start)} → {Math.round(visible.end)}</b></span>
+            <span><small>SOURCE → CIBLE</small><b>{sourceDimensionsLabel} → {MASTER.width} × {MASTER.height}</b></span>
           </div>
           <div className="mf-gameplay-calibration-screen-tabs">
             {SCREENS.map((item) => <button key={item.id} type="button" data-active={item.id === screen.id} onClick={() => setScreenId(item.id)}>{item.label}<small>{item.width} × {item.height}</small></button>)}
@@ -313,17 +324,17 @@ export function GameplayCalibrationLab() {
           </div>
           <dl className="mf-gameplay-calibration-readout">
             <div><dt>Viewport utile</dt><dd>{screen.width} × {screen.height}</dd></div>
-            <div><dt>Échelle du jeu</dt><dd>× {geometry.scale.toFixed(3)}</dd></div>
+            <div><dt>Source logique</dt><dd>{geometry.sourceWidth} × {geometry.sourceHeight}</dd></div>
+            <div><dt>Échelle source</dt><dd>× {geometry.scale.toFixed(3)}</dd></div>
             <div><dt>Ancrage testé</dt><dd>{calibration.anchor.toUpperCase()}</dd></div>
-            <div><dt>Coupe logique</dt><dd>{visible.extra ? `EXTRA +${Math.round(visible.extra)}` : `${Math.round(visible.start)} → ${Math.round(MASTER.height - visible.end)}`}</dd></div>
           </dl>
           <div className="mf-gameplay-calibration-matrix" aria-label="Comparaison des zones visibles">
             {SCREENS.map((item) => {
-              const range = logicalVisibleRange(item, calibration.anchor)
-              return <div key={item.id}><b>{item.label}</b><i><span style={{ top: `${range.start / MASTER.height * 100}%`, height: `${(range.end - range.start) / MASTER.height * 100}%` }} /></i><small>{range.extra ? `MASTER + ${Math.round(range.extra)} EXTRA` : `y ${Math.round(range.start)} → ${Math.round(range.end)}`}</small></div>
+              const range = logicalVisibleRange(item, calibration.anchor, source)
+              return <div key={item.id}><b>{item.label}</b><i><span style={{ top: `${range.start / range.sourceHeight * 100}%`, height: `${(range.end - range.start) / range.sourceHeight * 100}%` }} /></i><small>{range.extra ? `SOURCE + ${Math.round(range.extra)} EXTRA` : `y ${Math.round(range.start)} → ${Math.round(range.end)}`}</small></div>
             })}
           </div>
-          {ratioMismatch && <p className="mf-gameplay-calibration-warning">⚠ Cette DA n’a pas le ratio cible MASTER 390 × 850. Elle est montrée entière, sans déformation : les bandes visibles signalent ce qui doit être recomposé.</p>}
+          {ratioMismatch && <p className="mf-gameplay-calibration-warning">⚠ Cette DA n’a pas le ratio cible MASTER 390 × 850. Sa géométrie source est conservée sans déformation ; les bandes visibles signalent ce qui devra éventuellement être recomposé pour une nouvelle production.</p>}
         </section>
 
         <aside className="mf-gameplay-calibration-controls">

@@ -76,3 +76,7 @@ Les liens sont calculés depuis le centre logique des objets mais leur point vis
 Le bouton compact `↺` de la barre supérieure **Réinitialise la revue locale** : il efface annotations, nœuds locaux, liens, déplacements, commentaires, remplacements d’image et calages locaux du jeu courant, puis revient exactement au Plan canonique. Un simple rechargement de page conserve au contraire la revue locale, par conception.
 
 La suppression d’un repère local supprime son bundle sémantique associé et les liens qui le référencent ; le Plan ne doit jamais conserver de destination orpheline après `Delete`, `Backspace`, Undo/Redo ou recréation d’un lien.
+
+### Sources DA dans les nœuds
+
+Après validation d’une DA, les nœuds `IMAGE` ne doivent pas afficher un simple aperçu recadré du master. Ils pointent vers de **vrais fichiers de production ou de découpe**, affichés à leur taille native ; leur cadre s’agrandit avec leur contenu dans l’espace vectoriel. Le master complet reste un écran/référence séparé. Une découpe contaminée par des valeurs ou états dynamiques est explicitement marquée comme source de travail, jamais comme asset runtime final.

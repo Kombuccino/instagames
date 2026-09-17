@@ -7,6 +7,14 @@
 - Découpage sémantique : grille/matière, trois tracés, registre des résultats, total, Undo/Validate. Les données visibles de la maquette sont indicatives et doivent être remplacées par les vraies valeurs moteur lors de la mini-tranche.
 - Statut : **DA validée / Release non intégrée**.
 
+### Rebirth — sources de découpe visibles dans le Production Lab
+
+Le master DA validé est désormais matérialisé sur le canevas `390×850` sous `public/assets/generated/linefugg/rebirth/sources/linefugg-rebirth-editorial-paper-master-390x850.png`. Les nœuds DA du Lab montrent les **fichiers sources à leur taille native**, pas des miniatures recadrées.
+
+Sources découpées depuis ce master : `paper-texture-source-120x80.png`, `grid-surface-source-354x374.png`, `line-language-source-354x374.png`, `ledger-source-350x139.png`, `total-source-179x72.png`, `controls-source-316x131.png`, `cell-study-source-98x98.png`.
+
+Ces découpes servent à la production et à la revue. Elles ne sont pas toutes runtime-ready : grille, tracés, registre, total et étude cellule contiennent encore des données dynamiques de la maquette et restent donc **SOURCE / REFERENCE CUT** jusqu’à nettoyage ou reconstruction. L’échantillon papier est statique ; les contrôles sont une base visuelle mais leurs états séparés restent à produire.
+
 État canonique classique : 11 septembre 2026, version `0.5.3`, direction **Orbital Accounting**. Appliquer `docs/GAME_ART_PRODUCTION_PIPELINE.md` et `docs/ASSET_PIPELINE.md`.
 
 Les PNG approuvés et sources de travail sont conservés. **Le runtime gameplay ne charge plus aucun de ces gros PNG : ses 11 images actives sont des dérivés WebP lossless pré-dimensionnés.** Les quatre covers suivent le même principe, avec masters PNG distincts et dérivés WebP Core.

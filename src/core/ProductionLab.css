@@ -8,3 +8,7 @@
 
 /* Cross-zone semantic links: lighter dashed underlay below screens and nodes. */
 .mfpl-links-underlay{z-index:1;pointer-events:none}.mfpl-links-underlay .mfpl-link-cross-zone{stroke:#8c949c;stroke-width:1;stroke-dasharray:8 8;opacity:.42}.mfpl-links-foreground{z-index:15}.mfpl-links-foreground g.is-cross-zone>.mfpl-link,.mfpl-links-foreground g.is-cross-zone>.mfpl-link-target{stroke:transparent;fill:transparent}.mfpl-links-foreground g.is-cross-zone.is-selected>.mfpl-link-target{stroke:#e25834;fill:#fff}
+
+
+/* DA production sources: native-size assets inside content-sized vector nodes. */
+.mfpl-node{height:auto;min-height:148px;overflow:visible}.mfpl-node p,.mfpl-node ul{max-height:none;overflow:visible}.mfpl-node-source{margin:8px 0 6px;padding:0;display:block;width:max-content;max-width:none}.mfpl-node-source img{display:block;width:auto;height:auto;max-width:none;object-fit:none;border:1px solid rgba(23,25,29,.2);background:#cfd3d7}.mfpl-node-source figcaption{margin-top:4px;font-size:8px;color:#6d747d}.mfpl-node-thumb{display:none}

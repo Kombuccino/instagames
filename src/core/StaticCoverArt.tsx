@@ -1,9 +1,10 @@
+import { MINIFUGG_MASTER_VIEWPORT } from './runtime/gameRuntimePolicy'
 import type { GameWelcomeVariant } from './types'
 
 /** Static Core art only: no engine, animation, edited master or gameplay layout. */
 export function StaticCoverArt({ variant }: { variant: GameWelcomeVariant }) {
   const preserveFrame = variant.fit === 'contain'
-  const preservedTitleHeight = Math.max(0, Math.min(844, variant.preserveTitleHeight ?? 0))
+  const preservedTitleHeight = Math.max(0, Math.min(MINIFUGG_MASTER_VIEWPORT.height, variant.preserveTitleHeight ?? 0))
   const titleFadeHeight = Math.min(30, preservedTitleHeight * .2)
   return (
     <>

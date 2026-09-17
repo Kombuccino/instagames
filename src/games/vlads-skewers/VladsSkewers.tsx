@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import type { GameComponentProps } from '../../core/types'
 import { PhaserGameHost } from '../../core/runtime/PhaserGameHost'
-import { DEFAULT_LOGICAL_VIEWPORTS } from '../../core/runtime/gameRuntimePolicy'
+import { MINIFUGG_LEGACY_PORTRAIT_VIEWPORT } from '../../core/runtime/gameRuntimePolicy'
 import { miniFuggAudio } from '../../audio'
 import { VLADS_SKEWERS_SCENE_KEY, VladsSkewersScene } from './VladsSkewersScene'
 import { applyVladRuntimeTuning } from './VladsSkewersRuntime'
@@ -53,7 +53,7 @@ export function VladsSkewers({ active, seed, restartToken, session }: GameCompon
       <PhaserGameHost
         active={active}
         restartToken={restartToken}
-        logicalViewport={DEFAULT_LOGICAL_VIEWPORTS.portrait}
+        logicalViewport={MINIFUGG_LEGACY_PORTRAIT_VIEWPORT}
         sceneKey={VLADS_SKEWERS_SCENE_KEY}
         createScene={createScene}
         renderPixelRatio={renderPixelRatio}

@@ -187,7 +187,7 @@ Pour Phaser 4.2.1, préférer les émetteurs avec plafond/réservation de partic
 
 ## 10. Fixed-stage composition remains authoritative
 
-All assets are authored for the game's declared logical viewport, normally `390×844` portrait or `844×390` landscape.
+All new portrait assets are authored for the game's declared logical viewport, normally `390×850`; existing approved `390×844` portrait games/assets remain valid until a dedicated migration. Existing landscape games may retain `844×390` for maintenance.
 
 Asset decomposition does not create mobile/desktop layout variants. Phaser/Core uniformly scale the 390-wide composition: width first on mobile, height first on PC.
 
@@ -241,7 +241,7 @@ Before declaring the art pass complete, answer yes to all relevant items:
 - Are all functional texts localizable or avoided?
 - Does every visible word, number and symbol belong to the micro-brief's closed allowlist, with every unlisted generator invention rejected before presentation?
 - Does the screen remain coherent at all gameplay states?
-- Does the 390×844 (or declared viewport) composition remain unchanged across device ratios?
+- Does the 390×850 new-production composition (or the game’s explicitly declared legacy viewport) remain unchanged across device ratios?
 - Are runtime assets verified through their documented local/Drive entry route?
 - Has the flattened DA/master been kept as reference-only when appropriate?
 

@@ -48,7 +48,7 @@ Outils locaux : Python 3.10+ et Pillow (dépendance d'atelier, pas du jeu). Lire
 
 ```sh
 # Master cover : tailles/format issus du contrat actuel ; aucun redimensionnement.
-python3 .agents/skills/minifugg-art/scripts/art_files.py inspect cover.png --size 390x844 --format PNG --alpha opaque
+python3 .agents/skills/minifugg-art/scripts/art_files.py inspect cover.png --size 390x850 --format PNG --alpha opaque
 # Asset isolé : marge choisie selon son manifeste, pas un seuil universel.
 python3 .agents/skills/minifugg-art/scripts/art_files.py inspect subject.png --format PNG --alpha required --clearance 2
 # Comparaison native : ne remplace ni ne modifie les sources, ni un fichier existant.

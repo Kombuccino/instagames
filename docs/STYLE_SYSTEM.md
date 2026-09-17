@@ -72,7 +72,7 @@ Gameplay art is authored for the game's **fixed logical stage**, not for a parti
 
 Default authored stages are:
 
-- portrait: `390 × 844` logical units;
+- portrait: `390 × 850` logical units for new production; existing approved `390 × 844` compositions remain valid until migrated;
 - landscape: `844 × 390` logical units.
 
 The central composition must remain the same on phone, tablet, browser and desktop/store builds. Runtime adaptation is uniform scaling of the whole logical stage, not a redesign of object positions.

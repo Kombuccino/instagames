@@ -45,7 +45,7 @@ This order is a recommended implementation sequence, not a statement about game 
 The gameplay/engine migration can be marked `current` when all of these are true:
 
 1. Freeze the existing mechanic/rules as the behavioral reference.
-2. Confirm the game's fixed logical viewport (`390×844` portrait or `844×390` landscape by default).
+2. Confirm the game's fixed logical viewport: new portrait production targets `390×850`; an existing approved portrait game may remain explicitly `390×844` until this migration changes its geometry; existing landscape games may retain `844×390`.
 3. Rebuild the gameplay scene in Phaser without changing the mechanic unless explicitly requested.
 4. Put all gameplay positions, hit areas and cameras in logical units.
 5. Use uniform aspect-preserving scaling; no critical `vw`/`vh` layout.

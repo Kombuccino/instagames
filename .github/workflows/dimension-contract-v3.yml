@@ -18,6 +18,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - run: node scripts/prepatch-dimension-migration-v3.mjs
       - run: node scripts/migrate-dimension-contract-v3.mjs
       - run: npm install --no-audit --no-fund
       - run: npm run test:repository
@@ -31,6 +32,6 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add AGENTS.md GAME_DEV_SPEC.md docs/GAME_ENGINE_ARCHITECTURE.md docs/DA_GAME.md docs/DA_COVER.md docs/PRODUCTION_LAB_V1.md .agents/skills/phaser-minifugg/SKILL.md src/core/LayoutLab.tsx src/core/layoutLab.css src/core/CoverCalibrationLab.tsx src/core/coverCalibrationLab.css src/core/GameplayCalibrationLab.tsx src/core/GameplayCalibrationRuntime.tsx src/core/ProductionLab.tsx src/core/ProductionLab.css src/core/coinConsole90s.css
+          git add AGENTS.md GAME_DEV_SPEC.md docs/GAME_ENGINE_ARCHITECTURE.md docs/DA_GAME.md docs/DA_COVER.md docs/PRODUCTION_LAB_V1.md .agents/skills/phaser-minifugg/SKILL.md src/core/LayoutLab.tsx src/core/layoutLab.css src/core/CoverCalibrationLab.tsx src/core/coverCalibrationLab.css src/core/GameplayCalibrationLab.tsx src/core/GameplayCalibrationRuntime.tsx src/core/ProductionLab.tsx src/core/ProductionLab.css src/core/coinConsole90s.css scripts/migrate-dimension-contract-v3.mjs
           git commit -m "refactor(layout): migrate labs to 390x850 contract [dimension-migrated]"
           git push origin HEAD:core/dimension-contract-390x850-v3

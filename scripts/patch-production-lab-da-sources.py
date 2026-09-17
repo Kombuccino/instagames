@@ -8,8 +8,10 @@ out_dir = ROOT / 'public/assets/generated/linefugg/rebirth/sources'
 out_dir.mkdir(parents=True, exist_ok=True)
 
 img = Image.open(source_webp).convert('RGBA')
+# The Lab derivative currently stored in Git is 260×567 despite its historical filename.
+# Reproject it once to the canonical 390×850 DA canvas before making production cuts.
 if img.size != (390, 850):
-    raise SystemExit(f'Unexpected DA source size: {img.size}')
+    img = img.resize((390, 850), Image.Resampling.LANCZOS)
 
 outputs = {
     'linefugg-rebirth-editorial-paper-master-390x850.png': (0, 0, 390, 850),
@@ -115,7 +117,7 @@ manifest = manifest_path.read_text()
 block = """
 ### Rebirth — sources de découpe visibles dans le Production Lab
 
-Le master DA validé est désormais conservé en PNG `390×850` sous `public/assets/generated/linefugg/rebirth/sources/linefugg-rebirth-editorial-paper-master-390x850.png`. Les nœuds DA du Lab montrent les **fichiers sources à leur taille native**, pas des miniatures recadrées.
+Le master DA validé est désormais matérialisé sur le canevas `390×850` sous `public/assets/generated/linefugg/rebirth/sources/linefugg-rebirth-editorial-paper-master-390x850.png`. Les nœuds DA du Lab montrent les **fichiers sources à leur taille native**, pas des miniatures recadrées.
 
 Sources découpées depuis ce master : `paper-texture-source-120x80.png`, `grid-surface-source-354x374.png`, `line-language-source-354x374.png`, `ledger-source-350x139.png`, `total-source-179x72.png`, `controls-source-316x131.png`, `cell-study-source-98x98.png`.
 

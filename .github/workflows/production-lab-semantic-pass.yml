@@ -1,0 +1,36 @@
+name: Production Lab Semantic Pass
+
+on:
+  push:
+    branches:
+      - core/production-lab-semantic-pass
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/patch-production-lab-semantic-pass.mjs
+      - run: npm install --no-audit --no-fund
+      - run: npm run test:repository
+      - run: npm run build
+      - run: git diff --check
+      - name: Commit semantic pass
+        run: |
+          if git diff --quiet; then
+            echo "No semantic pass changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/core/ProductionLab.tsx src/core/ProductionLab.css docs/PRODUCTION_LAB_V1.md src/games/linefugg/GAME_STATUS.md
+          git commit -m "feat(lab): add semantic tags and DA gaps [production-lab-semantic]"
+          git push origin HEAD:core/production-lab-semantic-pass

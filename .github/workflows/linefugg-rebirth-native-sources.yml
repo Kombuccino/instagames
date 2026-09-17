@@ -23,7 +23,7 @@ jobs:
       - run: git diff --check
       - name: Commit generated native sources
         run: |
-          if git diff --quiet -- public/assets/generated/linefugg/rebirth/sources; then
+          if [ -z "$(git status --porcelain -- public/assets/generated/linefugg/rebirth/sources)" ]; then
             echo "No source changes to commit."
             exit 0
           fi

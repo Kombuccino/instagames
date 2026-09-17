@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useRef } from 'react'
 import type { GameComponentProps } from '../../core/types'
 import { PhaserGameHost } from '../../core/runtime/PhaserGameHost'
-import { MINIFUGG_LEGACY_PORTRAIT_VIEWPORT } from '../../core/runtime/gameRuntimePolicy'
+import { MINIFUGG_LEGACY_PORTRAIT_VIEWPORT, MINIFUGG_MASTER_VIEWPORT } from '../../core/runtime/gameRuntimePolicy'
 import { createLineFuggMusicPlayer } from '../../audio/gameMusic'
 import { LINEFUGG_SCENE_KEY, LineFuggScene } from './LineFuggScene'
 
 const LINEFUGG_BACKGROUND = '/assets/imported/linefugg/backgrounds/orbital-environment.webp'
 
 export function LineFugg({ active, seed, restartToken, session }: GameComponentProps) {
+  const query = new URL(window.location.href).searchParams
+  const rebirthLab = query.get('lab') === 'gameplay-runtime' && query.get('skin') === 'rebirth-editorial'
   const renderPixelRatio = useRef(Math.min(2, Math.max(1, window.devicePixelRatio || 1))).current
   const sessionRef = useRef(session)
   sessionRef.current = session
@@ -26,6 +28,7 @@ export function LineFugg({ active, seed, restartToken, session }: GameComponentP
   const createScene = useCallback(() => new LineFuggScene({
     seed,
     renderPixelRatio,
+    visualMode: rebirthLab ? 'rebirth-editorial' : 'orbital',
     session: {
       setScore: (score) => sessionRef.current.setScore(score),
       finish: (payload) => {
@@ -41,8 +44,8 @@ export function LineFugg({ active, seed, restartToken, session }: GameComponentP
         position: 'absolute',
         inset: 0,
         overflow: 'hidden',
-        backgroundColor: '#02070e',
-        backgroundImage: `linear-gradient(rgba(1, 5, 12, .10), rgba(1, 5, 12, .10)), url(${LINEFUGG_BACKGROUND})`,
+        backgroundColor: rebirthLab ? '#eee5d5' : '#02070e',
+        backgroundImage: rebirthLab ? 'none' : `linear-gradient(rgba(1, 5, 12, .10), rgba(1, 5, 12, .10)), url(${LINEFUGG_BACKGROUND})`,
         backgroundPosition: 'center center',
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
@@ -51,7 +54,7 @@ export function LineFugg({ active, seed, restartToken, session }: GameComponentP
       <PhaserGameHost
         active={active}
         restartToken={restartToken}
-        logicalViewport={MINIFUGG_LEGACY_PORTRAIT_VIEWPORT}
+        logicalViewport={rebirthLab ? MINIFUGG_MASTER_VIEWPORT : MINIFUGG_LEGACY_PORTRAIT_VIEWPORT}
         sceneKey={LINEFUGG_SCENE_KEY}
         createScene={createScene}
         renderPixelRatio={renderPixelRatio}

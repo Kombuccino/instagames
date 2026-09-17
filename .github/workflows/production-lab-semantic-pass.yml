@@ -19,6 +19,7 @@ jobs:
         with:
           node-version: 22
       - run: node scripts/patch-production-lab-semantic-pass.mjs
+      - run: node scripts/patch-production-lab-semantic-fix.mjs
       - run: npm install --no-audit --no-fund
       - run: npm run test:repository
       - run: npm run build

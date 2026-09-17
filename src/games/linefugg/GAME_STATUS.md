@@ -35,3 +35,7 @@ Le plan canonique doit être synchronisé à chaque décision sémantique ou vis
 - **Manques DA visibles dans le Lab** : états de cellule complets (**bloqué**), états Undo/Validate (**bloqué**), mouvement de reroll papier (**à faire**), langage sonore Rebirth (**à faire**). Les nœuds existants affichent désormais des tags multi-domaines et des repères Point/Zone/Dessin quand ils ont un sens.
 
 Prochaine action : revoir ces manques directement dans le Lab et produire en priorité les états de cellule et de contrôles avant d’étendre la mini-tranche au runtime Rebirth complet.
+
+## Passe Lab — sources natives 17 septembre 2026
+
+Le Lab ne traite plus les crops du master DA comme assets. Une première vraie décomposition produit des sources séparées pour papier, plaques de résultats, total, Undo et Validate ; elles sont affichées à leur taille native dans des nœuds auto-dimensionnés. Le master 390×850 reste la vue d’ensemble. États de cellule, variantes des contrôles, reroll/FX et son restent visibles comme éléments à produire.

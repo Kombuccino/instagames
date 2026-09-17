@@ -10,7 +10,7 @@ Un **écran** est une **capture statique d’une situation utile du jeu**, jamai
 
 Un **nœud** est une unité sémantique de conception, pas un objet de code. Il peut contenir une observation, une règle, une référence visuelle/sonore, un tileset à produire, un comportement ou tout autre détail utile à la compréhension. Un nœud peut porter plusieurs tags simples (`GD`, `IMAGE`, `ANIMATION`, `FX`, `SON`, `UI`, `NOTE`) et un statut léger (`done`, `review`, `todo`, `blocked`) ; ces marqueurs servent à lire le Plan, pas à recréer un logiciel de gestion de projet. Les nœuds locaux sont directement déplaçables sur le Plan.
 
-Les nœuds canoniques peuvent aussi porter un **repère visuel** Point, Zone ou Dessin sur leur écran propriétaire. Le type de repère suit le sens : Point pour un détail ponctuel, Zone pour une surface ou un composant, Dessin pour un mouvement, une trajectoire ou un FX. Quand une référence DA existe, un nœud peut afficher une petite découpe visuelle de cette référence au lieu de rester purement textuel.
+Les nœuds canoniques peuvent aussi porter un **repère visuel** Point, Zone ou Dessin sur leur écran propriétaire. Le type de repère suit le sens : Point pour un détail ponctuel, Zone pour une surface ou un composant, Dessin pour un mouvement, une trajectoire ou un FX. Une DA validée conserve son screen global, mais ses nœuds IMAGE doivent pointer vers de **vrais fichiers sources séparés** dès qu’ils existent ; ils sont affichés à leur taille native et le cadre du nœud s’adapte au contenu. Un élément encore absent reste `todo`/`blocked`, sans crop décoratif du master.
 
 ## Repères et observations
 
@@ -76,3 +76,9 @@ Les liens sont calculés depuis le centre logique des objets mais leur point vis
 Le bouton compact `↺` de la barre supérieure **Réinitialise la revue locale** : il efface annotations, nœuds locaux, liens, déplacements, commentaires, remplacements d’image et calages locaux du jeu courant, puis revient exactement au Plan canonique. Un simple rechargement de page conserve au contraire la revue locale, par conception.
 
 La suppression d’un repère local supprime son bundle sémantique associé et les liens qui le référencent ; le Plan ne doit jamais conserver de destination orpheline après `Delete`, `Backspace`, Undo/Redo ou recréation d’un lien.
+
+## Sources de production après validation DA
+
+Après validation d’une DA gameplay, le nuage DA devient le plan de production visible : le screen montre la composition d’ensemble, tandis que les nœuds autour portent les sources raster réelles, les surfaces moteur, états, animations/FX, sons et manques à produire. Une découpe contaminée par des valeurs, chemins ou textes dynamiques reste une référence et n’est pas promue en asset.
+
+Les sources raster sont montrées à leur dimension native dans l’espace vectoriel ; le nœud n’impose ni miniature, ni recadrage, ni hauteur fixe. Les liens vers les nœuds s’ancrent sur les dimensions réellement rendues.

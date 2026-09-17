@@ -16,5 +16,7 @@ jobs:
         with:
           node-version: 22
       - run: npm install --no-audit --no-fund
+      - name: Audit MiniFugg dimensions
+        run: node scripts/audit-minifugg-dimensions.mjs
       - run: npm run test:repository
       - run: npm run build

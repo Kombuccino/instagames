@@ -11,6 +11,7 @@ await fs.mkdir(output, { recursive: true })
 const receipt = JSON.parse(await fs.readFile('ops/drive-asset-sync/imports/linefugg-covers-2026-09-07.json', 'utf8'))
 const runtimeFile = edition => `linefugg-cover-${edition}.webp`
 const expected = receipt.assets.map(asset => `/assets/generated/linefugg/welcome/variants/runtime/${runtimeFile(asset.edition)}`)
+const linePositions = ['center 2.9%', 'center 1.4%', 'center 2.9%', 'center 2.9%']
 const vladExpected = [
   'vlad-cover-01-chaos.webp',
   'vlad-cover-02-still-life.webp',
@@ -18,6 +19,7 @@ const vladExpected = [
   'vlad-cover-04-castle-sign.webp',
   'vlad-cover-05-japanese-stall.webp',
 ].map(file => `/assets/generated/vlads-skewers/welcome/variants/runtime/${file}`)
+const vladPositions = ['center 2.9%', 'center 2.1%', 'center 2.9%', 'center 2.1%', 'center 2.9%']
 const report = { assets: [], scenarios: [], errors: [], screenshots: [] }
 for (const asset of receipt.assets) {
   const bytes = await fs.readFile(`${receipt.repository_prefix}${asset.file}`)
@@ -36,29 +38,29 @@ try {
   assert.deepEqual(LINEFUGG_WELCOME.variants.map(variant => variant.image), expected)
   assert.equal(LINEFUGG_WELCOME.motion, 'none')
   assert.equal(LINEFUGG_WELCOME.selection, 'seeded')
-  for (const variant of LINEFUGG_WELCOME.variants) {
+  for (const [index, variant] of LINEFUGG_WELCOME.variants.entries()) {
     assert.equal(variant.runtime, 'static')
     assert.equal(variant.unlockScore, 0)
     assert.equal(variant.fit, 'cover')
-    assert.equal(variant.objectPosition, 'top center')
+    assert.equal(variant.objectPosition, linePositions[index])
     assert.ok(!variant.layers?.length)
     assert.match(variant.image, /\/runtime\/.*\.webp$/)
   }
   assert.deepEqual(VLADS_SKEWERS_WELCOME.variants.map(variant => variant.image), vladExpected)
   assert.equal(VLADS_SKEWERS_WELCOME.motion, 'none')
   assert.equal(VLADS_SKEWERS_WELCOME.selection, 'seeded')
-  for (const variant of VLADS_SKEWERS_WELCOME.variants) {
+  for (const [index, variant] of VLADS_SKEWERS_WELCOME.variants.entries()) {
     assert.equal(variant.runtime, 'static')
     assert.equal(variant.unlockScore, 0)
     assert.equal(variant.fit, 'cover')
-    assert.equal(variant.objectPosition, 'top center')
+    assert.equal(variant.objectPosition, vladPositions[index])
     assert.ok(!variant.layers?.length)
   }
   await server.listen()
   browser = await chromium.launch({ headless: true })
   const formats = [
     { name: 'a54-brave', width: 360, height: 611, deviceScaleFactor: 2, hasTouch: true },
-    { name: 'master', width: 390, height: 844, deviceScaleFactor: 2, hasTouch: true },
+    { name: 'canonical-master', width: 390, height: 850, deviceScaleFactor: 2, hasTouch: true },
     { name: 'desktop', width: 1280, height: 720, deviceScaleFactor: 1 },
   ]
   for (const format of formats) {
@@ -83,18 +85,20 @@ try {
     const art = shell.locator('.mf-core-selected-cover > img')
     const fixedControls = page.locator('.mf-coin-console-system.is-fixed')
     const click = async locator => format.hasTouch ? locator.tap() : locator.click()
-    const assertArt = async expectedSrc => {
+    const assertArt = async (expectedSrc, expectedPosition) => {
       await art.evaluate(image => image.decode())
       const value = await art.evaluate(image => {
         const box = image.getBoundingClientRect()
         const scale = Math.max(box.width / image.naturalWidth, box.height / image.naturalHeight)
         return { src: image.getAttribute('src'), width: image.naturalWidth, height: image.naturalHeight,
           fit: getComputedStyle(image).objectFit, overflow: getComputedStyle(image.parentElement).overflow,
+          authoredPosition: image.style.objectPosition,
           paintedWidth: image.naturalWidth * scale, paintedHeight: image.naturalHeight * scale,
           boxWidth: box.width, boxHeight: box.height }
       })
       assert.ok(expected.includes(value.src), `Unexpected cover ${value.src}`)
       if (expectedSrc) assert.equal(value.src, expectedSrc)
+      if (expectedPosition) assert.equal(value.authoredPosition, expectedPosition)
       assert.deepEqual([value.width, value.height], [780, 1688])
       assert.equal(value.fit, 'cover', 'The authored 390 × 844 restoration must fill the Cover')
       assert.equal(value.overflow, 'hidden', 'The continuous lower escape stays inside the cover slot')
@@ -119,7 +123,7 @@ try {
       assert.equal(await buttons.nth(index).isEnabled(), true)
       await click(buttons.nth(index))
       await click(shell.getByRole('button', { name: 'Close', exact: true }))
-      await assertArt(expected[index])
+      await assertArt(expected[index], linePositions[index])
       const path = `${output}/${format.name}-${receipt.assets[index].edition}.png`
       await page.screenshot({ path })
       report.screenshots.push(path)
@@ -151,12 +155,12 @@ try {
         width: image.naturalWidth,
         height: image.naturalHeight,
         fit: getComputedStyle(image).objectFit,
-        position: getComputedStyle(image).objectPosition,
+        authoredPosition: image.style.objectPosition,
       }))
       assert.equal(value.src, vladExpected[index])
       assert.deepEqual([value.width, value.height], [780, 1688])
       assert.equal(value.fit, 'cover')
-      assert.equal(value.position, '50% 0%')
+      assert.equal(value.authoredPosition, vladPositions[index])
       assert.equal(await vladShell.locator('canvas').count(), 0)
       const playBox = await fixedControls.locator('.mf-coin-console-90s').boundingBox()
       const coverBox = await vladArt.boundingBox()

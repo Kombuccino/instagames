@@ -8,7 +8,9 @@ Le **Plan** est un espace vectoriel extensible avec pan/zoom. Les Covers forment
 
 Un **écran** est une **capture statique d’une situation utile du jeu**, jamais un mini-runtime. L’écran général montre le contexte principal ; des captures supplémentaires servent à montrer les moments qu’il faut réellement voir : action en cours, transition, changement de niveau, état terminal, etc. Les captures viennent du vrai jeu et peuvent être régénérées. Pendant la revue humaine, l’image d’un écran peut aussi être remplacée localement par glisser-déposer ou fichier choisi ; ce remplacement n’est canonique qu’après traitement par ChatGPT/Codex.
 
-Un **nœud** est une unité sémantique de conception, pas un objet de code. Il peut contenir une observation, une règle, une référence visuelle/sonore, un tileset à produire, un comportement ou tout autre détail utile à la compréhension. Les nœuds locaux sont directement déplaçables sur le Plan.
+Un **nœud** est une unité sémantique de conception, pas un objet de code. Il peut contenir une observation, une règle, une référence visuelle/sonore, un tileset à produire, un comportement ou tout autre détail utile à la compréhension. Un nœud peut porter plusieurs tags simples (`GD`, `IMAGE`, `ANIMATION`, `FX`, `SON`, `UI`, `NOTE`) et un statut léger (`done`, `review`, `todo`, `blocked`) ; ces marqueurs servent à lire le Plan, pas à recréer un logiciel de gestion de projet. Les nœuds locaux sont directement déplaçables sur le Plan.
+
+Les nœuds canoniques peuvent aussi porter un **repère visuel** Point, Zone ou Dessin sur leur écran propriétaire. Le type de repère suit le sens : Point pour un détail ponctuel, Zone pour une surface ou un composant, Dessin pour un mouvement, une trajectoire ou un FX. Quand une référence DA existe, un nœud peut afficher une petite découpe visuelle de cette référence au lieu de rester purement textuel.
 
 ## Repères et observations
 
@@ -22,7 +24,7 @@ Un repère local et son nœud constituent donc toujours un couple sémantique. S
 
 ## Liens sémantiques
 
-Un nœud peut avoir zéro, un ou plusieurs liens. Les liens ne reproduisent pas les dépendances du code ; ils expriment ce que l’humain et l’agent doivent comprendre.
+Un nœud peut avoir zéro, un ou plusieurs liens. Les liens ne reproduisent pas les dépendances du code ; ils expriment ce que l’humain et l’agent doivent comprendre. Quand cela éclaire réellement la production, ils traversent les états : une règle Proto peut pointer vers sa traduction DA, puis la DA vers son implémentation Release. Les éléments encore absents restent volontairement sans faux équivalent Release.
 
 L’outil **Lien** fonctionne en deux clics : le premier et le second clic peuvent viser un nœud, un Point/Zone/Dessin existant ou n’importe quel endroit d’un écran. Cliquer un endroit vide d’un écran crée automatiquement un Point avec son nœud local, de sorte qu’un lien conserve toujours un contexte sémantique.
 

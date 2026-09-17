@@ -31,6 +31,7 @@ Le plan canonique doit être synchronisé à chaque décision sémantique ou vis
 - **Proto** : quatre situations réelles P1 → P4 ;
 - **DA** : direction validée — registre éditorial imprimé, référence Lab `public/assets/generated/linefugg/rebirth/da/linefugg-rebirth-editorial-paper-lab-390x850.webp`, découpée en grille/matière, tracés, registre des résultats, total et contrôles ;
 - **Mini-tranche** : disponible uniquement via le runtime de Lab avec `skin=rebirth-editorial` ; le stage Rebirth utilise `390 × 850` tandis que le jeu public reste explicitement legacy `390 × 844` ;
-- **Release** : vide tant que cette mini-tranche n’a pas été revue et acceptée pour bascule.
+- **Release** : la mini-tranche Lab est maintenant représentée comme première traduction à revoir, sans prétendre qu’elle est la Release publique ;
+- **Manques DA visibles dans le Lab** : états de cellule complets (**bloqué**), états Undo/Validate (**bloqué**), mouvement de reroll papier (**à faire**), langage sonore Rebirth (**à faire**). Les nœuds existants affichent désormais des tags multi-domaines et des repères Point/Zone/Dessin quand ils ont un sens.
 
-Prochaine action : revoir la mini-tranche dans le Lab, noter les corrections visuelles/fonctionnelles, puis seulement décider de l’étendre au runtime Rebirth complet.
+Prochaine action : revoir ces manques directement dans le Lab et produire en priorité les états de cellule et de contrôles avant d’étendre la mini-tranche au runtime Rebirth complet.

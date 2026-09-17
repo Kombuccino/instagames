@@ -79,6 +79,12 @@ La suppression d’un repère local supprime son bundle sémantique associé et 
 
 ## Sources de production après validation DA
 
+Après validation d’une DA gameplay, le premier livrable du nuage DA est un **inventaire visuel exhaustif**, pas une série de crops. Chaque élément important visible dans la DA doit posséder un nœud, même lorsqu’il est moteur-owned et ne produira jamais de fichier : grille, cellules, chiffres/opérateurs, tracés, calculs, total, contrôles, états, mouvements, FX et sons.
+
+Avant tout asset final, les composants interactifs reçoivent leur matrice d’états et les mouvements notables leur storyboard. Les nœuds IMAGE restent `todo` tant qu’un vrai fichier propre n’existe pas ; une découpe de maquette ou une source dégradée ne sert pas à remplir artificiellement le Lab. Les liens sont volontairement rares : Proto → traduction DA, puis DA → Release seulement quand cette traduction existe réellement.
+
+L’espace de chaque État est extensible : le fond de zone s’agrandit à partir du bounding-box des écrans et nœuds canoniques ou locaux avec une marge de respiration. Un nouveau nœud ne doit pas être tassé pour tenir dans une largeur historique fixe.
+
 Après validation d’une DA gameplay, le nuage DA devient le plan de production visible : le screen montre la composition d’ensemble, tandis que les nœuds autour portent les sources raster réelles, les surfaces moteur, états, animations/FX, sons et manques à produire. Une découpe contaminée par des valeurs, chemins ou textes dynamiques reste une référence et n’est pas promue en asset.
 
 Les sources raster sont montrées à leur dimension native dans l’espace vectoriel ; le nœud n’impose ni miniature, ni recadrage, ni hauteur fixe. Les liens vers les nœuds s’ancrent sur les dimensions réellement rendues.

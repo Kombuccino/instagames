@@ -39,3 +39,8 @@ Prochaine action : revoir ces manques directement dans le Lab et produire en pri
 ## Passe Lab — sources natives 17 septembre 2026
 
 Le Lab ne traite plus les crops du master DA comme assets. Une première vraie décomposition produit des sources séparées pour papier, plaques de résultats, total, Undo et Validate ; elles sont affichées à leur taille native dans des nœuds auto-dimensionnés. Le master 390×850 reste la vue d’ensemble. États de cellule, variantes des contrôles, reroll/FX et son restent visibles comme éléments à produire.
+
+
+## Rebirth — reset production DA (18 septembre 2026)
+
+La première décomposition en petits assets/crops est annulée : qualité source insuffisante, inventaire incomplet et états interactifs absents. Le Production Lab repart du screen DA validé avec un inventaire visuel exhaustif avant production : structure, chiffres/opérateurs, lignes, états, FX/mouvements et sons. Release Rebirth reste vide jusqu’à validation de cette planche.

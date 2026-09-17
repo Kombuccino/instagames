@@ -70,19 +70,8 @@ Les quatre covers WebP totalisent 5 953 200 octets mais sont des assets de feed,
 
 Le coût RGBA après décodage reste de l'ordre de la mesure précédente (~14,875 Mio hors fond CSS, textes et buffers) : WebP réduit le **transfert et le stockage**, pas mécaniquement la mémoire d'une texture décodée à dimensions identiques.
 
-## Rebirth — sources de production séparées
+## Rebirth — production en reconstruction
 
-Première décomposition réelle de la DA éditoriale validée. Ces fichiers sont visibles dans le Production Lab à leur taille native ; ils ne sont pas tous encore branchés au runtime public.
+La première passe de sources séparées du 17 septembre est annulée : elle provenait d’une source de preview dégradée et ne constitue pas un pack de production. Ces fichiers sont retirés. La DA validée reste une référence globale.
 
-| Source | Taille | Ownership | Statut |
-| --- | ---: | --- | --- |
-| `rebirth/sources/da-master-approved-390x850.png` | 390×850 | référence globale, **REFERENCE ONLY** | validée |
-| `rebirth/sources/paper-texture-source-160x96.png` | 160×96 | matière/environnement | source produite |
-| `rebirth/sources/result-plate-red-86x40.png` | 86×40 | surface structurelle ; formule/résultat Phaser | source produite |
-| `rebirth/sources/result-plate-blue-86x40.png` | 86×40 | surface structurelle ; formule/résultat Phaser | source produite |
-| `rebirth/sources/result-plate-green-86x40.png` | 86×40 | surface structurelle ; formule/résultat Phaser | source produite |
-| `rebirth/sources/total-plate-140x62.png` | 140×62 | surface structurelle ; total Phaser | source produite |
-| `rebirth/sources/control-undo-source-118.png` | 118×118 | contrôle stateful, alpha | source idle ; états complémentaires à produire |
-| `rebirth/sources/control-validate-source-118.png` | 118×118 | contrôle stateful, alpha | source idle ; états complémentaires à produire |
-
-Les tracés, nombres/opérateurs, formules, total et contenu de grille restent engine-owned. États de cellule, variantes pressé/désactivé, reroll/FX et son restent explicitement ouverts dans le Lab.
+Le 18 septembre, le Lab repart par l’inventaire visuel complet : grille, cellule, chiffres/opérateurs, système de lignes, registre, total, matrices Undo/Validate, états de cellules, storyboard reroll, feedback invalide et carte sonore. Aucun nouvel asset Rebirth n’est considéré produit tant que cette planche n’est pas revue.

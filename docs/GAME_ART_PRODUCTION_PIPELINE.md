@@ -36,6 +36,14 @@ La planche contient, à l'échelle du stage et dans le langage visuel de la DA :
 
 La planche ne redessine pas le jeu dans un médium étranger. Les effets reprennent palette, matières, contours, échelle de détail et rythme de la DA. Toute idée nouvelle est identifiée comme proposition de l'agent. L'utilisateur valide ou corrige cette planche avant la production complète ; elle est archivée comme référence avec son statut dans `ART_DIRECTION.md` et son chemin est cité dans `ASSET_MANIFEST.md`.
 
+### 2.1 Inventory gate before asset production
+
+Après validation de la DA et avant toute découpe/export, faire un inventaire visuel complet dans le Production Lab. **Tout élément important visible doit avoir un nœud**, même si son owner final est Phaser et qu’aucun fichier ne sera produit. Cet inventaire inclut au minimum structure, surfaces, chiffres/glyphes, états interactifs, mouvement/FX et événements sonores.
+
+Pour chaque composant interactif, définir sa matrice d’états avant export. Pour chaque mouvement notable, définir une séquence courte repos → action → pic → retour. Tant que l’inventaire est incomplet, les assets concernés restent `todo`/`blocked` : ne pas fabriquer des crops ou textures provisoires uniquement pour donner l’impression que le pack existe déjà.
+
+Une source de production doit provenir du master approuvé original ou d’une recréation propre. Une preview, vignette, image recompressée ou source agrandie n’est jamais une base acceptable pour fabriquer les assets finaux.
+
 ## 3. Single-owner rule
 
 Every visible element has exactly one production owner.

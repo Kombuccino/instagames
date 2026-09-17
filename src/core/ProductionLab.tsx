@@ -184,6 +184,7 @@ const REFERENCE_OPTIONS: Array<{ id: ReferenceMode; label: string; logicalHeight
   { id: 'brave', label: 'A54 Brave 360×611', logicalHeight: MASTER_WIDTH * 611 / 360 },
 ]
 const LINEFUGG_PROOF_ROOT = '/assets/generated/linefugg/production-lab'
+const LINEFUGG_REBIRTH_DA_ROOT = '/assets/generated/linefugg/rebirth/da'
 
 function clamp(value: number, min: number, max: number) { return Math.min(max, Math.max(min, value)) }
 function projectTitle(game: InstagameDefinition) { return game.id === 'linefugg' ? 'LineFugg — Rebirth' : game.title }
@@ -272,6 +273,12 @@ function buildLineFuggPlan(game: InstagameDefinition): PlanProject {
       facts: ['Trois résultats intermédiaires', 'Total visible', 'Undo encore disponible', 'Validation manuelle obligatoire'],
       source: 'capture Playwright du runtime classique', x: SCREEN_X.proto, y: 4080, image: `${LINEFUGG_PROOF_ROOT}/proto-three-lines.png`, preview: 'proto', anchor: 'center',
     },
+    {
+      id: 'D1', state: 'da', title: 'DA validée · registre éditorial imprimé', status: 'Validée le 17 septembre 2026',
+      context: 'Première DA Rebirth validée. Elle traduit l’état P4 en feuille imprimée tactile : grille dominante, trois tracés colorés, registre des résultats, total et deux actions finales.',
+      facts: ['MASTER 390×850', 'Zone garantie 390×710', 'Grille 7×7 prioritaire', 'Trois tracés lisibles simultanément', 'Valeurs de la maquette = référence visuelle, pas données canoniques'],
+      source: 'ChatGPT image generation · 17 septembre 2026', x: SCREEN_X.da, y: 420, image: `${LINEFUGG_REBIRTH_DA_ROOT}/linefugg-rebirth-editorial-paper-lab-390x850.webp`, preview: 'proto', anchor: 'center',
+    },
   ]
 
   const nodes: PlanNode[] = [
@@ -288,11 +295,17 @@ function buildLineFuggPlan(game: InstagameDefinition): PlanProject {
     { id: 'P-validate', ownerScreenId: 'P4', title: 'Trois lignes puis choix', kind: 'text', body: 'La troisième ligne ne termine pas la partie. Le joueur choisit quand valider.', facts: ['Pas de résolution automatique', 'Validate actif à 3 lignes'], source: 'validateEnabled() / validateRun()', x: 1190, y: 4200, links: [screenLink('P-validate-control', 'P4', 325, 775, 'Validate'), nodeLink('P-validate-total', 'P-total', 'valide')] },
     { id: 'P-total', ownerScreenId: 'P4', title: 'Total final', kind: 'text', body: 'Le score final est la somme des trois scores de lignes.', facts: ['3 résultats intermédiaires', 'Somme finale'], source: 'totalScore() / session.finish()', x: 2140, y: 4510, links: [screenLink('P-total-value', 'P4', 195, 650, 'total')] },
     { id: 'P-viewport', ownerScreenId: 'P1', title: 'Contrat d’écran', kind: 'text', body: 'Toute nouvelle DA vise le MASTER 390×850 et garde le gameplay indispensable dans la zone garantie 390×710.', facts: ['390×710 garanti', 'Références 390×844 historiques compatibles', 'Pas de reflow PC/mobile'], source: 'MINIFUGG_ZONES.md', x: 1190, y: 1070, links: [] },
+    { id: 'D-style', ownerScreenId: 'D1', title: 'Découpe 1 · matière et grille', kind: 'image', body: 'Papier ivoire imprimé, trame et encre sèche. La grille 7×7 reste la masse dominante et les nombres conservent le contraste maximal.', facts: ['Pas de chrome futuriste', 'Texture matérielle sobre', 'Grille avant décor'], source: 'DA validée 17/09/2026', x: 3100, y: 560, links: [screenLink('D-style-grid', 'D1', 195, 275, 'grille + matière')] },
+    { id: 'D-lines', ownerScreenId: 'D1', title: 'Découpe 2 · les trois tracés', kind: 'image', body: 'Les trois lignes sont des encres/transparences colorées qui traversent les cases sans masquer les valeurs. Les points et flèches rendent l’ordre immédiatement lisible.', facts: ['3 identités couleur', 'Direction visible', 'Intersection lisible'], source: 'DA validée 17/09/2026', x: 4000, y: 650, links: [screenLink('D-lines-board', 'D1', 195, 320, 'tracés')] },
+    { id: 'D-ledger', ownerScreenId: 'D1', title: 'Découpe 3 · registre des résultats', kind: 'image', body: 'Sous la grille, chaque ligne possède une rangée typographique compacte avec son identité couleur, sa formule et son résultat. Cette zone doit rester vivante et moteur-owned.', facts: ['3 lignes de résultat', 'Typographie fonctionnelle', 'Aucun faux texte décoratif'], source: 'DA validée 17/09/2026', x: 3100, y: 1040, links: [screenLink('D-ledger-rows', 'D1', 195, 545, 'résultats')] },
+    { id: 'D-total', ownerScreenId: 'D1', title: 'Découpe 4 · total', kind: 'image', body: 'Le total forme une rupture de hiérarchie nette entre le registre et les commandes, sans devenir plus important que la grille.', facts: ['Somme finale moteur-owned', 'Valeur large et isolée'], source: 'DA validée 17/09/2026', x: 4000, y: 1160, links: [screenLink('D-total-value', 'D1', 285, 655, 'total')] },
+    { id: 'D-controls', ownerScreenId: 'D1', title: 'Découpe 5 · Undo / Validate', kind: 'image', body: 'Deux commandes physiques simples concluent la lecture : Undo à gauche, Validate à droite. Leur forme et matière peuvent être traduites en assets/états, mais leur logique reste celle du prototype.', facts: ['Undo toujours disponible avant validation', 'Validate explicite après 3 lignes', 'États interactifs à produire'], source: 'DA validée 17/09/2026', x: 3100, y: 1380, links: [screenLink('D-controls-undo', 'D1', 108, 770, 'Undo'), screenLink('D-controls-validate', 'D1', 280, 770, 'Validate')] },
+    { id: 'D-corrections', ownerScreenId: 'D1', title: 'À corriger avant runtime', kind: 'text', body: 'La validation porte sur la direction artistique et la hiérarchie. Les nombres, formules, résultats et détails exacts de la maquette ne deviennent pas des données de jeu : la planche de traduction devra reprendre un état réel LineFugg et vérifier chaque valeur.', facts: ['DA validée ≠ état fonctionnel validé', 'Recomposer avec données réelles', 'Pas de texte ou score cuit dans le fond'], source: 'validation utilisateur 17/09/2026 + DA_GAME.md', x: 4000, y: 1510, links: [screenLink('D-corrections-screen', 'D1', 195, 545, 'contenu fonctionnel')] },
   ]
 
   return {
     title: 'LineFugg — Rebirth',
-    summary: 'Rebirth repart du vrai LineFugg classique. Le Plan montre des captures statiques de situations réelles ; DA et Release restent vides.',
+    summary: 'Rebirth repart du vrai LineFugg classique. Le Proto reste la vérité fonctionnelle ; la première DA Rebirth est validée et découpée dans le Lab. Release reste vide tant qu’aucune mini-tranche intégrée n’existe.',
     screens,
     nodes,
   }

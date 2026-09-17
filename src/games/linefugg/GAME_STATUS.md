@@ -6,7 +6,7 @@ Mis à jour : 16 septembre 2026 à 15:44 Europe/Paris. Version : `0.8.2`. Change
 
 Le LineFugg publié revient volontairement au runtime **classique Orbital Accounting** qui servait de référence fonctionnelle avant Solar Origami. Les règles, l’équilibrage et les contrôles ne changent pas. Solar Origami est conservé dans Git et dans ses assets comme cas d’étude d’un pipeline DA/intégration raté ; ce n’est plus la direction active du jeu classique.
 
-En parallèle, **LineFugg — Rebirth** est traité comme un nouveau chantier de production à partir de ce jeu classique pris comme prototype évolué. Rebirth n’a actuellement **ni DA ni Release** : le Production Lab doit d’abord décrire honnêtement le prototype, ses situations, ses règles, ses états et ses dépendances avant toute nouvelle recherche artistique.
+En parallèle, **LineFugg — Rebirth** est traité comme un nouveau chantier de production à partir de ce jeu classique pris comme prototype évolué. Le 17 septembre 2026, l’utilisateur a validé la première DA Rebirth : **registre éditorial imprimé / papier tactile**, sur l’état fonctionnel P4. Le Production Lab contient désormais cette DA et son découpage sémantique. **Release reste vide** tant qu’aucune mini-tranche de traduction n’est réellement intégrée.
 
 ## Prototype de référence
 
@@ -29,7 +29,7 @@ Le plan canonique doit être synchronisé à chaque décision sémantique ou vis
 
 - **Covers** : existantes, ensemble séparé ;
 - **Proto** : en cours d’analyse détaillée dans le Lab ;
-- **DA** : vide tant qu’aucune nouvelle direction n’est réellement produite ;
+- **DA** : première direction validée — registre éditorial imprimé, référence Lab `public/assets/generated/linefugg/rebirth/da/linefugg-rebirth-editorial-paper-lab-390x850.webp` ;
 - **Release** : vide tant qu’aucune intégration Rebirth n’existe.
 
-Prochaine action : finir la lecture sémantique du prototype dans le Lab, puis seulement lancer une nouvelle exploration DA Rebirth à partir de ce contrat visible.
+Prochaine action : utiliser le découpage DA du Lab comme planche de traduction, corriger les valeurs/formules sur un état réel puis intégrer une mini-tranche représentative avant toute production complète.

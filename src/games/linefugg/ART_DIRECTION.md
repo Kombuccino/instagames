@@ -1,5 +1,15 @@
 # LineFugg — Art Direction
 
+## Rebirth — direction validée le 17 septembre 2026
+
+La nouvelle direction gameplay de **LineFugg — Rebirth** est validée : **registre éditorial imprimé / papier tactile**. Référence de revue intégrée au Production Lab : `public/assets/generated/linefugg/rebirth/da/linefugg-rebirth-editorial-paper-lab-390x850.webp`.
+
+Cette validation porte sur le médium, la hiérarchie et la grammaire visuelle : papier ivoire imprimé, encre sèche/trame discrète, grille 7×7 dominante, trois tracés translucides colorés, registre typographique des trois calculs, total isolé, Undo et Validate comme objets simples. Elle ne valide pas les nombres/formules exacts dessinés par la maquette : la traduction runtime doit les reconstruire depuis un état réel LineFugg et garder toute donnée dynamique moteur-owned.
+
+Le Production Lab découpe cette référence en cinq unités : grille/matière, tracés, registre des résultats, total, contrôles. Cette découpe est la planche de traduction de départ avant mini-tranche. Aucune Release Rebirth n’est encore intégrée.
+
+## Direction classique conservée comme référence historique
+
 Status: canonical gameplay art direction approved 2026-09-06.
 Cover status: current static collection, integrated 2026-09-07 after explicit user request. Preserve the four approved originals identified in ASSET_MANIFEST.md; animation is deferred, not a reason to retain the migration badge. Cover art follows DA_COVER.md, independently from the gameplay medium below.
 

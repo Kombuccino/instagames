@@ -1,6 +1,13 @@
 # LineFugg — Production asset manifest
 
-État canonique : 11 septembre 2026, version `0.5.3`, direction **Orbital Accounting**. Appliquer `docs/GAME_ART_PRODUCTION_PIPELINE.md` et `docs/ASSET_PIPELINE.md`.
+## Rebirth — référence DA validée
+
+- `public/assets/generated/linefugg/rebirth/da/linefugg-rebirth-editorial-paper-lab-390x850.webp` — dérivé de revue 390×850 de la DA validée le 17 septembre 2026 ; usage Production Lab uniquement, pas texture runtime finale.
+- Source de génération : image ChatGPT du 17 septembre 2026, `gen_id 629be15a-5355-4579-9149-4bc42942535c`, sortie originale 849×1851. Le dérivé Lab a été redimensionné proportionnellement vers 390×850 ; aucun élément n’a été redessiné.
+- Découpage sémantique : grille/matière, trois tracés, registre des résultats, total, Undo/Validate. Les données visibles de la maquette sont indicatives et doivent être remplacées par les vraies valeurs moteur lors de la mini-tranche.
+- Statut : **DA validée / Release non intégrée**.
+
+État canonique classique : 11 septembre 2026, version `0.5.3`, direction **Orbital Accounting**. Appliquer `docs/GAME_ART_PRODUCTION_PIPELINE.md` et `docs/ASSET_PIPELINE.md`.
 
 Les PNG approuvés et sources de travail sont conservés. **Le runtime gameplay ne charge plus aucun de ces gros PNG : ses 11 images actives sont des dérivés WebP lossless pré-dimensionnés.** Les quatre covers suivent le même principe, avec masters PNG distincts et dérivés WebP Core.
 

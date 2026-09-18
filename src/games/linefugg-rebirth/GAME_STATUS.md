@@ -2,9 +2,32 @@
 
 ## État courant — 18 septembre 2026
 
-**T02 est intégré au vrai runtime Phaser de Rebirth, version de test `0.1.0-t02`. Le jeu classique n'a pas été modifié.** L'utilisateur a accepté le pack pour intégration avec des réserves mineures sur les alignements et tailles numériques. La validation humaine du jeu intégré reste à recueillir.
+**T02 est intégré au vrai runtime Phaser de Rebirth, version de test `0.1.0-t02`. Le jeu classique n'a pas été modifié.** Le 18 septembre à 15:30 Europe/Paris, l'utilisateur confirme que le jeu tourne et juge très satisfaisante l'intégration visuelle et jouable, sous réserve de petites finitions. Cette acceptation remplace l'attente de retour humain sur ce premier pilote ; elle ne valide pas les fonctions Core encore absentes, toutes les plateformes, ni la généralisation de la méthode.
 
 Accès : `/?usr=moigod&lab=gameplay-runtime&game=linefugg-rebirth`. Ancien alias conservé dans ce Lab : `game=linefugg&skin=rebirth-editorial`. La route `game=linefugg` sans skin reste le classique. Aucun ajout au feed/catalogue public, aucun score envoyé au classement officiel. Recommencer apparaît après validation de la partie, pas au-dessus de la grille pendant le jeu.
+
+### Deux corrections Core ouvertes — non réalisées dans cette passe
+
+- [ ] Rétablir le retour Core normal autour de Rebirth, sans dessiner un retour concurrent dans l'art ni toucher au classique.
+- [ ] Brancher la fin de partie et le score du jour sur le parcours quotidien Core attendu. À l'instant du retour, `GameplayCalibrationRuntime` ne fait que recevoir `session.finish` dans son état React local et afficher un readout ; il ne fournit pas l'écran de fin ni le circuit de score quotidien complet. Conserver l'identité distincte de Rebirth : ses essais/règles ne doivent pas écraser les scores du classique.
+
+Ces omissions relèvent de l'intégration MiniFugg, pas de la décomposition graphique. La prochaine recette doit inclure le cycle entrée → jeu → fin/score du jour → retour, en plus des contrôles internes. Aucun correctif de code ni nouvelle version produit n'est livré par cette mise à jour documentaire.
+
+### Portabilité du procédé — question prioritaire, résultat non établi
+
+L'utilisateur veut pouvoir poursuivre avec un modèle de conversation antérieur, notamment GPT-5.6, sans devoir reconstruire la procédure ou utiliser systématiquement le modèle le plus puissant. Le résultat obtenu en quelques grandes passes correspond à son objectif, même si plusieurs passes de finition restent acceptables. Cela décrit l'expérience de ce pilote, pas une garantie de cadence pour les autres jeux.
+
+Le journal commun reste `.agents/skills/minifugg-art/references/VALIDATION.md`, avec le protocole autonome et les archives T01/T02. Trois responsabilités doivent rester séparées : le modèle image fabrique/édite ; l'agent comprend la DA, choisit les composants, masque, paramètres et corrections ; les scripts et le code vérifié exécutent crops, alpha, atlas, états, rendu et tests. T02 a utilisé des sélections et scripts spécifiques à ses sources après deux échecs de génération ciblée : ce n'est pas encore un outil universel de découpe. Conserver les scripts et composants qui fonctionnent, plutôt que demander à chaque modèle de les réinventer. Une procédure seule ne garantit pas la même perception visuelle ni le même diagnostic d'erreurs.
+
+Expériences proposées, non lancées par cette discussion :
+
+1. Après les corrections Core, tester une DA externe déjà validée de Crazy Papers dans un contexte neuf, sans générer simultanément la DA et ses calques. Retrouver son master exact avant l'essai.
+2. Comparer les modèles de conversation sur ce même fichier figé et le même paquet autonome (brief, références, outils/scripts, critères), sans fournir à l'un le résultat ou les décisions spécifiques produits par l'autre. Garder le même outil image et les mêmes accès lorsque possible ; noter les différences au lieu d'attribuer à un modèle une restriction d'outils. Pour un diagnostic supplémentaire, on peut fournir aux deux le même inventaire approuvé : cela mesure l'exécution, pas la compréhension autonome.
+3. Séparer ensuite le test de complexité sur Vlad : masques, parties cachées, pivots, déformations/animations et relations entre objets. Ne pas changer en même temps le jeu, le modèle et l'outillage puis prétendre identifier la cause d'un écart.
+
+Critères : fidélité/matière/échelle, composants et états exploitables, comportement en jeu, absence de régressions Core, reprises et temps humain jusqu'à acceptation. Aucun essai croisé de modèles n'a encore été exécuté. Une hypothèse de répartition reste à éprouver : modèle plus puissant pour les décisions visuelles/diagnostics difficiles, modèle antérieur pour l'exécution bornée avec outils existants. Ce n'est pas une dépendance obligatoire au premier modèle.
+
+Vérification documentaire du 18 septembre : [OpenAI — image generation tool](https://developers.openai.com/api/docs/guides/tools-image-generation) distingue le modèle principal des modèles GPT Image et indique que le premier révise le prompt ; [ChatGPT Images](https://help.openai.com/en/articles/11084440) décrit les fonctions de génération/édition. Cela ne prouve ni le modèle image réellement employé dans nos appels antérieurs ni la même qualité avec chaque modèle de conversation. Aucun achat/API ni changement de modèle n'a été effectué pour cette vérification.
 
 ## Isolation et sources
 
@@ -45,8 +68,8 @@ Les rapports et captures sont les artifacts `rebirth-proof-*` du run CI cité (r
 
 ## Plan de production et limites
 
-Proto : référence fonctionnelle classique inchangée. DA de cette expérience : T01, puis pack T02 validé pour intégration. Réalisation : ce runtime Rebirth et ses preuves CI. Restent la revue tactile sur appareil réel, les petits alignements, les raccords et la finition du ressenti. L'ancien plan graphique du Production Lab n'a pas encore été remplacé par ces captures ; ne pas confondre sa DA éditoriale précédente avec T02. Aucune refonte de l'éditeur Lab n'est incluse.
+Proto : référence fonctionnelle classique inchangée. DA de cette expérience : T01, puis pack T02 validé pour intégration. Réalisation : ce runtime Rebirth et ses preuves CI, désormais revus favorablement par l'utilisateur le 18 septembre. Restent les deux corrections Core ci-dessus, les petits alignements, les raccords et la finition du ressenti. L'ancien plan graphique du Production Lab n'a pas encore été remplacé par ces captures ; ne pas confondre sa DA éditoriale précédente avec T02. Aucune refonte de l'éditeur Lab n'est incluse.
 
-Sur le cas Brave 360 × 611, plus court que la zone garantie, les actions passent mais le cadrage complet des extrémités n'est pas certifié. Safari, téléphone physique, manette matérielle et performance réelle restent non testés. Son et animations finales ne sont pas déclarés terminés.
+Sur le cas Brave 360 × 611, plus court que la zone garantie, les actions passent mais le cadrage complet des extrémités n'est pas certifié. Le retour utilisateur ne précise pas son appareil : Safari, téléphone physique identifié, manette matérielle et mesure de performance réelle restent non testés par l'agent. Son et animations finales ne sont pas déclarés terminés.
 
-Après revue de ce pilote, retrouver la DA externe approuvée de Crazy Papers et tester dans un contexte neuf : DA choisie/retouchée/gelée, puis compréhension/décomposition. La portabilité vers d'autres modèles de conversation reste à mesurer. Voir le journal `.agents/skills/minifugg-art/references/VALIDATION.md`. Pas de nouvel abonnement ni de nouvelle DA à lancer par défaut.
+Suite : fermer les omissions Core de Rebirth, puis appliquer les essais de portabilité distincts décrits plus haut. Pas de modification du classique, de nouvel abonnement ni de nouvelle DA à lancer par défaut.

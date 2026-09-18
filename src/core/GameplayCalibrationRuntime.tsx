@@ -122,7 +122,7 @@ export function GameplayCalibrationRuntime() {
 
   return (
     <main className="mf-gameplay-runtime" data-testid="gameplay-runtime" data-game-id={rebirth ? 'linefugg-rebirth' : game.id} data-lab-scenario={scenario ?? undefined}>
-      {rebirth && <button data-testid="rebirth-restart" type="button" onClick={() => {
+      {rebirth && finished && <button data-testid="rebirth-restart" type="button" onClick={() => {
         setFinished(null); setScore(0); setRestartToken(value => value + 1)
       }} style={{ position: 'fixed', right: 8, top: 8, zIndex: 100, padding: '8px 12px', borderRadius: 6, border: '1px solid #786d58', background: '#f4eddc', color: '#343b30' }}>Recommencer</button>}
       <div className="game-card">

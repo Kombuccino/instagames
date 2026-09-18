@@ -1,12 +1,24 @@
 # Validation de minifugg-art
 
-Suivi du skill, pas une nouvelle autorité artistique. Mis à jour le 11 septembre 2026. Base examinée : `1c84696421a4c455a908a4e51a74c75fff0377ab`.
+Suivi du skill, pas une nouvelle autorité artistique. Mis à jour le 18 septembre 2026. Base de la validation initiale : `1c84696421a4c455a908a4e51a74c75fff0377ab`.
+
+## Essai de mise en place Qwen-Image-Layered — 18 septembre 2026
+
+Base inspectée : `main` à `88ec96de362430fdc33490a09b7ba43288125ad3`. L'utilisateur demande de mettre en place les outils existants et d'essayer la décomposition, sans développer davantage le Lab ni lui imposer un formulaire.
+
+- Fournisseur choisi pour le premier essai : fal, modèle `fal-ai/qwen-image-layered`. Documentation du modèle et API relues. Le connecteur fal est disponible dans le catalogue ChatGPT mais **non installé/non connecté** dans cette session ; la carte de connexion a été présentée. Seule l'autorisation de compte doit être faite par l'utilisateur, pas la préparation artistique ou technique. Ne jamais demander de coller une clé secrète dans le chat.
+- Autre route effectivement examinée : démonstration officielle Qwen sur Hugging Face. Les appels réseau depuis le conteneur échouent à la résolution DNS ; l'accès à la configuration/API de la Space n'a pas abouti via les outils disponibles. Cela ne prouve pas que la Space est en panne. Aucun GPU CUDA ni variable `FAL_KEY`/`HF_TOKEN` utilisable n'a été trouvé dans ce conteneur.
+- Référence du pilote retrouvée dans `src/games/linefugg/ART_DIRECTION.md` : DA Rebirth registre éditorial/papier tactile. Les deux fichiers `public/assets/generated/linefugg/rebirth/da/linefugg-rebirth-editorial-paper-lab-390x850.webp` et `linefugg-rebirth-editorial-paper-lab-390x850-r2.webp` sont présents et partagent le blob `7f0171395341bed5e3c2db0dae9988b6c227294d`. Cette passe n'a pas ouvert leurs pixels ni vérifié leur encodage ; retrouver/ouvrir le master approuvé lossless avant une production finale, ne pas promouvoir une preview en source finale.
+- **Résultat réel : accès vérifiés, connexion fal proposée ; aucune décomposition soumise, aucun calque généré, aucun SDK ou adaptateur ajouté, aucune intégration ni comparaison visuelle effectuée.** Aucun coût d'inférence engagé. Une carte de connexion n'est pas une installation achevée.
+- Reprise : une fois fal réellement connecté, découvrir ses actions et vérifier que le modèle est exposé ; récupérer la référence exacte, faire un petit essai, sauvegarder les calques RGBA, contrôler alpha/géométrie et recomposer pour comparaison. Les pertes et regroupements incorrects doivent être examinés avant toute modification du jeu. Ne pas annoncer de gain de temps ni de fidélité sans cet essai. Pas de tâche de fond ni de notification ultérieure programmée.
+
+Sources : [Qwen officiel](https://huggingface.co/Qwen/Qwen-Image-Layered), [Space officielle](https://huggingface.co/spaces/Qwen/Qwen-Image-Layered), [API fal](https://fal.ai/models/fal-ai/qwen-image-layered/api). Canva reste une alternative non installée et non testée ; ne pas demander plusieurs connexions avant d'avoir évalué le premier candidat.
 
 ## Périmètre autorisé
 
 L'utilisateur a validé la reprise des consignes, du skill graphique, des contrôles, des essais et des traces de résultat. Le bilan hebdomadaire est **reporté** : aucun skill de revue, tâche récurrente ou changement de paramètres de compte n'est inclus. Le lieu éventuel de cette future revue sera rediscuté ; ne pas supposer les accès d'un autre environnement.
 
-Aucune DA, image canonique, règle de jeu, version produit ou interface runtime n'est remplacée par cette passe documentaire/outillage. Les modifications de consignes restent ciblées : covers statiques, frontière Welcome, sources propres vs annotations et transport local/Drive.
+Aucune DA, image canonique, règle de jeu, version produit ou interface runtime n'est remplacée par cette passe documentaire/outillage. Les modifications de consignes restent ciblées : covers statiquesques, frontière Welcome, sources propres vs annotations et transport local/Drive.
 
 ## Contrôles exécutés
 
@@ -59,7 +71,7 @@ Scénarios à utiliser dans l'environnement qui charge le skill. Ils fixent les 
 
 1. **Cover :** choisir un jeu réel et préparer un petit comparatif d'écritures distinctes, hors de son catalogue publié. Une image par appel, texte exact listé, PNG statique, règles de cadrage ; assembler sans décor de présentation. Ne pas régénérer/remplacer ses masters déjà approuvés.
 2. **Asset gameplay :** choisir un élément d'une DA validée, retrouver le master exact, produire ou extraire proprement l'élément et tester alpha/ancrage/états dans une mini-tranche sans changer le gameplay. Une boîte englobante automatique ne vaut pas détourage sémantique.
-3. **UI :** choisir un composant déjà validé, réutiliser ses primitives et référence actuelles, produire seulement les états utiles. L'interface complète/étendue dépend du contrat actuel ; ne pas reprendre une vieille planche au nom ressemblant.
+3. **UI :** choisir un composant déjà validé, réutiliser ses primitives et référence actuelles, produire seulement les états utiles. L'interface complète/étendue dépend du contrat actuel ; ne pas reprendre une vieille planche au nom ressemblant à celle d'une autre référence.
 
 Pour chaque essai, remplir la trace de `docs/DA_CORE.md` dans le suivi concerné : sources, brief et paramètres accessibles, sorties, nombre d'essais connu, textes parasites observés, contrôle technique, examen visuel, coût de préparation effectivement mesuré et retour utilisateur. Les résultats du pilote permettront une correction ciblée du skill, pas la création de quatre procédures concurrentes.
 

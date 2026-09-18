@@ -2,11 +2,65 @@
 
 Suivi du skill, pas une nouvelle autorité artistique. Mis à jour le 18 septembre 2026. Base de la validation initiale : `1c84696421a4c455a908a4e51a74c75fff0377ab`.
 
-## État actuel — T01, DA et calques générés dans ChatGPT
+## État actuel — T02, raffinement et banc des composants
+
+Base Git : `76e58a632b28acb911003d1ce1e329ad96b6cfaa`. **Pack et assemblage interactif de recette réalisés ; intégration complète au jeu Phaser publié non réalisée.** Aucune nouvelle DA canonique, aucune modification du jeu, du registre, des règles ou du Production Lab. L'acceptation artistique de T02 reste à recueillir.
+
+### Décisions utilisateur qui remplacent l'interprétation trop stricte de T01
+
+Le 18 septembre, l'utilisateur considère T01 comme une première séparation très satisfaisante à raffiner. Le fond peu informatif peut être un aplat proche ; son absence dans une superposition transparente n'invalide pas cette séparation. La conservation de la matière et de l'échelle relative importe davantage que l'alignement de calques plein cadre à (0,0). Les objets de production doivent être recadrés au plus près avec leurs coordonnées source, taille et pivot. Les variantes d'un même contrôle gardent toutefois un cadre commun pour éviter les sauts entre états.
+
+Les nombres variables sont séparés. Le test emploie `0–9`, `+`, `×`, `÷`, `=`, sans signe moins. Un point décimal raster est ajouté pour afficher les résultats non entiers de divisions. Les cellules composent un nombre ou un préfixe `×n` / `÷n` ; ne pas générer chaque combinaison comme une image différente. Cette portée expérimentale ne supprime pas les valeurs négatives d'un jeu existant.
+
+Le parcours normal est **exploration de cinq ou six DA → choix/retouches → gel du fichier approuvé → compréhension → décomposition → raffinement → intégration**. T01 a produit sa DA et ses premières couches dans le même échange : ce n'est pas une preuve de fonctionnement avec une DA externe, ni dans deux contextes indépendants. Finir ce pilote avant l'essai demandé sur une DA validée de Crazy Papers, dont le master exact sera à retrouver. Ne pas lancer ce second jeu en parallèle.
+
+### Livrables et contrôles réalisés
+
+- **47 PNG RGBA** : plateau vide, quatre groupes décoratifs, échantillon papier optionnel, 15 glyphes, registre vide, trois rangées réutilisables, total vide et libellé raster, huit états de boutons, six états de pastilles, six morceaux de tracés. Crops, transformations, pivots et SHA-256 figurent dans le manifeste. Les huit sources T01 sont conservées octet pour octet.
+- Chiffres 1–9 extraits du calque numérique T01, 0 extrait du résultat 20, + et = extraits du registre. ×, ÷ et le point sont **construits localement**, pas présentés comme des originaux récupérés. Couverture raster neutralisée en blanc pour teinte/taille variables. Aucune police du système n'est embarquée.
+- Registre/total : retrait masqué des valeurs, signes et disques puis réparation locale par inpainting. Les grandes surfaces illustrées restent issues de T01. Des zones légèrement lissées demeurent à examiner à taille native ; les pixels cachés ne sont pas prétendument récupérés à l'identique.
+- Undo/Validate : `off/on/hover/pressed`, dérivés par teinte/contraste/luminance du même sprite, sans changement d'ancrage. Trois pastilles : `off/on`. Tracés : nœud et segment par couleur, rotation/extension longitudinale ; opacité appliquée au groupe dans le banc. Raccords fins et mouvement en Phaser restent à éprouver.
+- Atlas **2048 × 1537**, PNG et WebP vérifié lossless, JSON de frames. Chaque frame PNG restitue exactement l'asset individuel ; les pixels visibles décodés du WebP et tous les alphas correspondent au PNG.
+- **10 tests Python réussis**, avec sous-tests sur les fichiers : sources inchangées, PNG/RGBA/tailles, inventaire des glyphes, recoloration, géométrie/alpha des états, atlas réversible, WebP lossless.
+- **38 vérifications Chromium réussies**, sans erreur JavaScript, fenêtres 390 et 1440 pixels : images chargées, formules/préfixes, résultats/décimales, désactivation, Undo, hover/pressed, relâchement extérieur sans activation, validation clavier/tactile émulée, reset et absence de débord horizontal. Le HTML local est rendu via `set_content` : ce n'est ni le site déployé, ni Safari, ni un téléphone physique.
+
+Le fichier autonome `banc-composants.html` est un **banc HTML de recette des composants**, pas un nouveau moteur de jeu. Les sélecteurs montrent 0–3 lignes et une situation avec ×/÷ ; Undo retire une ligne et Validate agit uniquement à trois lignes. Calcul de gauche à droite : `8 ×2 +4 ÷2 = 10`, `3 ÷2 +7 ×3 = 25.5`, `9 +3 ×2 ÷3 = 8`, total `43.5`. Ni drag de grille, ni reroll, ni session/score Core, ni audio ne sont validés par ce banc.
+
+Les captures natives sont **853 × 1844**, comme T01. À largeur 390 cela représente environ 843,10 unités de hauteur ; aucune conformité nouvelle au stage Core 390 × 850 / zone garantie 390 × 710 n'est revendiquée. Les positions du banc sont des ajustements mesurés de cette étude, pas une nouvelle géométrie canonique.
+
+### Échecs enregistrés et changement de méthode
+
+Deux demandes d'édition ciblée ont retourné des planches globales hors périmètre au lieu du seul registre vidé. Sorties rejetées : `a7f255f7-ce2b-4fd8-bc65-ce8ece126881` et `cb00adbe-7178-425e-bf9d-3d348c3f0b27`. Elles n'alimentent aucun asset du pack. Les métadonnées ne montrent pas un prompt interne exploitable ni la référence effectivement transmise : ne pas prétendre que le contexte était isolé. Après deux échecs, arrêt des relances ; raffinement déterministe des fichiers T01 par crops, masques, inpainting local, transformations et assemblage.
+
+Une première réparation de disque trop claire a été corrigée. Le libellé TOTAL extrait comme masque blanc a reçu sa teinte sombre au rendu. Une capture native initiale avait un pixel de largeur supplémentaire à cause du centrage fractionnaire ; elle a été refaite à coordonnées entières. Les défauts observés ne sont pas masqués par une régénération générale.
+
+Ce résultat est **assisté par scripts**, avec régions T01 choisies et contrôlées par l'agent. Il ne prouve pas qu'un prompt unique PSD-like suffit, ni que ces coordonnées sont transposables à une autre DA. Aucun appel payant fal/HF, aucune souscription ou nouvelle dépendance runtime dans le dépôt.
+
+### Archive et reprise
+
+Archive privée vérifiée présente dans `MiniFugg - Graphic Archive/Games/linefugg/layer-refinement-tests` : [minifugg-t02-composants.zip](https://drive.google.com/file/d/1PjuYZnrv6vq-mYP-P6VKJw8D0YsGTMta/view). Taille 26 542 390 octets, SHA-256 local `b0f2cfba5ce68a5681382cca79b2d398f66db9ed5841656037bf2ba9abdab30e`. L'archive contient sources, 47 PNG, atlas, manifeste/layout, HTML autonome, scripts de reconstruction, tests, captures et deux documents `docs/T02.md` et `docs/template-deux-phases.md`. Le transfert Drive et sa taille sont confirmés ; aucun checksum distant n'a été exposé par le connecteur. Ce dossier est hors de la synchronisation d'assets runtime Fugg. Les fichiers ne sont pas importés dans le jeu : seul ce journal est modifié dans GitHub.
+
+Reproduire avec les dépendances d'atelier disponibles : `python build_assets.py`, `python build_atlas.py`, `python build_fixture.py`, `python tests/test_assets.py`, `python tests/test_fixture.py`, `python tests/capture_native.py`. Versions réellement employées et limites dans `proofs/environment.json`. L'HTML embarque ses images et ne fait aucune requête réseau. Les deux images génératives rejetées sont exclues du pack.
+
+**Suite de T02 :** revue des composants raffinés, puis branchement et vérification dans le vrai runtime Phaser avant de dire que l'intégration est complète. **T03 ensuite :** repartir du master externe validé de Crazy Papers, dans un contexte neuf. Pas de boucle indéfinie, pas de refonte du Lab et pas de nouvel abonnement.
+
+### Template autonome et portabilité — non encore éprouvée
+
+Ce gabarit spécialise le micro-brief existant de DA_CORE ; l'agent le remplit, jamais l'utilisateur.
+
+1. **Phase DA séparée :** une image indépendante par proposition, référence fonctionnelle, invariants/traitement, liste fermée des textes, original lossless à une résolution de travail au moins double. Mesurer les pixels réels. Attendre choix/retouches puis figer fichier et hash. Ne pas faire les calques dans cette exploration.
+2. **Paquet d'entrée de décomposition :** fichier approuvé effectivement accessible, hash, géométrie, contenus dynamiques et inventaire avec identifiants/repères visuels, rectangles source, échelle, transparence et états. Une copie annotée est distincte de l'image propre. La sélection du Lab peut alimenter ces repères ; le Lab reste optionnel.
+3. **Commande unitaire :** « Édition de [fichier joint et id], composant [repère]. Livrer uniquement [élément], conserver [silhouette/matière/échelle], retirer [contenu précis], reconstituer seulement [surface occultée nécessaire]. Textes autorisés : [liste ou aucun]. PNG RGBA, extérieur transparent. Aucun titre, légende, asset sheet, faux damier ni nouvelle DA. » Préférer un masque déterministe pour les pixels visibles ; le recadrage et l'ancrage sont contrôlés par l'agent. Un nom de fichier dans un texte ne prouve pas que l'image a été transmise.
+4. **Raffinement :** glyphes et valeurs composables ; états d'un même contrôle dans un cadre/pivot commun ; composants de lignes avec opacité/raccords vérifiés ; fichiers recadrés et manifeste de géométrie. Distinguer extrait, reconstruit, transformé et nouvellement généré. Ne pas appeler une planche contenant du JSON un vrai manifeste.
+5. **Recette :** assembler les vrais fichiers, exercer les valeurs et états, vérifier les critères visuels/techniques/fonctionnels séparément. Après deux corrections infructueuses, diagnostiquer et changer de méthode. Distinguer banc de composants et jeu intégré.
+
+**Aucun autre modèle de conversation n'a été testé.** La documentation [OpenAI Image generation](https://developers.openai.com/api/docs/guides/image-generation), consultée le 18 septembre 2026, distingue modèle de conversation et modèle image et décrit la révision du prompt par le premier. Cela ne garantit ni le modèle image utilisé dans cette interface, ni une qualité identique entre versions de ChatGPT. Fixer source/hash, périmètre, critères et fournisseur/version image quand contrôlable ; refaire le même paquet dans des contextes neufs et avec d'autres modèles de conversation. Enregistrer paramètres réellement exposés, essais, corrections et temps humain. Ne pas revendiquer trois prompts prêts à intégrer ni un gain de durée avant cette mesure.
+
+## Historique — T01, DA et calques générés dans ChatGPT
 
 Base Git inspectée pour cet audit : `main` à `8d1989fb79716c49032b3231bbb9e4b3414ab5a6`. L'utilisateur demande une expérience de méthode indépendante de la conformité stricte au game design : une nouvelle DA de résolution au moins double, puis des PNG transparents dont la superposition restitue cette DA. Pas de fichier PSD obligatoire, pas de nouvelle souscription, pas de refonte du Lab. Le retour « pas totalement parfait, mais pas mal » invite à analyser ; ce n'est pas une acceptation finale.
 
-**Bilan : production de grandes familles reconnaissables et de vrais fichiers RGBA réussie ; recomposition fidèle échouée.** Ne pas intégrer ces sorties dans le jeu ni les promouvoir en nouvelle DA canonique. La génération précédente a livré un master et sept calques distincts ; cette passe a inspecté ces huit fichiers et les a réellement superposés, sans nouvelle génération.
+**Bilan de l'audit initial : production de grandes familles reconnaissables et de vrais fichiers RGBA réussie ; superposition brute non fidèle.** La portée de cette conclusion a été corrigée par l'utilisateur : voir décisions T02 ci-dessus. Ne pas promouvoir les sorties T01 en nouvelle DA canonique. La génération précédente a livré un master et sept calques distincts ; cette passe a inspecté ces huit fichiers et les a réellement superposés, sans nouvelle génération.
 
 ### Fichiers et méthode réellement contrôlés
 
@@ -27,21 +81,21 @@ Superposition native à (0,0) avec `Pillow.Image.alpha_composite`, sans déplace
 
 ### Résultats observés
 
-- Les familles sont visuellement reconnues ; les boutons gardent une matière illustrée convaincante. Le plateau existe sans nombres ni tracés. Contrôles examinés aussi sur blanc et noir : découpes et ombres réelles.
+- Les familles sont visuellement reconnues ; les boutons gardent une matière illustrée convaincante. Le plateau existe sans nombres ni tracésés. Contrôles examinés aussi sur blanc et noir : découpes et ombres réelles.
 - **34,5852 % de la recomposition reste entièrement transparent.** Le fond papier complet n'a pas été produit : le calque dit de fond ne contient que les décors de coins.
 - Géométrie non conservée : chiffres descendus, registre remonté sur la grille, total remonté sur le registre. Exemple mesuré par seuillage dans une zone ciblée, sans OCR : boîte du premier 8 environ (93,245)–(122,289) dans le master, contre (91,298)–(126,350) dans son calque. La taille change aussi légèrement ; ce n'est pas uniquement une translation.
 - Des différences de dessin et de teinte demeurent ; les chiffres sélectionnés perdent notamment les couleurs du master. Les aplats quasi opaques sont souvent à alpha 253/255 ; ce défaut léger est distinct de la semi-transparence intentionnelle plus forte des tracés. Des pixels alpha très faibles éloignés des objets rendent insuffisant un simple bounding-box alpha > 0.
-- Le registre, le total et les commandes gardent des textes/valeurs intégrés et plusieurs objets partagent un calque. Ces regroupements étaient demandés dans les prompts de l'essai : ils ne constituent pas à eux seuls un échec du test de recomposition, mais ne sont pas des composants runtime terminés. États interactifs et typographie dynamique ne sont pas testés.
+- Le registre, le total et les commandes gardent des textes/valeurs intégrés et plusieurs objets partagent un calque. Ces regroupements étaient demandés dans les prompts de l'essai : ils ne constituent pas à eux seuls un échec du test de recomposition, mais ne sont pas des composants runtime terminés. États interactifs et typographie dynamique ne sont pas testés dans T01.
 
-Preuves jointes à la conversation : comparaison native original/recomposition, recomposition RGBA brute, contrôles sur blanc/noir, JSON de mesures, script reproductible et huit originaux dans `MiniFugg-T01-calques-analyse.zip` (SHA-256 `8f9576d8a2ec4acea375fd9f85b92eaba3a7912f34aad1ff182face4bd51db79`). **Les images et l'archive ne sont pas importées dans GitHub/Drive ni dans le jeu ; seuls ce compte rendu et les identifiants/empreintes sont publiés dans le dépôt.** Aucun build/runtime testé pour cet audit documentaire et graphique. Ne pas convertir cette analyse en statut Release du Lab.
+Preuves jointes à la conversation : comparaison native original/recomposition, recomposition RGBA brute, contrôles sur blanc/noir, JSON de mesures, script reproductible et huit originaux dans `MiniFugg-T01-calques-analyse.zip` (SHA-256 `8f9576d8a2ec4acea375fd9f85b92eaba3a7912f34aad1ff182face4bd51db79`). **À cette étape, les images et l'archive n'étaient pas importées dans GitHub/Drive ni dans le jeu ; seuls ce compte rendu et les identifiants/empreintes étaient publiés dans le dépôt.** Aucun build/runtime testé pour cet audit documentaire et graphique. Ne pas convertir cette analyse en statut Release du Lab. Les sources T01 sont maintenant aussi conservées dans l'archive T02.
 
-### Diagnostic et prochaine expérience
+### Diagnostic et proposition historique
 
 Le brief demandait de « recréer » chaque famille tout en conservant exactement son alignement. Le résultat suggère une reconstruction visuelle, pas une extraction contrainte. L'agent a aussi mélangé fond papier et décor dans une demande de calque transparent, au lieu de réserver explicitement un fond complet opaque. La formulation explique une partie des erreurs ; ce test unique ne prouve pas qu'un prompt seul peut garantir les pixels/coordonnées.
 
-**T02 proposé, non lancé : un seul Validate sur le master T01 inchangé.** Référence + sélection/masque visuel + coordonnées mesurées ; tester une extraction par masque de silhouette qui conserve les pixels existants plutôt qu'une régénération libre du bouton. Le fond occulté est reconstruit séparément. Export et placement dans la toile d'origine sont déterministes. Vérifier recomposition et contours avant extension. Masques, bords antialiasés et couleurs déjà mélangées au fond peuvent eux-mêmes demander une correction ; les éléments semi-transparents devront être traités séparément. Aucun succès promis avant mesure.
+**Proposition initiale de T02, remplacée par la portée autorisée ci-dessus : un seul Validate sur le master T01 inchangé.** Référence + sélection/masque visuel + coordonnées mesurées ; tester une extraction par masque de silhouette qui conserve les pixels existants plutôt qu'une régénération libre du bouton. Le fond occulté est reconstruit séparément. Export et placement dans la toile d'origine sont déterministes. Vérifier recomposition et contours avant extension. Masques, bords antialiasés et couleurs déjà mélangées au fond peuvent eux-mêmes demander une correction ; les éléments semi-transparents devront être traités séparément. Aucun succès promis avant mesure.
 
-Le Lab reste optionnel : sa sélection doit pouvoir devenir un repère/masque et une référence de fichier réellement transmis, pas seulement le nom d'un élément dans un long texte. Une passe ciblée puis bilan ; pas sept régénérations simultanées. Non éprouvés : répétabilité sur plusieurs DA, décomposition plus fine, états de boutons, intégration moteur et temps jusqu'à acceptation. Aucun gain « deux heures au lieu de plusieurs jours » n'est encore établi.
+Le Lab reste optionnel : sa sélection doit pouvoir devenir un repère/masque et une référence de fichier réellement transmis, pas seulement le nom d'un élément dans un long texte. Une passe ciblée puis bilan ; pas sept régénérations simultanées. Non éprouvés à ce stade : répétabilité sur plusieurs DA, décomposition plus fine, états de boutons, intégration moteur et temps jusqu'à acceptation. Aucun gain « deux heures au lieu de plusieurs jours » n'est encore établi.
 
 ## Historique — accès à Qwen-Image-Layered, avant T01
 
@@ -109,7 +163,7 @@ Scénarios à utiliser dans l'environnement qui charge le skill. Ils fixent les 
 
 ## Pilotes graphiques restant à éprouver
 
-T01 ci-dessus constitue maintenant un essai réel de génération/décomposition, mais pas une validation artistique ou runtime. Les propositions suivantes restent non exécutées dans ce suivi. Aucun gain de qualité artistique, de temps d'intégration ou de taux d'acceptation n'est revendiqué à partir des seuls tests techniques. Utiliser le dernier `main` et les références réellement ouvertes au moment de l'essai.
+T01 est un essai réel de génération/décomposition et T02 une préparation/recette des composants ; aucun ne vaut validation du jeu intégré. Les propositions suivantes restent non exécutées dans ce suivi. Aucun gain de qualité artistique, de temps d'intégration ou de taux d'acceptation n'est revendiqué à partir des seuls tests techniques. Utiliser le dernier `main` et les références réellement ouvertes au moment de l'essai.
 
 1. **Cover :** choisir un jeu réel et préparer un petit comparatif d'écritures distinctes, hors de son catalogue publié. Une image par appel, texte exact listé, PNG statique, règles de cadrage ; assembler sans décor de présentation. Ne pas régénérer/remplacer ses masters déjà approuvés.
 2. **Asset gameplay :** choisir un élément d'une DA validée, retrouver le master exact, produire ou extraire proprement l'élément et tester alpha/ancrage/états dans une mini-tranche sans changer le gameplay. Une boîte englobante automatique ne vaut pas détourage sémantique.

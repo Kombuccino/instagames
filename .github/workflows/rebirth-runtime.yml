@@ -16,6 +16,9 @@ on:
       - '.github/workflows/rebirth-runtime.yml'
 permissions:
   contents: read
+concurrency:
+  group: rebirth-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   rebirth:
     runs-on: ubuntu-latest
@@ -28,11 +31,26 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: node --test scripts/test-linefugg-rebirth-model.mjs
       - run: npm run build
+      - name: Prepare isolated offline workspace for this integration
+        if: github.ref == 'refs/heads/core/rebirth-t02-integration'
+        run: |
+          tar --exclude='*.ttf' --exclude='*.otf' --exclude='*.woff*' --exclude='*.eot' -czf /tmp/rebirth-workspace.tgz src scripts node_modules package.json tsconfig.json vite.config.ts index.html public/assets/imported/linefugg/rebirth
+      - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/core/rebirth-t02-integration'
+        with:
+          name: rebirth-offline-workspace
+          path: /tmp/rebirth-workspace.tgz
+          retention-days: 1
       - run: npx playwright install --with-deps chromium
       - run: |
           npm run dev -- --host 127.0.0.1 --port 5175 > /tmp/rebirth-vite.log 2>&1 &
           for i in $(seq 1 60); do curl -fsS http://127.0.0.1:5175/ >/dev/null && break; sleep 1; done
-          node scripts/test-linefugg-rebirth-browser.mjs
+          timeout 150s node scripts/test-linefugg-rebirth-browser.mjs
+      - name: Preserve diagnostic server log
+        if: always()
+        run: |
+          mkdir -p artifacts/linefugg-rebirth
+          cp /tmp/rebirth-vite.log artifacts/linefugg-rebirth/vite.log || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:

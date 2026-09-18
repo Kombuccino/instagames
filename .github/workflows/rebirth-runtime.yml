@@ -1,0 +1,42 @@
+name: Rebirth runtime checks
+on:
+  push:
+    branches: [main, 'core/rebirth-t02-integration']
+    paths:
+      - 'src/games/linefugg-rebirth/**'
+      - 'src/core/GameplayCalibrationRuntime.tsx'
+      - 'public/assets/imported/linefugg/rebirth/**'
+      - 'scripts/test-linefugg-rebirth-*.mjs'
+      - '.github/workflows/rebirth-runtime.yml'
+  pull_request:
+    paths:
+      - 'src/games/linefugg-rebirth/**'
+      - 'src/core/GameplayCalibrationRuntime.tsx'
+      - 'scripts/test-linefugg-rebirth-*.mjs'
+      - '.github/workflows/rebirth-runtime.yml'
+permissions:
+  contents: read
+jobs:
+  rebirth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: node --test scripts/test-linefugg-rebirth-model.mjs
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: |
+          npm run dev -- --host 127.0.0.1 --port 5175 > /tmp/rebirth-vite.log 2>&1 &
+          for i in $(seq 1 60); do curl -fsS http://127.0.0.1:5175/ >/dev/null && break; sleep 1; done
+          node scripts/test-linefugg-rebirth-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rebirth-runtime-proof
+          path: artifacts/linefugg-rebirth
+          if-no-files-found: ignore
+          retention-days: 14

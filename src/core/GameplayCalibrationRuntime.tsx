@@ -3,6 +3,8 @@ import { miniFuggAudio } from '../audio'
 import { gameRegistry } from './gameRegistry'
 import { MINIFUGG_LEGACY_PORTRAIT_VIEWPORT } from './runtime/gameRuntimePolicy'
 import type { GameFinishPayload } from './types'
+import { LineFuggRebirth } from '../games/linefugg-rebirth/LineFuggRebirth'
+import { RELEASE as REBIRTH_RELEASE } from '../games/linefugg-rebirth/art'
 
 type LineFuggLabScenario = 'initial' | 'drag' | 'after-line' | 'three-lines'
 
@@ -11,6 +13,13 @@ type StagePoint = { x: number; y: number }
 function requestedGameId() {
   if (typeof window === 'undefined') return ''
   return new URL(window.location.href).searchParams.get('game')?.trim() ?? ''
+}
+
+function requestedRebirth() {
+  if (typeof window === 'undefined') return false
+  const query = new URL(window.location.href).searchParams
+  return query.get('lab') === 'gameplay-runtime' && (query.get('game') === 'linefugg-rebirth'
+    || (query.get('game') === 'linefugg' && query.get('skin') === 'rebirth-editorial'))
 }
 
 function requestedLineFuggScenario(): LineFuggLabScenario | null {
@@ -54,11 +63,13 @@ function scheduleLine(canvas: HTMLCanvasElement, from: StagePoint, to: StagePoin
 
 /** Isolated, same-origin runtime used inside the calibration and Production Labs. */
 export function GameplayCalibrationRuntime() {
-  const game = useMemo(() => gameRegistry.find((entry) => entry.id === requestedGameId()), [])
+  const rebirth = useMemo(requestedRebirth, [])
+  const game = useMemo(() => gameRegistry.find((entry) => entry.id === (requestedGameId() === 'linefugg-rebirth' ? 'linefugg' : requestedGameId())), [])
   const scenario = useMemo(requestedLineFuggScenario, [])
   const [score, setScore] = useState(0)
   const [finished, setFinished] = useState<GameFinishPayload | null>(null)
-  const Game = game?.component
+  const [restartToken, setRestartToken] = useState(0)
+  const Game = rebirth ? LineFuggRebirth : game?.component
 
   useEffect(() => {
     miniFuggAudio.setMuted(true)
@@ -66,7 +77,8 @@ export function GameplayCalibrationRuntime() {
   }, [])
 
   useEffect(() => {
-    if (game?.id !== 'linefugg' || !scenario || scenario === 'initial') return
+    // Rebirth has different geometry and owns its explicit test scenarios.
+    if (rebirth || game?.id !== 'linefugg' || !scenario || scenario === 'initial') return
     let cancelled = false
     const timers: number[] = []
     let attempts = 0
@@ -104,23 +116,26 @@ export function GameplayCalibrationRuntime() {
       cancelled = true
       timers.forEach((timer) => window.clearTimeout(timer))
     }
-  }, [game?.id, scenario])
+  }, [game?.id, scenario, rebirth])
 
   if (!game || !Game) return <main className="mf-gameplay-runtime-error">Jeu introuvable.</main>
 
   return (
-    <main className="mf-gameplay-runtime" data-testid="gameplay-runtime" data-game-id={game.id} data-lab-scenario={scenario ?? undefined}>
+    <main className="mf-gameplay-runtime" data-testid="gameplay-runtime" data-game-id={rebirth ? 'linefugg-rebirth' : game.id} data-lab-scenario={scenario ?? undefined}>
+      {rebirth && <button data-testid="rebirth-restart" type="button" onClick={() => {
+        setFinished(null); setScore(0); setRestartToken(value => value + 1)
+      }} style={{ position: 'fixed', right: 8, top: 8, zIndex: 100, padding: '8px 12px', borderRadius: 6, border: '1px solid #786d58', background: '#f4eddc', color: '#343b30' }}>Recommencer</button>}
       <div className="game-card">
         <div className="game-surface">
           <Game
             active
             seed={20260913}
-            restartToken={0}
+            restartToken={restartToken}
             session={{ setScore, finish: (payload) => { setScore(payload.score); setFinished(payload) } }}
           />
         </div>
         <div className="mf-gameplay-runtime__readout" aria-hidden="true">
-          <span>{game.title}</span><b>{finished ? `FIN · ${finished.score}` : score}</b>
+          <span>{rebirth ? `LineFugg Rebirth · ${REBIRTH_RELEASE.version}` : game.title}</span><b>{finished ? `FIN · ${finished.score}` : score}</b>
         </div>
       </div>
     </main>

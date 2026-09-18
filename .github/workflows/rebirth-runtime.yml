@@ -21,8 +21,15 @@ concurrency:
   cancel-in-progress: true
 jobs:
   rebirth:
+    name: Rebirth ${{ matrix.config }}
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 7
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [master, a54, iphone, brave-degraded, desktop, reduced-motion]
+    env:
+      REBIRTH_CONFIG: ${{ matrix.config }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -31,21 +38,11 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: node --test scripts/test-linefugg-rebirth-model.mjs
       - run: npm run build
-      - name: Prepare isolated offline workspace for this integration
-        if: github.ref == 'refs/heads/core/rebirth-t02-integration'
-        run: |
-          tar --exclude='*.ttf' --exclude='*.otf' --exclude='*.woff*' --exclude='*.eot' -czf /tmp/rebirth-workspace.tgz src scripts node_modules package.json tsconfig.json vite.config.ts index.html public/assets/imported/linefugg/rebirth
-      - uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/core/rebirth-t02-integration'
-        with:
-          name: rebirth-offline-workspace
-          path: /tmp/rebirth-workspace.tgz
-          retention-days: 1
       - run: npx playwright install --with-deps chromium
       - run: |
           npm run dev -- --host 127.0.0.1 --port 5175 > /tmp/rebirth-vite.log 2>&1 &
           for i in $(seq 1 60); do curl -fsS http://127.0.0.1:5175/ >/dev/null && break; sleep 1; done
-          timeout 150s node scripts/test-linefugg-rebirth-browser.mjs
+          timeout 180s node scripts/test-linefugg-rebirth-browser.mjs
       - name: Preserve diagnostic server log
         if: always()
         run: |
@@ -54,7 +51,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: rebirth-runtime-proof
+          name: rebirth-proof-${{ matrix.config }}
           path: artifacts/linefugg-rebirth
           if-no-files-found: ignore
           retention-days: 14

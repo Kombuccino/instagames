@@ -16,7 +16,7 @@ const configs = [
 ]
 let activePage
 try {
-  for (const config of configs) {
+  for (const config of configs.filter(item => !process.env.REBIRTH_CONFIG || item.name === process.env.REBIRTH_CONFIG)) {
     const context = await browser.newContext({ viewport: { width: config.width, height: config.height }, deviceScaleFactor: config.dpr, hasTouch: !!config.touch, reducedMotion: config.reduce ? 'reduce' : 'no-preference' })
     context.setDefaultTimeout(12000); context.setDefaultNavigationTimeout(45000)
     console.log('Testing Rebirth:', config.name)
@@ -29,7 +29,7 @@ try {
     const canvas = page.locator('[data-testid=linefugg-rebirth] canvas')
     const capture = async name => {
       const path = `${root}/${config.name}-${name}.png`
-      await page.screenshot({ path, timeout: 15000 }); report.screenshots.push(path)
+      const pixels = await page.screenshot({ path, timeout: 15000 }); report.screenshots.push(path); return pixels
     }
     const world = async (x, y) => {
       const box = await canvas.boundingBox(); assert(box)
@@ -55,6 +55,7 @@ try {
       await page.waitForTimeout(60)
     }
     const initial = await state()
+    report.engine = initial.renderer
     assert.equal(initial.game,'linefugg-rebirth'); assert.equal(initial.lines.length,0)
     assert.equal(initial.undoEnabled,false); assert.equal(initial.validateEnabled,false)
     assert.equal(initial.reducedMotion,!!config.reduce); assert.equal(initial.assetFailure,'')
@@ -96,7 +97,17 @@ try {
       assert(top.y>=host.y-2,`${config.name} top inside host`)
       assert(bottom.y<=host.y+host.height+2,`${config.name} controls inside host`)
     }
-    await capture('three-lines')
+    const proof = await capture('three-lines')
+    const sample = await grid([0,0]); sample.x -= 12 * (await canvas.boundingBox()).width / 390
+    const pixel = await page.evaluate(async ({ png, x, y, dpr }) => {
+      const image = new Image(); image.src = `data:image/png;base64,${png}`
+      await image.decode()
+      const surface = document.createElement('canvas'); surface.width = image.width; surface.height = image.height
+      const context = surface.getContext('2d'); context.drawImage(image, 0, 0)
+      return [...context.getImageData(Math.round(x*dpr), Math.round(y*dpr), 1, 1).data]
+    }, { png: proof.toString('base64'), x: sample.x, y: sample.y, dpr: config.dpr })
+    assert(pixel[0] > pixel[1] + 20 && pixel[0] > pixel[2] + 20, `${config.name}: actual red route pixels must be visible, got ${pixel}`)
+    report.checks.push(`${config.name}: rendered red route pixel ${pixel.join(',')}`)
     await tap('validate'); assert.equal((await state()).finished,true)
     const finished=await state();await tap('validate');assert.deepEqual((await state()).lines,finished.lines)
     await page.getByTestId('rebirth-restart').click()
@@ -106,11 +117,12 @@ try {
     report.checks.push(`${config.name}: draw, protected cells, deterministic reroll/undo, invalid duplicate, finish, restart, geometry`)
     await context.close()
   }
+  if (!process.env.REBIRTH_CONFIG || process.env.REBIRTH_CONFIG === 'master') {
   const page=await browser.newPage({viewport:{width:390,height:850}});activePage=page
   page.setDefaultTimeout(12000); page.setDefaultNavigationTimeout(45000)
   await page.goto(`${base}/?usr=moigod&lab=gameplay-runtime&game=linefugg&skin=rebirth-editorial&scenario=operators`,{waitUntil:'networkidle'})
   await page.waitForFunction(()=>typeof window.render_rebirth_to_text==='function')
-  await page.locator('body').click({position:{x:1,y:400}})
+  await page.mouse.click(2,60)
   await page.keyboard.press('Space');await page.keyboard.press('ArrowRight');await page.keyboard.press('ArrowRight');await page.keyboard.press('ArrowRight');await page.keyboard.press('Space')
   await page.waitForFunction(()=>!JSON.parse(window.render_rebirth_to_text()).rerolling)
   const s=await page.evaluate(()=>JSON.parse(window.render_rebirth_to_text()))
@@ -124,13 +136,14 @@ try {
   assert.equal(await page.getByTestId('rebirth-restart').count(),0)
   assert.equal(rebirthRequests.length,0)
   report.checks.push('classic route preserved, no Rebirth texture requested')
+  }
   assert.deepEqual(report.errors,[])
 } catch(error) {
   report.failure=String(error.stack||error)
-  if(activePage&&!activePage.isClosed()) await activePage.screenshot({path:`${root}/failure.png`,timeout:10000}).catch(()=>{})
+  if(activePage&&!activePage.isClosed()) await activePage.screenshot({path:`${root}/failure-${process.env.REBIRTH_CONFIG || 'all'}.png`,timeout:10000}).catch(()=>{})
   throw error
 } finally {
-  await fs.writeFile(`${root}/report.json`,JSON.stringify(report,null,2))
+  await fs.writeFile(`${root}/report-${process.env.REBIRTH_CONFIG || 'all'}.json`,JSON.stringify(report,null,2))
   console.log(JSON.stringify(report,null,2))
   await browser.close()
 }

@@ -1,47 +1,13 @@
 import Phaser from 'phaser'
 import type { GameSessionApi } from '../../core/types'
-import { ART_SCALE, ATLAS_KEY, ATLAS_FALLBACK, BOARD, BOARD_ART, COLORS, CONTROLS, FRAMES, GLYPHS, INK, INKS, PAPER, STAGE } from './art'
+import { ART_SCALE, ATLAS_KEY, ATLAS_FALLBACK, BOARD, BOARD_ART, COLORS, CONTROLS, FRAMES, INK, INKS, PAPER, STAGE } from './art'
+import { RasterLabel, tintImage } from './RasterLabel'
 import { RebirthModel, GRID, cell, format, formula, indexOf, snapEnd, type Point } from './model'
 
 export const REBIRTH_SCENE_KEY = 'linefugg-rebirth-t02'
 type Bridge = { seed: number; renderPixelRatio: number; session: GameSessionApi }
 type Control = keyof typeof CONTROLS
 type Drag = { id: number; start: Point; end: Point | null }
-
-class RasterLabel extends Phaser.GameObjects.Container {
-  private glyphImages: Phaser.GameObjects.Image[] = []
-  value = ''
-  constructor(scene: Phaser.Scene, x: number, y: number) {
-    super(scene, x, y)
-    scene.add.existing(this)
-  }
-  setValue(value: string, cap: number, tint: number, maxWidth: number, align: 'left' | 'center' | 'right' = 'center') {
-    this.value = value
-    const items = [...value].map(char => {
-      const glyph = GLYPHS[char]
-      if (!glyph) throw new Error(`Missing Rebirth glyph: ${char}`)
-      const frame = FRAMES[glyph[0]]
-      const scale = /[0-9]/.test(char) ? cap / glyph[1] : cap / 52
-      return { frame: glyph[0], width: frame[2] * scale, height: frame[3] * scale, char }
-    })
-    const gap = cap * 0.14
-    const natural = items.reduce((n, item) => n + item.width, 0) + Math.max(0, items.length - 1) * gap
-    const fit = Math.min(1, maxWidth / Math.max(1, natural))
-    const width = natural * fit
-    let x = align === 'left' ? 0 : align === 'right' ? -width : -width / 2
-    items.forEach((item, i) => {
-      let image = this.glyphImages[i]
-      if (!image) { image = this.scene.add.image(0, 0, ATLAS_KEY); this.add(image); this.glyphImages.push(image) }
-      const y = item.char === '.' ? (cap / 2 - item.height) * fit : -item.height * fit / 2
-      image.setTexture(ATLAS_KEY, item.frame).setOrigin(0).setPosition(x, y)
-        .setDisplaySize(item.width * fit, item.height * fit).setTint(tint).setVisible(true)
-      x += (item.width + gap) * fit
-    })
-    this.glyphImages.slice(items.length).forEach(image => image.setVisible(false))
-    this.setSize(width, cap * fit)
-    return this
-  }
-}
 
 export class LineFuggRebirthScene extends Phaser.Scene {
   private model!: RebirthModel
@@ -66,9 +32,10 @@ export class LineFuggRebirthScene extends Phaser.Scene {
   private reportedFinish = false
   private routeDirty = true
   private failure = ''
+  private keyEvents = new WeakSet<KeyboardEvent>()
   private pointerPosition = { x: 195, y: 450 }
   private readonly reader = () => JSON.stringify({
-    game: 'linefugg-rebirth', art: 't02', coordinateSystem: '390x850; top-left',
+    game: 'linefugg-rebirth', art: 't02', renderer: this.game.renderer.type === Phaser.WEBGL ? 'WebGL' : 'Canvas', coordinateSystem: '390x850; top-left',
     boardId: this.model?.boardId, board: this.model?.board, boardBounds: BOARD,
     lines: this.model?.lines.map(({ start, end, cells, values, score, rerollKey }) => ({ start, end, cells, values, score, rerollKey })),
     total: this.model?.total, finished: this.model?.finished, rerolling: this.rerolling,
@@ -88,7 +55,7 @@ export class LineFuggRebirthScene extends Phaser.Scene {
     this.model = new RebirthModel(undefined, this.bridge.seed)
     this.labels = []; this.history = []; this.indicators = []; this.paths = []
     this.drag = null; this.pressed = null; this.hovered = null; this.rerolling = false
-    this.routeDirty = true; this.reportedFinish = false; this.failure = ''; this.focusPoint = { row: 0, col: 0 }; this.keyboardFocus = false
+    this.keyEvents = new WeakSet(); this.routeDirty = true; this.reportedFinish = false; this.failure = ''; this.focusPoint = { row: 0, col: 0 }; this.keyboardFocus = false
     this.cameras.main.setZoom(this.bridge.renderPixelRatio).centerOn(STAGE.width / 2, STAGE.height / 2)
     this.cameras.main.setBackgroundColor(PAPER)
     if (!this.textures.exists(ATLAS_KEY)) {
@@ -140,13 +107,13 @@ export class LineFuggRebirthScene extends Phaser.Scene {
       this.history.push({ dot,
         formula: new RasterLabel(this, 81, y).setDepth(17),
         equal: new RasterLabel(this, 267, y).setDepth(17),
-        score: new RasterLabel(this, 334, y).setDepth(17),
+        score: new RasterLabel(this, 328, y).setDepth(17),
       })
     }
     this.sprite('total-empty', 19, 650, 352, 18)
-    this.sprite('label-total', 105, 675, 68, 19).setTint(INK)
-    new RasterLabel(this, 213, 690).setValue('=', 25, 0x375138, 22).setDepth(19)
-    this.total = new RasterLabel(this, 283, 690).setDepth(19)
+    tintImage(this, this.sprite('label-total', 99, 678, 68, 19), 'label-total', INK)
+    new RasterLabel(this, 208, 685).setValue('=', 25, 0x375138, 22).setDepth(19)
+    this.total = new RasterLabel(this, 275, 685).setDepth(19)
     this.controlImages = {
       undo: this.sprite('undo-off', CONTROLS.undo.x, CONTROLS.undo.y, CONTROLS.undo.width, 25),
       validate: this.sprite('validate-off', CONTROLS.validate.x, CONTROLS.validate.y, CONTROLS.validate.width, 25),
@@ -277,7 +244,7 @@ export class LineFuggRebirthScene extends Phaser.Scene {
   private refreshBoard() { this.labels.forEach((_label, i) => { this.refreshCell(i); this.labels[i].setScale(1) }) }
   private renderRoute(target: Phaser.GameObjects.RenderTexture, points: Point[], color: number) {
     target.clear()
-    if (!points.length) return
+    if (!points.length) { target.render(); return }
     const d = this.bridge.renderPixelRatio
     const positions = points.map(p => { const c = this.center(p); return { x: (c.x - BOARD.x) * d, y: (c.y - BOARD.y) * d } })
     const stamps: Phaser.GameObjects.Image[] = []
@@ -289,7 +256,7 @@ export class LineFuggRebirthScene extends Phaser.Scene {
     }
     for (const p of positions) stamps.push(new Phaser.GameObjects.Image(this, p.x, p.y, ATLAS_KEY, `path-${COLORS[color]}-node`).setDisplaySize(39 * d, 39 * d))
     // The opacity is applied once to the composed route, not once per overlapping piece.
-    target.draw(stamps)
+    target.draw(stamps).render()
     stamps.forEach(stamp => stamp.destroy())
   }
   private refresh() {
@@ -313,9 +280,9 @@ export class LineFuggRebirthScene extends Phaser.Scene {
       row.dot.setTexture(ATLAS_KEY, `indicator-${COLORS[i]}-${line ? 'on' : 'off'}`)
       row.formula.setValue(line ? formula(line.values) : '', 20, INK, 166, 'left')
       row.equal.setValue(line ? '=' : '', 22, INK, 16)
-      row.score.setValue(line ? format(line.score) : '', 25, INKS[i], 59)
+      row.score.setValue(line ? format(line.score) : '', 25, INKS[i], 54)
     })
-    this.total.setValue(format(this.model.total), 39, 0x305125, 76)
+    this.total.setValue(format(this.model.total), 35, 0x305125, 62)
     this.refreshControls()
     this.cursorOutline.clear()
     if (this.keyboardFocus) {
@@ -347,6 +314,9 @@ export class LineFuggRebirthScene extends Phaser.Scene {
     this.refresh()
   }
   private keyDown(event: KeyboardEvent) {
+    // Phaser can revisit the same queued DOM event before its next frame; apply it once.
+    if (this.keyEvents.has(event)) return
+    this.keyEvents.add(event)
     if (event.target instanceof HTMLElement && event.target.closest('input,textarea,select,button,[contenteditable=true]')) return
     const key = event.key.toLowerCase()
     if (!['arrowleft','arrowright','arrowup','arrowdown',' ','enter','backspace','u','escape'].includes(key)) return
@@ -367,6 +337,8 @@ export class LineFuggRebirthScene extends Phaser.Scene {
     this.refresh()
   }
   private keyUp(event: KeyboardEvent) {
+    if (this.keyEvents.has(event)) return
+    this.keyEvents.add(event)
     if (event.key === 'Enter' && this.pressed?.id === -2) { this.pressed = null; this.act('validate'); this.refreshControls() }
   }
   private keyboardPrimary() {

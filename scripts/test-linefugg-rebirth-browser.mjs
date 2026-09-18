@@ -18,6 +18,8 @@ let activePage
 try {
   for (const config of configs) {
     const context = await browser.newContext({ viewport: { width: config.width, height: config.height }, deviceScaleFactor: config.dpr, hasTouch: !!config.touch, reducedMotion: config.reduce ? 'reduce' : 'no-preference' })
+    context.setDefaultTimeout(12000); context.setDefaultNavigationTimeout(45000)
+    console.log('Testing Rebirth:', config.name)
     const page = await context.newPage(); activePage = page
     page.on('pageerror', e => report.errors.push(`${config.name}: ${e.message}`))
     page.on('response', r => { if (r.url().includes('/linefugg/rebirth/') && r.status() >= 400) report.errors.push(`${r.status()}: ${r.url()}`) })
@@ -27,7 +29,7 @@ try {
     const canvas = page.locator('[data-testid=linefugg-rebirth] canvas')
     const capture = async name => {
       const path = `${root}/${config.name}-${name}.png`
-      await page.screenshot({ path }); report.screenshots.push(path)
+      await page.screenshot({ path, timeout: 15000 }); report.screenshots.push(path)
     }
     const world = async (x, y) => {
       const box = await canvas.boundingBox(); assert(box)
@@ -62,6 +64,7 @@ try {
     assert.equal((await state()).drag.cells.length,5)
     await capture('drag'); await release()
     await page.waitForFunction(() => !JSON.parse(window.render_rebirth_to_text()).rerolling)
+    console.log(config.name, 'first route released and rerolled')
     const first = await state()
     assert.equal(first.lines.length,1); assert.equal(first.undoEnabled,true)
     for (const p of first.lines[0].cells) assert.deepEqual(first.board[p.row*7+p.col],initial.board[p.row*7+p.col])
@@ -78,6 +81,7 @@ try {
     assert.deepEqual((await state()).board,initial.board)
     await trace([0,0],[0,4]); assert.deepEqual((await state()).board,first.board)
     await trace([2,0],[2,4]); await trace([4,0],[4,4])
+    console.log(config.name, 'three routes reached')
     const full = await state()
     assert.equal(full.lines.length,3); assert.equal(full.validateEnabled,true); assert.equal(full.finished,false)
     for (let i=0;i<3;i++) {
@@ -103,6 +107,7 @@ try {
     await context.close()
   }
   const page=await browser.newPage({viewport:{width:390,height:850}});activePage=page
+  page.setDefaultTimeout(12000); page.setDefaultNavigationTimeout(45000)
   await page.goto(`${base}/?usr=moigod&lab=gameplay-runtime&game=linefugg&skin=rebirth-editorial&scenario=operators`,{waitUntil:'networkidle'})
   await page.waitForFunction(()=>typeof window.render_rebirth_to_text==='function')
   await page.locator('body').click({position:{x:1,y:400}})
@@ -122,7 +127,7 @@ try {
   assert.deepEqual(report.errors,[])
 } catch(error) {
   report.failure=String(error.stack||error)
-  if(activePage&&!activePage.isClosed()) await activePage.screenshot({path:`${root}/failure.png`}).catch(()=>{})
+  if(activePage&&!activePage.isClosed()) await activePage.screenshot({path:`${root}/failure.png`,timeout:10000}).catch(()=>{})
   throw error
 } finally {
   await fs.writeFile(`${root}/report.json`,JSON.stringify(report,null,2))

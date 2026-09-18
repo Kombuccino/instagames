@@ -4,6 +4,8 @@ Backlog transversal de la plateforme. Voir `docs/TODO_NOTES.md`.
 
 ## Priorité / prochaine passe
 
+Production de jeux — priorité exprimée le 18 septembre 2026 : résoudre la reconstruction de sources à calques depuis une DA aplatie, puis leur intégration fidèle. Le développement du Lab n’est pas une fin en soi. Essai proposé et non encore effectué : décomposer une DA existante avec un outil spécialisé, recomposer l’écran depuis les vrais éléments, puis éprouver un composant interactif. Voir le classement ci-dessous.
+
 ## Produit / UX
 
 - [ ] Prévoir un petit écran de loading au lancement des jeux lorsque le chargement réel provoque une attente perceptible, afin d’éviter les temps morts avant l’affichage du jeu.
@@ -28,9 +30,27 @@ Backlog transversal de la plateforme. Voir `docs/TODO_NOTES.md`.
 
 ## Méthode de production / outillage
 
-Clarifications utilisateur du 18 septembre 2026 : le principal temps perdu est la traduction et l’intégration d’une DA, pas l’absence de tests du jeu. Le prototype est joué/testé dans MiniFugg pour nourrir les retours ; la DA puis les éléments produits doivent en conserver les fonctions et états. Le Lab accompagne ces essais uniquement lorsque la communication est difficile ; l’objectif est de pouvoir s’en passer, pas d’en faire un passage humain obligatoire. L’essai actuel porte sur un jeu existant. Pour un nouveau jeu, l’utilisateur souhaite demander son activation vers la fin de la conception du prototype ; ne pas en déduire une activation/publication automatique ni une suppression des tests de l’agent.
+### Intentions acquises — 18 septembre 2026
 
-- [ ] Préciser et éprouver la route « traduction DA → éléments de jeu → intégration » du skill `minifugg-art`, en renforçant le pipeline existant plutôt qu’en ajoutant une autorité concurrente. Proposition à tester : correspondance de chaque fonction du proto avec sa traduction visuelle ; composants livrés avec les états utiles et leur branchement réel ; typographie choisie et contrôlée dans le moteur sur de vraies valeurs ; détourage sémantique/alpha, parties occultées reconstituées, pivots et familles cohérents ; assemblage comparé à la référence au même état puis vérification des interactions. Les trois preuves sont distinctes : comportement conservé, sources propres, restitution fidèle. Un crop, un PNG avec alpha ou un build vert ne suffisent pas. Les états peuvent être produits par des sprites ou par le moteur selon la DA ; ne pas imposer un fichier par état. Aucun changement du skill ou du runtime n’est livré par cette note.
-- [ ] Définir une boucle de retour légère, utilisable depuis le chat comme depuis le Lab : observation/version de départ → attendu et critère vérifiable → correction ciblée → preuve sur la version corrigée + non-régression → résultat proposé à validation. Conserver l’identifiant du retour dans le suivi existant ; distinguer corrigé, vérifié par l’agent, accepté par l’utilisateur, partiel et bloqué. Ne jamais transformer une auto-déclaration en validation humaine. Après deux corrections infructueuses d’un même défaut, diagnostiquer et changer de méthode au lieu d’empiler des retouches. L’utilisateur a exprimé son intérêt pour cette boucle ; son détail reste une proposition, sans refonte du Lab engagée.
+Le principal temps perdu est la traduction/intégration d’une DA, pas l’absence de tests : le prototype est joué dans MiniFugg. Une image générée aplatie n’a pas de document source à calques récupérable ; il faut construire cet équivalent, avec éléments isolés, transparence, parties occultées et ordre de composition. Une liste d’éléments ou des crops rectangulaires ne constituent pas ce livrable.
+
+L’utilisateur conçoit sur téléphone et donne des retours oraux naturels. L’agent interprète, recherche la cause, corrige, vérifie et tient le suivi ; aucun formulaire, critère de test ou compte rendu de cinquante lignes n’est demandé à l’utilisateur. Question courte seulement si une ambiguïté importante subsiste après examen. Le plan sert à maintenir un état présent, visuel et hiérarchisé des problèmes/décisions, pas à empiler la chronologie du chat. Le Lab reste optionnel pour la communication difficile ; une solution existante plus simple est préférable si elle résout le besoin.
+
+L’essai actuel porte sur un jeu existant. Pour un nouveau jeu, l’utilisateur demande son activation vers la fin de la conception du prototype ; ne pas en déduire une activation/publication automatique ni la suppression des tests de l’agent.
+
+### P1 — Sources à calques et intégration fidèle
+
+- [ ] Éprouver la reconstruction d’une DA existante avec un outil spécialisé avant d’étendre l’éditeur du Lab. Premier candidat proposé : Qwen-Image-Layered (calques RGBA, décomposition récursive, exports PNG/PSD). Comparaison sans nouvel outil maison possible avec Canva Magic Layers (éléments et textes éditables). Recherche documentaire seulement : aucun de ces outils n’a encore été testé sur les DA MiniFugg ; aucun gain de durée ni fidélité au pixel n’est établi. Qwen ne permet pas d’imposer explicitement le contenu de chaque calque par le prompt ; les parties cachées sont reconstruites, pas récupérées à l’identique.
+- [ ] À partir de cet essai, préciser la route existante `minifugg-art` / `GAME_ART_PRODUCTION_PIPELINE.md` : source recomposable avant intégration complète, conservation du master approuvé, masques propres et reconstruction localisée plutôt que régénération globale. Garder positions, ordre, dimensions et pivots avec les images ; l’export et le placement moteur doivent dériver de la même géométrie. Le texte dynamique reste une vraie typographie/glyphes exploitables, les composants répétitifs sont réutilisables, et les états utiles partagent ancrages et géométrie. Comparer la recomposition au master puis tester les interactions ; un build vert ou un PNG avec alpha ne suffisent pas. Pas de changement du skill livré par cette note.
+
+Sources consultées le 18/09/2026 : [Qwen officiel](https://github.com/QwenLM/Qwen-Image-Layered), [API fal](https://fal.ai/models/fal-ai/qwen-image-layered/api), [Canva Magic Layers](https://www.canva.com/magic-layers/). Le choix d’un fournisseur et son accès restent à établir avant traitement d’assets ; aucune installation ni génération externe effectuée ici.
+
+### P2 — Retours naturels, état courant non chronologique
+
+- [ ] Tenir dans le suivi existant une synthèse courte regroupée par problème et importance : blocage courant, autres corrections ouvertes, décisions à conserver, sujets différés. Fusionner les reformulations au lieu de créer un nouveau point à chaque message ; un changement de sujet ne clôt pas un problème. L’agent porte en interne la boucle observation → attendu → correction → vérification ; l’utilisateur ne remplit rien. Distinguer corrigé/vérifié/accepté par l’utilisateur/partiel/bloqué, sans auto-validation humaine. Après deux corrections infructueuses du même défaut, diagnostiquer puis changer de méthode. Détails d’implémentation proposés, non livrés.
+
+### En réserve — Améliorations du Lab déjà discutées
+
+- [ ] Si le Lab reste utile : fiabiliser la sauvegarde et signaler ses échecs ; transporter les images réellement accessibles et la version d’origine dans l’export ; rendre visible le résultat du traitement des retours ; séparer données de production des jeux et code de l’éditeur avant généralisation. Propositions conservées, aucune refonte du Lab engagée. Reporter les raffinements du canvas qui ne débloquent pas le travail.
 
 ## À explorer / idées

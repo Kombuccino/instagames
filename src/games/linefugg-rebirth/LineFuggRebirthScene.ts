@@ -88,7 +88,7 @@ export class LineFuggRebirthScene extends Phaser.Scene {
     this.model = new RebirthModel(undefined, this.bridge.seed)
     this.labels = []; this.history = []; this.indicators = []; this.paths = []
     this.drag = null; this.pressed = null; this.hovered = null; this.rerolling = false
-    this.reportedFinish = false; this.failure = ''; this.focusPoint = { row: 0, col: 0 }; this.keyboardFocus = false
+    this.routeDirty = true; this.reportedFinish = false; this.failure = ''; this.focusPoint = { row: 0, col: 0 }; this.keyboardFocus = false
     this.cameras.main.setZoom(this.bridge.renderPixelRatio).centerOn(STAGE.width / 2, STAGE.height / 2)
     this.cameras.main.setBackgroundColor(PAPER)
     if (!this.textures.exists(ATLAS_KEY)) {
@@ -283,11 +283,11 @@ export class LineFuggRebirthScene extends Phaser.Scene {
     const stamps: Phaser.GameObjects.Image[] = []
     for (let i = 1; i < positions.length; i++) {
       const a = positions[i - 1], b = positions[i]
-      const segment = this.make.image({ x: a.x, y: a.y, key: ATLAS_KEY, frame: `path-${COLORS[color]}-segment`, add: false })
+      const segment = new Phaser.GameObjects.Image(this, a.x, a.y, ATLAS_KEY, `path-${COLORS[color]}-segment`)
       segment.setOrigin(0, 0.5).setDisplaySize(Math.hypot(b.x - a.x, b.y - a.y), 19 * d).setRotation(Math.atan2(b.y - a.y, b.x - a.x))
       stamps.push(segment)
     }
-    for (const p of positions) stamps.push(this.make.image({ x: p.x, y: p.y, key: ATLAS_KEY, frame: `path-${COLORS[color]}-node`, add: false }).setDisplaySize(39 * d, 39 * d))
+    for (const p of positions) stamps.push(new Phaser.GameObjects.Image(this, p.x, p.y, ATLAS_KEY, `path-${COLORS[color]}-node`).setDisplaySize(39 * d, 39 * d))
     // The opacity is applied once to the composed route, not once per overlapping piece.
     target.draw(stamps)
     stamps.forEach(stamp => stamp.destroy())

@@ -2,7 +2,42 @@
 
 Date : 19 septembre 2026. Base de l'audit initial : `2c0c37a4024ac5475ddc2a25112593ee1c968197`. Base de l'enregistrement de la nouvelle validation : `760eae934dd1749cedd9dd6cc65f7f5636961f12`.
 
-## État courant — DA principale compacte validée
+## Contrôle des variantes — 19 septembre 2026, après les reprises
+
+Base inspectée : `5612c96cd7d8a2465067d07eeeff20a5b762b449`. L'utilisateur approuve le dessin des variantes corrigées (textes décoratifs/smileys retirés et poses des managers diversifiées), mais demande de vérifier le contrat de hauteur avant fabrication. **Aspect artistique retenu ; gabarit commun non conforme en l'état.** La DA principale ci-dessous reste inchangée.
+
+Les quatre fichiers ont été ouverts, décodés et vérifiés par signature/CRC PNG et empreinte. Mesures :
+
+| Image | Pixels réels | Hauteur à largeur logique 390 |
+| --- | --- | --- |
+| Principale compacte approuvée | 849 × 1851 | 850,28 |
+| Niveau 1 corrigé | 941 × 1672 | 692,96 |
+| Niveau 5 corrigé | 941 × 1672 | 692,96 |
+| Remontrance corrigée | 941 × 1672 | 692,96 |
+
+**Le ratio des trois nouvelles sorties a dérivé vers 9:16.** Il manque 157,04 unités de toile par rapport au MASTER 390 × 850. Un étirement vertical pour remplir 850 déformerait les objets d'environ +22,66 %. L'enregistrement PNG est valide ; aucun défaut d'encodage n'est démontré par ce contrôle, et il ne prouve pas l'historique des pixels.
+
+Nuance importante : ce n'est pas un nouvel excès de hauteur de gameplay. Les nouvelles images entières tiennent dans 710 lorsqu'elles sont ramenées uniformément à largeur 390 et placées en haut, **avant réserve du Retour Core**. Cela n'approuve ni l'ancrage final ni le comportement du host. La limite indispensable demeure le bas des bases tactiles des tampons ; ne pas exiger les papiers décoratifs inférieurs dans la zone garantie. Un cadrage centré sans recalage couperait toujours les informations supérieures.
+
+La dérive concerne aussi les objets fixes : rectangles approximatifs de la feuille autour de 256 × 248 unités dans la principale, 239 × 206 au niveau 1 et 223 × 194 au niveau 5. Ces mesures de silhouette, contrôlées visuellement, ne sont pas des métriques de police ni des masques runtime. Les tampons changent aussi de position/échelle. **Ajouter du fond sous les images ne rétablit donc pas le gabarit commun.**
+
+Suite retenue pour la fabrication : garder les dessins de personnages/décors acceptés, reprendre les cadres fixes de la composition principale, conserver une même taille/position du poste documentaire et des cinq tampons entre grades, puis vérifier le vrai Retour Core et la fenêtre garantie. Construire ces variations par composants ; ne pas redessiner toute la scène pour une correction de format et ne pas étirer une image aplatie. Sources et sorties de production restent haute définition ; le gabarit logique 390 × 850 n'est pas une consigne de source raster minuscule. Les états de journée, la ville commune, la photo/famille, le métronome et les autres familles restent à terminer selon ce plan.
+
+Sources corrigées, conservées octet pour octet dans l'archive :
+
+| Rôle | Génération | SHA-256 |
+| --- | --- | --- |
+| N1 — `bureaucratie_crépusculaire_dossier_logement.png` | `e3d2f756-e1b4-4524-8d63-fafc59a881b4` | `44886286b51d6fa2c2faa7e4a6501d8713e6fd7af5d04c7db5b7885b83dac190` |
+| N5 — `bureaucratie_au_coucher_du_soleil.png` | `2ea510a2-d685-47c4-9bd5-a6d5df933bb6` | `9572dbdb5753733d0a06abc594e0c9a2b7ec1584681be3f637a7a40fdd9d2d35` |
+| Remontrance — `dossier_rejeté_au_mauvais_service.png` | `5bb0b3c4-f09b-4b21-9b75-ae84f79dd7e2` | `961dfa2811608a378169992d3c842b658438833d4beb0808a46191eff69731f6` |
+
+[Comparaison visuelle principale/niveau 1](https://drive.google.com/file/d/1tjymawpTAs9YC7ek4TqFR3XLG7pfqbJS/view). [Archive de l'audit](https://drive.google.com/file/d/1SsEQAvgR2D_0mr6JamixaMpT-3VfW5vu/view), dans le dossier privé T03 `1KDXvfbcsc4ksMe1NP_YTEvfIprQijqY0`, 11 322 326 octets ; SHA-256 local `adc20ea9459ec560d4e8af5632d9650dddcd46e269a05c41e25f23d4c3925128`. Upload, taille et caractère privé vérifiés ; pas de checksum distant exposé. Contient les quatre sources, le script d'audit, les mesures, neuf assertions diagnostiques réussies, les copies de comparaison et le compte rendu. Aucune police distribuée.
+
+**Livré : audit et preuves, pas une nouvelle version corrigée du master.** Aucune génération, découpe finale, intégration, modification du jeu ou test runtime dans cette passe. Les comparaisons sont des copies réduites/annotées ; le gris représente la toile absente, pas un fond de production. Le rendu du Lab n'a pas été rafraîchi : ces constats sont enregistrés dans son plan de production documentaire, sans prétendre à une mise à jour visuelle.
+
+Enseignement : contrôler après chaque édition les dimensions réelles, le ratio et l'échelle des objets fixes, pas seulement la suppression du contenu indésirable. Le même nom de fichier a servi à la principale et à N5 : sélectionner par référence et hash, jamais par seul nom. Cette passe ne démontre toujours pas la portabilité entre modèles de conversation.
+
+## Référence principale — composition compacte validée
 
 **L'utilisateur a validé la dernière composition compacte et l'a désignée comme DA principale le 19 septembre 2026 à 10:22:10 UTC.** Le fichier exact est `crazy-papers-gameplay-da-main-compact-2026-09-19.png`, Drive privé `1Msvmzf6bU5Zw3TaV8thCrpzOIFWdcLi8`. Source de conversation : `bureaucratie_au_coucher_du_soleil.png`, génération `3033818c-cc4a-4f06-b395-e6b83fc11528`.
 
@@ -12,7 +47,7 @@ La correction retenue récupère l'espace dans la bande des managers/enseignes p
 
 La validation artistique et la composition sont acquises. La nouvelle image doit encore recevoir son contrôle mesuré de zone garantie et du masque réel Retour Core, distinct de cette validation. **Les 744,17 unités et les rectangles de l'audit ci-dessous appartiennent à l'ancienne image.** Ils ne démontrent ni un défaut ni une conformité de la nouvelle source. Aucun nouvel asset runtime, jeu intégré ou état de carrière n'est livré par cet enregistrement. Le code, sa version et son verrou de migration restent inchangés.
 
-Suite active : compléter la planche de traduction depuis cette source figée, avec repères de découpe et états ; produire ensuite les compléments niveaux 1 et 5, deux ambiances de journée contrastées et une remontrance avant la déclinaison complète. Les familles et décisions ci-dessous restent acquises. Le rendu du Production Lab n'a pas été mis à jour dans cette passe documentaire ; rattacher cette référence et ses nouveaux états lors de la préparation visuelle, sans refondre l'éditeur.
+Suite active : recaler les études complémentaires depuis cette source figée selon le contrôle ci-dessus, puis compléter la planche de traduction, les repères de découpe/états et les ambiances de journée avant la déclinaison complète. Les familles et décisions ci-dessous restent acquises. Le rendu du Production Lab n'a pas été mis à jour dans cette passe documentaire ; rattacher cette référence et ses nouveaux états lors de la préparation visuelle, sans refondre l'éditeur.
 
 La source initiale a été créée ailleurs, puis deux corrections graphiques ont eu lieu dans la conversation du pilote LineFugg. Cette reprise ne prouve donc ni l'indépendance à l'historique ni la portabilité inter-modèles. Aucune nouvelle génération n'a été demandée pendant la seule inscription de cette validation.
 
@@ -130,7 +165,7 @@ Recette à venir : pour chaque service, cas simple et cas difficile résoluble ;
 ## Ordre de production et points de revue
 
 1. **A — validation visuelle acquise :** audit initial puis correction compacte choisie par l'utilisateur. La source principale est figée. Vérifier son calage technique et les dégagements Core avant les exports ; ne pas refaire valider l'ancien montage.
-2. **B — à produire depuis cette source :** niveaux 1 et 5 dans la même géométrie, deux instants lumineux contrastés et un événement de remontrance. Ces extrêmes éprouvent les promesses absentes de la source avant de produire les intermédiaires.
+2. **B — études produites, calage à corriger :** dessins des niveaux 1 et 5 et de la remontrance acceptés sous réserve du contrat de hauteur ; recaler leurs composants dans la même géométrie. Les moments lumineux contrastés et la continuité de la ville restent à produire/vérifier avant les intermédiaires.
 3. **C — mini-tranche :** un bureau, une ville, un acteur, cinq tampons, cinq familles de feuilles, une erreur/retour, une variation de pile et une promotion. Phaser et Core réels, pas seulement un collage.
 4. **D — déclinaison :** grades 2–4, six moments, casting et vingt modèles, petits lots avec mêmes échelles/pivots.
 5. **E — recette :** grade × moment × pression, documents et erreurs, entrée/fin/score quotidien/retour/rejouer, tactile/clavier, reduced motion, mémoire/nettoyage. Brave court reste un cas dégradé distinct de la fenêtre garantie.

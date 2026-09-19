@@ -139,3 +139,12 @@ The green tile faces in the technical diagrams are illustrative engine-state sup
 4. Integrate one representative slice, preserving the approved material look rather than replacing the shell with permanent generic geometry.
 5. Test390×850, A54 Chrome360×656, iPhone390×712, degraded Brave360×611 and desktop16:9, with bottom anchoring and Core RETOUR; inspect glyphs at actual phone size, large values, I previews, both rotations, line completeness, simultaneous clears and lifecycle.
 6. Run typecheck/build and actual gameplay checks before marking migration current. This preparation pass ran only file/image checks, not build, runtime or deployment validation.
+
+## Playable TARGET slice — 2026-09-19
+
+- Runtime HUD atlas: `public/assets/generated/tetramindfck/gameplay/ui/tetramindfck-hud-digits.webp` — 400×60, ten frames 40×60, VP8L lossless. It renders LEVEL, TARGET and calculation values.
+- Historical `*-down.webp` variants are not used by this slice because at least one changes the icon direction. Clean `*-up.webp` faces remain authored sources; Phaser owns press/hold/release/blocked motion.
+- Orange rotate-left and cyan rotate-right are horizontally mirrored in Phaser to restore counterclockwise / clockwise semantics without repainting the accepted material.
+- MiniFugg rail animation is engine-owned pixel graphics with discrete Game & Watch poses.
+- Intermediate and final arithmetic values render in the CALC strip separate from the exact 10×20 board.
+- The cream shell remains a representative structural slice. A final clean authored shell/background source is still required before the art pack can be called complete.

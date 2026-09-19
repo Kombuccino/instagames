@@ -1,34 +1,58 @@
 # TetraMindFck — Art Direction
 
-## Gameplay direction — approved 2026-09-12
+## Gameplay direction — approved 2026-09-19
 
-The former neutral gameplay prototype is now superseded by a **retro portable-console / green CRT** direction for the Phaser gameplay surface.
+The approved direction remains a **retro portable-console / green CRT**: warm cream handheld body, one dominant green display, narrow left equipment rail, washed phosphor tiles and tactile controls. The 2026-09-19 approval supersedes the former SCORE-led gameplay composition, not the cover or audio directions below.
 
-Visual reference accepted by the user in the 2026-09-12 ChatGPT art iteration: cream late-90s handheld body, one dominant green CRT/LCD screen, narrow left status rail, washed phosphor tiles and tactile physical controls. The generated mockup remains **REFERENCE ONLY** because its board state, score, HUD values and controls are baked. Production must reconstruct the system in layers rather than use the flat image as runtime art.
+Exact approved reference: `tetramindfck-gameplay-da-approved-2026-09-19.png`, private Graphic Archive file `1uwp0dczINJlFOX1eMle5xtjXZNLBuxo7`, in `Games/tetramindfck/gameplay-production-2026-09-19` (folder `1cVoRYkEmFleYRc9PVnzdZiM_HFXc3W43`). Original: opaque PNG, 853 × 1844 pixels, SHA-256 `25b66ea0292439a32047cdd7d544ca4e553f1f8855ec68cab156e45c231b9a83`. Preserve these bytes. This flat image is **REFERENCE ONLY**, not a runtime background or a mechanically valid board state.
 
-### Gameplay visual contract
+### Approved gameplay visual contract
 
-- Fixed logical stage `390 × 844`; phone remains the complete composition.
-- Warm cream handheld shell, restrained wear, dark green CRT surfaces and a simple crop-safe room ambience above/behind the machine.
-- The `10 × 20` board is the dominant surface; no decorative nesting may reduce digit size unnecessarily.
-- Main CRT: one frame only. `SCORE` sits above the board inside the display and must accommodate multi-million values.
-- Left rail: `LEVEL`, `TARGET`, `NEXT`, `NEXT+1`; preview windows are mini CRTs. The immediate `NEXT` gets a small marker/arrow. Preview layout must handle the four-cell I piece.
-- Regular numeric cells `1–9` are not color-coded. They share one muted pale-green CRT/phosphor family, with low brightness and visible scanline influence.
-- Operators and bonuses keep the exact same square geometry as numbers; only restrained tint distinguishes them: warm muted multiply, amber divide, alternate cyan/special.
-- Every tile is snapped to the exact board grid and rendered as part of the screen, never as glossy plastic bricks placed over it.
-- Active piece may receive a small edge lift; ghost remains a low-alpha grid-aligned outline.
-- Clear animation keeps the board frozen until the scan ends. Intermediate totals follow calculation order; final result appears outside the row in the calculation direction; only then do cleared rows collapse.
-- Controls: four equal main buttons on one low row with minimal consistent gaps — `LEFT`, `RIGHT`, rotate-left, rotate-right. `DOWN` is smaller and centered beneath the movement pair. Buttons stay within CENTRE.
-- Functional text is English only. No filler slogans, no instructional microcopy, no repeated branding. One MiniFugg mark maximum in the gameplay artwork.
-- Decorative room/background contains no text.
+- New production stage: `390 × 850` logical units, textures at ×2 (`780 × 1700` pixels for a full-stage export). The approved historical source is not stretched to that ratio. Existing runtime `390 × 844` remains unchanged until the dedicated cutover.
+- Explicit vertical anchor: **bottom**. Essential controls and information must fit the bottom `390 × 710` window (`y 140–850` in the new master). Extra height belongs above the console. Do not reduce the whole game horizontally to fit short mobile viewports.
+- Warm cream shell, restrained wear, dark green CRT surfaces and a simple crop-safe room ambience above/behind the machine.
+- Exact `10 × 20` board, with one common square cell geometry. The engine, not the generated image, owns grid coordinates. Decorative frames and result labels must not consume a board column.
+- Main display header: **TARGET**, not SCORE. The target has a wide, readable numeric field. Test `50`, `50000`, `100000`, `170000` and `9999999`, with consistent glyph proportions and spacing; never squash characters horizontally.
+- Left rail: **LEVEL**, one small MiniFugg mark in the freed former target location, **NEXT**, **NEXT+1**. No second TARGET panel. LEVEL displays at least two digits (`01`, `03`, `09`, `10`, `99`); do not truncate `100` or cap game progression to fit two characters.
+- Preview windows remain mini CRTs. Immediate NEXT has a separate small marker/arrow. Center actual piece bounds and fit a horizontal four-cell I piece.
+- Regular number tiles `1–9` share one muted pale-green phosphor family, with restrained scanline influence. No color coding by digit.
+- Operators use the same square cell geometry: one warm muted multiplier family, amber dividers, cyan reverse/specials. The inconsistent tints in the mockup are not authoritative.
+- **All game numbers are raster glyphs/tiles selected and composed by Phaser.** This includes cell digits, LEVEL, TARGET and calculation results. Do not reintroduce system-font text over the artwork. Values stay live; glyph artwork is reusable and exported with explicit frames, baseline and advance. Use `0–9` for readouts, but do not reintroduce zero-valued gameplay cells.
+- Active piece receives only a small edge lift. Ghost is a low-alpha outline at the true collision-derived landing position, not at the illustrative position from the mockup.
+- Calculate only full rows. Keep the board frozen while the scan follows operation order, shows intermediate totals and then the final result; only afterwards collapse rows. The nine-fives example in the approved image is not a valid gameplay state.
+- Result placement may be adapted to the actual available space. A result outside the right edge is no longer mandatory if it clips or sacrifices the tenth column. Preserve a readable directional association with the calculated row.
+- Four equal main buttons on one low row with consistent gaps: LEFT, RIGHT, rotate-left, rotate-right. **The left rotation control is counterclockwise; the right rotation control is clockwise**, with matching labels. The remaining reversed arrows in the flat image must not be copied into production.
+- DOWN is smaller and centered below the movement pair. Its full touch target and label remain visible in the bottom-anchored composition.
+- Shell title: `TetraMindFck` only; no Calc Drop suffix, registered mark or version copy. English functional labels only, no filler slogans or instructional microcopy.
+- One small MiniFugg mark maximum. Use the canonical brand/mascot sources; the incidental generated creature is not a new canonical Fuggy reference. The decorative room contains no text.
+- Core owns RETOUR and terminal screens. Reserve the overlay without moving it or baking it into the game artwork.
 
-### Production ownership
+### Production ownership and first specimens
 
-Authored raster later: crop-safe room ambience, clean shell, shared physical button base and optional CRT glass highlight. Phaser owns all values, labels, grid geometry, cells, previews, score, operators, scanlines, ghost, line-clear FX and button-state movement.
+Authored raster: crop-safe room, clean shell with apertures, clean CRT/glass support where useful, button bases and raster glyph/label atlases. Phaser owns the numerical data, arithmetic, exact grid, sprite selection/position, previews, input, ghost, button states, scan and row-collapse motion. Do not bake live values, controls, paths or board states into a background and then draw them twice.
 
-The first integration pass intentionally uses Phaser geometry for the shell/control blockout so composition and readability can be validated before raster production. Once accepted, authored source masters are created losslessly and runtime derivatives use WebP lossless by default. PNG is source/master only; AVIF is reserved for large opaque static art after decode/quality validation.
+The 2026-09-19 preparation produced an inventory of 25 elements and three **technical review boards**, archived separately from the clean reference:
 
-`ASSET_MANIFEST.md` is the production contract for layer ownership, states, filenames and FX recipes.
+- `01-composition.png` — Drive `171vEdyI1uP5KvjBtK6iSTP5S5VtoHHnU`;
+- `02-glyphes-commandes.png` — Drive `11zSXtChhQ5RmP1qw3n6enoINIhSvSiLM`;
+- `03-calcul-mouvement.png` — Drive `1EnHa2W5LfydmzgFqejMcigi18hCOssV8`.
+
+The cell-digit specimen isolates contours of `1–9` from the exact approved raster. The HUD `0–9` specimen is a newly constructed broad seven-segment proposal, not an exact source extraction. Both are **review specimens**, not approved final assets. PNG and WebP-lossless versions decode to identical RGBA pixels. No runtime references were changed in this preparation pass.
+
+### Proposals still to validate
+
+- A temporary calculation strip inside the main CRT, below and separate from permanent TARGET, outside the grid. This avoids the cramped right-edge callout without inventing a new score HUD.
+- Proposed blockout only: square cell `23 × 23` logical units (`46 × 46` artwork pixels), board at `x124 / y206`, size `230 × 460`; TARGET at `116 / 153`, size `248 × 30`; calculation strip at `116 / 184`, size `248 × 20`. These measurements are not yet an accepted replacement master.
+- Proposed physical button press: approximately 2 logical units down, 70 ms press / 90 ms release; stable pressed state during hold; reset on pointercancel, blur or deactivation. Reduced motion changes brightness without travel.
+- Proposed calculation sequence retains approximately 1.18 seconds as the initial tuning reference; reduced motion shows result then wipe without sweep. Local lock pulse approximately 100 ms and level pulse approximately 180 ms are proposals, not new gameplay timing rules.
+
+Show these proposals in the translation board and a representative mini-slice before the full raster pack. Keep missing sources marked missing. The prepared inventory still needs to be wired into the Production Lab UI; do not claim that publication or Release integration has happened.
+
+### Scope of the TARGET decision
+
+The visible goal is level progression through the current single-clear target, not a cumulative SCORE display. The large example values in the art do not approve a replacement target curve. Existing leaderboard scoring, saved scores and cover-unlock thresholds must be reconciled as a separate product change, not silently deleted in this art pass. Until then, preserve the current runtime rules and metric while preparing the TARGET-led presentation.
+
+`ASSET_MANIFEST.md` records layer ownership, filenames, specimen status and validation gates. `GAME_STATUS.md` records the pending Lab/runtime work. No new full-game approval is inferred from this DA approval.
 
 ## Welcome illustration direction
 

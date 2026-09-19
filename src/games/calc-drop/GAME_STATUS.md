@@ -1,6 +1,26 @@
 # TetraMindFck — Game Status
 
-Updated: 2026-09-13 Europe/Paris
+Updated: 2026-09-19 Europe/Paris
+
+## Gameplay DA approved; production preparation started — 2026-09-19
+
+- User approved the exact latest cream-handheld / green-CRT reference and authorized the next production step.
+- Approved presentation: wide TARGET instead of SCORE, LEVEL on at least two digits, no second TARGET in the rail, one small MiniFugg mark, NEXT / NEXT+1, bottom anchoring, exact square 10×20 board and four equal main controls. Numeric values must be displayed with reusable raster glyphs/tiles, not a substituted system font.
+- New-production specification: 390×850 logical units, ×2 exports 780×1700 pixels, guaranteed bottom window y140–850. The exact 853×1844 reference is preserved, not stretched. The current 390×844 runtime is not migrated by this documentation pass.
+- Exact approved PNG archived privately as Drive `1uwp0dczINJlFOX1eMle5xtjXZNLBuxo7`, under `Games/tetramindfck/gameplay-production-2026-09-19` (folder `1cVoRYkEmFleYRc9PVnzdZiM_HFXc3W43`). SHA-256 `25b66ea0292439a32047cdd7d544ca4e553f1f8855ec68cab156e45c231b9a83`.
+- Produced and visually inspected three separate technical review boards: composition/ownership (`171vEdyI1uP5KvjBtK6iSTP5S5VtoHHnU`), glyphs/command states (`11zSXtChhQ5RmP1qw3n6enoINIhSvSiLM`) and full-row calculation storyboard (`1EnHa2W5LfydmzgFqejMcigi18hCOssV8`). Each is 2340×2000 pixels, not a stage texture.
+- Private preparation package `tetramindfck-production-preparation.zip`, Drive `129nDDEw_OXC2UI4T9MLCvsJ6zZ4JiHu_`, contains the original, three boards, offline HTML viewer, 25-element inventory, two raster glyph specimens, frame metadata, preparation script and file verification.
+- First cell specimen: actual 1–9 contours isolated from the approved raster. HUD specimen: proposed broad seven-segment 0–9 artwork. Both remain candidates, not final accepted atlases. PNG/WebP decode checks passed, including identical RGBA pixels, alpha, single-frame and VP8L lossless payload.
+- New proposal requiring review: a temporary calculation strip inside the main CRT, distinct from permanent TARGET and outside the board. The old requirement to force every result to the right may be relaxed, as the user allowed; never consume the tenth column.
+- Remaining illustrative errors in the reference are not production rules: only full rows calculate; geometry must be exact; ghost comes from collision; left rotation must be counterclockwise and right rotation clockwise; category tints must be consistent.
+- Example targets 50000 / 100000 / 170000 are capacity tests, not an approved replacement progression curve. The HUD decision does not silently migrate leaderboard persistence or cover-unlock scoring.
+- `ART_DIRECTION.md` and `ASSET_MANIFEST.md` now record the approved contract, actual deliverables, proposals and missing work. No gameplay code, covers, audio, migration lock or player release version changes in this preparation pass.
+- **Production Lab status: inventory prepared, UI synchronization still pending.** Do not claim that these boards or 25 nodes already appear in the Lab. No fake Release screenshot or final clean-shell/button source has been produced.
+- **Validation scope:** image/file checks only. Typecheck, build, actual gameplay, viewport runtime and deployment checks were not run for this pass. No new public asset path was registered.
+
+### Immediate continuation
+
+Wire the inventory into the Tetra Production Lab plan, keeping missing source images explicit and private archive references private. Review the proposed calculation strip, glyph specimens and state storyboard. Then produce clean sources and integrate a representative slice with actual phone-size raster digits, full 10×20 geometry, horizontal-I previews, LEVEL 09/10/99/100, large TARGET values, both rotation directions and bottom anchoring with RETOUR. Only extend the pack after comparison against the accepted material reference. Preserve existing gameplay and scoring rules unless their change is explicitly resolved.
 
 ## Calage final des quatre covers — 2026-09-13
 
@@ -8,7 +28,9 @@ Updated: 2026-09-13 Europe/Paris
 - Les quatre masters PNG et WebP lossless restent octet pour octet inchangés. Core superpose seulement le bandeau-titre exact du même raster au fond recadré ; aucun personnage, bloc, trait, couleur ou lettrage n’est généré de nouveau.
 - Contrôle visuel effectué sur A54 Brave, MASTER et desktop pour les quatre éditions : sujet remonté au-dessus de JOUER, titre entier, raccord fondu imperceptible, aucune cover animée ni erreur console.
 
-## Gameplay CRT art integration — 2026-09-12
+## Historical gameplay CRT art integration — 2026-09-12
+
+This is the record of the former mini-slice, not the current TARGET-led art contract approved on 2026-09-19.
 
 - User approved the retro handheld / green CRT gameplay direction after iterative correction of the grid, previews, controls and tile treatment.
 - The accepted visual contract is now canonical in `ART_DIRECTION.md`; production ownership and format rules are in `ASSET_MANIFEST.md`.
@@ -30,9 +52,9 @@ Updated: 2026-09-13 Europe/Paris
 
 ## Current phase
 
-Gameplay Phaser migration + gameplay art production mini-slice.
+Gameplay art production preparation / translation review. Phaser migration remains in-progress and locked; the updated DA is not yet integrated. Production Lab UI synchronization is pending.
 
-## Current rules
+## Current runtime rules — unchanged by the art preparation
 
 - Portrait game, fixed logical stage `390 × 844`.
 - Falling 7-bag tetromino sequence; each block carries a digit or arithmetic operator.
@@ -47,7 +69,7 @@ Gameplay Phaser migration + gameplay art production mini-slice.
   - then `200`, `300`, `400`… in steps of 100;
   - the value compared to the target is the **sum of all line scores in that single clear**;
   - one sufficiently large clear may cross several targets at once.
-- Total run score remains the cumulative sum of all cleared-line scores for the leaderboard.
+- Total run score remains the cumulative sum of all cleared-line scores for the leaderboard; reconcile this metric separately from removing the SCORE readout in the future gameplay art.
 
 ## Runtime / migration
 
@@ -58,10 +80,10 @@ Gameplay Phaser migration + gameplay art production mini-slice.
 
 ## Validation / remaining
 
-- Validate the new CRT mini-slice at phone width and desktop CENTRE-height framing before generating final shell/button raster assets.
+- Follow the 2026-09-19 translation gates in `ASSET_MANIFEST.md` before full raster production. Validate bottom anchoring and TARGET-led composition, not the superseded SCORE-led reference.
 - Typecheck/build and representative phone/desktop play validation remain required before marking the migration `current` and deleting the legacy renderer.
-- Verify especially: controls, 7-bag previews including I-piece width, O-piece token rotation, reverse calculation, simultaneous line clear animation, 3-tick lock, bonus injection, total-clear target skipping, `1–9` generation, `2:1` operator split, long score display, game-over/restart and reactive music level changes.
-- After mini-slice acceptance: produce clean source masters and WebP-lossless runtime derivatives for the shell/button/background family through the documented asset pipeline, then replace temporary Phaser structural geometry without changing gameplay positions.
+- Verify especially: controls, 7-bag previews including I-piece width, O-piece token rotation, reverse calculation, simultaneous line-clear animation, 3-tick lock, bonus injection, total-clear target skipping, `1–9` generation, `2:1` operator split, long target/result display, level overflow beyond two digits, game-over/restart and reactive music level changes.
+- After translation/mini-slice acceptance: produce clean source masters and WebP-lossless runtime derivatives for the shell/button/background/glyph family through the documented asset pipeline, then replace temporary structural geometry without changing gameplay rules.
 
 ## Cover size regression correction — 2026-09-12
 

@@ -1,6 +1,21 @@
 # CrazyPapers — Asset Manifest
 
-## Current production review — T03, 19 September 2026
+## Principal gameplay reference — compact revision approved 19 September 2026
+
+**Active source:** `crazy-papers-gameplay-da-main-compact-2026-09-19.png`, in `MiniFugg - Graphic Archive/Games/crazy-papers/Gameplay DA Validated - 2026-09-19`.
+
+- Private Drive file `1Msvmzf6bU5Zw3TaV8thCrpzOIFWdcLi8`; folder `1UGgUw1SPKimiTxQNhBy9uUxcelafpxRH`.
+- Conversation image `bureaucratie_au_coucher_du_soleil.png`; generation `3033818c-cc4a-4f06-b395-e6b83fc11528`.
+- PNG, opaque RGB, **849 × 1851 pixels**, **2,048,167 bytes**.
+- SHA-256 `cccc81028dc7e725bc25ce7ee7401a8f3dc6861be3b17facd4fe9b4239723e51`.
+- User visual approval at `2026-09-19T10:21:35Z`; principal-DA designation at `2026-09-19T10:22:10Z`.
+- File opened/decoded, archived privately, fetched back and verified **byte-for-byte identical** to the conversation original. No resizing or recompression.
+- Scope: compact manager/header composition and upward recovery of the gameplay space; essential content ends at the bottom of stamp touch bases. See [ART_DIRECTION.md](ART_DIRECTION.md) for the approval contract.
+- Status: **principal artistic/composition reference, not a runtime texture or finished atlas**. No new code, game release or production import accompanies this registration. Guaranteed-zone/Core clearance checks on this revised image remain separate from visual approval.
+
+Use this source, not the earlier taller composition or T03 technical montage, for the next production work. The previous reference and its audit below remain historical evidence; their 744.17-unit measurement must not be attributed to the new image. Dynamic values and text are still engine-owned. Complementary office, daylight, family, manager, document and event families remain in [PRODUCTION_PLAN.md](PRODUCTION_PLAN.md).
+
+## Historical production review — T03 initial audit, 19 September 2026
 
 Read [PRODUCTION_PLAN.md](PRODUCTION_PLAN.md) before producing the gameplay pack. It records the measured source audit, candidate layout, the user's five-rank progression, independent six-state exterior/daylight axis, aging/family picture, changing managers, lamp/window variants, returned-file scene, and combinatorial document families.
 
@@ -8,13 +23,13 @@ The original was opened and measured: its file/definition checks pass, but its e
 
 Review archive, outside runtime sync: Drive file `17PY_6aMUfEfvAVwQ-3iZpS359vSZsXAR`, folder `1KDXvfbcsc4ksMe1NP_YTEvfIprQijqY0`; `crazy-papers-t03-review.zip`, local SHA-256 `087d4d17f4521429058c3cd9346319bba2dc840833b9336d6d0478c528e56709`. Source, annotation copies, candidate montage, measurements and reproduction script are included. None of these review crops is a final isolated asset. The Lab renderer has not yet been refreshed with the candidate layout.
 
-## Validated gameplay DA reference — 19 September 2026
+## Earlier gameplay reference — superseded by the compact source above
 
-- Canonical artistic reference: `MiniFugg - Graphic Archive/Games/crazy-papers/Gameplay DA Validated - 2026-09-19/crazy-papers-gameplay-da-validated-2026-09-19.png`.
+- Earlier artistic reference: `MiniFugg - Graphic Archive/Games/crazy-papers/Gameplay DA Validated - 2026-09-19/crazy-papers-gameplay-da-validated-2026-09-19.png`.
 - Private Drive file id: `1csaKcsx62GvWuBa716fXelhI2NqE2ZTT`; archive folder id: `1UGgUw1SPKimiTxQNhBy9uUxcelafpxRH`.
 - Original: PNG, `849 × 1851`, opaque RGB, 2,012,759 bytes, SHA-256 `5d3384b040167f1c76ad5cf4bd8673997c07451a64878340bc606246ef8e90f1`.
-- User validation: gameplay DA + general early-game composition, 19 September 2026.
-- Status: **reference only** — not a runtime texture, not an atlas, not a production master, not yet imported into the gameplay asset tree.
+- Initial user validation: gameplay DA + general early-game composition, 19 September 2026; framing superseded by the later compact approval.
+- Status: **historical reference only** — not a runtime texture, not an atlas, not a production master, not yet imported into the gameplay asset tree.
 - Target translation contract: new MiniFugg MASTER `390 × 850`, guaranteed gameplay zone `390 × 710`; preserve the original unchanged and create separate production assets only after the translation board is accepted.
 - Dynamic ownership: all document text/data, pending count, time, manager dialogue and state changes stay engine-owned. The reference does not authorize baking those values into a background.
 - First production decomposition must include at minimum: office/window background ×6 times of day; five manager bays and expression states; five department logos/colors; five one-row stamp controls + interaction states; wooden document support; document template families with live text slots; backlog pile units/overflow; metronome states; wrong-department red return dossier + oversized arm event.

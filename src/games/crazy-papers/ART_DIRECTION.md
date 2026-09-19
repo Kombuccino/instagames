@@ -1,18 +1,32 @@
 # CrazyPapers — Art Direction
 
+## Main gameplay DA — approved 19 September 2026 at 12:22 Europe/Paris
+
+**The current principal gameplay reference is the compact composition approved by the user at 10:21:35 UTC and explicitly designated as the main DA at 10:22:10 UTC.** Use this exact image for the next decomposition and complementary studies; do not restart a style search or revert to the taller manager/header arrangement.
+
+- Archive: `MiniFugg - Graphic Archive/Games/crazy-papers/Gameplay DA Validated - 2026-09-19/crazy-papers-gameplay-da-main-compact-2026-09-19.png`.
+- Private Drive file: `1Msvmzf6bU5Zw3TaV8thCrpzOIFWdcLi8`, folder `1UGgUw1SPKimiTxQNhBy9uUxcelafpxRH`.
+- Conversation source: `bureaucratie_au_coucher_du_soleil.png`, generation `3033818c-cc4a-4f06-b395-e6b83fc11528`.
+- Original PNG RGB opaque, **849 × 1851 pixels**, 2,048,167 bytes; SHA-256 `cccc81028dc7e725bc25ce7ee7401a8f3dc6861be3b17facd4fe9b4239723e51`.
+- Original opened and decoded; the archived file was downloaded again and verified byte-for-byte identical. No resize, crop, retouch or recompression was applied during registration.
+
+Approval covers the artistic direction and this compact visual composition: shorter manager bays/department headers, recovered space below the portraits, document and stamp bank moved upward. The indispensable gameplay envelope ends at the bottom of the stamp touch bases; paper and desk continuation below them are crop-safe decoration. The exact accepted image governs, including the compact labels above the portraits; the earlier suggestion of labels below them does not authorize silently changing this accepted version.
+
+This remains a **reference image**, not a runtime background or a finished set of assets. Visual approval is acquired; it is distinct from verifying the new image's guaranteed-zone placement, real Core return clearance, live text and interactions. The 744.17-unit span measured in the earlier T03 audit belongs to the previous image, not this one. Keep the new source unchanged; any production crop/placement must be an explicit derivative. The source resolution is over 2× at logical width 390, not an instruction to downscale the working master to 390 pixels.
+
+The five-rank office/character evolution, six day phases, family picture and remonstration scene remain required complementary work in [PRODUCTION_PLAN.md](PRODUCTION_PLAN.md); approval of this one screen does not mean those variants already exist. The painted count 47, sample form values, three TIC/TAC words and mixed cast are not permission to change the rules or forget the specified initial state. All dynamic content stays engine-owned.
+
+Previous source `crazy-papers-gameplay-da-validated-2026-09-19.png` (Drive `1csaKcsx62GvWuBa716fXelhI2NqE2ZTT`, SHA-256 `5d3384b040167f1c76ad5cf4bd8673997c07451a64878340bc606246ef8e90f1`) remains preserved as an earlier reference, **superseded for the active gameplay composition**. The T03 technical montage is not the new principal DA. Covers and the deployed game are unchanged by this registration.
+
 ## Base direction
 
 - Oppressive low-resolution bureaucracy mood, with physical paper and hard printed edges.
 - Historical reference: the administrative tension of *Papers, Please* without copying its interface, assets, characters, emblems or exact palette.
 - Current gameplay renderer is Phaser 4 on the historical `390 × 844` stage. The validated new gameplay DA is the target for the next art/layout pass; new authored translation uses `390 × 850` with a guaranteed `390 × 710` gameplay zone. Dynamic gameplay state stays engine-owned; do not rebuild a DOM/CSS interface inside the scene.
 
-## Gameplay DA validated — 19 September 2026
+## Gameplay art contract — retained through the compact revision
 
-The user explicitly validated the exact gameplay reference `MiniFugg - Graphic Archive/Games/crazy-papers/Gameplay DA Validated - 2026-09-19/crazy-papers-gameplay-da-validated-2026-09-19.png` (private Drive file `1csaKcsx62GvWuBa716fXelhI2NqE2ZTT`, folder `1UGgUw1SPKimiTxQNhBy9uUxcelafpxRH`). Source: opaque PNG, `849 × 1851`, SHA-256 `5d3384b040167f1c76ad5cf4bd8673997c07451a64878340bc606246ef8e90f1`. Preserve this original unchanged: it is the canonical artistic/composition reference for the gameplay redesign.
-
-Validation scope: **art direction and general early-game composition**, representing the desk after roughly one or two minutes of play, before heavy overload. It is not yet a production master or a runtime texture. Its ratio is already extremely close to the new MiniFugg master (at 390 logical units wide it maps to about 850.28 high), but the production translation still has to prove that every indispensable control and label fits inside the guaranteed `390 × 710` window.
-
-This validation supersedes older gameplay-visual choices when they conflict with the points below:
+The initial validation of 19 September established the DA and general early-game composition, representing the desk after roughly one or two minutes of play, before heavy overload. The compact source above supersedes its framing, not the following art/gameplay requirements:
 
 - **Rendering:** deliberate constructed pixel art throughout — coherent pixel clusters, stepped edges, limited material detail, no smooth painted illustration merely filtered into pixels.
 - **Five departments only:** `ACCOUNTING`, `CIVIL`, `PLANNING`, `HR`, `LEGAL`. Each department owns one stable color, one logo/pictogram and one distinct manager bay/office atmosphere.
@@ -24,10 +38,10 @@ This validation supersedes older gameplay-visual choices when they conflict with
 - **Document content:** paper texture, borders, logos and form geometry may be authored, but titles, names, numbers, clues, fields and other variable content stay engine-rendered/live. The active document must remain large enough to read comfortably at phone size.
 - **Stamps:** five physical stamps on **one horizontal row**. Their bodies keep the department colors; their click face uses the department logo/pictogram rather than the department name. The whole hardware base is the obvious touch target, so the player never has to guess where to click.
 - **Metronome:** visible in the office and tied to pressure. Its sound accelerates with level/pressure; the visual `TIC / TAC` stack cycles vertically. Level 1 shows only two simultaneous words before the oldest disappears; later intensity can rise progressively to six simultaneous words.
-- **Text discipline:** all gameplay-visible text is English. No mugs with jokes, motivational notes, decorative slogans, fake handwritten chatter or ambient pseudo-copy. Functional text only.
+- **Text discipline:** all gameplay-visible text is English. No mugs with jokes, motivational notes, decorative slogans, fake handwritten chatter or ambient pseudo-copy. Functional text only; the protagonist's name/title and family picture requested subsequently are narrative exceptions described in PRODUCTION_PLAN.
 - **Below-safe decoration:** desk objects and paper continuation may exist outside the guaranteed gameplay window, but they are expendable under crop and never carry required information.
 
-Next mandatory production step is the DA → game translation board: canonical `390 × 850` composition, explicit vertical anchor, guaranteed-zone check, layer ownership, manager states, six window states, document templates, backlog/pile mapping, metronome storyboard and wrong-department arm event. Do not integrate the whole art pass before that board and a representative vertical slice are validated.
+Next production step: use the approved compact source to complete the DA → game translation board, its measured placement and the missing variant/event studies in PRODUCTION_PLAN. Preserve canonical `390 × 850` composition, explicit vertical anchor, guaranteed-zone check, layer ownership, manager states, six window states, document templates, backlog/pile mapping, metronome storyboard and wrong-department arm event. Do not integrate the whole art pass before the complementary board and a representative vertical slice are validated.
 
 ## Cover research — 12 September 2026 — first three sources approved
 

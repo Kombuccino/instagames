@@ -1,16 +1,30 @@
 # CrazyPapers — Suivi de création
 
-Mis à jour : 19 septembre 2026. Version livrable : `0.5.2`.
+Mis à jour : 19 septembre 2026 à 12:22 Europe/Paris (décision utilisateur). Version publiée : voir `definition.ts`, inchangée dans cette passe.
 
-## DA gameplay validée — 19 septembre 2026
+## État actuel — DA principale compacte validée
 
-L’utilisateur valide comme référence canonique de gameplay l’image `MiniFugg - Graphic Archive/Games/crazy-papers/Gameplay DA Validated - 2026-09-19/crazy-papers-gameplay-da-validated-2026-09-19.png` (Drive privé `1csaKcsx62GvWuBa716fXelhI2NqE2ZTT`). Original préservé : PNG opaque `849 × 1851`, SHA-256 `5d3384b040167f1c76ad5cf4bd8673997c07451a64878340bc606246ef8e90f1`. Cette validation porte sur la **DA et la composition générale d’un début de partie après environ 1–2 minutes**, pas encore sur un master runtime ni sur une intégration Phaser finale.
+L'utilisateur approuve la dernière image à 10:21:35 UTC puis demande explicitement de la noter comme **DA principale validée** à 10:22:10 UTC. La référence active est désormais `crazy-papers-gameplay-da-main-compact-2026-09-19.png`, Drive privé `1Msvmzf6bU5Zw3TaV8thCrpzOIFWdcLi8`, dans le dossier `Gameplay DA Validated - 2026-09-19` de l'archive CrazyPapers.
 
-Décisions désormais canoniques : pixel art construit ; cinq départements anglais `ACCOUNTING / CIVIL / PLANNING / HR / LEGAL`, chacun avec couleur + logo + ambiance + manager ; cinq tampons sur une seule ligne avec pictogramme sur la face et grosse base cliquable ; document actif large sur support bois presque à plat et contenu variable rendu par le moteur ; horloge de journée analogique avec secteur rouge de fin de journée, sans date ni nom du jour ; six décors de fenêtre selon l’heure ; piles latérales directement proportionnelles au nombre de dossiers en attente et encore modestes dans cet état précoce ; métronome avec cadence croissante et pile visuelle `TIC/TAC` de 2 à 6 éléments ; aucun texte d’ambiance décoratif.
+Source exacte : `bureaucratie_au_coucher_du_soleil.png`, génération `3033818c-cc4a-4f06-b395-e6b83fc11528`. PNG RGB opaque **849 × 1851**, **2 048 167 octets**, SHA-256 `cccc81028dc7e725bc25ce7ee7401a8f3dc6861be3b17facd4fe9b4239723e51`. Le fichier a été ouvert, archivé sans modification et retéléchargé pour confirmer l'identité octet pour octet.
+
+Choix acquis : bande managers/enseignes raccourcie, espace récupéré sous les portraits, remontée de la zone document/tampons. La limite basse indispensable est le bas des bases tactiles des tampons ; la continuation du bureau et les papiers sous cette limite sont décoratifs. L'image exacte approuvée prime sur les suggestions intermédiaires de placement des libellés.
+
+Cette source remplace l'ancienne composition haute et le montage technique comme référence de départ. L'ancienne image n'est pas effacée : elle reste historique dans l'archive. Les mesures de 744,17 unités et les coordonnées du premier audit ne concernent que cette ancienne source.
+
+**Livré dans cette passe :** validation principale enregistrée, PNG original archivé/vérifié et références documentaires synchronisées. **Non livré :** découpe finale, variantes de grades, nouveaux assets runtime, actualisation visuelle du Lab ou intégration du jeu. Aucun fichier de code, version produit ou verrou de migration ne change. La conformité technique de la nouvelle composition au masque réel Core et à la fenêtre garantie reste à vérifier lors de sa préparation ; ne pas confondre ce contrôle et la validation visuelle déjà acquise.
+
+Prochaine étape : partir de cette source figée pour compléter la planche de traduction et ses familles, puis études des bureaux niveaux 1 et 5 et de la remontrance, conformément à [PRODUCTION_PLAN.md](PRODUCTION_PLAN.md). Les enrichissements de carrière, photo/famille, ville et documents restent acquis ; cette image unique ne les représente pas tous. Contrat de référence dans [ART_DIRECTION.md](ART_DIRECTION.md), fiche fichier dans [ASSET_MANIFEST.md](ASSET_MANIFEST.md).
+
+## Historique — première DA gameplay validée, remplacée par la version compacte
+
+L’utilisateur avait validé comme référence de gameplay l’image `MiniFugg - Graphic Archive/Games/crazy-papers/Gameplay DA Validated - 2026-09-19/crazy-papers-gameplay-da-validated-2026-09-19.png` (Drive privé `1csaKcsx62GvWuBa716fXelhI2NqE2ZTT`). Original préservé : PNG opaque `849 × 1851`, SHA-256 `5d3384b040167f1c76ad5cf4bd8673997c07451a64878340bc606246ef8e90f1`. Cette validation portait sur la **DA et la composition générale d’un début de partie après environ 1–2 minutes**, pas encore sur un master runtime ni sur une intégration Phaser finale. Sa composition est maintenant remplacée par la référence compacte ci-dessus.
+
+Décisions conservées : pixel art construit ; cinq départements anglais `ACCOUNTING / CIVIL / PLANNING / HR / LEGAL`, chacun avec couleur + logo + ambiance + manager ; cinq tampons sur une seule ligne avec pictogramme sur la face et grosse base cliquable ; document actif large sur support bois presque à plat et contenu variable rendu par le moteur ; horloge de journée analogique avec secteur rouge de fin de journée, sans date ni nom du jour ; six décors de fenêtre selon l’heure ; piles latérales directement proportionnelles au nombre de dossiers en attente et encore modestes dans cet état précoce ; métronome avec cadence croissante et pile visuelle `TIC/TAC` de 2 à 6 éléments ; aucun texte d’ambiance décoratif hors des ajouts narratifs explicitement demandés depuis.
 
 État manager initial : visages uniquement, aucune bulle. Les variations suivantes pourront montrer un seul manager parlant à la fois. L’erreur de service doit devenir un événement spectaculaire : énorme bras/poing au centre, dossier renvoyé à dos rouge avec gros cachet anglais `WRONG DEPARTMENT`, puis le même dossier revient sur la planche.
 
-Contrat de traduction : la source `849 × 1851` est presque exactement au ratio du MASTER `390 × 850`, mais elle n’est **pas encore certifiée pour la zone garantie `390 × 710`**. La prochaine étape est donc la planche DA → jeu avec compaction verticale, ancrage, couches/états et tests de crop avant toute intégration complète.
+Contrat de traduction : MASTER `390 × 850`, zone garantie `390 × 710`, ancrage, couches/états et tests de crop avant toute intégration complète. La compaction visuelle a depuis été approuvée sur une nouvelle image ; ne pas redemander la validation de l'ancienne maquette.
 
 ## Calage final des six covers — 13 septembre 2026
 
@@ -138,7 +152,7 @@ La correction est exclusivement un cadrage runtime `center 70%` pour cette varia
 
 ## Prochaine action
 
-1. Produire la **planche de traduction DA → jeu** à partir de la référence validée : MASTER `390 × 850`, zone garantie `390 × 710`, ancrage, couches, managers, tampons, document, backlog, six fenêtres, métronome et événement `WRONG DEPARTMENT`.
-2. Valider cette planche puis intégrer une mini-tranche représentative en Phaser avant de produire tout le pack.
-3. Vérifier en parallèle le correctif DPR sur mobile/PC réel et les sensations de pression.
+1. Compléter la **planche de traduction DA → jeu** depuis la DA principale compacte désormais figée : vérifier son placement dans MASTER `390 × 850` / zone garantie `390 × 710`, le retour Core, puis les couches et états.
+2. Produire les compléments ciblés prévus dans `PRODUCTION_PLAN.md` : bureaux niveaux 1 et 5, états de journée contrastés et événement de remontrance. Ne pas refaire la DA principale et ne pas lancer les cinq bureaux complets d'un coup.
+3. Après revue de ces compléments, intégrer une mini-tranche représentative en Phaser avant de produire tout le pack ; vérifier le correctif DPR sur mobile/PC réel et les sensations de pression.
 4. Après validation technique de la migration et de la nouvelle tranche, seulement alors passer `migration.state` à `current` / `locked: false`.

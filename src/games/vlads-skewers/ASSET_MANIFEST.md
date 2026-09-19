@@ -79,3 +79,14 @@ Micro-brief fermé : conserver titre, personnages, scène, palette et technique 
 - Character parts: “strict 4×4 transparent atlas with expressions, mouths, arms/legs, customer drool, grill marks, ash and juice; crisp coarse pixel clusters.”
 
 The built-in generator originals remain in Codex generation storage; production-ready assets are the repository paths in the table. Earlier sheets with baked faces/limbs, painted checkerboards, or the rejected cage-like customer booth were removed from production.
+
+
+## Revue de recomposition du 19 septembre
+
+Le tableau historique ci-dessus décrit le runtime inchangé. La nouvelle production vise 390×850 / garantie 390×710 bottom ; composition.json est une proposition mesurée, non une géométrie déjà intégrée.
+
+production-lab/master-*.png sont des captures réelles du monde legacy. production-lab/blockout-*.png et .svg sont des guides techniques de placement et d’états, REFERENCE ONLY, sans valeur artistique finale. Ils ne doivent jamais être chargés par VladsSkewersScene. Les rapports de géométrie ne certifient pas la qualité des sources.
+
+Le Plan production-plan.json inventorie les futurs assets et tous les éléments moteur-owned : cinq loges vides/grillées, portraits entiers et expressions, bouche/ancrages/bave, seau, cartouche extensible et timer, corps/faces/membres alimentaires, broches 2–5 et état complet, trois vies, chiffres/police bitmap, niveau, jus cinq paliers, Brutality et audio. Aucun sprite final issu du blockout n’existe. Chaque entrée IMAGE reste à produire/bloquée tant qu’une vraie source indépendante n’est pas contrôlée.
+
+Priorité : validation de composition puis une seule tranche représentative (loge/portrait/commande + broche complète protégée). La séparation doit reconstruire les pixels masqués, pas trouer les visages ou couvrir une découpe contaminée par un rectangle. Sources PNG intactes ; dérivés WebP lossless seulement après approbation et contrôles.

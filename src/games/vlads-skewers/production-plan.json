@@ -1,0 +1,681 @@
+{
+  "title": "Vlad — recomposition gameplay",
+  "summary": "Revue du 19 septembre : même pixel art, nouvelle composition au contrat. Jeu public inchangé.",
+  "screens": [
+    {
+      "id": "VP1",
+      "state": "proto",
+      "title": "Départ actuel",
+      "context": "Capture réelle du runtime de référence en Chromium CI, avant refonte. Source legacy 390×844, pas preuve de déploiement ni validation Safari.",
+      "facts": [
+        "Code gameplay inchangé",
+        "Capture diagnostique, non cible artistique"
+      ],
+      "source": "/assets/generated/vlads-skewers/production-lab/master-initial.png",
+      "image": "/assets/generated/vlads-skewers/production-lab/master-initial.png",
+      "status": "Diagnostic réel",
+      "x": 1650,
+      "y": 420,
+      "preview": "proto",
+      "anchor": "bottom"
+    },
+    {
+      "id": "VP2",
+      "state": "proto",
+      "title": "File pleine actuelle",
+      "context": "Capture réelle du runtime de référence en Chromium CI, avant refonte. Source legacy 390×844, pas preuve de déploiement ni validation Safari.",
+      "facts": [
+        "Code gameplay inchangé",
+        "Capture diagnostique, non cible artistique"
+      ],
+      "source": "/assets/generated/vlads-skewers/production-lab/master-queue-five-visible.png",
+      "image": "/assets/generated/vlads-skewers/production-lab/master-queue-five-visible.png",
+      "status": "Diagnostic réel",
+      "x": 1650,
+      "y": 1400,
+      "preview": "proto",
+      "anchor": "bottom"
+    },
+    {
+      "id": "VP3",
+      "state": "proto",
+      "title": "Brutality actuel",
+      "context": "Capture réelle du runtime de référence en Chromium CI, avant refonte. Source legacy 390×844, pas preuve de déploiement ni validation Safari.",
+      "facts": [
+        "Code gameplay inchangé",
+        "Capture diagnostique, non cible artistique"
+      ],
+      "source": "/assets/generated/vlads-skewers/production-lab/master-brutality.png",
+      "image": "/assets/generated/vlads-skewers/production-lab/master-brutality.png",
+      "status": "Diagnostic réel",
+      "x": 1650,
+      "y": 2380,
+      "preview": "proto",
+      "anchor": "bottom"
+    },
+    {
+      "id": "VD1",
+      "state": "da",
+      "title": "Composition proposée",
+      "context": "Blockout technique mesuré, à valider. Ni artwork final ni nouvelle Release. Les mots de repérage ne seront pas imprimés dans les assets.",
+      "facts": [
+        "390×850 · bottom",
+        "Zone garantie 390×710",
+        "Cinq loges intégralement contenues"
+      ],
+      "source": "src/games/vlads-skewers/composition.json",
+      "image": "/assets/generated/vlads-skewers/production-lab/blockout-playing.png",
+      "status": "Composition proposée · artwork à produire",
+      "x": 4450,
+      "y": 420,
+      "preview": "proto",
+      "anchor": "bottom"
+    },
+    {
+      "id": "VD2",
+      "state": "da",
+      "title": "Brochette complète protégée",
+      "context": "Blockout technique mesuré, à valider. Ni artwork final ni nouvelle Release. Les mots de repérage ne seront pas imprimés dans les assets.",
+      "facts": [
+        "390×850 · bottom",
+        "Zone garantie 390×710",
+        "Cinq loges intégralement contenues"
+      ],
+      "source": "src/games/vlads-skewers/composition.json",
+      "image": "/assets/generated/vlads-skewers/production-lab/blockout-hold.png",
+      "status": "Composition proposée · artwork à produire",
+      "x": 4450,
+      "y": 1400,
+      "preview": "proto",
+      "anchor": "bottom"
+    },
+    {
+      "id": "VD3",
+      "state": "da",
+      "title": "Climax Brutality",
+      "context": "Blockout technique mesuré, à valider. Ni artwork final ni nouvelle Release. Les mots de repérage ne seront pas imprimés dans les assets.",
+      "facts": [
+        "390×850 · bottom",
+        "Zone garantie 390×710",
+        "Cinq loges intégralement contenues"
+      ],
+      "source": "src/games/vlads-skewers/composition.json",
+      "image": "/assets/generated/vlads-skewers/production-lab/blockout-brutality.png",
+      "status": "Composition proposée · artwork à produire",
+      "x": 4450,
+      "y": 2380,
+      "preview": "proto",
+      "anchor": "bottom"
+    },
+    {
+      "id": "VD4",
+      "state": "da",
+      "title": "Ouverture de niveau",
+      "context": "Blockout technique mesuré, à valider. Ni artwork final ni nouvelle Release. Les mots de repérage ne seront pas imprimés dans les assets.",
+      "facts": [
+        "390×850 · bottom",
+        "Zone garantie 390×710",
+        "Cinq loges intégralement contenues"
+      ],
+      "source": "src/games/vlads-skewers/composition.json",
+      "image": "/assets/generated/vlads-skewers/production-lab/blockout-level.png",
+      "status": "Composition proposée · artwork à produire",
+      "x": 4450,
+      "y": 3360,
+      "preview": "proto",
+      "anchor": "bottom"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "VD-layout",
+      "ownerScreenId": "VD1",
+      "title": "Cadre garanti, avant toute illustration",
+      "kind": "text",
+      "tags": [
+        "GD",
+        "UI"
+      ],
+      "status": "review",
+      "body": "MASTER 390×850, ancrage bas, zone garantie y140→850. La proposition garde même les boîtes essentielles après y207 pour résister au cas Brave dégradé. RETOUR Core reste libre.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 152,
+        "y": 247,
+        "width": 228,
+        "height": 62,
+        "w": 228,
+        "h": 62
+      },
+      "x": 3360,
+      "y": 430,
+      "links": []
+    },
+    {
+      "id": "VD-tower",
+      "ownerScreenId": "VD1",
+      "title": "Cinq loges dans le même cadre",
+      "kind": "text",
+      "tags": [
+        "IMAGE",
+        "UI"
+      ],
+      "status": "review",
+      "body": "Cinq niches fixes, mêmes tablettes, même échelle. Client actif en haut ; progression de file vers le haut. Les cinq loges restent visibles même si deux sont fermées.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 306,
+        "y": 318,
+        "width": 78,
+        "height": 440,
+        "w": 78,
+        "h": 440
+      },
+      "x": 3360,
+      "y": 750,
+      "links": []
+    },
+    {
+      "id": "VD-portraits",
+      "ownerScreenId": "VD1",
+      "title": "Portraits entiers, pas de trous",
+      "kind": "animation",
+      "tags": [
+        "IMAGE",
+        "ANIMATION"
+      ],
+      "status": "blocked",
+      "body": "Référence de style : version 1 renvoyée le 13 septembre. Reconstruire toute zone cachée par la bave avant de supprimer celle-ci. Masque de niche devant le bas du buste ; pivots et bouche par portrait. Ne pas utiliser l’atlas rejeté.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 306,
+        "y": 318,
+        "width": 78,
+        "height": 440,
+        "w": 78,
+        "h": 440
+      },
+      "x": 3360,
+      "y": 1070,
+      "links": []
+    },
+    {
+      "id": "VD-order",
+      "ownerScreenId": "VD1",
+      "title": "Recette lisible de deux à cinq aliments",
+      "kind": "text",
+      "tags": [
+        "IMAGE",
+        "UI"
+      ],
+      "status": "review",
+      "body": "Un seul cartouche lié au client actif, broche horizontale, aliments morts et grillés. Timer à droite intégré au même cartouche. Cadre extensible sans étirer ses ornements ; cinq ingrédients n’en sortent pas.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 152,
+        "y": 247,
+        "width": 228,
+        "height": 62,
+        "w": 228,
+        "h": 62
+      },
+      "x": 3360,
+      "y": 1390,
+      "links": []
+    },
+    {
+      "id": "VD-drool",
+      "ownerScreenId": "VD1",
+      "title": "Bouche → écoulement → seau",
+      "kind": "animation",
+      "tags": [
+        "FX",
+        "ANIMATION",
+        "IMAGE"
+      ],
+      "status": "todo",
+      "body": "Visages opaques intacts, bave indépendante. Filet local puis gouttes vers le collecteur droit et le seau ; budget indicatif 24 gouttes, suspension au pause. Décor et portrait ont des propriétaires séparés.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 327,
+        "y": 778,
+        "width": 55,
+        "height": 66,
+        "w": 55,
+        "h": 66
+      },
+      "x": 3360,
+      "y": 1710,
+      "links": []
+    },
+    {
+      "id": "VD-skewer",
+      "ownerScreenId": "VD1",
+      "title": "Broche courte, empilement à la garde",
+      "kind": "animation",
+      "tags": [
+        "GD",
+        "IMAGE",
+        "ANIMATION"
+      ],
+      "status": "review",
+      "body": "Deux à cinq aliments. Longueurs runtime 110/150/190/230 à conserver comme référence mécanique ; capacité visuelle et corps à éprouver dans la tranche. La prise se fait à la main, la collision seulement à la pointe invisible.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 156,
+        "y": 753,
+        "width": 56,
+        "height": 62,
+        "w": 56,
+        "h": 62
+      },
+      "x": 3360,
+      "y": 2030,
+      "links": []
+    },
+    {
+      "id": "VD-capture",
+      "ownerScreenId": "VD1",
+      "title": "Angle et perforation propres à chaque aliment",
+      "kind": "animation",
+      "tags": [
+        "GD",
+        "ANIMATION"
+      ],
+      "status": "todo",
+      "body": "Contact ascendant de l’apex, angle et point de perforation conservés. Glissement à la garde puis empilement vers la pointe. Pas de recentrage ni remise à plat, ni collision par le bras.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 156,
+        "y": 753,
+        "width": 56,
+        "height": 62,
+        "w": 56,
+        "h": 62
+      },
+      "x": 3360,
+      "y": 2350,
+      "links": []
+    },
+    {
+      "id": "VD-limbs",
+      "ownerScreenId": "VD1",
+      "title": "Matter validé, pas de nouvelle force artificielle",
+      "kind": "animation",
+      "tags": [
+        "GD",
+        "ANIMATION"
+      ],
+      "status": "done",
+      "body": "Conserver la gravité monde et les membres articulés légers déjà validés. Ni double injection d’accélération, ni nouvelle sinusoïde. La DA ne modifie pas la physique.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 156,
+        "y": 753,
+        "width": 56,
+        "height": 62,
+        "w": 56,
+        "h": 62
+      },
+      "x": 3360,
+      "y": 2670,
+      "links": []
+    },
+    {
+      "id": "VD-hold",
+      "ownerScreenId": "VD1",
+      "title": "Résultat complet protégé une seconde",
+      "kind": "animation",
+      "tags": [
+        "GD",
+        "ANIMATION",
+        "UI"
+      ],
+      "status": "todo",
+      "body": "Afficher la broche complète avant son départ automatique. Pointe inerte, patience protégée ; puis vol vers le client actif en haut et affichage du gain réel. Aucun service manuel.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 160,
+        "y": 436,
+        "width": 130,
+        "height": 32,
+        "w": 130,
+        "h": 32
+      },
+      "x": 3360,
+      "y": 2990,
+      "links": []
+    },
+    {
+      "id": "VD-emotion",
+      "ownerScreenId": "VD1",
+      "title": "Joie → inquiétude → panique → mort",
+      "kind": "animation",
+      "tags": [
+        "IMAGE",
+        "ANIMATION"
+      ],
+      "status": "todo",
+      "body": "Corps alimentaires, visages et fils noirs avec petites mains blanches sont séparés. Corps embrochés grillés, yeux en croix, membres tombants. Pas de bavure humaine sculptée dans les aliments.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 52,
+        "y": 350,
+        "width": 246,
+        "height": 65,
+        "w": 246,
+        "h": 65
+      },
+      "x": 3360,
+      "y": 3310,
+      "links": []
+    },
+    {
+      "id": "VD-fall",
+      "ownerScreenId": "VD1",
+      "title": "Chute hors écran et trajectoires lisibles",
+      "kind": "animation",
+      "tags": [
+        "GD",
+        "ANIMATION"
+      ],
+      "status": "todo",
+      "body": "Apparition au-dessus du bord visible avec marge de silhouette, aucune traînée. Rotation et poussées latérales compatibles avec les règles. Les aliments peuvent passer devant les loges ; elles ne deviennent pas un mur.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 306,
+        "y": 318,
+        "width": 78,
+        "height": 440,
+        "w": 78,
+        "h": 440
+      },
+      "x": 3360,
+      "y": 3630,
+      "links": []
+    },
+    {
+      "id": "VD-juice",
+      "ownerScreenId": "VD1",
+      "title": "Cinq paliers de jus",
+      "kind": "text",
+      "tags": [
+        "FX",
+        "SON"
+      ],
+      "status": "todo",
+      "body": "Gerbe à l’impact, puis gouttes et petits morceaux retombant sous gravité derrière les cibles. Paliers normal/×2/×3/×4/×5. Pool indicatif 48/72/96/144/192 particules, à profiler ; baisse de densité avant baisse de lisibilité.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 52,
+        "y": 350,
+        "width": 246,
+        "height": 65,
+        "w": 246,
+        "h": 65
+      },
+      "x": 5200,
+      "y": 430,
+      "links": []
+    },
+    {
+      "id": "VD-brutality",
+      "ownerScreenId": "VD1",
+      "title": "BRUTALITY! réellement visible",
+      "kind": "text",
+      "tags": [
+        "FX",
+        "IMAGE",
+        "SON"
+      ],
+      "status": "todo",
+      "body": "Titre gothique temporaire dans la zone centrale haute, jamais derrière le grill ni sur le cartouche/timer. Pluie de jus spectaculaire mais cibles lisibles. Habillage d’un événement, pas un écran bloquant ni un score différent.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 52,
+        "y": 350,
+        "width": 246,
+        "height": 65,
+        "w": 246,
+        "h": 65
+      },
+      "x": 5200,
+      "y": 750,
+      "links": []
+    },
+    {
+      "id": "VD-score",
+      "ownerScreenId": "VD1",
+      "title": "Score, gain, combo : trois informations distinctes",
+      "kind": "text",
+      "tags": [
+        "GD",
+        "UI"
+      ],
+      "status": "review",
+      "body": "Score total à droite ; gain au service ; meilleur combo persistant près de la main jusqu’à fin/annulation. Ne pas restaurer les anciens barèmes : conserver le calcul courant chaîne factorielle × beauté moyenne.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 278,
+        "y": 207,
+        "width": 102,
+        "height": 26,
+        "w": 102,
+        "h": 26
+      },
+      "x": 5200,
+      "y": 1070,
+      "links": []
+    },
+    {
+      "id": "VD-level",
+      "ownerScreenId": "VD1",
+      "title": "Ouverture de niveau lisible et temporaire",
+      "kind": "animation",
+      "tags": [
+        "UI",
+        "ANIMATION"
+      ],
+      "status": "review",
+      "body": "Cartouche LEVEL n, icônes disponibles et effectif du niveau, affiché assez longtemps puis retiré. Progression courante : n+2 clients, recettes 2–5, nouveaux aliments par paliers.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 64,
+        "y": 345,
+        "width": 224,
+        "height": 98,
+        "w": 224,
+        "h": 98
+      },
+      "x": 5200,
+      "y": 1390,
+      "links": []
+    },
+    {
+      "id": "VD-reserve",
+      "ownerScreenId": "VD1",
+      "title": "Trois piques à gauche",
+      "kind": "text",
+      "tags": [
+        "IMAGE",
+        "UI"
+      ],
+      "status": "todo",
+      "body": "Rack vertical de trois piques rouge et or, une retirée par client perdu. Ce sont des vies, pas des ingrédients. Il reste en dehors du contrôle RETOUR.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 10,
+        "y": 338,
+        "width": 34,
+        "height": 122,
+        "w": 34,
+        "h": 122
+      },
+      "x": 5200,
+      "y": 1710,
+      "links": []
+    },
+    {
+      "id": "VD-grill",
+      "ownerScreenId": "VD1",
+      "title": "Grill et flammes ne masquent plus la main",
+      "kind": "animation",
+      "tags": [
+        "IMAGE",
+        "ANIMATION",
+        "FX"
+      ],
+      "status": "review",
+      "body": "Feu animé séparé de la grille, lisible mais contenu. Aliment raté brûle/noircit/disparaît. Une seule petite remarque drôle à la fois, uniquement au grill, avec vraie typographie bitmap et sans bloc d’explication.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 12,
+        "y": 742,
+        "width": 302,
+        "height": 104,
+        "w": 302,
+        "h": 104
+      },
+      "x": 5200,
+      "y": 2030,
+      "links": []
+    },
+    {
+      "id": "VD-blood",
+      "ownerScreenId": "VD1",
+      "title": "Bonus immédiatement reconnu",
+      "kind": "text",
+      "tags": [
+        "IMAGE",
+        "FX",
+        "GD"
+      ],
+      "status": "todo",
+      "body": "Silhouette claire de goutte de sang, distincte de tomate et ail. Patience/ralenti selon les règles existantes ; flash local et son Core, pas une nouvelle mécanique.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 52,
+        "y": 350,
+        "width": 246,
+        "height": 65,
+        "w": 246,
+        "h": 65
+      },
+      "x": 5200,
+      "y": 2350,
+      "links": []
+    },
+    {
+      "id": "VD-pixel",
+      "ownerScreenId": "VD1",
+      "title": "Même densité de pixels, aucune frange cyan",
+      "kind": "text",
+      "tags": [
+        "IMAGE",
+        "UI"
+      ],
+      "status": "blocked",
+      "body": "Sources PNG natives intactes ; unités et pivots documentés. Pas d’upscale d’une preview, pas de chromakey qui perce les visages. Nearest, texte bitmap, tests à densité 1/2 et en mouvement ; pas de filtre global.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 306,
+        "y": 318,
+        "width": 78,
+        "height": 440,
+        "w": 78,
+        "h": 440
+      },
+      "x": 5200,
+      "y": 2670,
+      "links": []
+    },
+    {
+      "id": "VD-audio",
+      "ownerScreenId": "VD1",
+      "title": "Impacts, grill, service et climax",
+      "kind": "audio",
+      "tags": [
+        "SON"
+      ],
+      "status": "todo",
+      "body": "Réutiliser Core Audio ; accents synchronisés aux cinq paliers. Onomatopées d’impact conservées, aucune phrase d’ingrédient à l’embrochement. Son à valider séparément, sans changer les règles.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 12,
+        "y": 742,
+        "width": 302,
+        "height": 104,
+        "w": 302,
+        "h": 104
+      },
+      "x": 5200,
+      "y": 2990,
+      "links": []
+    },
+    {
+      "id": "VD-production",
+      "ownerScreenId": "VD1",
+      "title": "Inventaire, états, puis une tranche",
+      "kind": "text",
+      "tags": [
+        "NOTE"
+      ],
+      "status": "blocked",
+      "body": "Ces rectangles sont un blockout technique, pas la DA finale. Après validation de composition : états des loges/clients/cartouche, textures entières propres, mini-tranche jouable, comparaison avant extension. Release nouvelle reste vide.",
+      "facts": [],
+      "source": "src/games/vlads-skewers/ART_DIRECTION.md",
+      "marker": {
+        "type": "rect",
+        "x": 152,
+        "y": 247,
+        "width": 228,
+        "height": 62,
+        "w": 228,
+        "h": 62
+      },
+      "x": 5200,
+      "y": 3310,
+      "links": []
+    }
+  ]
+}

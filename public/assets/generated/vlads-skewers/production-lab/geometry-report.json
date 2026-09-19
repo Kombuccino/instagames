@@ -1,0 +1,59 @@
+{
+  "scope": "Geometric box tests only, not artwork or real-device acceptance",
+  "checks": [
+    {
+      "id": "guaranteed",
+      "w": 390,
+      "h": 710,
+      "mobile": true,
+      "scale": 1,
+      "visibleTop": 140,
+      "allEssentialBoxesInside": true
+    },
+    {
+      "id": "chrome",
+      "w": 360,
+      "h": 656,
+      "mobile": true,
+      "scale": 0.9230769230769231,
+      "visibleTop": 139.33333333333337,
+      "allEssentialBoxesInside": true
+    },
+    {
+      "id": "iphone-size",
+      "w": 390,
+      "h": 712,
+      "mobile": true,
+      "scale": 1,
+      "visibleTop": 138,
+      "allEssentialBoxesInside": true
+    },
+    {
+      "id": "brave-degraded",
+      "w": 360,
+      "h": 611,
+      "mobile": true,
+      "scale": 0.9230769230769231,
+      "visibleTop": 188.08333333333337,
+      "allEssentialBoxesInside": true
+    },
+    {
+      "id": "master",
+      "w": 390,
+      "h": 850,
+      "mobile": true,
+      "scale": 1,
+      "visibleTop": 0,
+      "allEssentialBoxesInside": true
+    },
+    {
+      "id": "desktop",
+      "w": 1280,
+      "h": 720,
+      "mobile": false,
+      "scale": 1.0140845070422535,
+      "visibleTop": 140,
+      "allEssentialBoxesInside": true
+    }
+  ]
+}

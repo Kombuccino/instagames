@@ -1,0 +1,2346 @@
+{
+  "commit": "c28b3bf9116f17c440ac97c77c9ae094aa919c0b",
+  "cases": [
+    {
+      "viewport": {
+        "id": "a54-chrome",
+        "width": 360,
+        "height": 656,
+        "mobile": true
+      },
+      "file": "a54-chrome-initial.png",
+      "state": {
+        "coordinateSystem": "390x844 logical; origin top-left; x right; y down",
+        "mode": "playing",
+        "level": 1,
+        "score": 0,
+        "served": 0,
+        "remainingCustomers": 3,
+        "visibleCustomers": 3,
+        "lives": 3,
+        "slowSeconds": 0,
+        "combo": 0,
+        "maxSkewerIngredients": 5,
+        "fx": {
+          "ambientFlames": 15,
+          "embersAlive": 106,
+          "foregroundEmbersAlive": 141,
+          "smokeAlive": 15
+        },
+        "customerRosterSize": 15,
+        "fallArea": {
+          "minX": 38,
+          "maxX": 326
+        },
+        "skewer": {
+          "x": 195,
+          "y": 780,
+          "tipX": 195,
+          "tipY": 635,
+          "rawPoints": 0,
+          "stack": [],
+          "height": 110,
+          "width": 10,
+          "hitboxVisible": false,
+          "completedLock": false,
+          "stackLayout": "guard-up",
+          "guardY": 745,
+          "limbPhysics": "matter-two-link-damped-anchor",
+          "limbMaxSpeed": 0
+        },
+        "impactCallouts": 0,
+        "input": {
+          "handOnly": true,
+          "handHint": false,
+          "gripX": 195,
+          "gripY": 737,
+          "hitRadiusX": 68,
+          "hitRadiusY": 76
+        },
+        "activeCustomer": {
+          "id": 8,
+          "name": "Sorina",
+          "order": [
+            "pepper",
+            "tomato"
+          ],
+          "patience": 24.6
+        },
+        "drops": [
+          {
+            "id": 1,
+            "kind": "meat",
+            "x": 78,
+            "y": -2,
+            "vx": 0,
+            "speed": 100,
+            "rotation": -0.043,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          }
+        ],
+        "presentation": {
+          "customerX": 355,
+          "customerSize": 82,
+          "orderBubble": {
+            "width": 136,
+            "height": 58
+          },
+          "ingredientSpeechOnImpale": false,
+          "grillComments": true,
+          "droolAnchoredToMouth": true
+        }
+      },
+      "geometry": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 360,
+          "height": 656,
+          "top": 0,
+          "right": 360,
+          "bottom": 656,
+          "left": 0
+        },
+        "dataset": {
+          "authoredVerticalAnchor": "bottom",
+          "effectiveVerticalAnchor": "bottom"
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "a54-chrome",
+        "width": 360,
+        "height": 656,
+        "mobile": true
+      },
+      "file": "a54-chrome-queue-five-visible.png",
+      "state": {
+        "coordinateSystem": "390x844 logical; origin top-left; x right; y down",
+        "mode": "playing",
+        "level": 4,
+        "score": 0,
+        "served": 0,
+        "remainingCustomers": 6,
+        "visibleCustomers": 5,
+        "lives": 3,
+        "slowSeconds": 0,
+        "combo": 0,
+        "maxSkewerIngredients": 5,
+        "fx": {
+          "ambientFlames": 15,
+          "embersAlive": 129,
+          "foregroundEmbersAlive": 116,
+          "smokeAlive": 21
+        },
+        "customerRosterSize": 15,
+        "fallArea": {
+          "minX": 38,
+          "maxX": 326
+        },
+        "skewer": {
+          "x": 195,
+          "y": 780,
+          "tipX": 195,
+          "tipY": 595,
+          "rawPoints": 0,
+          "stack": [],
+          "height": 150,
+          "width": 10,
+          "hitboxVisible": false,
+          "completedLock": false,
+          "stackLayout": "guard-up",
+          "guardY": 745,
+          "limbPhysics": "matter-two-link-damped-anchor",
+          "limbMaxSpeed": 0
+        },
+        "impactCallouts": 0,
+        "input": {
+          "handOnly": true,
+          "handHint": false,
+          "gripX": 195,
+          "gripY": 737,
+          "hitRadiusX": 68,
+          "hitRadiusY": 76
+        },
+        "activeCustomer": {
+          "id": 11,
+          "name": "Oana",
+          "order": [
+            "pepper",
+            "tomato",
+            "onion"
+          ],
+          "patience": 24.7
+        },
+        "drops": [
+          {
+            "id": 1,
+            "kind": "meat",
+            "x": 79,
+            "y": 43,
+            "vx": 0,
+            "speed": 131,
+            "rotation": -0.099,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          },
+          {
+            "id": 2,
+            "kind": "tomato",
+            "x": 75,
+            "y": -80,
+            "vx": 55,
+            "speed": 119,
+            "rotation": -0.243,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          }
+        ],
+        "presentation": {
+          "customerX": 355,
+          "customerSize": 82,
+          "orderBubble": {
+            "width": 136,
+            "height": 58
+          },
+          "ingredientSpeechOnImpale": false,
+          "grillComments": true,
+          "droolAnchoredToMouth": true
+        }
+      },
+      "geometry": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 360,
+          "height": 656,
+          "top": 0,
+          "right": 360,
+          "bottom": 656,
+          "left": 0
+        },
+        "dataset": {
+          "authoredVerticalAnchor": "bottom",
+          "effectiveVerticalAnchor": "bottom"
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "a54-chrome",
+        "width": 360,
+        "height": 656,
+        "mobile": true
+      },
+      "file": "a54-chrome-brutality.png",
+      "state": {
+        "coordinateSystem": "390x844 logical; origin top-left; x right; y down",
+        "mode": "playing",
+        "level": 4,
+        "score": 0,
+        "served": 0,
+        "remainingCustomers": 6,
+        "visibleCustomers": 5,
+        "lives": 3,
+        "slowSeconds": 0,
+        "combo": 5,
+        "maxSkewerIngredients": 5,
+        "fx": {
+          "ambientFlames": 15,
+          "embersAlive": 130,
+          "foregroundEmbersAlive": 107,
+          "smokeAlive": 23
+        },
+        "customerRosterSize": 15,
+        "fallArea": {
+          "minX": 38,
+          "maxX": 326
+        },
+        "skewer": {
+          "x": 195,
+          "y": 780,
+          "tipX": 195,
+          "tipY": 515,
+          "rawPoints": 153,
+          "stack": [
+            {
+              "kind": "meat",
+              "cooked": true,
+              "x": 203,
+              "y": 664,
+              "rotation": 0,
+              "limbAngles": [
+                2.09,
+                2.52,
+                2.9,
+                2.55
+              ],
+              "jointAngles": [
+                1.89,
+                0.45,
+                -1.84,
+                -1.75
+              ],
+              "entryProgress": 0.62,
+              "centeringError": 36,
+              "beautyMultiplier": 2,
+              "chainPoints": 1
+            },
+            {
+              "kind": "tomato",
+              "cooked": true,
+              "x": 198,
+              "y": 624,
+              "rotation": 0,
+              "limbAngles": [
+                -2.18,
+                1.81,
+                -2.15,
+                -2.94
+              ],
+              "jointAngles": [
+                2.47,
+                1.06,
+                2.39,
+                2.82
+              ],
+              "entryProgress": 0.62,
+              "centeringError": 18,
+              "beautyMultiplier": 2.5,
+              "chainPoints": 2
+            },
+            {
+              "kind": "pepper",
+              "cooked": true,
+              "x": 194,
+              "y": 583,
+              "rotation": 0,
+              "limbAngles": [
+                -2.69,
+                -2.34,
+                1.69,
+                -0.46
+              ],
+              "jointAngles": [
+                2.65,
+                2.57,
+                -2.15,
+                0.1
+              ],
+              "entryProgress": 0.62,
+              "centeringError": 0,
+              "beautyMultiplier": 3.5,
+              "chainPoints": 6
+            },
+            {
+              "kind": "onion",
+              "cooked": true,
+              "x": 190,
+              "y": 542,
+              "rotation": 0,
+              "limbAngles": [
+                -0.14,
+                0.14,
+                -0.45,
+                0.45
+              ],
+              "jointAngles": [
+                0.81,
+                -0.81,
+                1.01,
+                -1.01
+              ],
+              "entryProgress": 0.62,
+              "centeringError": 18,
+              "beautyMultiplier": 2.5,
+              "chainPoints": 24
+            },
+            {
+              "kind": "mushroom",
+              "cooked": true,
+              "x": 186,
+              "y": 502,
+              "rotation": 0,
+              "limbAngles": [
+                0.03,
+                0.28,
+                0.08,
+                0.23
+              ],
+              "jointAngles": [
+                -0.36,
+                -0.56,
+                -0.35,
+                -0.44
+              ],
+              "entryProgress": 0.62,
+              "centeringError": 36,
+              "beautyMultiplier": 2,
+              "chainPoints": 120
+            }
+          ],
+          "height": 230,
+          "width": 10,
+          "hitboxVisible": false,
+          "completedLock": true,
+          "stackLayout": "guard-up",
+          "guardY": 745,
+          "limbPhysics": "matter-two-link-damped-anchor",
+          "limbMaxSpeed": 6.81
+        },
+        "impactCallouts": 5,
+        "input": {
+          "handOnly": true,
+          "handHint": false,
+          "gripX": 195,
+          "gripY": 737,
+          "hitRadiusX": 68,
+          "hitRadiusY": 76
+        },
+        "activeCustomer": {
+          "id": 11,
+          "name": "Oana",
+          "order": [
+            "meat",
+            "tomato",
+            "pepper",
+            "onion",
+            "mushroom"
+          ],
+          "patience": 25.5
+        },
+        "drops": [
+          {
+            "id": 1,
+            "kind": "meat",
+            "x": 79,
+            "y": 118,
+            "vx": 0,
+            "speed": 161,
+            "rotation": -0.17,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          },
+          {
+            "id": 2,
+            "kind": "tomato",
+            "x": 102,
+            "y": -9,
+            "vx": 55,
+            "speed": 161,
+            "rotation": -0.224,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          }
+        ],
+        "presentation": {
+          "customerX": 355,
+          "customerSize": 82,
+          "orderBubble": {
+            "width": 136,
+            "height": 58
+          },
+          "ingredientSpeechOnImpale": false,
+          "grillComments": true,
+          "droolAnchoredToMouth": true
+        }
+      },
+      "geometry": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 360,
+          "height": 656,
+          "top": 0,
+          "right": 360,
+          "bottom": 656,
+          "left": 0
+        },
+        "dataset": {
+          "authoredVerticalAnchor": "bottom",
+          "effectiveVerticalAnchor": "bottom"
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "iphone",
+        "width": 390,
+        "height": 712,
+        "mobile": true
+      },
+      "file": "iphone-initial.png",
+      "state": {
+        "coordinateSystem": "390x844 logical; origin top-left; x right; y down",
+        "mode": "playing",
+        "level": 1,
+        "score": 0,
+        "served": 0,
+        "remainingCustomers": 3,
+        "visibleCustomers": 3,
+        "lives": 3,
+        "slowSeconds": 0,
+        "combo": 0,
+        "maxSkewerIngredients": 5,
+        "fx": {
+          "ambientFlames": 15,
+          "embersAlive": 100,
+          "foregroundEmbersAlive": 138,
+          "smokeAlive": 15
+        },
+        "customerRosterSize": 15,
+        "fallArea": {
+          "minX": 38,
+          "maxX": 326
+        },
+        "skewer": {
+          "x": 195,
+          "y": 780,
+          "tipX": 195,
+          "tipY": 635,
+          "rawPoints": 0,
+          "stack": [],
+          "height": 110,
+          "width": 10,
+          "hitboxVisible": false,
+          "completedLock": false,
+          "stackLayout": "guard-up",
+          "guardY": 745,
+          "limbPhysics": "matter-two-link-damped-anchor",
+          "limbMaxSpeed": 0
+        },
+        "impactCallouts": 0,
+        "input": {
+          "handOnly": true,
+          "handHint": false,
+          "gripX": 195,
+          "gripY": 737,
+          "hitRadiusX": 68,
+          "hitRadiusY": 76
+        },
+        "activeCustomer": {
+          "id": 8,
+          "name": "Sorina",
+          "order": [
+            "pepper",
+            "tomato"
+          ],
+          "patience": 24.7
+        },
+        "drops": [
+          {
+            "id": 1,
+            "kind": "meat",
+            "x": 78,
+            "y": -12,
+            "vx": 0,
+            "speed": 100,
+            "rotation": -0.029,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          }
+        ],
+        "presentation": {
+          "customerX": 355,
+          "customerSize": 82,
+          "orderBubble": {
+            "width": 136,
+            "height": 58
+          },
+          "ingredientSpeechOnImpale": false,
+          "grillComments": true,
+          "droolAnchoredToMouth": true
+        }
+      },
+      "geometry": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 712,
+          "top": 0,
+          "right": 390,
+          "bottom": 712,
+          "left": 0
+        },
+        "dataset": {
+          "authoredVerticalAnchor": "bottom",
+          "effectiveVerticalAnchor": "bottom"
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "iphone",
+        "width": 390,
+        "height": 712,
+        "mobile": true
+      },
+      "file": "iphone-queue-five-visible.png",
+      "state": {
+        "coordinateSystem": "390x844 logical; origin top-left; x right; y down",
+        "mode": "playing",
+        "level": 4,
+        "score": 0,
+        "served": 0,
+        "remainingCustomers": 6,
+        "visibleCustomers": 5,
+        "lives": 3,
+        "slowSeconds": 0,
+        "combo": 0,
+        "maxSkewerIngredients": 5,
+        "fx": {
+          "ambientFlames": 15,
+          "embersAlive": 127,
+          "foregroundEmbersAlive": 134,
+          "smokeAlive": 18
+        },
+        "customerRosterSize": 15,
+        "fallArea": {
+          "minX": 38,
+          "maxX": 326
+        },
+        "skewer": {
+          "x": 195,
+          "y": 780,
+          "tipX": 195,
+          "tipY": 595,
+          "rawPoints": 0,
+          "stack": [],
+          "height": 150,
+          "width": 10,
+          "hitboxVisible": false,
+          "completedLock": false,
+          "stackLayout": "guard-up",
+          "guardY": 745,
+          "limbPhysics": "matter-two-link-damped-anchor",
+          "limbMaxSpeed": 0
+        },
+        "impactCallouts": 0,
+        "input": {
+          "handOnly": true,
+          "handHint": false,
+          "gripX": 195,
+          "gripY": 737,
+          "hitRadiusX": 68,
+          "hitRadiusY": 76
+        },
+        "activeCustomer": {
+          "id": 11,
+          "name": "Oana",
+          "order": [
+            "meat",
+            "onion",
+            "meat"
+          ],
+          "patience": 24.7
+        },
+        "drops": [
+          {
+            "id": 1,
+            "kind": "meat",
+            "x": 79,
+            "y": 34,
+            "vx": 0,
+            "speed": 134,
+            "rotation": -0.085,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          },
+          {
+            "id": 2,
+            "kind": "tomato",
+            "x": 69,
+            "y": -91,
+            "vx": 55,
+            "speed": 110,
+            "rotation": -0.247,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          }
+        ],
+        "presentation": {
+          "customerX": 355,
+          "customerSize": 82,
+          "orderBubble": {
+            "width": 136,
+            "height": 58
+          },
+          "ingredientSpeechOnImpale": false,
+          "grillComments": true,
+          "droolAnchoredToMouth": true
+        }
+      },
+      "geometry": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 712,
+          "top": 0,
+          "right": 390,
+          "bottom": 712,
+          "left": 0
+        },
+        "dataset": {
+          "authoredVerticalAnchor": "bottom",
+          "effectiveVerticalAnchor": "bottom"
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "iphone",
+        "width": 390,
+        "height": 712,
+        "mobile": true
+      },
+      "file": "iphone-brutality.png",
+      "state": {
+        "coordinateSystem": "390x844 logical; origin top-left; x right; y down",
+        "mode": "playing",
+        "level": 4,
+        "score": 0,
+        "served": 0,
+        "remainingCustomers": 6,
+        "visibleCustomers": 5,
+        "lives": 3,
+        "slowSeconds": 0,
+        "combo": 5,
+        "maxSkewerIngredients": 5,
+        "fx": {
+          "ambientFlames": 15,
+          "embersAlive": 128,
+          "foregroundEmbersAlive": 134,
+          "smokeAlive": 23
+        },
+        "customerRosterSize": 15,
+        "fallArea": {
+          "minX": 38,
+          "maxX": 326
+        },
+        "skewer": {
+          "x": 195,
+          "y": 780,
+          "tipX": 195,
+          "tipY": 515,
+          "rawPoints": 153,
+          "stack": [
+            {
+              "kind": "meat",
+              "cooked": true,
+              "x": 204,
+              "y": 672,
+              "rotation": 0,
+              "limbAngles": [
+                1.54,
+                2.15,
+                2.45,
+                1.95
+              ],
+              "jointAngles": [
+                2.81,
+                0.9,
+                -2.22,
+                -1.73
+              ],
+              "entryProgress": 0.71,
+              "centeringError": 36,
+              "beautyMultiplier": 2,
+              "chainPoints": 1
+            },
+            {
+              "kind": "tomato",
+              "cooked": true,
+              "x": 199,
+              "y": 630,
+              "rotation": 0,
+              "limbAngles": [
+                -1.45,
+                0.99,
+                -1.46,
+                -2.74
+              ],
+              "jointAngles": [
+                1.27,
+                1.57,
+                1.41,
+                2.45
+              ],
+              "entryProgress": 0.71,
+              "centeringError": 18,
+              "beautyMultiplier": 2.5,
+              "chainPoints": 2
+            },
+            {
+              "kind": "pepper",
+              "cooked": true,
+              "x": 195,
+              "y": 588,
+              "rotation": 0,
+              "limbAngles": [
+                -2.47,
+                -2.09,
+                0.83,
+                0.25
+              ],
+              "jointAngles": [
+                2.48,
+                2.24,
+                -0.98,
+                -0.9
+              ],
+              "entryProgress": 0.71,
+              "centeringError": 0,
+              "beautyMultiplier": 3.5,
+              "chainPoints": 6
+            },
+            {
+              "kind": "onion",
+              "cooked": true,
+              "x": 190,
+              "y": 547,
+              "rotation": 0,
+              "limbAngles": [
+                -0.49,
+                0.49,
+                -0.46,
+                0.46
+              ],
+              "jointAngles": [
+                0.93,
+                -0.93,
+                0.62,
+                -0.62
+              ],
+              "entryProgress": 0.71,
+              "centeringError": 18,
+              "beautyMultiplier": 2.5,
+              "chainPoints": 24
+            },
+            {
+              "kind": "mushroom",
+              "cooked": true,
+              "x": 185,
+              "y": 505,
+              "rotation": 0,
+              "limbAngles": [
+                0.06,
+                0.09,
+                -0.01,
+                0.02
+              ],
+              "jointAngles": [
+                -0.44,
+                0.28,
+                -0.13,
+                0.31
+              ],
+              "entryProgress": 0.71,
+              "centeringError": 36,
+              "beautyMultiplier": 2,
+              "chainPoints": 120
+            }
+          ],
+          "height": 230,
+          "width": 10,
+          "hitboxVisible": false,
+          "completedLock": true,
+          "stackLayout": "guard-up",
+          "guardY": 745,
+          "limbPhysics": "matter-two-link-damped-anchor",
+          "limbMaxSpeed": 6.56
+        },
+        "impactCallouts": 5,
+        "input": {
+          "handOnly": true,
+          "handHint": false,
+          "gripX": 195,
+          "gripY": 737,
+          "hitRadiusX": 68,
+          "hitRadiusY": 76
+        },
+        "activeCustomer": {
+          "id": 11,
+          "name": "Oana",
+          "order": [
+            "meat",
+            "tomato",
+            "pepper",
+            "onion",
+            "mushroom"
+          ],
+          "patience": 25.4
+        },
+        "drops": [
+          {
+            "id": 1,
+            "kind": "meat",
+            "x": 79,
+            "y": 121,
+            "vx": 0,
+            "speed": 161,
+            "rotation": -0.166,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          },
+          {
+            "id": 2,
+            "kind": "tomato",
+            "x": 101,
+            "y": -14,
+            "vx": 55,
+            "speed": 161,
+            "rotation": -0.225,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          }
+        ],
+        "presentation": {
+          "customerX": 355,
+          "customerSize": 82,
+          "orderBubble": {
+            "width": 136,
+            "height": 58
+          },
+          "ingredientSpeechOnImpale": false,
+          "grillComments": true,
+          "droolAnchoredToMouth": true
+        }
+      },
+      "geometry": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 712,
+          "top": 0,
+          "right": 390,
+          "bottom": 712,
+          "left": 0
+        },
+        "dataset": {
+          "authoredVerticalAnchor": "bottom",
+          "effectiveVerticalAnchor": "bottom"
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "a54-brave",
+        "width": 360,
+        "height": 611,
+        "mobile": true
+      },
+      "file": "a54-brave-initial.png",
+      "state": {
+        "coordinateSystem": "390x844 logical; origin top-left; x right; y down",
+        "mode": "playing",
+        "level": 1,
+        "score": 0,
+        "served": 0,
+        "remainingCustomers": 3,
+        "visibleCustomers": 3,
+        "lives": 3,
+        "slowSeconds": 0,
+        "combo": 0,
+        "maxSkewerIngredients": 5,
+        "fx": {
+          "ambientFlames": 15,
+          "embersAlive": 111,
+          "foregroundEmbersAlive": 144,
+          "smokeAlive": 18
+        },
+        "customerRosterSize": 15,
+        "fallArea": {
+          "minX": 38,
+          "maxX": 326
+        },
+        "skewer": {
+          "x": 195,
+          "y": 780,
+          "tipX": 195,
+          "tipY": 635,
+          "rawPoints": 0,
+          "stack": [],
+          "height": 110,
+          "width": 10,
+          "hitboxVisible": false,
+          "completedLock": false,
+          "stackLayout": "guard-up",
+          "guardY": 745,
+          "limbPhysics": "matter-two-link-damped-anchor",
+          "limbMaxSpeed": 0
+        },
+        "impactCallouts": 0,
+        "input": {
+          "handOnly": true,
+          "handHint": false,
+          "gripX": 195,
+          "gripY": 737,
+          "hitRadiusX": 68,
+          "hitRadiusY": 76
+        },
+        "activeCustomer": {
+          "id": 8,
+          "name": "Sorina",
+          "order": [
+            "pepper",
+            "tomato"
+          ],
+          "patience": 24.4
+        },
+        "drops": [
+          {
+            "id": 1,
+            "kind": "meat",
+            "x": 79,
+            "y": 13,
+            "vx": 0,
+            "speed": 100,
+            "rotation": -0.064,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          }
+        ],
+        "presentation": {
+          "customerX": 355,
+          "customerSize": 82,
+          "orderBubble": {
+            "width": 136,
+            "height": 58
+          },
+          "ingredientSpeechOnImpale": false,
+          "grillComments": true,
+          "droolAnchoredToMouth": true
+        }
+      },
+      "geometry": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 360,
+          "height": 611,
+          "top": 0,
+          "right": 360,
+          "bottom": 611,
+          "left": 0
+        },
+        "dataset": {
+          "authoredVerticalAnchor": "bottom",
+          "effectiveVerticalAnchor": "bottom"
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "a54-brave",
+        "width": 360,
+        "height": 611,
+        "mobile": true
+      },
+      "file": "a54-brave-queue-five-visible.png",
+      "state": {
+        "coordinateSystem": "390x844 logical; origin top-left; x right; y down",
+        "mode": "playing",
+        "level": 4,
+        "score": 0,
+        "served": 0,
+        "remainingCustomers": 6,
+        "visibleCustomers": 5,
+        "lives": 3,
+        "slowSeconds": 0,
+        "combo": 0,
+        "maxSkewerIngredients": 5,
+        "fx": {
+          "ambientFlames": 15,
+          "embersAlive": 137,
+          "foregroundEmbersAlive": 124,
+          "smokeAlive": 26
+        },
+        "customerRosterSize": 15,
+        "fallArea": {
+          "minX": 38,
+          "maxX": 326
+        },
+        "skewer": {
+          "x": 195,
+          "y": 780,
+          "tipX": 195,
+          "tipY": 595,
+          "rawPoints": 0,
+          "stack": [],
+          "height": 150,
+          "width": 10,
+          "hitboxVisible": false,
+          "completedLock": false,
+          "stackLayout": "guard-up",
+          "guardY": 745,
+          "limbPhysics": "matter-two-link-damped-anchor",
+          "limbMaxSpeed": 0
+        },
+        "impactCallouts": 0,
+        "input": {
+          "handOnly": true,
+          "handHint": false,
+          "gripX": 195,
+          "gripY": 737,
+          "hitRadiusX": 68,
+          "hitRadiusY": 76
+        },
+        "activeCustomer": {
+          "id": 11,
+          "name": "Oana",
+          "order": [
+            "meat",
+            "pepper",
+            "pepper"
+          ],
+          "patience": 24.4
+        },
+        "drops": [
+          {
+            "id": 1,
+            "kind": "meat",
+            "x": 79,
+            "y": 102,
+            "vx": 0,
+            "speed": 160,
+            "rotation": -0.163,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          },
+          {
+            "id": 2,
+            "kind": "tomato",
+            "x": 100,
+            "y": -17,
+            "vx": 55,
+            "speed": 160,
+            "rotation": -0.226,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          }
+        ],
+        "presentation": {
+          "customerX": 355,
+          "customerSize": 82,
+          "orderBubble": {
+            "width": 136,
+            "height": 58
+          },
+          "ingredientSpeechOnImpale": false,
+          "grillComments": true,
+          "droolAnchoredToMouth": true
+        }
+      },
+      "geometry": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 360,
+          "height": 611,
+          "top": 0,
+          "right": 360,
+          "bottom": 611,
+          "left": 0
+        },
+        "dataset": {
+          "authoredVerticalAnchor": "bottom",
+          "effectiveVerticalAnchor": "bottom"
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "a54-brave",
+        "width": 360,
+        "height": 611,
+        "mobile": true
+      },
+      "file": "a54-brave-brutality.png",
+      "state": {
+        "coordinateSystem": "390x844 logical; origin top-left; x right; y down",
+        "mode": "playing",
+        "level": 4,
+        "score": 0,
+        "served": 0,
+        "remainingCustomers": 6,
+        "visibleCustomers": 5,
+        "lives": 3,
+        "slowSeconds": 0,
+        "combo": 5,
+        "maxSkewerIngredients": 5,
+        "fx": {
+          "ambientFlames": 15,
+          "embersAlive": 148,
+          "foregroundEmbersAlive": 121,
+          "smokeAlive": 29
+        },
+        "customerRosterSize": 15,
+        "fallArea": {
+          "minX": 38,
+          "maxX": 326
+        },
+        "skewer": {
+          "x": 195,
+          "y": 780,
+          "tipX": 195,
+          "tipY": 515,
+          "rawPoints": 153,
+          "stack": [
+            {
+              "kind": "meat",
+              "cooked": true,
+              "x": 195,
+              "y": 621,
+              "rotation": 0,
+              "limbAngles": [
+                2.96,
+                2.91,
+                3.14,
+                3.07
+              ],
+              "jointAngles": [
+                0.33,
+                0.18,
+                -0.86,
+                -0.78
+              ],
+              "entryProgress": 0.4,
+              "centeringError": 36,
+              "beautyMultiplier": 2,
+              "chainPoints": 1
+            },
+            {
+              "kind": "tomato",
+              "cooked": true,
+              "x": 194,
+              "y": 588,
+              "rotation": 0,
+              "limbAngles": [
+                -2.84,
+                3.13,
+                -2.86,
+                -2.9
+              ],
+              "jointAngles": [
+                -2.2,
+                -0.64,
+                -2.73,
+                -2.49
+              ],
+              "entryProgress": 0.4,
+              "centeringError": 18,
+              "beautyMultiplier": 2.5,
+              "chainPoints": 2
+            },
+            {
+              "kind": "pepper",
+              "cooked": true,
+              "x": 192,
+              "y": 554,
+              "rotation": 0,
+              "limbAngles": [
+                -2.7,
+                -2.54,
+                2.71,
+                -2.05
+              ],
+              "jointAngles": [
+                2.8,
+                -2.5,
+                -2.92,
+                2.58
+              ],
+              "entryProgress": 0.4,
+              "centeringError": 0,
+              "beautyMultiplier": 3.5,
+              "chainPoints": 6
+            },
+            {
+              "kind": "onion",
+              "cooked": true,
+              "x": 190,
+              "y": 520,
+              "rotation": 0,
+              "limbAngles": [
+                1.71,
+                -1.71,
+                0.83,
+                -0.83
+              ],
+              "jointAngles": [
+                -1.9,
+                1.9,
+                -0.71,
+                0.71
+              ],
+              "entryProgress": 0.4,
+              "centeringError": 18,
+              "beautyMultiplier": 2.5,
+              "chainPoints": 24
+            },
+            {
+              "kind": "mushroom",
+              "cooked": true,
+              "x": 188,
+              "y": 486,
+              "rotation": 0,
+              "limbAngles": [
+                -0.45,
+                -0.59,
+                -0.71,
+                -0.23
+              ],
+              "jointAngles": [
+                0.88,
+                -0.12,
+                1.21,
+                -0.51
+              ],
+              "entryProgress": 0.4,
+              "centeringError": 36,
+              "beautyMultiplier": 2,
+              "chainPoints": 120
+            }
+          ],
+          "height": 230,
+          "width": 10,
+          "hitboxVisible": false,
+          "completedLock": true,
+          "stackLayout": "guard-up",
+          "guardY": 745,
+          "limbPhysics": "matter-two-link-damped-anchor",
+          "limbMaxSpeed": 7
+        },
+        "impactCallouts": 5,
+        "input": {
+          "handOnly": true,
+          "handHint": false,
+          "gripX": 195,
+          "gripY": 737,
+          "hitRadiusX": 68,
+          "hitRadiusY": 76
+        },
+        "activeCustomer": {
+          "id": 11,
+          "name": "Oana",
+          "order": [
+            "meat",
+            "tomato",
+            "pepper",
+            "onion",
+            "mushroom"
+          ],
+          "patience": 25.7
+        },
+        "drops": [
+          {
+            "id": 1,
+            "kind": "meat",
+            "x": 79,
+            "y": 158,
+            "vx": 0,
+            "speed": 161,
+            "rotation": -0.212,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          },
+          {
+            "id": 2,
+            "kind": "tomato",
+            "x": 119,
+            "y": 39,
+            "vx": 55,
+            "speed": 161,
+            "rotation": -0.212,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          }
+        ],
+        "presentation": {
+          "customerX": 355,
+          "customerSize": 82,
+          "orderBubble": {
+            "width": 136,
+            "height": 58
+          },
+          "ingredientSpeechOnImpale": false,
+          "grillComments": true,
+          "droolAnchoredToMouth": true
+        }
+      },
+      "geometry": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 360,
+          "height": 611,
+          "top": 0,
+          "right": 360,
+          "bottom": 611,
+          "left": 0
+        },
+        "dataset": {
+          "authoredVerticalAnchor": "bottom",
+          "effectiveVerticalAnchor": "bottom"
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "master",
+        "width": 390,
+        "height": 844,
+        "mobile": true
+      },
+      "file": "master-initial.png",
+      "state": {
+        "coordinateSystem": "390x844 logical; origin top-left; x right; y down",
+        "mode": "playing",
+        "level": 1,
+        "score": 0,
+        "served": 0,
+        "remainingCustomers": 3,
+        "visibleCustomers": 3,
+        "lives": 3,
+        "slowSeconds": 0,
+        "combo": 0,
+        "maxSkewerIngredients": 5,
+        "fx": {
+          "ambientFlames": 15,
+          "embersAlive": 117,
+          "foregroundEmbersAlive": 141,
+          "smokeAlive": 18
+        },
+        "customerRosterSize": 15,
+        "fallArea": {
+          "minX": 38,
+          "maxX": 326
+        },
+        "skewer": {
+          "x": 195,
+          "y": 780,
+          "tipX": 195,
+          "tipY": 635,
+          "rawPoints": 0,
+          "stack": [],
+          "height": 110,
+          "width": 10,
+          "hitboxVisible": false,
+          "completedLock": false,
+          "stackLayout": "guard-up",
+          "guardY": 745,
+          "limbPhysics": "matter-two-link-damped-anchor",
+          "limbMaxSpeed": 0
+        },
+        "impactCallouts": 0,
+        "input": {
+          "handOnly": true,
+          "handHint": false,
+          "gripX": 195,
+          "gripY": 737,
+          "hitRadiusX": 68,
+          "hitRadiusY": 76
+        },
+        "activeCustomer": {
+          "id": 8,
+          "name": "Sorina",
+          "order": [
+            "pepper",
+            "tomato"
+          ],
+          "patience": 24.5
+        },
+        "drops": [
+          {
+            "id": 1,
+            "kind": "meat",
+            "x": 79,
+            "y": 11,
+            "vx": 0,
+            "speed": 100,
+            "rotation": -0.062,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          }
+        ],
+        "presentation": {
+          "customerX": 355,
+          "customerSize": 82,
+          "orderBubble": {
+            "width": 136,
+            "height": 58
+          },
+          "ingredientSpeechOnImpale": false,
+          "grillComments": true,
+          "droolAnchoredToMouth": true
+        }
+      },
+      "geometry": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "top": 0,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        },
+        "dataset": {
+          "authoredVerticalAnchor": "bottom",
+          "effectiveVerticalAnchor": "bottom"
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "master",
+        "width": 390,
+        "height": 844,
+        "mobile": true
+      },
+      "file": "master-queue-five-visible.png",
+      "state": {
+        "coordinateSystem": "390x844 logical; origin top-left; x right; y down",
+        "mode": "playing",
+        "level": 4,
+        "score": 0,
+        "served": 0,
+        "remainingCustomers": 6,
+        "visibleCustomers": 5,
+        "lives": 3,
+        "slowSeconds": 0,
+        "combo": 0,
+        "maxSkewerIngredients": 5,
+        "fx": {
+          "ambientFlames": 15,
+          "embersAlive": 129,
+          "foregroundEmbersAlive": 123,
+          "smokeAlive": 22
+        },
+        "customerRosterSize": 15,
+        "fallArea": {
+          "minX": 38,
+          "maxX": 326
+        },
+        "skewer": {
+          "x": 195,
+          "y": 780,
+          "tipX": 195,
+          "tipY": 595,
+          "rawPoints": 0,
+          "stack": [],
+          "height": 150,
+          "width": 10,
+          "hitboxVisible": false,
+          "completedLock": false,
+          "stackLayout": "guard-up",
+          "guardY": 745,
+          "limbPhysics": "matter-two-link-damped-anchor",
+          "limbMaxSpeed": 0
+        },
+        "impactCallouts": 0,
+        "input": {
+          "handOnly": true,
+          "handHint": false,
+          "gripX": 195,
+          "gripY": 737,
+          "hitRadiusX": 68,
+          "hitRadiusY": 76
+        },
+        "activeCustomer": {
+          "id": 11,
+          "name": "Oana",
+          "order": [
+            "meat",
+            "pepper",
+            "pepper"
+          ],
+          "patience": 24.4
+        },
+        "drops": [
+          {
+            "id": 1,
+            "kind": "meat",
+            "x": 79,
+            "y": 95,
+            "vx": 0,
+            "speed": 157,
+            "rotation": -0.156,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          },
+          {
+            "id": 2,
+            "kind": "tomato",
+            "x": 97,
+            "y": -25,
+            "vx": 55,
+            "speed": 156,
+            "rotation": -0.228,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          }
+        ],
+        "presentation": {
+          "customerX": 355,
+          "customerSize": 82,
+          "orderBubble": {
+            "width": 136,
+            "height": 58
+          },
+          "ingredientSpeechOnImpale": false,
+          "grillComments": true,
+          "droolAnchoredToMouth": true
+        }
+      },
+      "geometry": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "top": 0,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        },
+        "dataset": {
+          "authoredVerticalAnchor": "bottom",
+          "effectiveVerticalAnchor": "bottom"
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "master",
+        "width": 390,
+        "height": 844,
+        "mobile": true
+      },
+      "file": "master-brutality.png",
+      "state": {
+        "coordinateSystem": "390x844 logical; origin top-left; x right; y down",
+        "mode": "playing",
+        "level": 4,
+        "score": 0,
+        "served": 0,
+        "remainingCustomers": 6,
+        "visibleCustomers": 5,
+        "lives": 3,
+        "slowSeconds": 0,
+        "combo": 5,
+        "maxSkewerIngredients": 5,
+        "fx": {
+          "ambientFlames": 15,
+          "embersAlive": 138,
+          "foregroundEmbersAlive": 126,
+          "smokeAlive": 23
+        },
+        "customerRosterSize": 15,
+        "fallArea": {
+          "minX": 38,
+          "maxX": 326
+        },
+        "skewer": {
+          "x": 195,
+          "y": 780,
+          "tipX": 195,
+          "tipY": 515,
+          "rawPoints": 153,
+          "stack": [
+            {
+              "kind": "meat",
+              "cooked": true,
+              "x": 197,
+              "y": 634,
+              "rotation": 0,
+              "limbAngles": [
+                2.74,
+                2.88,
+                3.06,
+                3
+              ],
+              "jointAngles": [
+                0.52,
+                0.05,
+                -1.01,
+                -1.27
+              ],
+              "entryProgress": 0.45,
+              "centeringError": 36,
+              "beautyMultiplier": 2,
+              "chainPoints": 1
+            },
+            {
+              "kind": "tomato",
+              "cooked": true,
+              "x": 195,
+              "y": 598,
+              "rotation": 0,
+              "limbAngles": [
+                -2.69,
+                2.61,
+                -2.74,
+                -2.92
+              ],
+              "jointAngles": [
+                -2.36,
+                0.2,
+                -2.84,
+                -2.54
+              ],
+              "entryProgress": 0.45,
+              "centeringError": 18,
+              "beautyMultiplier": 2.5,
+              "chainPoints": 2
+            },
+            {
+              "kind": "pepper",
+              "cooked": true,
+              "x": 192,
+              "y": 562,
+              "rotation": 0,
+              "limbAngles": [
+                -3.02,
+                -2.87,
+                2.6,
+                -1.92
+              ],
+              "jointAngles": [
+                -3.03,
+                -2.97,
+                -2.65,
+                2.32
+              ],
+              "entryProgress": 0.45,
+              "centeringError": 0,
+              "beautyMultiplier": 3.5,
+              "chainPoints": 6
+            },
+            {
+              "kind": "onion",
+              "cooked": true,
+              "x": 190,
+              "y": 527,
+              "rotation": 0,
+              "limbAngles": [
+                1.55,
+                -1.55,
+                0.73,
+                -0.73
+              ],
+              "jointAngles": [
+                -1.6,
+                1.6,
+                -0.5,
+                0.5
+              ],
+              "entryProgress": 0.45,
+              "centeringError": 18,
+              "beautyMultiplier": 2.5,
+              "chainPoints": 24
+            },
+            {
+              "kind": "mushroom",
+              "cooked": true,
+              "x": 188,
+              "y": 491,
+              "rotation": 0,
+              "limbAngles": [
+                -0.39,
+                -0.3,
+                -0.2,
+                -0.04
+              ],
+              "jointAngles": [
+                0.78,
+                -0.52,
+                0.26,
+                -0.74
+              ],
+              "entryProgress": 0.45,
+              "centeringError": 36,
+              "beautyMultiplier": 2,
+              "chainPoints": 120
+            }
+          ],
+          "height": 230,
+          "width": 10,
+          "hitboxVisible": false,
+          "completedLock": true,
+          "stackLayout": "guard-up",
+          "guardY": 745,
+          "limbPhysics": "matter-two-link-damped-anchor",
+          "limbMaxSpeed": 7
+        },
+        "impactCallouts": 5,
+        "input": {
+          "handOnly": true,
+          "handHint": false,
+          "gripX": 195,
+          "gripY": 737,
+          "hitRadiusX": 68,
+          "hitRadiusY": 76
+        },
+        "activeCustomer": {
+          "id": 11,
+          "name": "Oana",
+          "order": [
+            "meat",
+            "tomato",
+            "pepper",
+            "onion",
+            "mushroom"
+          ],
+          "patience": 25.7
+        },
+        "drops": [
+          {
+            "id": 1,
+            "kind": "meat",
+            "x": 79,
+            "y": 154,
+            "vx": 0,
+            "speed": 161,
+            "rotation": -0.208,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          },
+          {
+            "id": 2,
+            "kind": "tomato",
+            "x": 117,
+            "y": 34,
+            "vx": 55,
+            "speed": 161,
+            "rotation": -0.214,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          }
+        ],
+        "presentation": {
+          "customerX": 355,
+          "customerSize": 82,
+          "orderBubble": {
+            "width": 136,
+            "height": 58
+          },
+          "ingredientSpeechOnImpale": false,
+          "grillComments": true,
+          "droolAnchoredToMouth": true
+        }
+      },
+      "geometry": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "top": 0,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        },
+        "dataset": {
+          "authoredVerticalAnchor": "bottom",
+          "effectiveVerticalAnchor": "bottom"
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "desktop",
+        "width": 1280,
+        "height": 720,
+        "mobile": false
+      },
+      "file": "desktop-initial.png",
+      "state": {
+        "coordinateSystem": "390x844 logical; origin top-left; x right; y down",
+        "mode": "playing",
+        "level": 1,
+        "score": 0,
+        "served": 0,
+        "remainingCustomers": 3,
+        "visibleCustomers": 3,
+        "lives": 3,
+        "slowSeconds": 0,
+        "combo": 0,
+        "maxSkewerIngredients": 5,
+        "fx": {
+          "ambientFlames": 15,
+          "embersAlive": 109,
+          "foregroundEmbersAlive": 140,
+          "smokeAlive": 15
+        },
+        "customerRosterSize": 15,
+        "fallArea": {
+          "minX": 38,
+          "maxX": 326
+        },
+        "skewer": {
+          "x": 195,
+          "y": 780,
+          "tipX": 195,
+          "tipY": 635,
+          "rawPoints": 0,
+          "stack": [],
+          "height": 110,
+          "width": 10,
+          "hitboxVisible": false,
+          "completedLock": false,
+          "stackLayout": "guard-up",
+          "guardY": 745,
+          "limbPhysics": "matter-two-link-damped-anchor",
+          "limbMaxSpeed": 0
+        },
+        "impactCallouts": 0,
+        "input": {
+          "handOnly": true,
+          "handHint": false,
+          "gripX": 195,
+          "gripY": 737,
+          "hitRadiusX": 68,
+          "hitRadiusY": 76
+        },
+        "activeCustomer": {
+          "id": 8,
+          "name": "Sorina",
+          "order": [
+            "pepper",
+            "tomato"
+          ],
+          "patience": 24.7
+        },
+        "drops": [
+          {
+            "id": 1,
+            "kind": "meat",
+            "x": 78,
+            "y": -9,
+            "vx": 0,
+            "speed": 100,
+            "rotation": -0.034,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          }
+        ],
+        "presentation": {
+          "customerX": 355,
+          "customerSize": 82,
+          "orderBubble": {
+            "width": 136,
+            "height": 58
+          },
+          "ingredientSpeechOnImpale": false,
+          "grillComments": true,
+          "droolAnchoredToMouth": true
+        }
+      },
+      "geometry": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "top": 0,
+          "right": 1280,
+          "bottom": 720,
+          "left": 0
+        },
+        "dataset": {
+          "authoredVerticalAnchor": "bottom",
+          "effectiveVerticalAnchor": "bottom"
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "desktop",
+        "width": 1280,
+        "height": 720,
+        "mobile": false
+      },
+      "file": "desktop-queue-five-visible.png",
+      "state": {
+        "coordinateSystem": "390x844 logical; origin top-left; x right; y down",
+        "mode": "playing",
+        "level": 4,
+        "score": 0,
+        "served": 0,
+        "remainingCustomers": 6,
+        "visibleCustomers": 5,
+        "lives": 3,
+        "slowSeconds": 0,
+        "combo": 0,
+        "maxSkewerIngredients": 5,
+        "fx": {
+          "ambientFlames": 15,
+          "embersAlive": 122,
+          "foregroundEmbersAlive": 130,
+          "smokeAlive": 20
+        },
+        "customerRosterSize": 15,
+        "fallArea": {
+          "minX": 38,
+          "maxX": 326
+        },
+        "skewer": {
+          "x": 195,
+          "y": 780,
+          "tipX": 195,
+          "tipY": 595,
+          "rawPoints": 0,
+          "stack": [],
+          "height": 150,
+          "width": 10,
+          "hitboxVisible": false,
+          "completedLock": false,
+          "stackLayout": "guard-up",
+          "guardY": 745,
+          "limbPhysics": "matter-two-link-damped-anchor",
+          "limbMaxSpeed": 0
+        },
+        "impactCallouts": 0,
+        "input": {
+          "handOnly": true,
+          "handHint": false,
+          "gripX": 195,
+          "gripY": 737,
+          "hitRadiusX": 68,
+          "hitRadiusY": 76
+        },
+        "activeCustomer": {
+          "id": 11,
+          "name": "Oana",
+          "order": [
+            "meat",
+            "onion",
+            "meat"
+          ],
+          "patience": 24.7
+        },
+        "drops": [
+          {
+            "id": 1,
+            "kind": "meat",
+            "x": 79,
+            "y": 38,
+            "vx": 0,
+            "speed": 133,
+            "rotation": -0.092,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          },
+          {
+            "id": 2,
+            "kind": "tomato",
+            "x": 72,
+            "y": -86,
+            "vx": 55,
+            "speed": 114,
+            "rotation": -0.245,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          }
+        ],
+        "presentation": {
+          "customerX": 355,
+          "customerSize": 82,
+          "orderBubble": {
+            "width": 136,
+            "height": 58
+          },
+          "ingredientSpeechOnImpale": false,
+          "grillComments": true,
+          "droolAnchoredToMouth": true
+        }
+      },
+      "geometry": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "top": 0,
+          "right": 1280,
+          "bottom": 720,
+          "left": 0
+        },
+        "dataset": {
+          "authoredVerticalAnchor": "bottom",
+          "effectiveVerticalAnchor": "bottom"
+        }
+      }
+    },
+    {
+      "viewport": {
+        "id": "desktop",
+        "width": 1280,
+        "height": 720,
+        "mobile": false
+      },
+      "file": "desktop-brutality.png",
+      "state": {
+        "coordinateSystem": "390x844 logical; origin top-left; x right; y down",
+        "mode": "playing",
+        "level": 4,
+        "score": 0,
+        "served": 0,
+        "remainingCustomers": 6,
+        "visibleCustomers": 5,
+        "lives": 3,
+        "slowSeconds": 0,
+        "combo": 5,
+        "maxSkewerIngredients": 5,
+        "fx": {
+          "ambientFlames": 15,
+          "embersAlive": 125,
+          "foregroundEmbersAlive": 137,
+          "smokeAlive": 27
+        },
+        "customerRosterSize": 15,
+        "fallArea": {
+          "minX": 38,
+          "maxX": 326
+        },
+        "skewer": {
+          "x": 195,
+          "y": 780,
+          "tipX": 195,
+          "tipY": 515,
+          "rawPoints": 153,
+          "stack": [
+            {
+              "kind": "meat",
+              "cooked": true,
+              "x": 203,
+              "y": 669,
+              "rotation": 0,
+              "limbAngles": [
+                1.74,
+                2.86,
+                2.58,
+                2.13
+              ],
+              "jointAngles": [
+                2.7,
+                -0.75,
+                -2.26,
+                -1.89
+              ],
+              "entryProgress": 0.66,
+              "centeringError": 36,
+              "beautyMultiplier": 2,
+              "chainPoints": 1
+            },
+            {
+              "kind": "tomato",
+              "cooked": true,
+              "x": 199,
+              "y": 627,
+              "rotation": 0,
+              "limbAngles": [
+                -1.56,
+                1.51,
+                -1.59,
+                -2.58
+              ],
+              "jointAngles": [
+                1.53,
+                1,
+                1.6,
+                2.27
+              ],
+              "entryProgress": 0.66,
+              "centeringError": 18,
+              "beautyMultiplier": 2.5,
+              "chainPoints": 2
+            },
+            {
+              "kind": "pepper",
+              "cooked": true,
+              "x": 194,
+              "y": 586,
+              "rotation": 0,
+              "limbAngles": [
+                -2.45,
+                -1.97,
+                1.19,
+                0.18
+              ],
+              "jointAngles": [
+                2.33,
+                2.05,
+                -1.67,
+                -0.85
+              ],
+              "entryProgress": 0.66,
+              "centeringError": 0,
+              "beautyMultiplier": 3.5,
+              "chainPoints": 6
+            },
+            {
+              "kind": "onion",
+              "cooked": true,
+              "x": 190,
+              "y": 545,
+              "rotation": 0,
+              "limbAngles": [
+                -0.44,
+                0.44,
+                -0.81,
+                0.81
+              ],
+              "jointAngles": [
+                0.92,
+                -0.92,
+                1.29,
+                -1.29
+              ],
+              "entryProgress": 0.66,
+              "centeringError": 18,
+              "beautyMultiplier": 2.5,
+              "chainPoints": 24
+            },
+            {
+              "kind": "mushroom",
+              "cooked": true,
+              "x": 186,
+              "y": 503,
+              "rotation": 0,
+              "limbAngles": [
+                0.09,
+                0.2,
+                0.08,
+                0.11
+              ],
+              "jointAngles": [
+                -0.46,
+                0,
+                -0.3,
+                0.1
+              ],
+              "entryProgress": 0.66,
+              "centeringError": 36,
+              "beautyMultiplier": 2,
+              "chainPoints": 120
+            }
+          ],
+          "height": 230,
+          "width": 10,
+          "hitboxVisible": false,
+          "completedLock": true,
+          "stackLayout": "guard-up",
+          "guardY": 745,
+          "limbPhysics": "matter-two-link-damped-anchor",
+          "limbMaxSpeed": 6.92
+        },
+        "impactCallouts": 5,
+        "input": {
+          "handOnly": true,
+          "handHint": false,
+          "gripX": 195,
+          "gripY": 737,
+          "hitRadiusX": 68,
+          "hitRadiusY": 76
+        },
+        "activeCustomer": {
+          "id": 11,
+          "name": "Oana",
+          "order": [
+            "meat",
+            "tomato",
+            "pepper",
+            "onion",
+            "mushroom"
+          ],
+          "patience": 25.5
+        },
+        "drops": [
+          {
+            "id": 1,
+            "kind": "meat",
+            "x": 79,
+            "y": 117,
+            "vx": 0,
+            "speed": 161,
+            "rotation": -0.165,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          },
+          {
+            "id": 2,
+            "kind": "tomato",
+            "x": 101,
+            "y": -15,
+            "vx": 55,
+            "speed": 161,
+            "rotation": -0.225,
+            "state": "falling",
+            "emotion": "happy",
+            "wounds": 0
+          }
+        ],
+        "presentation": {
+          "customerX": 355,
+          "customerSize": 82,
+          "orderBubble": {
+            "width": 136,
+            "height": 58
+          },
+          "ingredientSpeechOnImpale": false,
+          "grillComments": true,
+          "droolAnchoredToMouth": true
+        }
+      },
+      "geometry": {
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "top": 0,
+          "right": 1280,
+          "bottom": 720,
+          "left": 0
+        },
+        "dataset": {
+          "authoredVerticalAnchor": "bottom",
+          "effectiveVerticalAnchor": "bottom"
+        }
+      }
+    }
+  ],
+  "errors": []
+}

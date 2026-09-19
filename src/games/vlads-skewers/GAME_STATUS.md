@@ -1,53 +1,32 @@
 # Les Brochettes de Vlad — Suivi
 
-Mis à jour : 12 septembre 2026 à 23:24 Europe/Paris. Version de cette passe : `0.4.1`. Changelog : `CHANGELOG.md`. Référence artistique canonique : `ART_DIRECTION.md`.
+## État au 19 septembre 2026
 
-## État
+Jeu public : release 0.4.2 du 17 septembre, runtime historique 390×844. La refonte graphique est en préparation ; aucun code gameplay, score, physique, contrôle ni cover n’est remplacé par cette passe.
 
-- Registre : `fugg`, portrait `390 × 844`, runtime `phaser-2d`, migration gameplay `current`, cover `current`.
-- Cadrage gameplay : Vlad utilise l'ancrage vertical Core `bottom`. Les 390 unités de largeur restent la référence fixe ; le grill, la main et les flammes basses restent attachés au bas visible, tandis que les différences de hauteur navigateur/PWA/app sont absorbées par le haut du MASTER.
-- Brochette : longueur `110 / 150 / 190 / 230` unités pour `2 / 3 / 4 / 5` ingrédients, largeur `10`; les ingrédients glissent depuis la pointe jusqu'à la garde puis s'empilent vers l'apex.
-- Membres : chaque bras/jambe embroché utilise deux corps Matter et deux contraintes. La gravité reste en coordonnées monde et la pile/les collisions de gameplay restent séparées de ces corps invisibles.
-- Inertie : pas d'impulsion artificielle souris/doigt ; l'ancrage Matter est déplacé avec `updateVelocity=false`, les contraintes sont amorties et les vitesses invisibles bornées.
-- Clients `0.4.1` : les portraits sont ramenés à une taille uniforme de `82`, sans agrandissement spécial du client actif, et reculés à `x=355` pour rester dans les loges comme dans `Vlad-DA1.png`. Leur ligne de base reste celle de chaque tablette ; l'animation d'attente est limitée à un très léger mouvement.
-- Bave `0.4.1` : chaque portrait utilise un ancrage bouche propre en coordonnées locales du sprite. La goutte part du bord de la bouche, jamais de la tablette, de la joue ou de l'oreille.
-- Commande `0.4.1` : bulle réduite à `136 × 58`, broche horizontale et icônes resserrées, horloge de patience compacte juste sous la demande. Le contenu pilote l'encombrement au lieu de conserver un grand panneau vide.
-- Commentaires `0.4.1` : aucune phrase parlée lors d'un embrochement. Les impacts gardent uniquement leur onomatopée ; les petites phrases humoristiques sont réservées aux aliments ratés qui arrivent sur le grill, puis disparaissent rapidement.
-- Validation : une recette complète reste dans la main pendant `1 s`, protégée contre tout nouveau contact, puis part automatiquement.
-- Sang : grosse goutte construite sur grille de `2 px`, contour bordeaux très sombre, rouge saturé et reflet clair.
-- Collision : seule l'extrémité logique du harpon embroche. Aucune hitbox visible.
-- Orientation : chaque ingrédient conserve l'angle capturé au percement.
-- Covers : les 5 références validées restent l'autorité ; leurs restaurations statiques plein cadre `390×844`, sans bandes floues, sont actives dans le feed.
+## Lot actif : recomposition mesurée
 
-## Architecture transversale
+- Autorisation : refaire la maquette complète, même style, en réconciliant les retours de septembre.
+- Base inspectée : 02dfb0ebfba28c80c9cd3244ac98297a5b8388ab ; branche temporaire chatgpt/vlad-composition-review, PR25.
+- Nouveau contrat : MASTER 390×850, zone garantie 390×710, bottom y140→850. Les anciennes indications 390×662 de ce suivi ne sont plus la cible de conception.
+- Vérité visuelle : 15 captures du vrai runtime dans le banc existant, cinq formats (A54 Chrome, taille iPhone, Brave dégradé, master legacy et bureau) et trois situations (départ, file pleine, Brutality). Chromium CI : ce ne sont pas des tests Safari/Brave natifs ni une preuve de l’application déployée. Aucun pageerror/HTTP error dans le rapport initial.
+- Défauts constatés : score/panneau de niveau recadrés sur vues courtes ; Brutality déjà présent mais mal placé dans le feu ; silhouettes de clients mal contenues. Les éléments absents à l’écran ne sont donc pas tous absents du code.
+- Proposition de géométrie : composition.json ; cinq loges, commande 2–5, timer intégré, rack gauche, main/grill et seau tiennent dans les six simulations géométriques. Cela prouve les boîtes, pas l’art, les hitboxes ou la qualité sur appareil.
+- Production Lab : trois captures Proto, quatre blockouts DA (jeu, broche protégée, Brutality, niveau), inventaire sémantique couvrant structure, clients, états, gameplay, texte, FX et son. Aucune nouvelle Release ni faux asset final.
 
-`PhaserGameHost` accepte une configuration `physics` optionnelle. Vlad active Matter explicitement ; les autres jeux ne sont pas affectés.
+## Décisions réconciliées
 
-La fenêtre de gameplay `390 × 662` reste ancrable `top | center | bottom` sans modifier le monde logique `390 × 844` ni les 390 unités de largeur. Vlad reste `bottom`.
+Voir ART_DIRECTION.md, section du 19 septembre : actif en haut ; portraits intacts ; bave séparée vers le seau ; ordre/temps ensemble ; empilement à la garde ; seconde protégée ; physique validée conservée ; aucun changement silencieux de scoring ou de progression.
 
-## Passe gameplay `0.4.1`
+## Fichiers et preuves
 
-- Base inspectée : `63468fedabe845d069d99fcdd6937d35e256f215` sur `main`.
-- Référence : `GFX/crea-chatgpt/game/Vlad-DA1.png` et les règles déjà consignées dans `ART_DIRECTION.md` pour les loges, la ligne de base et la bave à la bouche.
-- Fichiers : `VladsSkewersPresentation.ts`, `VladsSkewers.tsx`, `definition.ts`, `CHANGELOG.md`, `GAME_STATUS.md`.
-- Portée : présentation uniquement ; règles, score, collisions, physique Matter, longueurs de brochette et protection de fin inchangés.
+- public/assets/generated/vlads-skewers/production-lab/ : captures réelles, blockouts techniques, geometry-report.json et report.json ; jamais des textures du jeu public.
+- composition.json : coordonnées de proposition.
+- production-plan.json : Plan canonique de revue, affiché par le Production Lab.
+- PR25 : espace de préparation ; la présence d’un fichier sur la branche n’est ni acceptation artistique ni déploiement du gameplay.
 
-## Vérification attendue avant publication
+## Contrôles et suite
 
-- `test:repository` et build TypeScript/Vite verts ;
-- cinq clients maximum restent visuellement contenus dans leurs loges, avec le client actif au même gabarit que les autres ;
-- bave visible uniquement au niveau de la bouche de chaque portrait ;
-- commande lisible de 2 à 5 ingrédients sans grand vide ;
-- un embrochement ne crée aucune phrase de légume, seulement l'onomatopée d'impact ;
-- une arrivée sur le grill peut afficher une seule petite remarque discrète ;
-- aucune régression sur la physique des membres, l'empilement à la garde, la seconde protégée, le score ou les covers.
+Contrôle diagnostic runtime : effectué. Contrôle géométrique des boîtes : effectué. Maquette pixel-art et comparaison au gabarit : à produire/revoir. Validation artistique utilisateur : en attente. Découpage, réfection des portraits, export runtime, mini-tranche puis intégration complète : non commencés.
 
-## Passe covers `0.4.0`
-
-- Base inspectée : `abdb1b464f1376ecce39aaccb6301e6dc19204f8` sur `origin/main`.
-- Demande : appliquer aux autres originaux validés le procédé accepté sur TetraMindFck, sans réinterprétation. ImageGen a reçu une seule référence à la fois et uniquement le prolongement décoratif nécessaire.
-- Sources : les cinq PNG approuvés du 10 septembre restent intacts sous `public/assets/imported/vlads-skewers/welcome/variants/`.
-- Sorties : cinq sources restaurées, cinq masters PNG `390×844` et cinq WebP lossless `780×1688` sous `public/assets/generated/vlads-skewers/welcome/variants/`.
-- Corrections : fin des bandes floues/mirroirs ; continuation naturelle du manteau et du feu, du velours, de la cape imprimée, de la vallée ou de l'échoppe. Sur la variante japonaise, seul le titre `ヴラッドの串焼き` reste ; le petit panneau secondaire est nettoyé.
-- Contrôles : artistique agent conforme ; technique conforme (opaque, mono-frame, dimensions attendues, WebP `VP8L`) ; `npm run build` réussi. Les cinq éditions ont été ouvertes, sélectionnées et capturées en navigateur sur mobile court `360×611`, MASTER `390×844` et bureau `1280×720`, sans erreur HTTP/JavaScript. Dans chaque état, JOUER reste dans la zone basse sacrifiable et ne masque aucun titre/logo.
-- Validation utilisateur : références historiques approuvées ; application du procédé à tous les originaux autorisée le 12 septembre 2026 ; revue finale du lot livré encore distincte.
+L’enseignement de cette passe est de mesurer le cadre visible avant le dessin. Ne pas relancer l’intégration rejetée ni reprendre l’ancien atlas troué. La prochaine validation porte sur la composition et les états, pas sur un déploiement.

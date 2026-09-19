@@ -1,5 +1,27 @@
 # Les Brochettes de Vlad — Direction artistique
 
+## Recomposition gameplay — décision du 19 septembre 2026
+
+Cette section remplace les anciennes consignes de composition ci-dessous lorsqu’elles se contredisent. Le jeu public reste la présentation restaurée, release 0.4.2 du 17 septembre (ajustement de métadonnées), en monde legacy 390×844. La nouvelle composition est une proposition, pas une validation ni une livraison gameplay.
+
+- Cible dédiée : MASTER 390×850, zone garantie 390×710, ancrage bottom y140→850. Toutes les cinq loges, la recette/timer, le score, le rack de vies, la prise/main et le grill doivent tenir. Au-dessus : décor uniquement. Les boîtes proposées commencent après y207 pour supporter aussi le diagnostic Brave dégradé.
+- Géométrie de travail : composition.json. Ne pas convertir directement les proportions d’une grande illustration en placements Phaser. Les guides de blockout sont des annotations techniques, pas des textures finales.
+- Style conservé : pixel art gothique BBQ, pierre sombre, or/rouge, portraits de la version 1 renvoyée le 13 septembre. L’image fixe le traitement, pas les coordonnées. Les autres images rejetées et les extractions trouées ne sont pas des sources utilisables.
+- File : client ACTIF EN HAUT, cinq loges fixes entièrement visibles, attente en dessous ; la file monte après un départ. Niches vides fermées par grille. Portraits légèrement reculés, masqués par la tablette, corps et bouche entiers.
+- Recette : un seul cartouche proche du client du haut, jusqu’à cinq aliments morts/grillés sur une broche horizontale. Timer intégré à droite ; cadre dimensionné au contenu sans étirer les coins. Aucun deuxième panneau de commande.
+- Bave : pixels sous la bave reconstruits, jamais rendus transparents. Portrait opaque sous la bave indépendante ; émission à la bouche, écoulement de tablette en tablette / collecteur droit jusqu’au seau.
+- Broche : courte selon 2/3/4/5 ingrédients ; entrée par la pointe, glissement à la garde, pile vers le haut, angle et perforation préservés. La broche complète est visible et protégée 1 s avant livraison automatique vers le client du haut. Pas de service manuel.
+- Physique Matter approuvée conservée, sans force artificielle d’accélération ajoutée. Pointe-harpon invisible comme hitbox ; ni halo jaune, ni ligne pointillée de geste.
+- Aliments : mêmes dix variétés que le code, ail danger et sang bonus séparés. Joie puis panique, fils noirs et mains blanches dessinés par-dessus les corps ; morts/grillés sur la broche. Naissance hors champ, pas de traînée. Ils peuvent passer devant les clients sans transformer les loges en mur.
+- FX : gerbes de jus coloré et débris sous gravité, intensité normal→×5, limites de particules à mesurer. BRUTALITY! temporaire en haut du champ utile et pluie derrière les cibles ; commande, timer et visages restent lisibles.
+- Texte : score total à droite, gain au service, combo persistant près de la main. Aucune parole de nourriture à l’embrochement ; onomatopée d’impact seulement. Remarque courte, rare et bitmap uniquement au grill. Pas de titre du jeu, pause, slogan ou panneau explicatif permanent.
+- Niveau : transition lisible puis disparue ; LEVEL n, icônes disponibles, effectif. Conserver la progression et le scoring courant (chaîne factorielle × beauté moyenne), pas les anciens barèmes de septembre.
+- Sources PNG natives et futurs dérivés WebP lossless séparés. Pas de lissage global, franges cyan, upscaling de preview, recadrage destructeur ou suppression alpha des visages. Les éléments masqués doivent être reconstruits avant animation.
+
+Validation requise : composition + états, puis mini-tranche. Le Production Lab expose les captures réelles et le blockout ; les nœuds de sources finales restent bloqués/à produire. Covers inchangées.
+
+## Références et historique antérieurs — à lire sous les décisions ci-dessus
+
 Mise à jour : 12 septembre 2026. Ce fichier réconcilie les décisions acquises pour le gameplay et les covers. Les procédures de référence sont `docs/ACTIONS.md`, `docs/DA_CORE.md`, `docs/DA_GAME.md` et `docs/DA_COVER.md`.
 
 ## État des validations

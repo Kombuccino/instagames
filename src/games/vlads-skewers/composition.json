@@ -1,0 +1,159 @@
+{
+  "schema": "minifugg/vlad-composition-review/1",
+  "status": "proposal-not-approved",
+  "master": {
+    "width": 390,
+    "height": 850
+  },
+  "anchor": "bottom",
+  "guaranteed": {
+    "x": 0,
+    "y": 140,
+    "width": 390,
+    "height": 710
+  },
+  "boxes": {
+    "counter": {
+      "x": 80,
+      "y": 207,
+      "width": 182,
+      "height": 26
+    },
+    "score": {
+      "x": 278,
+      "y": 207,
+      "width": 102,
+      "height": 26
+    },
+    "order": {
+      "x": 152,
+      "y": 247,
+      "width": 228,
+      "height": 62
+    },
+    "customers": {
+      "x": 306,
+      "y": 318,
+      "width": 78,
+      "height": 440
+    },
+    "reserve": {
+      "x": 10,
+      "y": 338,
+      "width": 34,
+      "height": 122
+    },
+    "brutality": {
+      "x": 52,
+      "y": 350,
+      "width": 246,
+      "height": 65
+    },
+    "levelCard": {
+      "x": 64,
+      "y": 345,
+      "width": 224,
+      "height": 98
+    },
+    "grill": {
+      "x": 12,
+      "y": 742,
+      "width": 302,
+      "height": 104
+    },
+    "hand": {
+      "x": 156,
+      "y": 753,
+      "width": 56,
+      "height": 62
+    },
+    "bucket": {
+      "x": 327,
+      "y": 778,
+      "width": 55,
+      "height": 66
+    },
+    "combo": {
+      "x": 224,
+      "y": 724,
+      "width": 72,
+      "height": 28
+    },
+    "gain": {
+      "x": 160,
+      "y": 436,
+      "width": 130,
+      "height": 32
+    }
+  },
+  "niches": [
+    {
+      "x": 312,
+      "y": 322,
+      "width": 65,
+      "height": 76,
+      "baseline": 396
+    },
+    {
+      "x": 312,
+      "y": 408,
+      "width": 65,
+      "height": 76,
+      "baseline": 482
+    },
+    {
+      "x": 312,
+      "y": 494,
+      "width": 65,
+      "height": 76,
+      "baseline": 568
+    },
+    {
+      "x": 312,
+      "y": 580,
+      "width": 65,
+      "height": 76,
+      "baseline": 654
+    },
+    {
+      "x": 312,
+      "y": 666,
+      "width": 65,
+      "height": 76,
+      "baseline": 740
+    }
+  ],
+  "iconCenters": [
+    180,
+    209,
+    238,
+    267,
+    296
+  ],
+  "iconY": 278,
+  "iconSize": 24,
+  "timer": {
+    "x": 352,
+    "y": 278,
+    "radius": 17
+  },
+  "skewer": {
+    "guardY": 742,
+    "axis": 184,
+    "heights": [
+      110,
+      150,
+      190,
+      230
+    ],
+    "firstStackOffset": 27,
+    "stackGap": 40
+  },
+  "coreReturn": {
+    "x": 8,
+    "width": 56,
+    "height": 56,
+    "yRule": "visible top + 8; Core only"
+  },
+  "note": "Geometry proposal only. Source pixels are not resized or repainted. Bounds tests do not establish artistic approval."
+}

@@ -1,3 +1,4 @@
+import vladCompositionPlan from '../games/vlads-skewers/production-plan.json'
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { gameRegistry } from './gameRegistry'
 import type { InstagameDefinition } from './types'
@@ -418,6 +419,11 @@ function buildLineFuggPlan(game: InstagameDefinition): PlanProject {
 }
 
 function buildPlan(game: InstagameDefinition) {
+  if (game.id === 'vlads-skewers') {
+    const base = buildGenericPlan(game)
+    const plan = vladCompositionPlan as PlanProject
+    return { ...plan, screens: [...base.screens.filter(screen => screen.state === 'covers'), ...plan.screens] }
+  }
   if (game.id === 'linefugg') return buildLineFuggPlan(game)
   if (game.id === 'crazy-papers') return buildCrazyPapersPlan(game)
   return buildGenericPlan(game)

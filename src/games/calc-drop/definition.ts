@@ -12,7 +12,7 @@ export const gameDefinition: InstagameDefinition = {
   status: 'fugg',
   orientation: 'portrait',
   runtime: 'phaser-2d',
-  logicalViewport: { width: 390, height: 844 },
+  logicalViewport: { width: 390, height: 850 },
   migration: {
     state: 'in-progress',
     targetRuntime: 'phaser-2d',
@@ -22,12 +22,12 @@ export const gameDefinition: InstagameDefinition = {
   welcome: TETRAMINDFCK_WELCOME,
   component: TetraMindFck,
   release: {
-    version: '0.8.5',
-    updatedAt: '2026-09-17T13:05:00+02:00',
+    version: '0.8.6',
+    updatedAt: '2026-09-19T18:33:00+02:00',
     changelogPath: 'src/games/calc-drop/CHANGELOG.md',
   },
   instructions: {
-    goal: 'Atteins l’objectif avec le score total d’un seul clear : 50, puis 100, puis +100 à chaque niveau.',
+    goal: 'Atteins la TARGET du niveau avec le total d’un seul clear, puis grimpe aussi haut que possible.',
     rules: [
       'Les cases numériques vont de 1 à 9 ; il y a deux fois plus de multiplicateurs que de diviseurs parmi les opérateurs.',
       'Complète une ou plusieurs lignes horizontales : chaque ligne est calculée puis les scores des lignes du même clear sont additionnés.',

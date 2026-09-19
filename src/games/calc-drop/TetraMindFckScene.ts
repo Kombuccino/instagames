@@ -17,46 +17,41 @@ const STANDARD_LINE_MAX = MAX_NUMBER * (BASE_MAX_MULTIPLIER ** (COLS - 1))
 const BIG_CLEAR_THRESHOLD = 1000
 
 const BG_KEY = 'tetra-bg'
-const SHELL_KEY = 'tetra-shell'
-const CRT_KEY = 'tetra-crt'
 const DIGITS_KEY = 'tetra-digits'
 const OPERATORS_KEY = 'tetra-operators'
+const HUD_DIGITS_KEY = 'tetra-hud-digits'
 const BTN_LEFT_UP = 'tetra-btn-left-up'
-const BTN_LEFT_DOWN = 'tetra-btn-left-down'
 const BTN_RIGHT_UP = 'tetra-btn-right-up'
-const BTN_RIGHT_DOWN = 'tetra-btn-right-down'
 const BTN_ROTATE_LEFT_UP = 'tetra-btn-rotate-left-up'
-const BTN_ROTATE_LEFT_DOWN = 'tetra-btn-rotate-left-down'
 const BTN_ROTATE_RIGHT_UP = 'tetra-btn-rotate-right-up'
-const BTN_ROTATE_RIGHT_DOWN = 'tetra-btn-rotate-right-down'
 const BTN_DOWN_UP = 'tetra-btn-down-up'
-const BTN_DOWN_DOWN = 'tetra-btn-down-down'
 
 const BG_PATH = '/assets/imported/tetramindfck/gameplay/background/tetramindfck-gameplay-bg-room.webp'
-const SHELL_PATH = '/assets/imported/tetramindfck/gameplay/shell/tetramindfck-console-shell.webp'
-const CRT_PATH = '/assets/imported/tetramindfck/gameplay/crt/tetramindfck-crt-plate.webp'
 const DIGITS_PATH = '/assets/imported/tetramindfck/gameplay/tiles/tetramindfck-tile-digits-sheet.webp'
 const OPERATORS_PATH = '/assets/imported/tetramindfck/gameplay/tiles/tetramindfck-tile-operators-sheet.webp'
+const HUD_DIGITS_PATH = '/assets/generated/tetramindfck/gameplay/ui/tetramindfck-hud-digits.webp'
 const BUTTON_ROOT = '/assets/imported/tetramindfck/gameplay/buttons'
 
-// 0.8.4 geometry gate: full-width console, compact rail, maximal readable board.
-const MAIN_CRT = { x: 93, y: 108, w: 289, h: 560 }
-const LEVEL_CRT = { x: 10, y: 142, w: 72, h: 82 }
-const TARGET_CRT = { x: 10, y: 238, w: 72, h: 82 }
-const NEXT_CRT = { x: 10, y: 334, w: 72, h: 112 }
-const NEXT2_CRT = { x: 10, y: 460, w: 72, h: 112 }
-const BTN_LEFT = { x: 10, y: 690, w: 87, h: 62 }
-const BTN_RIGHT = { x: 104, y: 690, w: 87, h: 62 }
-const BTN_ROTATE_LEFT = { x: 198, y: 690, w: 87, h: 62 }
-const BTN_ROTATE_RIGHT = { x: 292, y: 690, w: 87, h: 62 }
-const BTN_DOWN = { x: 58, y: 762, w: 86, h: 50 }
+// 0.8.6 TARGET-led slice on the canonical 390×850 master, bottom anchored.
+const MAIN_CRT = { x: 93, y: 114, w: 289, h: 560 }
+const LEVEL_CRT = { x: 10, y: 148, w: 72, h: 82 }
+const MASCOT_CRT = { x: 10, y: 244, w: 72, h: 82 }
+const NEXT_CRT = { x: 10, y: 340, w: 72, h: 112 }
+const NEXT2_CRT = { x: 10, y: 466, w: 72, h: 112 }
+const BTN_LEFT = { x: 10, y: 700, w: 87, h: 60 }
+const BTN_RIGHT = { x: 104, y: 700, w: 87, h: 60 }
+const BTN_ROTATE_LEFT = { x: 198, y: 700, w: 87, h: 60 }
+const BTN_ROTATE_RIGHT = { x: 292, y: 700, w: 87, h: 60 }
+const BTN_DOWN = { x: 61, y: 790, w: 82, h: 42 }
 
-const CELL_SIZE = 25.2
+const CELL_SIZE = 24.4
 const BOARD_WIDTH = CELL_SIZE * COLS
 const BOARD_HEIGHT = CELL_SIZE * ROWS
 const BOARD_X = MAIN_CRT.x + (MAIN_CRT.w - BOARD_WIDTH) / 2
-const BOARD_Y = 146
-const SCORE_Y = 117
+const BOARD_Y = 177
+const TARGET_LABEL_Y = 121
+const TARGET_VALUE_Y = 141
+const CALC_STRIP = { x: 116, y: 151, w: 248, h: 20 }
 const PREVIEW_TILE_SIZE = 14
 
 const CRT_BG = 0x09291f
@@ -79,7 +74,10 @@ type LineReport = { value: number; points: number; reversed: boolean; steps: Arr
 type ClearRowSnapshot = { rowIndex: number; tiles: Tile[]; report: LineReport }
 type PendingClear = { fullRows: number[]; reports: LineReport[]; gained: number; earnedBonus: BonusKind | null }
 type Aperture = { x: number; y: number; w: number; h: number }
-type ButtonTextures = { up: string; down: string }
+type ButtonTextures = { up: string; flipX?: boolean }
+type ButtonVisualState = 'idle' | 'pressed' | 'held' | 'blocked'
+type ButtonView = { image: Phaser.GameObjects.Image; box: Aperture; cx: number; cy: number; blocked: boolean }
+type MascotPose = 'idle' | 'blink' | 'cheer' | 'wow' | 'party'
 
 export type TetraMindFckSceneBridge = {
   seed: number
@@ -224,13 +222,6 @@ function dropDelay(level: number) {
   return Math.max(70, Math.round(820 * (0.82 ** (level - 1))))
 }
 
-function formatCompact(value: number) {
-  const absolute = Math.abs(value)
-  if (absolute < 1000) return Number.isInteger(value) ? String(value) : value.toFixed(1).replace('.0', '')
-  if (absolute < 1_000_000) return `${(value / 1000).toFixed(1).replace('.0', '')}k`
-  return `${(value / 1_000_000).toFixed(1).replace('.0', '')}M`
-}
-
 function tileFrame(tile: Tile) {
   if (tile.kind === 'number') return { texture: DIGITS_KEY, frame: Math.max(0, Math.min(8, tile.value - 1)) }
   if (tile.kind === 'reverse') return { texture: OPERATORS_KEY, frame: 6 }
@@ -258,12 +249,18 @@ export class TetraMindFckScene extends Phaser.Scene {
   private cellSprites: Phaser.GameObjects.Image[] = []
   private ghostRects: Phaser.GameObjects.Rectangle[] = []
   private lockGraphics!: Phaser.GameObjects.Graphics
-  private levelText!: Phaser.GameObjects.Text
-  private targetText!: Phaser.GameObjects.Text
-  private scoreText!: Phaser.GameObjects.Text
+  private levelDigits!: Phaser.GameObjects.Container
+  private targetDigits!: Phaser.GameObjects.Container
+  private calcDigits!: Phaser.GameObjects.Container
+  private calcDirection!: Phaser.GameObjects.Text
+  private mascotGraphics!: Phaser.GameObjects.Graphics
+  private mascotIdleTimer: Phaser.Time.TimerEvent | null = null
+  private mascotReactionTimer: Phaser.Time.TimerEvent | null = null
   private nextOne!: Phaser.GameObjects.Container
   private nextTwo!: Phaser.GameObjects.Container
   private clearLayer!: Phaser.GameObjects.Container
+  private readonly buttonViews = new Map<ActionName, ButtonView>()
+  private heldAction: 'left' | 'right' | 'down' | null = null
 
   constructor(bridge: TetraMindFckSceneBridge) {
     super({ key: TETRAMINDFCK_SCENE_KEY })
@@ -272,20 +269,14 @@ export class TetraMindFckScene extends Phaser.Scene {
 
   preload() {
     this.load.image(BG_KEY, BG_PATH)
-    this.load.image(SHELL_KEY, SHELL_PATH)
-    this.load.image(CRT_KEY, CRT_PATH)
     this.load.spritesheet(DIGITS_KEY, DIGITS_PATH, { frameWidth: 64, frameHeight: 64 })
     this.load.spritesheet(OPERATORS_KEY, OPERATORS_PATH, { frameWidth: 64, frameHeight: 64 })
+    this.load.spritesheet(HUD_DIGITS_KEY, HUD_DIGITS_PATH, { frameWidth: 40, frameHeight: 60 })
     this.load.image(BTN_LEFT_UP, `${BUTTON_ROOT}/tetramindfck-btn-left-up.webp`)
-    this.load.image(BTN_LEFT_DOWN, `${BUTTON_ROOT}/tetramindfck-btn-left-down.webp`)
     this.load.image(BTN_RIGHT_UP, `${BUTTON_ROOT}/tetramindfck-btn-right-up.webp`)
-    this.load.image(BTN_RIGHT_DOWN, `${BUTTON_ROOT}/tetramindfck-btn-right-down.webp`)
     this.load.image(BTN_ROTATE_LEFT_UP, `${BUTTON_ROOT}/tetramindfck-btn-rotate-left-up.webp`)
-    this.load.image(BTN_ROTATE_LEFT_DOWN, `${BUTTON_ROOT}/tetramindfck-btn-rotate-left-down.webp`)
     this.load.image(BTN_ROTATE_RIGHT_UP, `${BUTTON_ROOT}/tetramindfck-btn-rotate-right-up.webp`)
-    this.load.image(BTN_ROTATE_RIGHT_DOWN, `${BUTTON_ROOT}/tetramindfck-btn-rotate-right-down.webp`)
     this.load.image(BTN_DOWN_UP, `${BUTTON_ROOT}/tetramindfck-btn-down-up.webp`)
-    this.load.image(BTN_DOWN_DOWN, `${BUTTON_ROOT}/tetramindfck-btn-down-down.webp`)
   }
 
   init() {
@@ -302,18 +293,20 @@ export class TetraMindFckScene extends Phaser.Scene {
     this.pendingClear = null
     this.cellSprites = []
     this.ghostRects = []
+    this.buttonViews.clear()
+    this.heldAction = null
+    this.mascotIdleTimer = null
+    this.mascotReactionTimer = null
   }
 
   create() {
     this.cameras.main.setBackgroundColor('#241a15')
     this.cameras.main.setZoom(this.bridge.renderPixelRatio ?? 1).centerOn(STAGE_WIDTH / 2, STAGE_HEIGHT / 2)
     this.drawBackground()
-    this.drawCrtPlate()
     this.createBoard()
     this.createHud()
     this.createControls()
     this.clearLayer = this.add.container(0, 0).setDepth(26)
-    this.drawShellOverlay()
     this.registerKeyboard()
     this.input.on('pointerup', this.stopHold, this)
     this.input.on('pointerupoutside', this.stopHold, this)
@@ -327,7 +320,7 @@ export class TetraMindFckScene extends Phaser.Scene {
       Object.assign(window, { render_game_to_text: () => JSON.stringify({
         game: GAME_ID,
         runtime: 'phaser-2d',
-        coordinateSystem: '390x844; origin top-left; x right, y down',
+        coordinateSystem: '390x850; origin top-left; x right, y down; verticalAnchor bottom',
         board: { x: BOARD_X, y: BOARD_Y, width: BOARD_WIDTH, height: BOARD_HEIGHT, cols: COLS, rows: ROWS },
         level: this.level,
         target: targetForLevel(this.level),
@@ -342,22 +335,9 @@ export class TetraMindFckScene extends Phaser.Scene {
   }
 
   private drawBackground() {
-    this.add.image(STAGE_WIDTH / 2, STAGE_HEIGHT / 2, BG_KEY)
-      .setDisplaySize(STAGE_WIDTH, STAGE_HEIGHT)
+    this.add.image(STAGE_WIDTH / 2, STAGE_HEIGHT - 422, BG_KEY)
+      .setDisplaySize(STAGE_WIDTH, 844)
       .setDepth(0)
-  }
-
-  private drawCrtPlate() {
-    this.add.image(STAGE_WIDTH / 2, STAGE_HEIGHT / 2, CRT_KEY)
-      .setDisplaySize(STAGE_WIDTH, STAGE_HEIGHT)
-      .setDepth(1)
-  }
-
-  private drawShellOverlay() {
-    this.add.image(STAGE_WIDTH / 2, STAGE_HEIGHT / 2, SHELL_KEY)
-      .setDisplaySize(STAGE_WIDTH, STAGE_HEIGHT)
-      .setDepth(20)
-      .setScrollFactor(0)
   }
 
   private createBoard() {
@@ -398,68 +378,187 @@ export class TetraMindFckScene extends Phaser.Scene {
   private createHud() {
     const labelStyle = { fontFamily: 'monospace', fontSize: '8px', color: CRT_TEXT, fontStyle: 'bold' as const, letterSpacing: 1 }
     this.add.text(LEVEL_CRT.x + LEVEL_CRT.w / 2, LEVEL_CRT.y + 7, 'LEVEL', labelStyle).setOrigin(0.5, 0).setDepth(9)
-    this.add.text(TARGET_CRT.x + TARGET_CRT.w / 2, TARGET_CRT.y + 7, 'TARGET', labelStyle).setOrigin(0.5, 0).setDepth(9)
     this.add.text(NEXT_CRT.x + NEXT_CRT.w / 2, NEXT_CRT.y + 7, 'NEXT', labelStyle).setOrigin(0.5, 0).setDepth(9)
     this.add.text(NEXT2_CRT.x + NEXT2_CRT.w / 2, NEXT2_CRT.y + 7, 'NEXT+1', labelStyle).setOrigin(0.5, 0).setDepth(9)
+    this.add.text(MAIN_CRT.x + 11, TARGET_LABEL_Y, 'TARGET', {
+      fontFamily: 'monospace', fontSize: '11px', color: CRT_TEXT, fontStyle: 'bold', letterSpacing: 1,
+    }).setDepth(9)
 
-    this.levelText = this.add.text(LEVEL_CRT.x + LEVEL_CRT.w / 2, LEVEL_CRT.y + 44, '1', {
-      fontFamily: 'monospace', fontSize: '28px', color: CRT_TEXT, fontStyle: 'bold',
-    }).setOrigin(0.5).setDepth(9)
-    this.targetText = this.add.text(TARGET_CRT.x + TARGET_CRT.w / 2, TARGET_CRT.y + 44, '50', {
-      fontFamily: 'monospace', fontSize: '23px', color: '#d5a4a7', fontStyle: 'bold',
-    }).setOrigin(0.5).setDepth(9)
+    this.levelDigits = this.add.container(LEVEL_CRT.x + LEVEL_CRT.w / 2, LEVEL_CRT.y + 49).setDepth(10)
+    this.targetDigits = this.add.container(MAIN_CRT.x + MAIN_CRT.w - 10, TARGET_VALUE_Y).setDepth(10)
+    this.add.text(CALC_STRIP.x + 5, CALC_STRIP.y + 4, 'CALC', {
+      fontFamily: 'monospace', fontSize: '7px', color: CRT_TEXT, fontStyle: 'bold', letterSpacing: 1,
+    }).setDepth(9).setAlpha(0.56)
+    this.calcDirection = this.add.text(CALC_STRIP.x + 38, CALC_STRIP.y + 2, '→', {
+      fontFamily: 'monospace', fontSize: '11px', color: CRT_TEXT, fontStyle: 'bold',
+    }).setDepth(10).setVisible(false)
+    this.calcDigits = this.add.container(CALC_STRIP.x + CALC_STRIP.w - 4, CALC_STRIP.y + CALC_STRIP.h / 2).setDepth(10).setVisible(false)
+
+    this.mascotGraphics = this.add.graphics().setDepth(10)
+    this.add.text(MASCOT_CRT.x + MASCOT_CRT.w / 2, MASCOT_CRT.y + MASCOT_CRT.h - 16, 'MiniFugg', {
+      fontFamily: 'monospace', fontSize: '7px', color: CRT_TEXT, fontStyle: 'bold',
+    }).setOrigin(0.5).setDepth(10)
+    this.drawMascot('idle')
+    this.mascotIdleTimer = this.time.addEvent({
+      delay: 1600, loop: true,
+      callback: () => {
+        if (this.mascotReactionTimer) return
+        this.drawMascot('blink')
+        this.time.delayedCall(120, () => { if (!this.mascotReactionTimer) this.drawMascot('idle') })
+      },
+    })
 
     this.add.triangle(NEXT_CRT.x + 6, NEXT_CRT.y + 24, 0, 0, 0, 11, 8, 5.5, CRT_ACTIVE, 0.9).setOrigin(0.5).setDepth(10)
     this.nextOne = this.add.container(NEXT_CRT.x + NEXT_CRT.w / 2, NEXT_CRT.y + 72).setDepth(10)
     this.nextTwo = this.add.container(NEXT2_CRT.x + NEXT2_CRT.w / 2, NEXT2_CRT.y + 72).setDepth(10)
+  }
 
-    this.add.text(MAIN_CRT.x + 11, SCORE_Y, 'SCORE', {
-      fontFamily: 'monospace', fontSize: '11px', color: CRT_TEXT, fontStyle: 'bold', letterSpacing: 1,
-    }).setDepth(9)
-    this.scoreText = this.add.text(MAIN_CRT.x + MAIN_CRT.w - 11, SCORE_Y - 2, '0', {
-      fontFamily: 'monospace', fontSize: '21px', color: CRT_TEXT, fontStyle: 'bold',
-    }).setOrigin(1, 0).setDepth(9)
+  private renderDigitString(container: Phaser.GameObjects.Container, value: string, options: { height: number; maxWidth: number; align?: 'center' | 'right' }) {
+    container.removeAll(true)
+    const text = value.replace(/[^0-9]/g, '')
+    if (!text) return
+    const baseWidth = options.height * (2 / 3)
+    const baseGap = Math.max(1, options.height * 0.07)
+    const naturalWidth = text.length * baseWidth + Math.max(0, text.length - 1) * baseGap
+    const scale = Math.min(1, options.maxWidth / Math.max(1, naturalWidth))
+    const width = baseWidth * scale
+    const height = options.height * scale
+    const gap = baseGap * scale
+    const totalWidth = text.length * width + Math.max(0, text.length - 1) * gap
+    let cursor = options.align === 'right' ? -totalWidth : -totalWidth / 2
+    for (const digit of text) {
+      container.add(this.add.image(cursor + width / 2, 0, HUD_DIGITS_KEY, Number(digit)).setDisplaySize(width, height))
+      cursor += width + gap
+    }
+  }
+
+  private drawMascot(pose: MascotPose) {
+    const graphics = this.mascotGraphics
+    graphics.clear()
+    const cx = MASCOT_CRT.x + MASCOT_CRT.w / 2
+    const cy = MASCOT_CRT.y + 34
+    const color = 0xb9e6b6
+    const dark = 0x173e31
+    const px = 3
+    graphics.fillStyle(color, 0.9)
+    graphics.fillRect(cx - 9, cy - 8, 18, 17)
+    graphics.fillRect(cx - 12, cy - 11, 6, 6)
+    graphics.fillRect(cx + 6, cy - 11, 6, 6)
+    graphics.fillRect(cx - 7, cy + 9, 5, 4)
+    graphics.fillRect(cx + 2, cy + 9, 5, 4)
+    const armY = pose === 'cheer' || pose === 'party' ? cy - 7 : cy
+    graphics.fillRect(cx - 15, armY, 6, px)
+    graphics.fillRect(cx + 9, armY, 6, px)
+    if (pose === 'cheer' || pose === 'party') {
+      graphics.fillRect(cx - 15, armY - 5, px, 6)
+      graphics.fillRect(cx + 12, armY - 5, px, 6)
+    }
+    graphics.fillStyle(dark, 1)
+    if (pose === 'blink') {
+      graphics.fillRect(cx - 6, cy - 2, 4, 1)
+      graphics.fillRect(cx + 2, cy - 2, 4, 1)
+    } else {
+      graphics.fillRect(cx - 6, cy - 3, px, px)
+      graphics.fillRect(cx + 3, cy - 3, px, px)
+    }
+    if (pose === 'wow') graphics.fillRect(cx - 2, cy + 3, 4, 5)
+    else graphics.fillRect(cx - 4, cy + 4, 8, 2)
+    if (pose === 'party') {
+      graphics.fillStyle(color, 0.95)
+      graphics.fillRect(cx + 15, cy - 15, px, px)
+      graphics.fillRect(cx + 19, cy - 10, px, px)
+      graphics.fillRect(cx - 19, cy - 13, px, px)
+    }
+  }
+
+  private reactMascot(pose: Exclude<MascotPose, 'idle' | 'blink'>, duration = 760) {
+    this.mascotReactionTimer?.remove()
+    this.drawMascot(pose)
+    this.mascotReactionTimer = this.time.delayedCall(duration, () => {
+      this.mascotReactionTimer = null
+      this.drawMascot('idle')
+    })
   }
 
   private createControls() {
-    this.makeImageButton({ up: BTN_LEFT_UP, down: BTN_LEFT_DOWN }, BTN_LEFT, 'left')
-    this.makeImageButton({ up: BTN_RIGHT_UP, down: BTN_RIGHT_DOWN }, BTN_RIGHT, 'right')
-    this.makeImageButton({ up: BTN_ROTATE_LEFT_UP, down: BTN_ROTATE_LEFT_DOWN }, BTN_ROTATE_LEFT, 'rotateLeft')
-    this.makeImageButton({ up: BTN_ROTATE_RIGHT_UP, down: BTN_ROTATE_RIGHT_DOWN }, BTN_ROTATE_RIGHT, 'rotateRight')
-    this.makeImageButton({ up: BTN_DOWN_UP, down: BTN_DOWN_DOWN }, BTN_DOWN, 'down')
+    this.makeImageButton({ up: BTN_LEFT_UP }, BTN_LEFT, 'left')
+    this.makeImageButton({ up: BTN_RIGHT_UP }, BTN_RIGHT, 'right')
+    this.makeImageButton({ up: BTN_ROTATE_LEFT_UP, flipX: true }, BTN_ROTATE_LEFT, 'rotateLeft')
+    this.makeImageButton({ up: BTN_ROTATE_RIGHT_UP, flipX: true }, BTN_ROTATE_RIGHT, 'rotateRight')
+    this.makeImageButton({ up: BTN_DOWN_UP }, BTN_DOWN, 'down')
+  }
+
+  private applyButtonState(action: ActionName, state: ButtonVisualState) {
+    const view = this.buttonViews.get(action)
+    if (!view) return
+    const { image, box, cx, cy } = view
+    this.tweens.killTweensOf(image)
+    if (state === 'blocked') {
+      image.setPosition(cx, cy).setDisplaySize(box.w, box.h).setAlpha(0.58).setTint(0x8d8882)
+      return
+    }
+    if (state === 'pressed' || state === 'held') {
+      const travel = state === 'held' ? 3.2 : 2.4
+      const compression = state === 'held' ? 0.91 : 0.94
+      image.setPosition(cx, cy + travel).setDisplaySize(box.w * 0.995, box.h * compression).setAlpha(1).setTint(state === 'held' ? 0xe1d7cd : 0xefe5da)
+      return
+    }
+    image.setAlpha(1)
+    this.tweens.add({ targets: image, x: cx, y: cy, displayWidth: box.w, displayHeight: box.h, duration: 90, ease: 'Cubic.easeOut', onComplete: () => image.clearTint() })
+  }
+
+  private setButtonsBlocked(blocked: boolean) {
+    for (const [action, view] of this.buttonViews) {
+      view.blocked = blocked
+      this.applyButtonState(action, blocked ? 'blocked' : 'idle')
+    }
   }
 
   private makeImageButton(textures: ButtonTextures, box: Aperture, action: ActionName) {
-    const image = this.add.image(box.x + box.w / 2, box.y + box.h / 2, textures.up)
-      .setDisplaySize(box.w, box.h)
-      .setDepth(21)
+    const cx = box.x + box.w / 2
+    const cy = box.y + box.h / 2
+    const image = this.add.image(cx, cy, textures.up).setDisplaySize(box.w, box.h).setFlipX(Boolean(textures.flipX)).setDepth(21)
     image.setInteractive(new Phaser.Geom.Rectangle(-box.w / 2, -box.h / 2, box.w, box.h), Phaser.Geom.Rectangle.Contains)
-
-    const setPressed = (pressed: boolean) => {
-      image.setTexture(pressed ? textures.down : textures.up)
-      image.setDisplaySize(box.w, box.h)
+    this.buttonViews.set(action, { image, box, cx, cy, blocked: false })
+    const release = () => {
+      if (this.heldAction === action) this.heldAction = null
+      this.stopHold()
+      if (!this.buttonViews.get(action)?.blocked) this.applyButtonState(action, 'idle')
     }
-
     image.on('pointerdown', () => {
-      if (this.finished || this.pendingClear) return
-      setPressed(true)
+      const view = this.buttonViews.get(action)
+      if (!view || view.blocked || this.finished || this.pendingClear) return
+      this.applyButtonState(action, 'pressed')
       this.runAction(action)
-      if (action === 'left' || action === 'right' || action === 'down') this.startHold(action)
+      if (action === 'left' || action === 'right' || action === 'down') {
+        this.heldAction = action
+        this.startHold(action)
+        this.time.delayedCall(90, () => { if (this.heldAction === action && !view.blocked) this.applyButtonState(action, 'held') })
+      }
     })
-    image.on('pointerup', () => { setPressed(false); this.stopHold() })
-    image.on('pointerout', () => { setPressed(false); this.stopHold() })
+    image.on('pointerup', release)
+    image.on('pointerout', release)
+    image.on('pointercancel', release)
+  }
+
+  private pulseKeyboardButton(action: ActionName) {
+    const view = this.buttonViews.get(action)
+    if (!view || view.blocked) return
+    this.applyButtonState(action, 'pressed')
+    this.time.delayedCall(80, () => { if (!view.blocked) this.applyButtonState(action, 'idle') })
   }
 
   private registerKeyboard() {
     const keyboard = this.input.keyboard
     if (!keyboard) return
     keyboard.addCapture('UP,DOWN,LEFT,RIGHT,Z,X')
-    keyboard.on('keydown-LEFT', () => this.runAction('left'))
-    keyboard.on('keydown-RIGHT', () => this.runAction('right'))
-    keyboard.on('keydown-DOWN', () => this.runAction('down'))
-    keyboard.on('keydown-UP', () => this.runAction('rotateRight'))
-    keyboard.on('keydown-Z', () => this.runAction('rotateLeft'))
-    keyboard.on('keydown-X', () => this.runAction('rotateRight'))
+    const run = (action: ActionName) => { this.pulseKeyboardButton(action); this.runAction(action) }
+    keyboard.on('keydown-LEFT', () => run('left'))
+    keyboard.on('keydown-RIGHT', () => run('right'))
+    keyboard.on('keydown-DOWN', () => run('down'))
+    keyboard.on('keydown-UP', () => run('rotateRight'))
+    keyboard.on('keydown-Z', () => run('rotateLeft'))
+    keyboard.on('keydown-X', () => run('rotateRight'))
   }
 
   private startHold(action: 'left' | 'right' | 'down') {
@@ -577,6 +676,9 @@ export class TetraMindFckScene extends Phaser.Scene {
     this.gravityTimer?.remove()
     this.gravityTimer = null
     this.stopHold()
+    this.heldAction = null
+    this.setButtonsBlocked(true)
+    this.reactMascot(gained > BIG_CLEAR_THRESHOLD ? 'wow' : 'cheer', 820)
     this.renderBoard()
     void miniFuggAudio.playGameSfx(GAME_ID, 'calculate', { intensity: Math.min(1.25, 0.82 + fullRows.length * 0.12) })
     if (earnedBonus) this.time.delayedCall(135, () => void miniFuggAudio.playGameSfx(GAME_ID, 'bonus'))
@@ -608,8 +710,12 @@ export class TetraMindFckScene extends Phaser.Scene {
     const earnedBonus = pending.earnedBonus
     this.pendingClear = null
     this.clearLayer.removeAll(true)
+    this.calcDirection.setVisible(false)
+    this.calcDigits.setVisible(false)
+    this.setButtonsBlocked(false)
     this.bridge.session.setScore(this.score)
     if (this.level !== previousLevel) {
+      this.reactMascot('party', 980)
       this.bridge.onLevelChange?.(this.level)
       void miniFuggAudio.playGameSfx(GAME_ID, 'levelUp', { intensity: Math.min(1.25, 0.9 + progression.levelsGained * 0.08) })
     }
@@ -626,6 +732,9 @@ export class TetraMindFckScene extends Phaser.Scene {
     this.gravityTimer?.remove()
     this.gravityTimer = null
     this.stopHold()
+    this.heldAction = null
+    this.setButtonsBlocked(true)
+    this.reactMascot('wow', 1200)
     void miniFuggAudio.playGameSfx(GAME_ID, 'fail', { intensity: 0.95 })
     this.bridge.session.finish({
       score: this.score,
@@ -695,11 +804,14 @@ export class TetraMindFckScene extends Phaser.Scene {
 
   private renderHud() {
     const target = targetForLevel(this.level)
-    this.levelText.setText(String(this.level))
-    this.targetText.setText(String(target)).setFontSize(String(target).length > 5 ? 16 : String(target).length > 3 ? 19 : 23)
-    this.scoreText.setText(String(this.score))
-    const digits = String(Math.abs(this.score)).length
-    this.scoreText.setFontSize(digits > 11 ? 13 : digits > 8 ? 16 : 21)
+    this.renderDigitString(this.levelDigits, String(this.level).padStart(2, '0'), { height: 32, maxWidth: 56 })
+    this.renderDigitString(this.targetDigits, String(target), { height: 25, maxWidth: 150, align: 'right' })
+  }
+
+  private showCalculation(value: number, reversed: boolean) {
+    this.calcDirection.setText(reversed ? '←' : '→').setVisible(true)
+    this.calcDigits.setVisible(true)
+    this.renderDigitString(this.calcDigits, String(Math.max(0, Math.round(value))), { height: 14, maxWidth: 150, align: 'right' })
   }
 
   private renderPreviews() {
@@ -750,13 +862,9 @@ export class TetraMindFckScene extends Phaser.Scene {
       const calculationOrder = snapshot.report.reversed ? COLS - 1 - column : column
       const stepValue = snapshot.report.steps[column]
       if (stepValue !== null) {
-        const step = this.add.text(x, rowY - 15, formatCompact(stepValue), {
-          fontFamily: 'monospace', fontSize: '8px', color: CRT_TEXT, backgroundColor: '#0b2b22', fontStyle: 'bold', padding: { x: 2, y: 1 },
-        }).setOrigin(0.5).setAlpha(0)
-        rowContainer.add(step)
         this.time.delayedCall(70 + calculationOrder * 46, () => {
           this.tweens.add({ targets: cell, scale: 1.08, duration: 90, yoyo: true })
-          this.tweens.add({ targets: step, alpha: 1, y: rowY - 18, duration: 90, hold: 210, yoyo: true })
+          this.showCalculation(stepValue, snapshot.report.reversed)
         })
       }
     })
@@ -766,12 +874,7 @@ export class TetraMindFckScene extends Phaser.Scene {
     rowContainer.add(arrow)
     this.tweens.add({ targets: arrow, scaleX: 1, duration: 620, ease: 'Cubic.easeOut' })
 
-    const scoreX = snapshot.report.reversed ? MAIN_CRT.x + 4 : MAIN_CRT.x + MAIN_CRT.w - 4
-    const score = this.add.text(scoreX, rowY, `${snapshot.report.reversed ? '←' : '→'}${formatCompact(snapshot.report.points)}`, {
-      fontFamily: 'monospace', fontSize: '9px', color: CRT_TEXT, backgroundColor: '#0b2b22', fontStyle: 'bold', padding: { x: 2, y: 2 },
-    }).setOrigin(snapshot.report.reversed ? 0 : 1, 0.5).setAlpha(0)
-    rowContainer.add(score)
-    this.time.delayedCall(430, () => this.tweens.add({ targets: score, alpha: 1, duration: 100, hold: 420, yoyo: true }))
+    this.time.delayedCall(530, () => this.showCalculation(snapshot.report.points, snapshot.report.reversed))
 
     cells.forEach((cell, column) => {
       const wipeOrder = COLS - 1 - column
@@ -783,6 +886,11 @@ export class TetraMindFckScene extends Phaser.Scene {
     this.gravityTimer?.remove()
     this.gravityTimer = null
     this.stopHold()
+    this.mascotIdleTimer?.remove()
+    this.mascotIdleTimer = null
+    this.mascotReactionTimer?.remove()
+    this.mascotReactionTimer = null
+    for (const view of this.buttonViews.values()) this.tweens.killTweensOf(view.image)
     miniFuggAudio.stopGameSfx(GAME_ID)
     this.input.off('pointerup', this.stopHold, this)
     this.input.off('pointerupoutside', this.stopHold, this)

@@ -1,0 +1,32 @@
+name: Vlad Reframe Reference
+on:
+  push:
+    branches: [chatgpt/vlad-reframe-review]
+    paths:
+      - .github/workflows/vlad-reframe-reference.yml
+      - scripts/capture-vlad-reframe-reference.mjs
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - run: node scripts/capture-vlad-reframe-reference.mjs
+      - name: Preserve reviewed source context
+        if: always()
+        run: |
+          mkdir -p artifacts/vlad-reframe-reference
+          git archive --format=zip --output=artifacts/vlad-reframe-reference/reviewed-source.zip HEAD AGENTS.md GAME_DEV_SPEC.md codex.md docs .agents/skills/minifugg-art .agents/skills/phaser-minifugg vendor/phaser-skills/4.2.1 src/games/vlads-skewers src/games/linefugg src/games/linefugg-rebirth src/core/ProductionLab.tsx src/core/gameplayDaLabCatalog.ts src/core/runtime public/assets/generated/vlads-skewers
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vlad-reframe-reference
+          path: artifacts/vlad-reframe-reference
+          retention-days: 7

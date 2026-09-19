@@ -1,0 +1,83 @@
+name: Vlad composition review
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/vlad-art-review.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Capture current unchanged Vlad runtime
+        run: |
+          mkdir -p artifacts/vlad-review
+          cat > .vlad-review.mjs <<'SCRIPT'
+          import fs from 'node:fs/promises';
+          import { execFileSync } from 'node:child_process';
+          import { createServer } from 'vite';
+          import { chromium } from 'playwright';
+          const dir = 'artifacts/vlad-review';
+          const report = { commit: execFileSync('git', ['rev-parse','HEAD'], {encoding:'utf8'}).trim(), cases: [], errors: [] };
+          const server = await createServer({server:{host:'127.0.0.1',port:5194,strictPort:true}});
+          let browser;
+          try {
+            await server.listen();
+            browser = await chromium.launch({headless:true,args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+            for (const spec of [
+              {id:'a54-chrome',width:360,height:656,mobile:true},
+              {id:'iphone',width:390,height:712,mobile:true},
+              {id:'a54-brave',width:360,height:611,mobile:true},
+              {id:'master',width:390,height:844,mobile:true},
+              {id:'desktop',width:1280,height:720,mobile:false}
+            ]) {
+              const context = await browser.newContext({viewport:{width:spec.width,height:spec.height},deviceScaleFactor:1,isMobile:spec.mobile,hasTouch:spec.mobile});
+              const page = await context.newPage();
+              page.on('pageerror', e => report.errors.push({case:spec.id,error:e.message}));
+              page.on('response', r => { if(r.status()>=400)report.errors.push({case:spec.id,status:r.status(),url:r.url()}); });
+              await page.goto('http://127.0.0.1:5194/?usr=moigod&lab=gameplay-runtime&game=vlads-skewers');
+              await page.waitForFunction(() => typeof window.vlad_test_action === 'function', null, {timeout:45000});
+              await page.waitForTimeout(1200);
+              const snapshot = async name => {
+                const file = `${spec.id}-${name}.png`;
+                await page.screenshot({path:`${dir}/${file}`});
+                const state = await page.evaluate(() => JSON.parse(window.render_game_to_text()));
+                const geometry = await page.locator('.mf-phaser-host').evaluate(el => ({rect:el.getBoundingClientRect().toJSON(),dataset:{...el.dataset}}));
+                report.cases.push({viewport:spec,file,state,geometry});
+              };
+              await snapshot('initial');
+              await page.evaluate(() => window.vlad_test_action('queue-six'));
+              await page.waitForTimeout(150);
+              await snapshot('queue-five-visible');
+              await page.evaluate(() => window.vlad_test_action('brutality'));
+              await page.waitForTimeout(180);
+              await snapshot('brutality');
+              await context.close();
+            }
+          } finally {
+            await browser?.close();
+            await server.close();
+            await fs.writeFile(`${dir}/report.json`,JSON.stringify(report,null,2));
+          }
+          if(report.errors.some(e=>e.error))process.exitCode=1;
+          SCRIPT
+          node .vlad-review.mjs
+      - name: Save review evidence and relevant source context
+        if: always()
+        run: |
+          mkdir -p artifacts/vlad-review
+          tar -czf artifacts/vlad-review/source-context.tar.gz AGENTS.md GAME_DEV_SPEC.md codex.md docs src/core src/games/vlads-skewers src/games/linefugg src/games/linefugg-rebirth .agents/skills public/assets/generated/vlads-skewers public/assets/imported/vlads-skewers vendor/phaser-skills/4.2.1 || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vlad-composition-evidence
+          path: artifacts/vlad-review
+          retention-days: 7

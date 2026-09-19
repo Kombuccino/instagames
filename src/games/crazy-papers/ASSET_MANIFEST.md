@@ -1,5 +1,13 @@
 # CrazyPapers — Asset Manifest
 
+## Current production review — T03, 19 September 2026
+
+Read [PRODUCTION_PLAN.md](PRODUCTION_PLAN.md) before producing the gameplay pack. It records the measured source audit, candidate layout, the user's five-rank progression, independent six-state exterior/daylight axis, aging/family picture, changing managers, lamp/window variants, returned-file scene, and combinatorial document families.
+
+The original was opened and measured: its file/definition checks pass, but its essential vertical span is about 744.17 logical units and does not fit any unmodified 710-high window. A candidate layout and annotated comparison are prepared, not approved final art. Eight file/rectangle checks pass; no runtime test or new generation is claimed. The code and original assets remain unchanged.
+
+Review archive, outside runtime sync: Drive file `17PY_6aMUfEfvAVwQ-3iZpS359vSZsXAR`, folder `1KDXvfbcsc4ksMe1NP_YTEvfIprQijqY0`; `crazy-papers-t03-review.zip`, local SHA-256 `087d4d17f4521429058c3cd9346319bba2dc840833b9336d6d0478c528e56709`. Source, annotation copies, candidate montage, measurements and reproduction script are included. None of these review crops is a final isolated asset. The Lab renderer has not yet been refreshed with the candidate layout.
+
 ## Validated gameplay DA reference — 19 September 2026
 
 - Canonical artistic reference: `MiniFugg - Graphic Archive/Games/crazy-papers/Gameplay DA Validated - 2026-09-19/crazy-papers-gameplay-da-validated-2026-09-19.png`.

@@ -417,7 +417,35 @@ function buildLineFuggPlan(game: InstagameDefinition): PlanProject {
   }
 }
 
+function buildTetraMindFckPlan(game: InstagameDefinition): PlanProject {
+  const base = buildGenericPlan(game)
+  const daScreen: PlanScreen = {
+    id: 'D1', state: 'da', title: 'DA gameplay validée · TARGET handheld',
+    context: 'Référence validée le 19/09/2026 : console crème, CRT vert, TARGET principal, rail LEVEL / MiniFugg / NEXT / NEXT+1 et commandes physiques. La maquette reste une référence ; Phaser reconstruit le contenu dynamique.',
+    facts: ['MASTER 390×850', 'Ancrage bottom', 'Zone garantie 390×710', 'Grille moteur 10×20'],
+    source: 'Graphic Archive · Games/tetramindfck/gameplay-production-2026-09-19 · Drive 1uwp0dczINJlFOX1eMle5xtjXZNLBuxo7',
+    status: 'DA validée · slice jouable en intégration', x: SCREEN_X.da, y: 420, preview: 'proto', anchor: 'bottom',
+  }
+  const nodes: PlanNode[] = [
+    ...base.nodes,
+    { id: 'D-layout', ownerScreenId: 'D1', title: '390×850 · bottom', kind: 'text', tags: ['GD','UI'], status: 'done', body: 'Un seul monde logique ; la fenêtre 390×710 est ancrée bas.', facts: ['Pas de reflow PC/mobile'], source: 'ART_DIRECTION.md · MINIFUGG_ZONES.md', x: 3260, y: 460, links: [] },
+    { id: 'D-shell', ownerScreenId: 'D1', title: 'Coque crème · source finale', kind: 'image', tags: ['IMAGE'], status: 'todo', body: 'La slice conserve une coque structurelle. La source raster finale propre reste à produire sans grille, valeurs ni boutons baked.', facts: ['Titre TetraMindFck uniquement'], source: 'à produire depuis la DA approuvée', x: 3260, y: 700, links: [] },
+    { id: 'D-grid', ownerScreenId: 'D1', title: 'Grille exacte 10×20', kind: 'text', tags: ['GD','UI'], status: 'done', body: 'Phaser possède 200 cases carrées ; aucun résultat ne consomme une colonne.', facts: ['10×20','carrés'], source: 'TetraMindFckScene.ts', x: 3260, y: 940, links: [] },
+    { id: 'D-target', ownerScreenId: 'D1', title: 'TARGET · chiffres raster', kind: 'text', tags: ['UI','IMAGE'], status: 'review', body: 'TARGET remplace SCORE dans le grand CRT ; les valeurs utilisent un atlas raster 0–9.', facts: ['50','50000','100000','170000','9999999'], source: 'tetramindfck-hud-digits.webp', x: 3260, y: 1180, links: [] },
+    { id: 'D-level', ownerScreenId: 'D1', title: 'LEVEL · 2 chiffres et plus', kind: 'text', tags: ['UI','IMAGE'], status: 'review', body: 'LEVEL commence sur deux digits et accepte ensuite 10, 99 puis 100 sans troncature.', facts: ['01','09','10','99','100'], source: 'TetraMindFckScene.ts', x: 3260, y: 1420, links: [] },
+    { id: 'D-mascot', ownerScreenId: 'D1', title: 'MiniFugg · Game & Watch', kind: 'animation', tags: ['ANIMATION','FX','UI'], status: 'review', body: 'Poses discrètes idle, blink, cheer, wow et party ; réactions aux clears et level-ups.', facts: ['Animation rigide','Un seul MiniFugg'], source: 'TetraMindFckScene.ts', x: 3260, y: 1660, links: [] },
+    { id: 'D-buttons', ownerScreenId: 'D1', title: 'Boutons · sources propres', kind: 'image', tags: ['IMAGE','UI'], status: 'review', body: 'Les faces up restent authored ; les anciens down sont écartés car au moins un inverse la flèche.', facts: ['4 boutons égaux','DOWN plus petit'], source: 'public/assets/imported/tetramindfck/gameplay/buttons/', x: 6200, y: 460, links: [] },
+    { id: 'D-button-states', ownerScreenId: 'D1', title: 'Press / hold / release', kind: 'animation', tags: ['ANIMATION','FX','UI'], status: 'review', body: 'Course courte et sèche façon vieille Game Boy ; états idle, pressed, held, released, blocked et cancel.', facts: ['Pas de changement d’icône','Pointercancel reset'], source: 'TetraMindFckScene.ts', x: 6200, y: 740, links: [] },
+    { id: 'D-rotations', ownerScreenId: 'D1', title: 'Rotations correctes', kind: 'text', tags: ['GD','UI'], status: 'done', body: 'Gauche antihoraire ; droite horaire. Les faces colorées sont miroir horizontal au runtime.', facts: ['Z = gauche','X / ↑ = droite'], source: 'TetraMindFckScene.ts', x: 6200, y: 1020, links: [] },
+    { id: 'D-calc', ownerScreenId: 'D1', title: 'CALC hors grille', kind: 'animation', tags: ['GD','UI','ANIMATION'], status: 'review', body: 'Sous-totaux et résultat utilisent le même atlas raster dans un bandeau distinct ; full row uniquement.', facts: ['Board frozen','Direction séparée','Puis wipe/collapse'], source: 'animateClearRow()', x: 6200, y: 1300, links: [] },
+    { id: 'D-audio', ownerScreenId: 'D1', title: 'Feedback sonore', kind: 'audio', tags: ['SON'], status: 'done', body: 'Réutilise le vocabulaire Core existant pour move, rotate, drop, lock, calcul, bonus, impact et level-up.', facts: ['Core audio owner'], source: 'miniFuggAudio', x: 6200, y: 1580, links: [] },
+    { id: 'D-metric', ownerScreenId: 'D1', title: 'Score interne / ladder', kind: 'text', tags: ['GD','NOTE'], status: 'blocked', body: 'SCORE disparaît du HUD mais le cumul reste conservé pour session/ladder. Toute migration de métrique demande une décision produit séparée.', facts: ['Pas de suppression silencieuse'], source: 'definition.ts · session.setScore()', x: 6200, y: 1860, links: [] },
+  ]
+  return { title: 'TetraMindFck', summary: 'DA TARGET-led traduite en slice Phaser ; Release reste vide avant validation runtime.', screens: [...base.screens, daScreen], nodes }
+}
+
 function buildPlan(game: InstagameDefinition) {
+  if (game.id === 'tetramindfck') return buildTetraMindFckPlan(game)
   if (game.id === 'linefugg') return buildLineFuggPlan(game)
   if (game.id === 'crazy-papers') return buildCrazyPapersPlan(game)
   return buildGenericPlan(game)

@@ -1,5 +1,16 @@
 # CrazyPapers — Asset Manifest
 
+## Validated gameplay DA reference — 19 September 2026
+
+- Canonical artistic reference: `MiniFugg - Graphic Archive/Games/crazy-papers/Gameplay DA Validated - 2026-09-19/crazy-papers-gameplay-da-validated-2026-09-19.png`.
+- Private Drive file id: `1csaKcsx62GvWuBa716fXelhI2NqE2ZTT`; archive folder id: `1UGgUw1SPKimiTxQNhBy9uUxcelafpxRH`.
+- Original: PNG, `849 × 1851`, opaque RGB, 2,012,759 bytes, SHA-256 `5d3384b040167f1c76ad5cf4bd8673997c07451a64878340bc606246ef8e90f1`.
+- User validation: gameplay DA + general early-game composition, 19 September 2026.
+- Status: **reference only** — not a runtime texture, not an atlas, not a production master, not yet imported into the gameplay asset tree.
+- Target translation contract: new MiniFugg MASTER `390 × 850`, guaranteed gameplay zone `390 × 710`; preserve the original unchanged and create separate production assets only after the translation board is accepted.
+- Dynamic ownership: all document text/data, pending count, time, manager dialogue and state changes stay engine-owned. The reference does not authorize baking those values into a background.
+- First production decomposition must include at minimum: office/window background ×6 times of day; five manager bays and expression states; five department logos/colors; five one-row stamp controls + interaction states; wooden document support; document template families with live text slots; backlog pile units/overflow; metronome states; wrong-department red return dossier + oversized arm event.
+
 ## Static cover collection — 12 September 2026
 
 The user explicitly approved six exact source covers across two research lots. The source PNG files below are preserved byte-for-byte. Masters and runtime files are deterministic technical derivatives only; no image was regenerated, repainted or reinterpreted during integration.

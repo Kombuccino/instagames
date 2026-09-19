@@ -250,6 +250,91 @@ function buildGenericPlan(game: InstagameDefinition): PlanProject {
   }
 }
 
+
+function buildCrazyPapersPlan(game: InstagameDefinition): PlanProject {
+  const base = buildGenericPlan(game)
+  const daScreen: PlanScreen = {
+    id: 'D1',
+    state: 'da',
+    title: 'DA gameplay validée — début de partie',
+    context: 'Référence validée le 19/09/2026 : bureau pixel-art après environ 1–2 minutes. Original archivé en privé ; la traduction production doit encore prouver la zone garantie.',
+    facts: [
+      'Source 849×1851 · ratio quasi 390×850',
+      'Cible production 390×850 · zone garantie 390×710',
+      '5 départements anglais · 5 tampons sur une ligne',
+      'Aucune bulle manager dans l’état initial',
+    ],
+    source: 'MiniFugg - Graphic Archive/Games/crazy-papers/Gameplay DA Validated - 2026-09-19/crazy-papers-gameplay-da-validated-2026-09-19.png · Drive 1csaKcsx62GvWuBa716fXelhI2NqE2ZTT',
+    status: 'DA validée · planche de traduction à produire',
+    x: SCREEN_X.da,
+    y: 420,
+    preview: 'proto',
+    anchor: 'center',
+  }
+  const daNodes: PlanNode[] = [
+    {
+      id: 'D-style', ownerScreenId: 'D1', title: 'Pixel art construit', kind: 'text', tags: ['IMAGE'], status: 'done',
+      body: 'La référence validée fixe un pixel art construit, lisible et matériel. Pas de peinture lisse filtrée en pixels.',
+      facts: ['Bords en marches', 'Groupes de pixels cohérents', 'Palette de bureau sale et color-codée'],
+      source: 'ART_DIRECTION.md · validation utilisateur 19/09/2026', x: 3380, y: 460, links: [screenLink('D-style-screen', 'D1', 195, 330)],
+    },
+    {
+      id: 'D-departments', ownerScreenId: 'D1', title: '5 départements + managers', kind: 'text', tags: ['IMAGE', 'UI'], status: 'review',
+      body: 'ACCOUNTING / CIVIL / PLANNING / HR / LEGAL : bloc compact, couleur + logo + nom + visage. État initial sans bulle ; une seule prise de parole à la fois dans les variations.',
+      facts: ['5 couleurs stables', '5 logos', '5 ambiances de baie', 'Expressions à décliner'],
+      source: 'ART_DIRECTION.md', x: 3380, y: 700, links: [screenLink('D-departments-screen', 'D1', 195, 85)],
+    },
+    {
+      id: 'D-document', ownerScreenId: 'D1', title: 'Document vivant sur support bois', kind: 'text', tags: ['IMAGE', 'UI'], status: 'review',
+      body: 'Support presque à plat et document aussi grand que possible. Forme/papier peuvent être authored ; tout texte, indice, nombre et valeur restent rendus par le moteur.',
+      facts: ['Lisible téléphone', 'Templates par famille', 'Aucun texte variable baked'],
+      source: 'ART_DIRECTION.md', x: 3380, y: 940, links: [screenLink('D-document-screen', 'D1', 195, 500)],
+    },
+    {
+      id: 'D-stamps', ownerScreenId: 'D1', title: '5 tampons — une ligne', kind: 'text', tags: ['IMAGE', 'UI', 'ANIMATION'], status: 'review',
+      body: 'Cinq tampons physiques sur une seule ligne. Face = pictogramme du département, corps = couleur du département, base entière = cible tactile évidente.',
+      facts: ['Pas de nom sur la face du tampon', 'États repos / pressé / retour', 'Touch target généreux'],
+      source: 'ART_DIRECTION.md', x: 3380, y: 1180, links: [screenLink('D-stamps-screen', 'D1', 195, 745)],
+    },
+    {
+      id: 'D-time', ownerScreenId: 'D1', title: 'Journée + 6 fenêtres', kind: 'text', tags: ['GD', 'IMAGE', 'ANIMATION'], status: 'todo',
+      body: 'Horloge analogique de la journée avec secteur rouge final. Ni date ni nom du jour. Six décors de fenêtre font évoluer lumière et skyline avec l’heure.',
+      facts: ['6 états de fenêtre', 'Même cadrage', 'Progression visuelle du matin à la fermeture'],
+      source: 'ART_DIRECTION.md', x: 5150, y: 470, links: [screenLink('D-time-screen', 'D1', 300, 245)],
+    },
+    {
+      id: 'D-backlog', ownerScreenId: 'D1', title: 'Backlog physique = compteur', kind: 'text', tags: ['GD', 'IMAGE', 'ANIMATION'], status: 'todo',
+      body: 'Les piles latérales ne sont pas décoratives : leur hauteur/densité suit directement le nombre de dossiers en attente. L’état validé reste modéré car il représente le début de partie.',
+      facts: ['Croissance monotone', 'Peu de dossiers au début', 'Overflow seulement sous vraie pression'],
+      source: 'ART_DIRECTION.md', x: 5150, y: 730, links: [screenLink('D-backlog-screen', 'D1', 45, 410)],
+    },
+    {
+      id: 'D-metronome', ownerScreenId: 'D1', title: 'Métronome de pression', kind: 'animation', tags: ['ANIMATION', 'SON', 'UI'], status: 'todo',
+      body: 'Le métronome accélère avec la pression. TIC/TAC s’empile verticalement : 2 mots simultanés au niveau 1, progression jusqu’à 6.',
+      facts: ['Son Core-owned', 'Cycle visuel vertical', 'Cadence liée au niveau/pression'],
+      source: 'ART_DIRECTION.md', x: 5150, y: 990, links: [screenLink('D-metronome-screen', 'D1', 145, 300)],
+    },
+    {
+      id: 'D-error', ownerScreenId: 'D1', title: 'Retour WRONG DEPARTMENT', kind: 'animation', tags: ['GD', 'IMAGE', 'ANIMATION', 'FX'], status: 'todo',
+      body: 'Sur erreur : un seul manager intervient, un bras énorme envahit le centre et renvoie le même dossier avec dos rouge + grand cachet WRONG DEPARTMENT.',
+      facts: ['Dossier reste identifiable', 'Bras volontairement disproportionné', 'Événement bref et lisible'],
+      source: 'ART_DIRECTION.md', x: 5150, y: 1250, links: [screenLink('D-error-screen', 'D1', 195, 450)],
+    },
+    {
+      id: 'D-layout', ownerScreenId: 'D1', title: 'Traduction au contrat MiniFugg', kind: 'text', tags: ['GD', 'UI'], status: 'todo',
+      body: 'La source est presque au ratio 390×850, mais la composition doit être compactée/validée pour garder managers, document, compteur/horloge et cinq tampons dans la zone garantie 390×710.',
+      facts: ['Choisir ancrage', 'Tester A54 Chrome / iPhone / Brave', 'Ne pas réduire le document avant le header'],
+      source: 'MINIFUGG_ZONES.md · GAME_LAYOUT_SYSTEM.md', x: 6350, y: 560, links: [screenLink('D-layout-screen', 'D1', 195, 425)],
+    },
+  ]
+  return {
+    ...base,
+    summary: 'CrazyPapers : DA gameplay pixel-art validée. Le Proto reste le runtime actuel ; le nuage DA décrit maintenant la traduction à produire avant mini-tranche et Release.',
+    screens: [...base.screens, daScreen],
+    nodes: [...base.nodes, ...daNodes],
+  }
+}
+
 function buildLineFuggPlan(game: InstagameDefinition): PlanProject {
   const covers = (game.welcome?.variants ?? []).slice(0, 6).map<PlanScreen>((variant, index) => ({
     id: `C${index + 1}`, state: 'covers', title: variant.label || `Cover ${index + 1}`,
@@ -332,7 +417,11 @@ function buildLineFuggPlan(game: InstagameDefinition): PlanProject {
   }
 }
 
-function buildPlan(game: InstagameDefinition) { return game.id === 'linefugg' ? buildLineFuggPlan(game) : buildGenericPlan(game) }
+function buildPlan(game: InstagameDefinition) {
+  if (game.id === 'linefugg') return buildLineFuggPlan(game)
+  if (game.id === 'crazy-papers') return buildCrazyPapersPlan(game)
+  return buildGenericPlan(game)
+}
 
 function referenceGeometry(reference: ReferenceMode) {
   const option = REFERENCE_OPTIONS.find((item) => item.id === reference)

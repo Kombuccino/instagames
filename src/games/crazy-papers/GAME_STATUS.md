@@ -1,6 +1,16 @@
 # CrazyPapers — Suivi de création
 
-Mis à jour : 13 septembre 2026 à 09:34 Europe/Paris. Version livrable : `0.5.2`.
+Mis à jour : 19 septembre 2026. Version livrable : `0.5.2`.
+
+## DA gameplay validée — 19 septembre 2026
+
+L’utilisateur valide comme référence canonique de gameplay l’image `MiniFugg - Graphic Archive/Games/crazy-papers/Gameplay DA Validated - 2026-09-19/crazy-papers-gameplay-da-validated-2026-09-19.png` (Drive privé `1csaKcsx62GvWuBa716fXelhI2NqE2ZTT`). Original préservé : PNG opaque `849 × 1851`, SHA-256 `5d3384b040167f1c76ad5cf4bd8673997c07451a64878340bc606246ef8e90f1`. Cette validation porte sur la **DA et la composition générale d’un début de partie après environ 1–2 minutes**, pas encore sur un master runtime ni sur une intégration Phaser finale.
+
+Décisions désormais canoniques : pixel art construit ; cinq départements anglais `ACCOUNTING / CIVIL / PLANNING / HR / LEGAL`, chacun avec couleur + logo + ambiance + manager ; cinq tampons sur une seule ligne avec pictogramme sur la face et grosse base cliquable ; document actif large sur support bois presque à plat et contenu variable rendu par le moteur ; horloge de journée analogique avec secteur rouge de fin de journée, sans date ni nom du jour ; six décors de fenêtre selon l’heure ; piles latérales directement proportionnelles au nombre de dossiers en attente et encore modestes dans cet état précoce ; métronome avec cadence croissante et pile visuelle `TIC/TAC` de 2 à 6 éléments ; aucun texte d’ambiance décoratif.
+
+État manager initial : visages uniquement, aucune bulle. Les variations suivantes pourront montrer un seul manager parlant à la fois. L’erreur de service doit devenir un événement spectaculaire : énorme bras/poing au centre, dossier renvoyé à dos rouge avec gros cachet anglais `WRONG DEPARTMENT`, puis le même dossier revient sur la planche.
+
+Contrat de traduction : la source `849 × 1851` est presque exactement au ratio du MASTER `390 × 850`, mais elle n’est **pas encore certifiée pour la zone garantie `390 × 710`**. La prochaine étape est donc la planche DA → jeu avec compaction verticale, ancrage, couches/états et tests de crop avant toute intégration complète.
 
 ## Calage final des six covers — 13 septembre 2026
 
@@ -128,7 +138,7 @@ La correction est exclusivement un cadrage runtime `center 70%` pour cette varia
 
 ## Prochaine action
 
-1. Vérifier le correctif `0.4.1` sur le screen mobile/PC réel : plus aucune bande interne due au DPR.
-2. Refaire une vraie recherche DA gameplay conforme : 4–5 écrans indépendants, même géométrie et même état fonctionnel, sans titre/logo/texte parasite.
-3. Puis test utilisateur du gameplay en ligne : lisibilité du document, taille des 5 tampons, vitesse de la montée des piles, seuil de débordement et descente de la vague.
-4. Après validation technique de la migration, passer `migration.state` à `current` et `locked` à `false` sans réintroduire de renderer parallèle.
+1. Produire la **planche de traduction DA → jeu** à partir de la référence validée : MASTER `390 × 850`, zone garantie `390 × 710`, ancrage, couches, managers, tampons, document, backlog, six fenêtres, métronome et événement `WRONG DEPARTMENT`.
+2. Valider cette planche puis intégrer une mini-tranche représentative en Phaser avant de produire tout le pack.
+3. Vérifier en parallèle le correctif DPR sur mobile/PC réel et les sensations de pression.
+4. Après validation technique de la migration et de la nouvelle tranche, seulement alors passer `migration.state` à `current` / `locked: false`.

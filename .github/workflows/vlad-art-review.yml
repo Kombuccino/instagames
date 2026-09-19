@@ -3,15 +3,19 @@ on:
   pull_request:
     paths:
       - '.github/workflows/vlad-art-review.yml'
+      - 'scripts/prepare-vlad-review.mjs'
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
   capture:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'chatgpt/vlad-composition-review'
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -67,14 +71,33 @@ jobs:
             await server.close();
             await fs.writeFile(`${dir}/report.json`,JSON.stringify(report,null,2));
           }
-          if(report.errors.some(e=>e.error))process.exitCode=1;
+          if(report.errors.length)process.exitCode=1;
           SCRIPT
           node .vlad-review.mjs
-      - name: Save review evidence and relevant source context
+      - name: Prepare measured review, not gameplay
+        run: node scripts/prepare-vlad-review.mjs
+      - run: npm run test:repository && npm run build
+      - name: Save only review files to the temporary branch
+        env:
+          REVIEW_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -eu
+          branch=chatgpt/vlad-composition-review
+          git fetch origin "$branch"
+          test "$(git rev-parse FETCH_HEAD)" = "$REVIEW_HEAD"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- src/core/ProductionLab.tsx src/games/vlads-skewers/ART_DIRECTION.md src/games/vlads-skewers/GAME_STATUS.md src/games/vlads-skewers/ASSET_MANIFEST.md src/games/vlads-skewers/composition.json src/games/vlads-skewers/production-plan.json public/assets/generated/vlads-skewers/production-lab
+          git diff --cached --check
+          git diff --cached --stat
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'docs(vlad): record measured composition, real captures and Lab inventory'
+          git push origin "HEAD:refs/heads/$branch"
+      - name: Save evidence and prepared source context
         if: always()
         run: |
           mkdir -p artifacts/vlad-review
-          tar -czf artifacts/vlad-review/source-context.tar.gz AGENTS.md GAME_DEV_SPEC.md codex.md docs src/core src/games/vlads-skewers src/games/linefugg src/games/linefugg-rebirth .agents/skills public/assets/generated/vlads-skewers public/assets/imported/vlads-skewers vendor/phaser-skills/4.2.1 || true
+          tar -czf artifacts/vlad-review/source-context.tar.gz AGENTS.md GAME_DEV_SPEC.md codex.md docs src/core src/games/vlads-skewers .agents/skills public/assets/generated/vlads-skewers public/assets/imported/vlads-skewers vendor/phaser-skills/4.2.1 || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:

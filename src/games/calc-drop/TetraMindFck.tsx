@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { GameComponentProps } from '../../core/types'
 import { PhaserGameHost } from '../../core/runtime/PhaserGameHost'
-import { MINIFUGG_LEGACY_PORTRAIT_VIEWPORT } from '../../core/runtime/gameRuntimePolicy'
+import { MINIFUGG_MASTER_VIEWPORT } from '../../core/runtime/gameRuntimePolicy'
 import { useTetraMindFckMusic } from '../../music/reactiveGameMusic'
 import { TETRAMINDFCK_SCENE_KEY, TetraMindFckScene } from './TetraMindFckScene'
 import { installTetraMindFckSkin } from './TetraMindFckSkin'
@@ -54,7 +54,8 @@ export function TetraMindFck({ active, seed, restartToken, session }: GameCompon
       <PhaserGameHost
         active={gameplayActive}
         restartToken={restartToken}
-        logicalViewport={MINIFUGG_LEGACY_PORTRAIT_VIEWPORT}
+        logicalViewport={MINIFUGG_MASTER_VIEWPORT}
+        verticalAnchor="bottom"
         sceneKey={TETRAMINDFCK_SCENE_KEY}
         createScene={createScene}
         renderPixelRatio={renderPixelRatio}

@@ -1,5 +1,16 @@
 # TetraMindFck — Changelog
 
+## 0.8.6 — 2026-09-19 18:33 Europe/Paris
+
+- Première slice jouable de la DA TARGET-led validée : gameplay 390×850 ancré en bas, sans étirer le fond historique 390×844.
+- TARGET devient l’objectif principal du grand CRT. LEVEL utilise des glyphes raster et commence sur deux chiffres ; l’ancien TARGET du rail devient le petit écran MiniFugg.
+- MiniFugg reçoit des micro-poses Game & Watch : blink au repos, cheer/wow sur clear et party sur level-up.
+- LEVEL, TARGET et les valeurs de calcul utilisent un atlas raster 0–9 ; la grille et les previews gardent les atlas de tuiles existants.
+- Les calculs passent dans un bandeau CALC séparé : aucune colonne de la grille n’est sacrifiée.
+- Les anciens fichiers down incohérents ne sont plus utilisés. Les boutons dérivent press/hold/release/blocked depuis leur source up avec une course mécanique courte ; les rotations sont remises dans le bon sens sans régénération.
+- Gameplay, RNG, courbe de target, score de classement, bonus, lock 3 ticks et audio restent inchangés.
+
+Validation finale encore requise : build/CI, rendu téléphone/desktop, matière finale de coque et sensation des boutons à taille réelle.
 ## 0.8.5 — 2026-09-17 13:05 Europe/Paris
 
 - Les quatre covers actives appliquent le cadrage validé dans Cover Calibration pour la cible `390 × 850` et la fenêtre garantie `390 × 710` : `top / 4.3 % / 3.1 % / 2.5 %`.

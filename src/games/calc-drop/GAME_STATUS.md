@@ -2,6 +2,16 @@
 
 Updated: 2026-09-19 Europe/Paris
 
+## TARGET-led playable slice — 2026-09-19
+
+- Representative playable slice implemented on an isolated branch: 390×850 logical master, bottom anchor, wide TARGET, raster LEVEL/TARGET/calculation digits, MiniFugg rail screen and exact 10×20 engine grid.
+- Button audit found the historical down assets unsafe: at least `left-down` changes the arrow direction. The slice therefore uses clean up faces and derives idle/pressed/held/released/blocked/cancel motion in Phaser.
+- Rotate-left is counterclockwise and rotate-right clockwise by nondestructive horizontal mirroring of the approved colored faces.
+- MiniFugg uses rigid Game & Watch-style pose changes: idle/blink, cheer, wow and party.
+- Clear calculation uses a dedicated CALC strip outside the board. Only complete rows calculate and the board remains frozen until wipe/collapse.
+- Internal cumulative score stays active for session/leaderboard compatibility even though SCORE is no longer displayed.
+- Production Lab contains the Tetra DA inventory and explicitly leaves final shell source / product metric decisions unfinished. Release remains empty until runtime validation.
+- Build/CI and representative device checks are still required before migration can become `current`.
 ## Gameplay DA approved; production preparation started — 2026-09-19
 
 - User approved the exact latest cream-handheld / green-CRT reference and authorized the next production step.
